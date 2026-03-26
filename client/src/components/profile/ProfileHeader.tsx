@@ -64,12 +64,12 @@ export function ProfileHeader(props: ProfilePageProps) {
             <div className="max-w-7xl mx-auto flex flex-col items-center relative z-10">
               <div className="relative flex-shrink-0">
                 <div
-                  className={`rounded-full border-4 border-white dark:border-gray-600 shadow-xl overflow-hidden ${!isOwnProfile && user?.profileImage ? 'cursor-pointer hover:border-orange-400 transition-all' : ''}`}
-                  onClick={() => { if (!isOwnProfile && user?.profileImage) setTimeout(() => setShowExpandedPhoto(true), 0); }}
-                  title={!isOwnProfile && user?.profileImage ? "Click to enlarge photo" : undefined}
+                  className={`rounded-full border-4 border-white dark:border-gray-600 shadow-xl overflow-hidden ${user?.profileImage ? 'cursor-pointer hover:border-orange-400 transition-all' : ''}`}
+                  onClick={() => { if (user?.profileImage) setTimeout(() => setShowExpandedPhoto(true), 0); }}
+                  title={user?.profileImage ? "Click to enlarge photo" : undefined}
                 >
                   <div className="w-32 h-32 sm:w-40 sm:h-40 md:w-44 md:h-44 rounded-full overflow-hidden no-scrollbar">
-                    <SimpleAvatar user={user} size="xl" className="w-full h-full block object-cover" />
+                    <SimpleAvatar user={user} size="xl" className="w-full h-full block object-cover" onClick={user?.profileImage ? () => setShowExpandedPhoto(true) : undefined} />
                   </div>
                 </div>
                 {isOwnProfile && (

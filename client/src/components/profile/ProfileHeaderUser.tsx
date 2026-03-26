@@ -255,7 +255,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                   onClick={(e) => { e.stopPropagation(); if (user?.profileImage) setTimeout(() => setShowExpandedPhoto(true), 50); }}
                   title={user?.profileImage ? "Click to enlarge photo" : undefined}
                 >
-                  <SimpleAvatar user={user} size="xl" className="w-full h-full block object-cover" />
+                  <SimpleAvatar user={user} size="xl" className="w-full h-full block object-cover" onClick={user?.profileImage ? () => setShowExpandedPhoto(true) : undefined} />
                 </div>
                 <label
                   className={`absolute bottom-2 right-2 w-11 h-11 rounded-full p-0 flex items-center justify-center cursor-pointer ${!user?.profileImage ? 'bg-orange-500 hover:bg-orange-600' : 'bg-gray-600/90 hover:bg-gray-500'} text-white border-2 border-white overflow-hidden ${uploadingPhoto ? 'pointer-events-none opacity-50' : ''}`}
@@ -277,7 +277,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                   onClick={(e) => { e.stopPropagation(); if (user?.profileImage) setTimeout(() => setShowExpandedPhoto(true), 50); }}
                   title={user?.profileImage ? "Click to enlarge photo" : undefined}
                 >
-                  <SimpleAvatar user={user} size="xl" className="w-full h-full block object-cover" />
+                  <SimpleAvatar user={user} size="xl" className="w-full h-full block object-cover" onClick={user?.profileImage ? () => setShowExpandedPhoto(true) : undefined} />
                 </div>
                 {/* Add Photo - overlay at bottom right of avatar circle */}
                 <label
@@ -594,7 +594,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                           onClick={(e) => { e.stopPropagation(); if (user?.profileImage) setTimeout(() => setShowExpandedPhoto(true), 50); }}
                           title={user?.profileImage ? "Click to enlarge photo" : undefined}
                         >
-                          <SimpleAvatar user={user} size="xl" className="w-full h-full block object-cover" />
+                          <SimpleAvatar user={user} size="xl" className="w-full h-full block object-cover" onClick={user?.profileImage ? () => setShowExpandedPhoto(true) : undefined} />
                         </div>
 
                         {/* MOBILE ONLY: Nearby Local/Traveler labels under avatar (matches own-profile mobile layout) */}
@@ -1013,7 +1013,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                 onClick={(e) => { e.stopPropagation(); if (user?.profileImage) setTimeout(() => setShowExpandedPhoto(true), 50); }}
                 title={user?.profileImage ? "Click to enlarge photo" : undefined}
               >
-                <SimpleAvatar user={user} size="xl" className="w-full h-full block object-cover" />
+                <SimpleAvatar user={user} size="xl" className="w-full h-full block object-cover" onClick={user?.profileImage ? () => setShowExpandedPhoto(true) : undefined} />
               </div>
             </div>
 
@@ -1079,12 +1079,12 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
               {/* Avatar wrapper - relative for camera button positioning */}
               <div className="relative">
                 <div
-                  className={`rounded-full shadow-xl overflow-hidden ${user?.ambassadorStatus === 'active' ? 'border-4 border-amber-400' : `border-4 border-white dark:border-gray-600 ${!isOwnProfile && user?.profileImage ? 'cursor-pointer hover:border-orange-400 transition-all' : ''}`}`}
-                  onClick={(e) => { e.stopPropagation(); if (!isOwnProfile && user?.profileImage) setTimeout(() => setShowExpandedPhoto(true), 50); }}
-                  title={!isOwnProfile && user?.profileImage ? "Click to enlarge photo" : undefined}
+                  className={`rounded-full shadow-xl overflow-hidden ${user?.ambassadorStatus === 'active' ? 'border-4 border-amber-400' : `border-4 border-white dark:border-gray-600 ${user?.profileImage ? 'cursor-pointer hover:border-orange-400 transition-all' : ''}`}`}
+                  onClick={(e) => { e.stopPropagation(); if (user?.profileImage) setTimeout(() => setShowExpandedPhoto(true), 50); }}
+                  title={user?.profileImage ? "Click to enlarge photo" : undefined}
                 >
                   <div className="w-36 h-36 sm:w-40 sm:h-40 md:w-56 md:h-56 rounded-full overflow-hidden no-scrollbar">
-                    <SimpleAvatar user={user} size="xl" className="w-full h-full block object-cover" />
+                    <SimpleAvatar user={user} size="xl" className="w-full h-full block object-cover" onClick={user?.profileImage ? () => setShowExpandedPhoto(true) : undefined} />
                   </div>
                 </div>
                 {/* Camera button - over bottom edge of avatar (desktop other-user: N/A; iOS own: bottom-right) */}
