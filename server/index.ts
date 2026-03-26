@@ -109,6 +109,13 @@ app.get("/health", (_req, res) => {
 });
 app.get("/api/sentry-test", (_req, res) => res.json({ ok: true }));
 
+// Lightweight keep-alive ping — no DB, no auth, no middleware overhead.
+// Frontend calls this every 5 min to prevent Render cold starts.
+app.get("/api/ping", (_req, res) => {
+  res.setHeader("Cache-Control", "no-store");
+  res.json({ ok: true, ts: Date.now() });
+});
+
 // Trust reverse proxy (Replit/Render/Railway) so secure cookies & IPs work
 app.set("trust proxy", 1);
 

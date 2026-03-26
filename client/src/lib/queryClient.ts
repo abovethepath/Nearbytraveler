@@ -38,12 +38,26 @@ async function tryRefreshSession(): Promise<boolean> {
 
 let refreshInterval: ReturnType<typeof setInterval> | null = null;
 
+// Keep-alive ping — prevents Render cold starts by hitting a lightweight
+// endpoint every 5 min. No DB, no auth — just keeps the server warm.
+let keepAliveInterval: ReturnType<typeof setInterval> | null = null;
+function startKeepAlive() {
+  if (keepAliveInterval) return;
+  keepAliveInterval = setInterval(() => {
+    fetch(`${getApiBaseUrl()}/api/ping`).catch(() => {});
+  }, 5 * 60 * 1000);
+}
+function stopKeepAlive() {
+  if (keepAliveInterval) { clearInterval(keepAliveInterval); keepAliveInterval = null; }
+}
+
 export function startSessionRefresh() {
   if (refreshInterval) return;
   tryRefreshSession();
   refreshInterval = setInterval(() => {
     tryRefreshSession();
   }, 30 * 60 * 1000);
+  startKeepAlive();
 }
 
 export function stopSessionRefresh() {
@@ -51,6 +65,7 @@ export function stopSessionRefresh() {
     clearInterval(refreshInterval);
     refreshInterval = null;
   }
+  stopKeepAlive();
 }
 
 function hasVerifiedSession(): boolean {
