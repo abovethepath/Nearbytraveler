@@ -7,6 +7,7 @@ import {
   findCommunityForInterest,
   dismissCommunity,
 } from "@/lib/interestCommunityMap";
+import { IcebreakerPrompt, hasShownIcebreaker } from "@/components/IcebreakerPrompt";
 
 interface CommunityTag {
   id: number;
@@ -23,8 +24,8 @@ export function useCommunityJoinPrompt(
 ) {
   const [pending, setPending] = useState<CommunityMapping | null>(null);
   const [isJoining, setIsJoining] = useState(false);
-  // Queue for prompts that come in while one is already showing
   const [queue, setQueue] = useState<CommunityMapping[]>([]);
+  const [icebreaker, setIcebreaker] = useState<{ id: number; name: string } | null>(null);
 
   const checkInterest = useCallback((interest: string) => {
     const mapping = findCommunityForInterest(interest);
@@ -94,6 +95,10 @@ export function useCommunityJoinPrompt(
         toast?.({ title: `You're already in ${pending.communityDisplayName}!` });
       } else {
         toast?.({ title: `Joined ${pending.communityDisplayName}!` });
+        // Show icebreaker if not already shown for this community
+        if (!hasShownIcebreaker("community", tag.id)) {
+          setIcebreaker({ id: tag.id, name: pending.communityDisplayName });
+        }
       }
       // Dismiss so we don't prompt again
       dismissCommunity(pending.communitySlug);
@@ -117,7 +122,7 @@ export function useCommunityJoinPrompt(
     advanceQueue();
   }, [pending, advanceQueue]);
 
-  return { pending, isJoining, checkInterest, checkInterests, handleJoin, handleSkip };
+  return { pending, isJoining, checkInterest, checkInterests, handleJoin, handleSkip, icebreaker, setIcebreaker };
 }
 
 /** Render this alongside your page content. It shows the community join dialog when pending !== null. */
@@ -126,36 +131,51 @@ export function CommunityJoinPrompt({
   isJoining,
   onJoin,
   onSkip,
+  icebreaker,
+  onIcebreakerClose,
 }: {
   pending: CommunityMapping | null;
   isJoining: boolean;
   onJoin: () => void;
   onSkip: () => void;
+  icebreaker?: { id: number; name: string } | null;
+  onIcebreakerClose?: () => void;
 }) {
   return (
-    <Dialog open={!!pending} onOpenChange={(open) => { if (!open) onSkip(); }}>
-      <DialogContent className="sm:max-w-sm bg-white dark:bg-gray-900">
-        <DialogHeader>
-          <DialogTitle className="text-base">
-            {pending?.icon} {pending?.communityDisplayName}
-          </DialogTitle>
-        </DialogHeader>
-        <p className="text-sm text-gray-600 dark:text-gray-300">
-          Join the {pending?.communityDisplayName} community?
-        </p>
-        <div className="flex gap-2 mt-2">
-          <Button
-            onClick={onJoin}
-            disabled={isJoining}
-            className="bg-blue-600 hover:bg-blue-700 text-white flex-1"
-          >
-            {isJoining ? "Joining..." : "Yes"}
-          </Button>
-          <Button variant="outline" onClick={onSkip} disabled={isJoining} className="flex-1">
-            Skip
-          </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
+    <>
+      <Dialog open={!!pending} onOpenChange={(open) => { if (!open) onSkip(); }}>
+        <DialogContent className="sm:max-w-sm bg-white dark:bg-gray-900">
+          <DialogHeader>
+            <DialogTitle className="text-base">
+              {pending?.icon} {pending?.communityDisplayName}
+            </DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-gray-600 dark:text-gray-300">
+            Join the {pending?.communityDisplayName} community?
+          </p>
+          <div className="flex gap-2 mt-2">
+            <Button
+              onClick={onJoin}
+              disabled={isJoining}
+              className="bg-blue-600 hover:bg-blue-700 text-white flex-1"
+            >
+              {isJoining ? "Joining..." : "Yes"}
+            </Button>
+            <Button variant="outline" onClick={onSkip} disabled={isJoining} className="flex-1">
+              Skip
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {icebreaker && (
+        <IcebreakerPrompt
+          type="community"
+          id={icebreaker.id}
+          name={icebreaker.name}
+          onClose={() => onIcebreakerClose?.()}
+        />
+      )}
+    </>
   );
 }
