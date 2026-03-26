@@ -549,7 +549,7 @@ function Navbar() {
                         Sign In
                       </Button>
                     </Link>
-                    <Link href="/launching-soon">
+                    <Link href="/join">
                       <Button size="sm" className="bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-full px-4">
                         Sign Up
                       </Button>

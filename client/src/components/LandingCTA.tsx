@@ -41,7 +41,7 @@ export default function LandingCTA() {
             style={{ animation: "ctaRing 1.4s ease-in-out infinite" }}
           />
           <Button
-            onClick={() => setLocation('/launching-soon')}
+            onClick={() => setLocation('/join')}
             size="lg"
             className="relative bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white font-bold text-lg sm:text-xl md:text-2xl px-8 sm:px-12 py-8 sm:py-10 rounded-2xl shadow-xl hover:shadow-2xl transition-colors duration-200 whitespace-normal h-auto leading-snug w-full sm:w-auto"
           >
