@@ -406,6 +406,20 @@ function Router() {
     if (loginPending) setIsAuthenticating(true);
   }, [loginPending]);
 
+  // Auto-join communities based on interests — runs once per session
+  const autoJoinedRef = React.useRef(false);
+  useEffect(() => {
+    if (user?.id && !autoJoinedRef.current) {
+      autoJoinedRef.current = true;
+      // Fire-and-forget — non-blocking, no UI impact
+      fetch(`${getApiBaseUrl()}/api/communities/auto-join`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'x-user-id': String(user.id) },
+      }).catch(() => {});
+    }
+  }, [user?.id]);
+
   useEffect(() => {
     if (user) {
       startSessionRefresh();

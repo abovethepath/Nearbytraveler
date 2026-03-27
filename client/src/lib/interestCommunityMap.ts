@@ -13,9 +13,12 @@ export interface CommunityMapping {
   communityDisplayName: string;
   /** Emoji icon for the prompt dialog */
   icon: string;
+  /** Private communities require manual opt-in, skip auto-join */
+  isPrivate?: boolean;
 }
 
 export const INTEREST_COMMUNITY_MAPPINGS: CommunityMapping[] = [
+  // Existing communities
   {
     interests: ["Solo Female Traveler", "Solo Female Travel"],
     communitySlug: "solo-female-travelers",
@@ -57,6 +60,58 @@ export const INTEREST_COMMUNITY_MAPPINGS: CommunityMapping[] = [
     communitySlug: "veterans",
     communityDisplayName: "Veterans",
     icon: "🎖️",
+  },
+  // New communities
+  {
+    interests: ["Hiking", "Surfing", "Rock Climbing", "Running & Jogging", "Cycling & Biking", "Beach Volleyball", "Scuba Diving", "Kayaking", "Camping", "Skiing & Snowboarding", "Extreme Sports", "Water Sports", "Beach Activities", "Sailing", "Fishing"],
+    communitySlug: "outdoor-sports",
+    communityDisplayName: "Outdoor & Sports",
+    icon: "🏃",
+  },
+  {
+    interests: ["Yoga & Meditation", "Wellness & Mindfulness", "Sober/Alcohol-Free Lifestyle", "Health-Conscious/Vaccinated"],
+    communitySlug: "wellness-mindfulness",
+    communityDisplayName: "Wellness & Mindfulness",
+    icon: "🧘",
+  },
+  {
+    interests: ["Photography & Scenic Spots", "Street Art", "Architecture", "Film Festivals", "Arts", "Crafts", "Cultural Experiences", "Cultural Learning"],
+    communitySlug: "photography-arts",
+    communityDisplayName: "Photography & Arts",
+    icon: "📸",
+  },
+  {
+    interests: ["Vegan/Vegetarian", "Farm-to-Table Dining", "Food Trucks", "Health-Conscious/Vaccinated"],
+    communitySlug: "vegan-conscious-eating",
+    communityDisplayName: "Vegan & Conscious Eating",
+    icon: "🌱",
+  },
+  {
+    interests: ["Pet Lovers", "Animal Rescue & Shelters"],
+    communitySlug: "pet-lovers",
+    communityDisplayName: "Pet Lovers",
+    icon: "🐾",
+  },
+  {
+    interests: ["Kid-Friendly Activities", "Parenting Meetups", "Family-Oriented"],
+    communitySlug: "family-travelers",
+    communityDisplayName: "Family Travelers",
+    icon: "👨‍👩‍👧",
+  },
+  // Private communities — auto-join skipped, manual opt-in only
+  {
+    interests: ["420-Friendly"],
+    communitySlug: "420-friendly",
+    communityDisplayName: "420 Friendly",
+    icon: "💚",
+    isPrivate: true,
+  },
+  {
+    interests: ["Open to Dating", "Meeting New People"],
+    communitySlug: "singles-travelers",
+    communityDisplayName: "Singles Travelers",
+    icon: "💘",
+    isPrivate: true,
   },
 ];
 

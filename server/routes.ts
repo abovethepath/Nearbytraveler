@@ -29622,6 +29622,82 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // ---------- AUTO-JOIN COMMUNITIES BASED ON INTERESTS ----------
+
+  // Mapping of community slugs to interest pills (must match client interestCommunityMap.ts)
+  const COMMUNITY_INTEREST_MAP: Record<string, string[]> = {
+    "solo-female-travelers": ["Solo Female Traveler", "Solo Female Travel"],
+    "digital-nomads": ["Digital Nomad", "Digital Nomads"],
+    "foodies": ["Food Tours", "Foodie", "Food", "Restaurants & Food Scene", "Food Trucks", "Farm-to-Table Dining", "Ethnic Cuisine"],
+    "lgbtq-plus": ["LGBTQIA+", "LGBTQ+", "LGBTQIA+ Friendly"],
+    "solo-travelers": ["Solo Traveler", "Solo Travel"],
+    "couchsurfing-community": ["CouchSurfing"],
+    "veterans": ["Veteran", "Veterans"],
+    "outdoor-sports": ["Hiking", "Surfing", "Rock Climbing", "Running & Jogging", "Cycling & Biking", "Beach Volleyball", "Scuba Diving", "Kayaking", "Camping", "Skiing & Snowboarding", "Extreme Sports", "Water Sports", "Beach Activities", "Sailing", "Fishing"],
+    "wellness-mindfulness": ["Yoga & Meditation", "Wellness & Mindfulness", "Sober/Alcohol-Free Lifestyle", "Health-Conscious/Vaccinated"],
+    "photography-arts": ["Photography & Scenic Spots", "Street Art", "Architecture", "Film Festivals", "Arts", "Crafts", "Cultural Experiences", "Cultural Learning"],
+    "vegan-conscious-eating": ["Vegan/Vegetarian", "Farm-to-Table Dining", "Food Trucks"],
+    "pet-lovers": ["Pet Lovers", "Animal Rescue & Shelters"],
+    "family-travelers": ["Kid-Friendly Activities", "Parenting Meetups", "Family-Oriented"],
+  };
+  // Private communities — excluded from auto-join
+  const PRIVATE_COMMUNITY_SLUGS = new Set(["420-friendly", "singles-travelers"]);
+
+  app.post("/api/communities/auto-join", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || Number(req.headers['x-user-id']);
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+
+      // Get user's interests
+      const [userData] = await db.select({ interests: users.interests }).from(users).where(eq(users.id, Number(userId)));
+      const userInterests: string[] = userData?.interests || [];
+      if (userInterests.length === 0) return res.json({ joined: [] });
+
+      const userInterestsLower = new Set(userInterests.map(i => i.toLowerCase()));
+
+      // Find matching community slugs (exclude private)
+      const matchingSlugs: string[] = [];
+      for (const [slug, pills] of Object.entries(COMMUNITY_INTEREST_MAP)) {
+        if (PRIVATE_COMMUNITY_SLUGS.has(slug)) continue;
+        if (pills.some(p => userInterestsLower.has(p.toLowerCase()))) {
+          matchingSlugs.push(slug);
+        }
+      }
+      if (matchingSlugs.length === 0) return res.json({ joined: [] });
+
+      // Find community IDs for matching slugs
+      const communities = await db.select({ id: communityTags.id, name: communityTags.name })
+        .from(communityTags)
+        .where(inArray(communityTags.name, matchingSlugs));
+
+      // Find which the user is already in
+      const existing = await db.select({ tagId: userCommunityTags.tagId })
+        .from(userCommunityTags)
+        .where(and(
+          eq(userCommunityTags.userId, Number(userId)),
+          inArray(userCommunityTags.tagId, communities.map(c => c.id))
+        ));
+      const existingIds = new Set(existing.map(e => e.tagId));
+
+      // Auto-join missing communities
+      const joined: string[] = [];
+      for (const community of communities) {
+        if (existingIds.has(community.id)) continue;
+        try {
+          await db.insert(userCommunityTags).values({ userId: Number(userId), tagId: community.id }).onConflictDoNothing();
+          await db.update(communityTags).set({ memberCount: sql`COALESCE(${communityTags.memberCount}, 0) + 1` }).where(eq(communityTags.id, community.id));
+          joined.push(community.name);
+        } catch { /* skip duplicates */ }
+      }
+
+      if (joined.length > 0) console.log(`✅ AUTO-JOIN: User ${userId} joined ${joined.length} communities: ${joined.join(', ')}`);
+      res.json({ joined });
+    } catch (error: any) {
+      console.error("Auto-join error:", error);
+      res.json({ joined: [] }); // Non-fatal
+    }
+  });
+
   // ---------- COMMUNITY HOSTING OFFERS (CouchSurfing) ----------
 
   app.get("/api/communities/:id/hosting", async (req: any, res) => {
