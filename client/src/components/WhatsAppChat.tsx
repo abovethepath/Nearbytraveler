@@ -886,7 +886,9 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
 
   const { data: membersRaw = [], error: membersError } = useQuery<any[]>({
     queryKey: membersEndpoint ? [membersEndpoint] : ['members-disabled'],
-    enabled: Boolean(membersEndpoint)
+    enabled: Boolean(membersEndpoint),
+    staleTime: 15000,
+    refetchInterval: 20000, // Poll every 20s as fallback when WebSocket member:joined event is missed
   });
 
   // Enrich member rows with profile location (some endpoints only return ids/usernames).
