@@ -3426,7 +3426,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
       {/* Messages - Flex wrapper ensures proper spacing; min-h-0 allows flex child to shrink */}
       <div className="flex-1 flex flex-col overflow-hidden min-h-0 h-0 relative">
         {/* Fixed center logo watermark — stays in place while messages scroll */}
-        <img src="/logo_transparent.png" alt="" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 600, opacity: 0.06, pointerEvents: 'none', zIndex: 1, background: 'none', border: 'none', boxShadow: 'none', mixBlendMode: 'screen' }} />
+        <img src="/logo_transparent.png" alt="" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 600, opacity: 0.03, pointerEvents: 'none', zIndex: 1, background: 'none', border: 'none', boxShadow: 'none', mixBlendMode: 'screen' }} />
         {/* Scrollable messages area */}
         <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden overscroll-contain px-3 pt-1 pb-2 bg-[#0f1117] relative" style={{
           overscrollBehavior: 'contain', touchAction: 'pan-y', WebkitOverflowScrolling: 'touch' as any,
