@@ -646,7 +646,7 @@ app.use(
     cookie: {
       secure: true,
       httpOnly: true,
-      sameSite: "none" as const, // "none" required for mobile PWA — "lax" causes cookie loss on app resume
+      sameSite: "lax" as const,
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
       path: "/",
     },
