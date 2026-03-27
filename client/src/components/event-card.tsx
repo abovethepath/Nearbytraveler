@@ -329,6 +329,12 @@ export default function EventCard({ event, compact = false, featured = false }: 
             {event.title}
           </h3>
 
+          {(event as any).importedPlatform && (
+            <p className="text-xs text-gray-400 dark:text-gray-500 flex items-center gap-1">
+              📌 Originally posted on {(event as any).importedPlatform}
+            </p>
+          )}
+
           {event.description && (
             <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed whitespace-normal break-words [overflow-wrap:anywhere] line-clamp-2">
               {event.description}

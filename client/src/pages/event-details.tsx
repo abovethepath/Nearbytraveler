@@ -977,6 +977,11 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
             <CardHeader>
               <div>
                 <CardTitle className="text-2xl mb-2">{event.title}</CardTitle>
+                {(event as any).importedPlatform && (
+                  <p className="text-xs text-gray-400 dark:text-gray-500 flex items-center gap-1 mb-2">
+                    📌 Originally posted on {(event as any).importedPlatform}
+                  </p>
+                )}
                 <Badge variant="secondary" className="mb-4 text-gray-900 dark:text-gray-100">
                   {event.category}
                 </Badge>
