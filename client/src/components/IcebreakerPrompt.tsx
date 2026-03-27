@@ -50,8 +50,8 @@ export function IcebreakerPrompt({ type, id, name, chatId, onClose }: Icebreaker
       }
       markIcebreakerShown(type, id);
       onClose();
-    } catch {
-      // Silently fail — don't block the user
+    } catch (err) {
+      console.error("Icebreaker post failed:", err);
       markIcebreakerShown(type, id);
       onClose();
     } finally {

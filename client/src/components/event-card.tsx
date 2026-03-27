@@ -1,10 +1,8 @@
-import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar, MapPin, Users, Check, Phone, MessageCircle } from "lucide-react";
 import { useLocation } from "wouter";
 import type { Event } from "@shared/schema";
-import { IcebreakerPrompt, hasShownIcebreaker } from "@/components/IcebreakerPrompt";
 import ConnectionCelebration from "./connection-celebration";
 import { useConnectionCelebration } from "@/hooks/useConnectionCelebration";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -49,7 +47,6 @@ interface EventCardProps {
 export default function EventCard({ event, compact = false, featured = false }: EventCardProps) {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
-  const [showIcebreaker, setShowIcebreaker] = useState(false);
   const { isVisible, celebrationData, triggerCelebration, hideCelebration } = useConnectionCelebration();
 
   const getCurrentUser = () => {
@@ -130,9 +127,13 @@ export default function EventCard({ event, compact = false, featured = false }: 
         }
       });
 
-      // Show icebreaker prompt after joining (only once per event)
-      if (variables.status === 'going' && !hasShownIcebreaker("event", event.id)) {
-        setTimeout(() => setShowIcebreaker(true), 1500); // After celebration animation
+      // Auto-post system message to event chat (no user input needed)
+      if (variables.status === 'going') {
+        const username = currentUser?.username || currentUser?.name?.split(' ')[0] || 'Someone';
+        apiRequest("POST", `/api/event-chatrooms/${event.id}/messages`, {
+          message: `@${username} just joined! \u{1F44B}`,
+          messageType: "system",
+        }).catch(() => {}); // fire-and-forget
       }
     },
     onError: (error: any) => {
@@ -517,15 +518,6 @@ export default function EventCard({ event, compact = false, featured = false }: 
         />
       )}
 
-      {showIcebreaker && (
-        <IcebreakerPrompt
-          type="event"
-          id={event.id}
-          name={event.title}
-          chatId={event.id}
-          onClose={() => setShowIcebreaker(false)}
-        />
-      )}
     </>
   );
 }
