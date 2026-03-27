@@ -462,7 +462,7 @@ export default function CommunityDetail({ communityId }: { communityId: number }
         </DialogContent>
       </Dialog>
 
-      <div className={`max-w-3xl mx-auto px-4 ${isChatActive ? 'flex-1 flex flex-col min-h-0 overflow-hidden py-2' : 'py-4'}`}>
+      <div className={`${isChatActive ? 'flex-1 flex flex-col min-h-0 overflow-hidden' : 'max-w-3xl mx-auto px-4 py-4'}`}>
         <div className="flex gap-2 mb-2 shrink-0">
           <Button variant={activeSection === "feed" ? "default" : "outline"} size="sm"
             onClick={() => setActiveSection("feed")}
