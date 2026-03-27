@@ -3,6 +3,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient, getApiBaseUrl } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { SmartLocationInput } from "@/components/SmartLocationInput";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { SimpleAvatar } from "@/components/simple-avatar";
 import { useLocation } from "wouter";
@@ -37,7 +38,7 @@ export function HostingWidget({ communityId }: { communityId: number }) {
     title: "", description: "", maxGuests: 1,
     availableFrom: "", availableTo: "",
     couchType: "couch", amenities: [] as string[],
-    city: "", flexible: false,
+    city: "", state: "", country: "", flexible: false,
   });
 
   const { data: offers = [] } = useQuery<HostingOffer[]>({
@@ -55,7 +56,7 @@ export function HostingWidget({ communityId }: { communityId: number }) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/communities/${communityId}/hosting`] });
       setShowForm(false);
-      setForm({ title: "", description: "", maxGuests: 1, availableFrom: "", availableTo: "", couchType: "Couch", amenities: [], city: "", flexible: false });
+      setForm({ title: "", description: "", maxGuests: 1, availableFrom: "", availableTo: "", couchType: "Couch", amenities: [], city: "", state: "", country: "", flexible: false });
     },
   });
 
@@ -83,6 +84,8 @@ export function HostingWidget({ communityId }: { communityId: number }) {
       couchType: "Couch",
       amenities: [],
       city: (user as any)?.hometownCity || "",
+      state: (user as any)?.hometownState || "",
+      country: (user as any)?.hometownCountry || "United States",
       flexible: false,
     });
     setShowForm(true);
@@ -275,12 +278,13 @@ export function HostingWidget({ communityId }: { communityId: number }) {
                 className="text-sm"
               />
 
-              {/* City */}
-              <Input
-                placeholder="City"
-                value={form.city}
-                onChange={e => setForm(f => ({ ...f, city: e.target.value }))}
-                className="text-sm"
+              {/* Location */}
+              <SmartLocationInput
+                city={form.city}
+                state={form.state}
+                country={form.country}
+                onLocationChange={(loc) => setForm(f => ({ ...f, city: loc.city, state: loc.state, country: loc.country }))}
+                placeholder={{ country: "Country", state: "State", city: "City" }}
               />
 
               <Button
@@ -309,11 +313,12 @@ export function HostingWidget({ communityId }: { communityId: number }) {
               </div>
 
               {/* Destination */}
-              <Input
-                placeholder="Destination city"
-                value={form.city}
-                onChange={e => setForm(f => ({ ...f, city: e.target.value }))}
-                className="text-sm"
+              <SmartLocationInput
+                city={form.city}
+                state={form.state}
+                country={form.country}
+                onLocationChange={(loc) => setForm(f => ({ ...f, city: loc.city, state: loc.state, country: loc.country }))}
+                placeholder={{ country: "Country", state: "State", city: "Destination city" }}
               />
 
               {/* About me */}
