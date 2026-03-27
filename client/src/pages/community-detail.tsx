@@ -29,10 +29,11 @@ function UserAvatar({ user, size = "sm" }: { user: any; size?: string }) {
   );
 }
 
-function timeAgo(dateStr: string) {
-  const now = Date.now();
+function timeAgo(dateStr: string | null | undefined) {
+  if (!dateStr) return "";
   const then = new Date(dateStr).getTime();
-  const mins = Math.floor((now - then) / 60000);
+  if (isNaN(then)) return "";
+  const mins = Math.floor((Date.now() - then) / 60000);
   if (mins < 1) return "just now";
   if (mins < 60) return `${mins}m ago`;
   const hrs = Math.floor(mins / 60);
@@ -649,7 +650,7 @@ export default function CommunityDetail({ communityId }: { communityId: number }
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-1.5">
                               <span className="text-xs font-semibold">{msg.senderUsername || msg.username}</span>
-                              <span className="text-[10px] text-gray-400">{timeAgo(msg.createdAt)}</span>
+                              <span className="text-[10px] text-gray-400">{timeAgo(msg.sentAt || msg.createdAt)}</span>
                             </div>
                             <p className="text-xs text-gray-600 dark:text-gray-400 truncate">{msg.content}</p>
                           </div>
@@ -784,8 +785,8 @@ export default function CommunityDetail({ communityId }: { communityId: number }
               <WhatsAppChat
                 chatId={community.chatroomId}
                 chatType="chatroom"
-                title={community.name}
-                subtitle={`${community.memberCount || 0} members`}
+                title={community.displayName || community.name}
+                subtitle={`${community.memberCount || members.length || 0} members`}
                 currentUserId={currentUser?.id}
                 embedded
               />

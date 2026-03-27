@@ -29308,16 +29308,11 @@ Questions? Just reply to this message. Welcome aboard!
       // Add user to community chatroom if one exists (non-fatal if this fails)
       if (tag.chatroomId) {
         try {
-          const [alreadyMember] = await db.select().from(chatroomMembers)
-            .where(and(eq(chatroomMembers.chatroomId, tag.chatroomId), eq(chatroomMembers.userId, userId)));
-          if (!alreadyMember) {
-            await db.insert(chatroomMembers).values({
-              chatroomId: tag.chatroomId,
-              userId,
-              role: "member",
-              isActive: true,
-            }).onConflictDoNothing();
-          }
+          await db.execute(sql`
+            INSERT INTO chatroom_members (chatroom_id, user_id, role, is_active)
+            VALUES (${tag.chatroomId}, ${userId}, 'member', true)
+            ON CONFLICT (chatroom_id, user_id) DO UPDATE SET is_active = true
+          `);
         } catch (chatErr: any) {
           console.error("⚠️ Failed to add user to community chatroom (non-fatal):", chatErr?.message);
         }
@@ -29344,6 +29339,15 @@ Questions? Just reply to this message. Welcome aboard!
       await db.update(communityTags)
         .set({ memberCount: sql`GREATEST(0, ${communityTags.memberCount} - 1)` })
         .where(eq(communityTags.id, tagId));
+
+      // Remove from linked chatroom when leaving community
+      try {
+        const [tag] = await db.select({ chatroomId: communityTags.chatroomId }).from(communityTags).where(eq(communityTags.id, tagId));
+        if (tag?.chatroomId) {
+          await db.delete(chatroomMembers)
+            .where(and(eq(chatroomMembers.chatroomId, tag.chatroomId), eq(chatroomMembers.userId, userId)));
+        }
+      } catch { /* non-fatal */ }
 
       res.json({ ok: true });
     } catch (error: any) {
@@ -29695,13 +29699,28 @@ Questions? Just reply to this message. Welcome aboard!
         ));
       const existingIds = new Set(existing.map(e => e.tagId));
 
-      // Auto-join missing communities
+      // Auto-join missing communities + add to linked chatrooms
       const joined: string[] = [];
+      // Fetch chatroom IDs for communities that have them
+      const communitiesWithChatrooms = await db.select({ id: communityTags.id, chatroomId: communityTags.chatroomId })
+        .from(communityTags)
+        .where(inArray(communityTags.id, communities.map(c => c.id)));
+      const chatroomMap = new Map(communitiesWithChatrooms.filter(c => c.chatroomId).map(c => [c.id, c.chatroomId!]));
+
       for (const community of communities) {
         if (existingIds.has(community.id)) continue;
         try {
           await db.insert(userCommunityTags).values({ userId: Number(userId), tagId: community.id }).onConflictDoNothing();
           await db.update(communityTags).set({ memberCount: sql`COALESCE(${communityTags.memberCount}, 0) + 1` }).where(eq(communityTags.id, community.id));
+          // Also add to linked chatroom
+          const chatroomId = chatroomMap.get(community.id);
+          if (chatroomId) {
+            await db.execute(sql`
+              INSERT INTO chatroom_members (chatroom_id, user_id, role, is_active)
+              VALUES (${chatroomId}, ${Number(userId)}, 'member', true)
+              ON CONFLICT (chatroom_id, user_id) DO UPDATE SET is_active = true
+            `).catch(() => {});
+          }
           joined.push(community.name);
         } catch { /* skip duplicates */ }
       }
