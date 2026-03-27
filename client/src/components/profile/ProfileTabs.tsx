@@ -2590,11 +2590,31 @@ export function ProfileTabs(props: ProfilePageProps) {
                               className="aspect-square cursor-pointer rounded-lg overflow-hidden relative group"
                               onClick={() => { setSelectedPhotoIndex(index); setShowFullGallery(true); }}
                             >
-                              <img 
-                                src={photo.imageUrl} 
+                              <img
+                                src={photo.imageUrl}
                                 alt={photo.caption || 'Travel photo'}
                                 className="w-full h-full object-cover hover:scale-105 transition-transform"
                               />
+                              {isOwnProfile && (
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    if (window.confirm("Delete this photo?")) {
+                                      fetch(`${getApiBaseUrl()}/api/photos/${photo.id}`, { method: 'DELETE' })
+                                        .then(() => {
+                                          queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/photos`] });
+                                          queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/profile-bundle`] });
+                                          toast({ title: "Photo deleted" });
+                                        })
+                                        .catch(() => toast({ title: "Failed to delete", variant: "destructive" }));
+                                    }
+                                  }}
+                                  className="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/60 text-white flex items-center justify-center opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-xs font-bold z-10 hover:bg-red-600"
+                                >
+                                  X
+                                </button>
+                              )}
                             </div>
                           ))}
                         </div>

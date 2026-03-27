@@ -2267,8 +2267,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/photos`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/profile-bundle`] });
       toast({
-        title: "Photo uploaded",
+        title: "Photo uploaded!",
         description: "Your photo has been added to your profile.",
       });
       setUploadingPhoto(false);
