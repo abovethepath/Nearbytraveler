@@ -140,7 +140,6 @@ export default function LandingStreamlined() {
               className={`absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out pointer-events-none ${
                 index === currentVideo ? 'opacity-100' : 'opacity-0'
               }`}
-              style={{ objectPosition: 'center 20%' }}
               autoPlay
               loop
               muted
@@ -155,10 +154,10 @@ export default function LandingStreamlined() {
           {/* Bottom gradient — covers video watermark area */}
           <div className="absolute bottom-0 left-0 w-full h-1/3 bg-gradient-to-t from-black/90 via-black/40 to-transparent pointer-events-none"></div>
           
-          {/* Content overlay */}
-          <div className="relative z-10 pt-8 pb-12 sm:pt-12 sm:pb-16">
+          {/* Content overlay — extra bottom padding pushes text up to cover watermark area */}
+          <div className="relative z-10 pt-4 pb-24 sm:pt-8 sm:pb-28">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="flex flex-col items-center justify-center text-center min-h-[500px] sm:min-h-[600px]">
+              <div className="flex flex-col items-center justify-center text-center min-h-[480px] sm:min-h-[560px]">
                 
                 {/* Rotating Quote */}
                 <p className="landing-quote text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-orange-400 italic mb-8 sm:mb-10 leading-snug transition-opacity duration-500">
