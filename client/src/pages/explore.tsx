@@ -443,49 +443,17 @@ export default function Explore() {
       <div className="bg-gradient-to-r from-blue-600 via-blue-500 to-teal-400 text-white px-4 pt-[calc(env(safe-area-inset-top,0px)+52px)] pb-4 md:pt-6 md:pb-6">
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center gap-2 mb-1">
-            <Zap className="w-5 h-5 md:w-6 md:h-6" />
-            <h1 className="text-xl md:text-2xl font-bold">Explore</h1>
+            <Globe className="w-5 h-5 md:w-6 md:h-6" />
+            <h1 className="text-xl md:text-2xl font-bold">Communities</h1>
           </div>
-          <p className="text-white/80 text-xs md:text-sm">Who's live right now, and communities to join — in {userCity || "your city"}</p>
-          {hasHometownCity && hasTravelCity && (
-            <div className="mt-2 flex items-center gap-2">
-              <Button
-                size="sm"
-                variant="secondary"
-                onClick={() => setCityView("hometown")}
-                className={`${cityView === "hometown" ? "bg-[#FF6B35] text-white hover:bg-[#ff5a1f]" : "bg-white/20 text-white hover:bg-white/30"} border border-white/30 text-xs h-7`}
-              >
-                🏠 Hometown
-              </Button>
-              <Button
-                size="sm"
-                variant="secondary"
-                onClick={() => setCityView("travel")}
-                className={`${cityView === "travel" ? "bg-[#FF6B35] text-white hover:bg-[#ff5a1f]" : "bg-white/20 text-white hover:bg-white/30"} border border-white/30 text-xs h-7`}
-              >
-                ✈️ Travel city
-              </Button>
-            </div>
-          )}
+          <p className="text-white/80 text-xs md:text-sm">Find your people — join or create communities</p>
         </div>
       </div>
 
       <div className="max-w-6xl mx-auto px-3 sm:px-4 py-3 md:py-4 min-w-0 overflow-x-hidden">
-        {/* Single flat 3-tab bar — no more nested tabs */}
-        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)}>
-          <TabsList className="grid grid-cols-2 mb-4 w-full p-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl shadow-sm">
-            <TabsTrigger value="live" className="flex items-center justify-center gap-1 py-2 text-xs sm:text-sm min-w-0">
-              <MapPin className="w-3.5 h-3.5 shrink-0" /> <span>Live</span>
-            </TabsTrigger>
-            <TabsTrigger value="communities" className="flex items-center justify-center gap-1 py-2 text-xs sm:text-sm min-w-0">
-              <Globe className="w-3.5 h-3.5 shrink-0" /> <span className="hidden xs:inline">Communities</span><span className="xs:hidden">Groups</span>
-            </TabsTrigger>
-          </TabsList>
-
-          {/* ===== LIVE LOCATION SHARES TAB ===== */}
-          <TabsContent value="live" className="space-y-4">
-            {/* My active share banner */}
-            {myLiveShare && (
+          <div className="space-y-4">
+            {/* Live tab removed — now on Cities page. Dead code below preserved to avoid breaking hooks. */}
+            {false && myLiveShare && (
               <Card className="border-2 border-green-500 bg-green-50 dark:bg-green-950">
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
@@ -609,10 +577,7 @@ export default function Explore() {
                 ))}
               </div>
             )}
-          </TabsContent>
-
-          {/* ===== COMMUNITIES TAB ===== */}
-          <TabsContent value="communities" className="space-y-4">
+          {/* ===== COMMUNITIES ===== */}
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h3 className="font-bold text-lg mb-1">Find Your People</h3>
@@ -829,11 +794,8 @@ export default function Explore() {
                 </Button>
               </DialogContent>
             </Dialog>
-          </TabsContent>
-        </Tabs>
-
-        {/* People in city */}
-        {userCity && (
+          </div>
+        {false && userCity && (
           <div className="mt-8 mb-6">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
