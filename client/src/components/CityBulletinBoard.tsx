@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { SimpleAvatar } from "@/components/simple-avatar";
 import { useAuth } from "@/App";
 import { useLocation } from "wouter";
-import { MessageSquare, Clock, Send, ArrowLeft, Plus } from "lucide-react";
+import { MessageSquare, Clock, Send, Plus, Heart } from "lucide-react";
 
 function timeAgo(dateStr: string | null | undefined) {
   if (!dateStr) return "";
@@ -38,26 +38,24 @@ interface CityPost {
   replyCount: number;
 }
 
-interface CityPostDetail extends CityPost {
-  replies: {
-    id: number;
-    content: string;
-    createdAt: string;
-    authorId: number;
-    username: string;
-    name: string;
-    profileImage: string | null;
-  }[];
+interface Reply {
+  id: number;
+  content: string;
+  createdAt: string;
+  authorId: number;
+  username: string;
+  name: string;
+  profileImage: string | null;
 }
 
 export function CityBulletinBoard({ cityName }: { cityName: string }) {
   const { user } = useAuth();
   const [, setLocation] = useLocation();
   const [showNewPost, setShowNewPost] = useState(false);
-  const [selectedPost, setSelectedPost] = useState<number | null>(null);
+  const [expandedPost, setExpandedPost] = useState<number | null>(null);
+  const [replyTexts, setReplyTexts] = useState<Record<number, string>>({});
   const [newTitle, setNewTitle] = useState("");
   const [newContent, setNewContent] = useState("");
-  const [replyText, setReplyText] = useState("");
 
   const { data: posts = [] } = useQuery<CityPost[]>({
     queryKey: ["/api/city-posts", cityName],
@@ -69,14 +67,33 @@ export function CityBulletinBoard({ cityName }: { cityName: string }) {
     staleTime: 30000,
   });
 
-  const { data: postDetail } = useQuery<CityPostDetail>({
-    queryKey: ["/api/city-posts", selectedPost],
+  // Batch likes for all visible posts
+  const postIds = posts.map(p => p.id);
+  const { data: likesData = {} } = useQuery<Record<number, { count: number; liked: boolean }>>({
+    queryKey: ["/api/city-posts/likes", postIds.join(",")],
     queryFn: async () => {
-      const res = await fetch(`${getApiBaseUrl()}/api/city-posts/${selectedPost}`);
-      if (!res.ok) throw new Error("Failed");
+      if (postIds.length === 0) return {};
+      const res = await fetch(`${getApiBaseUrl()}/api/city-posts/likes?postIds=${postIds.join(",")}`, {
+        credentials: "include",
+        headers: user?.id ? { "x-user-id": String(user.id) } : {},
+      });
+      if (!res.ok) return {};
       return res.json();
     },
-    enabled: !!selectedPost,
+    enabled: postIds.length > 0,
+    staleTime: 15000,
+  });
+
+  // Replies for expanded post
+  const { data: expandedReplies = [] } = useQuery<Reply[]>({
+    queryKey: ["/api/city-posts", expandedPost, "replies"],
+    queryFn: async () => {
+      const res = await fetch(`${getApiBaseUrl()}/api/city-posts/${expandedPost}`);
+      if (!res.ok) return [];
+      const data = await res.json();
+      return data.replies || [];
+    },
+    enabled: !!expandedPost,
   });
 
   const createPostMutation = useMutation({
@@ -89,14 +106,26 @@ export function CityBulletinBoard({ cityName }: { cityName: string }) {
     },
   });
 
-  const replyMutation = useMutation({
-    mutationFn: async () => apiRequest("POST", `/api/city-posts/${selectedPost}/replies`, { content: replyText }),
+  const likeMutation = useMutation({
+    mutationFn: async (postId: number) => apiRequest("POST", `/api/city-posts/${postId}/like`),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/city-posts", selectedPost] });
-      queryClient.invalidateQueries({ queryKey: ["/api/city-posts", cityName] });
-      setReplyText("");
+      queryClient.invalidateQueries({ queryKey: ["/api/city-posts/likes"] });
     },
   });
+
+  const replyMutation = useMutation({
+    mutationFn: async ({ postId, content }: { postId: number; content: string }) =>
+      apiRequest("POST", `/api/city-posts/${postId}/replies`, { content }),
+    onSuccess: (_, vars) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/city-posts", vars.postId, "replies"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/city-posts", cityName] });
+      setReplyTexts(prev => ({ ...prev, [vars.postId]: "" }));
+    },
+  });
+
+  const toggleExpand = (postId: number) => {
+    setExpandedPost(prev => prev === postId ? null : postId);
+  };
 
   return (
     <Card className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
@@ -119,30 +148,101 @@ export function CityBulletinBoard({ cityName }: { cityName: string }) {
             <p className="text-xs text-gray-500 dark:text-gray-400">No posts yet — be the first!</p>
           </div>
         ) : (
-          <div className="space-y-2 max-h-[400px] overflow-y-auto">
-            {posts.map((post) => (
-              <button
-                key={post.id}
-                type="button"
-                onClick={() => setSelectedPost(post.id)}
-                className="w-full text-left p-3 rounded-lg bg-gray-50 dark:bg-gray-900/50 border border-gray-100 dark:border-gray-700 hover:border-orange-300 dark:hover:border-orange-600 transition-colors"
-              >
-                <div className="flex items-start gap-2.5">
-                  <div className="cursor-pointer shrink-0" onClick={(e) => { e.stopPropagation(); setLocation(`/profile/${post.authorId}`); }}>
-                    <SimpleAvatar user={{ id: post.authorId, username: post.username, profileImage: post.profileImage }} size="sm" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs font-bold text-gray-900 dark:text-white line-clamp-1">{post.title}</p>
-                    <p className="text-[11px] text-gray-600 dark:text-gray-400 line-clamp-2 mt-0.5">{post.content}</p>
-                    <div className="flex items-center gap-3 mt-1.5 text-[10px] text-gray-400 dark:text-gray-500">
-                      <span>@{post.username}</span>
-                      <span className="flex items-center gap-0.5"><Clock className="w-2.5 h-2.5" /> {timeAgo(post.createdAt)}</span>
-                      <span className="flex items-center gap-0.5"><MessageSquare className="w-2.5 h-2.5" /> {post.replyCount}</span>
+          <div className="space-y-2 max-h-[500px] overflow-y-auto">
+            {posts.map((post) => {
+              const likeInfo = likesData[post.id] || { count: 0, liked: false };
+              const isExpanded = expandedPost === post.id;
+              const replyText = replyTexts[post.id] || "";
+
+              return (
+                <div key={post.id} className="rounded-lg bg-gray-50 dark:bg-gray-900/50 border border-gray-100 dark:border-gray-700">
+                  {/* Post content */}
+                  <div className="p-3">
+                    <div className="flex items-start gap-2.5">
+                      <div className="cursor-pointer shrink-0" onClick={() => setLocation(`/profile/${post.authorId}`)}>
+                        <SimpleAvatar user={{ id: post.authorId, username: post.username, profileImage: post.profileImage }} size="sm" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-bold text-gray-900 dark:text-white line-clamp-1">{post.title}</p>
+                        <p className="text-[11px] text-gray-600 dark:text-gray-400 line-clamp-3 mt-0.5">{post.content}</p>
+                        <div className="flex items-center gap-3 mt-1.5 text-[10px] text-gray-400 dark:text-gray-500">
+                          <span>@{post.username}</span>
+                          <span className="flex items-center gap-0.5"><Clock className="w-2.5 h-2.5" /> {timeAgo(post.createdAt)}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Action bar — like, reply count, respond */}
+                    <div className="flex items-center gap-3 mt-2 pt-2 border-t border-gray-100 dark:border-gray-800">
+                      <button
+                        type="button"
+                        onClick={() => user?.id && likeMutation.mutate(post.id)}
+                        className={`flex items-center gap-1 text-[11px] transition-colors ${
+                          likeInfo.liked ? "text-red-500 font-semibold" : "text-gray-400 hover:text-red-400"
+                        }`}
+                      >
+                        <Heart className={`w-3.5 h-3.5 ${likeInfo.liked ? "fill-red-500" : ""}`} />
+                        {likeInfo.count > 0 && likeInfo.count}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => toggleExpand(post.id)}
+                        className="flex items-center gap-1 text-[11px] text-gray-400 hover:text-blue-500 transition-colors"
+                      >
+                        <MessageSquare className="w-3.5 h-3.5" />
+                        {post.replyCount > 0 ? `${post.replyCount} ${post.replyCount === 1 ? "reply" : "replies"}` : "Reply"}
+                      </button>
                     </div>
                   </div>
+
+                  {/* Expanded replies + reply input */}
+                  {isExpanded && (
+                    <div className="px-3 pb-3 border-t border-gray-100 dark:border-gray-800">
+                      {expandedReplies.length > 0 && (
+                        <div className="space-y-1.5 mt-2">
+                          {expandedReplies.map((reply) => (
+                            <div key={reply.id} className="flex items-start gap-2 p-1.5 rounded bg-white dark:bg-gray-800">
+                              <SimpleAvatar user={{ id: reply.authorId, username: reply.username, profileImage: reply.profileImage }} size="xs" />
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-1.5 text-[10px] text-gray-400">
+                                  <span className="font-semibold text-gray-700 dark:text-gray-300">@{reply.username}</span>
+                                  <span>{timeAgo(reply.createdAt)}</span>
+                                </div>
+                                <p className="text-[11px] text-gray-800 dark:text-gray-200 mt-0.5">{reply.content}</p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      {user?.id && (
+                        <div className="flex gap-1.5 mt-2">
+                          <Input
+                            placeholder="Write a reply..."
+                            value={replyText}
+                            onChange={(e) => setReplyTexts(prev => ({ ...prev, [post.id]: e.target.value }))}
+                            className="text-xs h-8 flex-1"
+                            maxLength={500}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter" && replyText.trim()) {
+                                replyMutation.mutate({ postId: post.id, content: replyText.trim() });
+                              }
+                            }}
+                          />
+                          <Button
+                            size="sm"
+                            className="h-8 w-8 p-0 bg-blue-600 hover:bg-blue-700 text-white"
+                            onClick={() => replyText.trim() && replyMutation.mutate({ postId: post.id, content: replyText.trim() })}
+                            disabled={replyMutation.isPending || !replyText.trim()}
+                          >
+                            <Send className="w-3 h-3" />
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
-              </button>
-            ))}
+              );
+            })}
           </div>
         )}
       </CardContent>
@@ -164,70 +264,6 @@ export function CityBulletinBoard({ cityName }: { cityName: string }) {
               {createPostMutation.isPending ? "Posting..." : "Post"}
             </Button>
           </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Post Detail Dialog */}
-      <Dialog open={!!selectedPost} onOpenChange={(open) => { if (!open) setSelectedPost(null); }}>
-        <DialogContent className="sm:max-w-lg bg-white dark:bg-gray-900 max-h-[80vh] overflow-y-auto">
-          {postDetail ? (
-            <>
-              <DialogHeader>
-                <DialogTitle className="text-base pr-6">{postDetail.title}</DialogTitle>
-              </DialogHeader>
-              <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 -mt-1">
-                <SimpleAvatar user={{ id: postDetail.authorId, username: postDetail.username, profileImage: postDetail.profileImage }} size="xs" />
-                <span>@{postDetail.username}</span>
-                <span>{timeAgo(postDetail.createdAt)}</span>
-              </div>
-              <p className="text-sm text-gray-800 dark:text-gray-200 whitespace-pre-wrap mt-2">{postDetail.content}</p>
-
-              {/* Replies */}
-              <div className="border-t border-gray-200 dark:border-gray-700 mt-4 pt-3">
-                <p className="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-2">
-                  {postDetail.replies?.length || 0} {postDetail.replies?.length === 1 ? "Reply" : "Replies"}
-                </p>
-                <div className="space-y-2">
-                  {(postDetail.replies || []).map((reply) => (
-                    <div key={reply.id} className="flex items-start gap-2 p-2 rounded-lg bg-gray-50 dark:bg-gray-800">
-                      <SimpleAvatar user={{ id: reply.authorId, username: reply.username, profileImage: reply.profileImage }} size="xs" />
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-1.5 text-[10px] text-gray-400">
-                          <span className="font-semibold text-gray-700 dark:text-gray-300">@{reply.username}</span>
-                          <span>{timeAgo(reply.createdAt)}</span>
-                        </div>
-                        <p className="text-xs text-gray-800 dark:text-gray-200 mt-0.5">{reply.content}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                {user?.id && (
-                  <div className="flex gap-2 mt-3">
-                    <Input
-                      placeholder="Write a reply..."
-                      value={replyText}
-                      onChange={(e) => setReplyText(e.target.value)}
-                      className="text-sm flex-1"
-                      maxLength={500}
-                      onKeyDown={(e) => { if (e.key === "Enter" && replyText.trim()) replyMutation.mutate(); }}
-                    />
-                    <Button
-                      size="sm"
-                      onClick={() => replyMutation.mutate()}
-                      disabled={replyMutation.isPending || !replyText.trim()}
-                      className="bg-blue-600 hover:bg-blue-700 text-white"
-                    >
-                      <Send className="w-3 h-3" />
-                    </Button>
-                  </div>
-                )}
-              </div>
-            </>
-          ) : (
-            <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-6 w-6 border-2 border-gray-300 border-t-blue-500 mx-auto" />
-            </div>
-          )}
         </DialogContent>
       </Dialog>
     </Card>

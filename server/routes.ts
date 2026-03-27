@@ -93,7 +93,7 @@ import {
   notifications,
 } from "../shared/schema";
 import { sql, eq, or, count, and, ne, desc, gte, lte, lt, isNotNull, inArray, asc, ilike, like, isNull, gt } from "drizzle-orm";
-import { waitlistLeads, availableNow, availableNowRequests, meetupChatrooms, meetupChatroomMessages, liveLocationShares, liveShareReactions, microExperiences, microExperienceParticipants, activityTemplates, meetupShareCards, communityTags, userCommunityTags, communityPosts, communityPostLikes, communityPostReplies, eventIntegrations, externalEvents, activityLog, savedTravelers, chatroomInviteTokens, chatroomModerationRecords, chatroomBlocks, hostingOffers, cityPosts, cityPostReplies } from "../shared/schema";
+import { waitlistLeads, availableNow, availableNowRequests, meetupChatrooms, meetupChatroomMessages, liveLocationShares, liveShareReactions, microExperiences, microExperienceParticipants, activityTemplates, meetupShareCards, communityTags, userCommunityTags, communityPosts, communityPostLikes, communityPostReplies, eventIntegrations, externalEvents, activityLog, savedTravelers, chatroomInviteTokens, chatroomModerationRecords, chatroomBlocks, hostingOffers, cityPosts, cityPostReplies, cityPostLikes } from "../shared/schema";
 import { writeActivityLog } from "./services/activityLogService";
 import { alias } from "drizzle-orm/pg-core";
 
@@ -29875,6 +29875,58 @@ Questions? Just reply to this message. Welcome aboard!
     } catch (error: any) {
       console.error("Error creating city post reply:", error);
       res.status(500).json({ error: "Failed to create reply" });
+    }
+  });
+
+  // Toggle like on a city post
+  app.post("/api/city-posts/:postId/like", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || Number(req.headers['x-user-id']);
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+      const postId = parseInt(req.params.postId);
+
+      const [existing] = await db.select().from(cityPostLikes)
+        .where(and(eq(cityPostLikes.postId, postId), eq(cityPostLikes.userId, userId)));
+
+      if (existing) {
+        await db.delete(cityPostLikes).where(eq(cityPostLikes.id, existing.id));
+        res.json({ liked: false });
+      } else {
+        await db.insert(cityPostLikes).values({ postId, userId });
+        res.json({ liked: true });
+      }
+    } catch (error: any) {
+      res.status(500).json({ error: "Failed to toggle like" });
+    }
+  });
+
+  // Batch get like counts + user liked state for city posts
+  app.get("/api/city-posts/likes", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || Number(req.headers['x-user-id']) || 0;
+      const postIds = (req.query.postIds as string || "").split(",").map(Number).filter(Boolean);
+      if (postIds.length === 0) return res.json({});
+
+      const counts = await db.select({
+        postId: cityPostLikes.postId,
+        count: sql<number>`COUNT(*)::int`,
+      }).from(cityPostLikes).where(inArray(cityPostLikes.postId, postIds)).groupBy(cityPostLikes.postId);
+
+      let userLikedSet = new Set<number>();
+      if (userId) {
+        const userLikes = await db.select({ postId: cityPostLikes.postId }).from(cityPostLikes)
+          .where(and(inArray(cityPostLikes.postId, postIds), eq(cityPostLikes.userId, userId)));
+        userLikedSet = new Set(userLikes.map(l => l.postId));
+      }
+
+      const result: Record<number, { count: number; liked: boolean }> = {};
+      for (const id of postIds) {
+        const found = counts.find(c => c.postId === id);
+        result[id] = { count: found ? Number(found.count) : 0, liked: userLikedSet.has(id) };
+      }
+      res.json(result);
+    } catch (error: any) {
+      res.json({});
     }
   });
 

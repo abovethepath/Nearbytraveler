@@ -3009,6 +3009,13 @@ export const cityPostReplies = pgTable("city_post_replies", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const cityPostLikes = pgTable("city_post_likes", {
+  id: serial("id").primaryKey(),
+  postId: integer("post_id").notNull().references(() => cityPosts.id, { onDelete: "cascade" }),
+  userId: integer("user_id").notNull().references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 export const eventIntegrations = pgTable("event_integrations", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
