@@ -93,7 +93,7 @@ import {
   notifications,
 } from "../shared/schema";
 import { sql, eq, or, count, and, ne, desc, gte, lte, lt, isNotNull, inArray, asc, ilike, like, isNull, gt } from "drizzle-orm";
-import { waitlistLeads, availableNow, availableNowRequests, meetupChatrooms, meetupChatroomMessages, liveLocationShares, liveShareReactions, microExperiences, microExperienceParticipants, activityTemplates, meetupShareCards, communityTags, userCommunityTags, communityPosts, communityPostLikes, communityPostReplies, eventIntegrations, externalEvents, activityLog, savedTravelers, chatroomInviteTokens, chatroomModerationRecords, chatroomBlocks } from "../shared/schema";
+import { waitlistLeads, availableNow, availableNowRequests, meetupChatrooms, meetupChatroomMessages, liveLocationShares, liveShareReactions, microExperiences, microExperienceParticipants, activityTemplates, meetupShareCards, communityTags, userCommunityTags, communityPosts, communityPostLikes, communityPostReplies, eventIntegrations, externalEvents, activityLog, savedTravelers, chatroomInviteTokens, chatroomModerationRecords, chatroomBlocks, hostingOffers } from "../shared/schema";
 import { writeActivityLog } from "./services/activityLogService";
 import { alias } from "drizzle-orm/pg-core";
 
@@ -29619,6 +29619,81 @@ Questions? Just reply to this message. Welcome aboard!
       res.json(result);
     } catch (error: any) {
       res.json({});
+    }
+  });
+
+  // ---------- COMMUNITY HOSTING OFFERS (CouchSurfing) ----------
+
+  app.get("/api/communities/:id/hosting", async (req: any, res) => {
+    try {
+      const tagId = parseInt(req.params.id);
+      const offers = await db.select({
+        id: hostingOffers.id,
+        userId: hostingOffers.userId,
+        offerType: hostingOffers.offerType,
+        title: hostingOffers.title,
+        description: hostingOffers.description,
+        maxGuests: hostingOffers.maxGuests,
+        availableFrom: hostingOffers.availableFrom,
+        availableTo: hostingOffers.availableTo,
+        createdAt: hostingOffers.createdAt,
+        username: users.username,
+        name: users.name,
+        firstName: users.firstName,
+        profileImage: users.profileImage,
+        hometownCity: users.hometownCity,
+        couchsurfingProfileUrl: users.couchsurfingProfileUrl,
+      })
+        .from(hostingOffers)
+        .innerJoin(users, eq(hostingOffers.userId, users.id))
+        .innerJoin(userCommunityTags, and(
+          eq(userCommunityTags.userId, hostingOffers.userId),
+          eq(userCommunityTags.tagId, tagId)
+        ))
+        .where(eq(hostingOffers.isActive, true))
+        .orderBy(desc(hostingOffers.createdAt));
+      res.json(offers);
+    } catch (error: any) {
+      console.error("Error fetching hosting offers:", error);
+      res.status(500).json({ error: "Failed to fetch hosting offers" });
+    }
+  });
+
+  app.post("/api/communities/:id/hosting", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || Number(req.headers['x-user-id']);
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+      const { offerType, title, description, maxGuests, availableFrom, availableTo } = req.body;
+      if (!offerType || !title || !availableFrom || !availableTo) {
+        return res.status(400).json({ error: "Missing required fields" });
+      }
+      const [offer] = await db.insert(hostingOffers).values({
+        userId: Number(userId),
+        offerType,
+        title,
+        description: description || "",
+        maxGuests: maxGuests || 1,
+        availableFrom: new Date(availableFrom),
+        availableTo: new Date(availableTo),
+        isActive: true,
+      }).returning();
+      res.json(offer);
+    } catch (error: any) {
+      console.error("Error creating hosting offer:", error);
+      res.status(500).json({ error: "Failed to create hosting offer" });
+    }
+  });
+
+  app.delete("/api/communities/:id/hosting/:offerId", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || Number(req.headers['x-user-id']);
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+      const offerId = parseInt(req.params.offerId);
+      await db.update(hostingOffers).set({ isActive: false })
+        .where(and(eq(hostingOffers.id, offerId), eq(hostingOffers.userId, Number(userId))));
+      res.json({ ok: true });
+    } catch (error: any) {
+      res.status(500).json({ error: "Failed to remove hosting offer" });
     }
   });
 

@@ -1056,6 +1056,24 @@ export function ProfileDialogs(props: ProfilePageProps) {
 
 
 
+                  <FormField
+                    control={form.control}
+                    name="couchsurfingProfileUrl"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>CouchSurfing Profile</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            placeholder="https://www.couchsurfing.com/people/username"
+                            type="text"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
                   {/* Business Description Field */}
                   <FormField
                     control={profileForm.control}

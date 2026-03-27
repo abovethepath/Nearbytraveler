@@ -4,6 +4,7 @@ import { useLocation } from "wouter";
 import { apiRequest, getApiBaseUrl } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { FullPageSkeleton } from "@/components/FullPageSkeleton";
+import { HostingWidget } from "@/components/HostingWidget";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -549,6 +550,11 @@ export default function CommunityDetail({ communityId }: { communityId: number }
                   </div>
                 </CardContent>
               </Card>
+            )}
+
+            {/* CouchSurfing Hosting & Requests — only for CouchSurfing community */}
+            {community.name?.toLowerCase().includes('couchsurf') && (
+              <HostingWidget communityId={communityId} />
             )}
 
             {/* WIDGET 3 — Chat Preview */}

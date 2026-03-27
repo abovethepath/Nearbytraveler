@@ -93,7 +93,8 @@ export const users = pgTable("users", {
   tiktokUrl: text("tiktok_url"),
   youtubeUrl: text("youtube_url"),
   websiteUrl: text("website_url"),
-  
+  couchsurfingProfileUrl: text("couchsurfing_profile_url"),
+
   // Business Address Information (required for admin verification)
   streetAddress: text("street_address"),
   zipCode: text("zip_code"),
