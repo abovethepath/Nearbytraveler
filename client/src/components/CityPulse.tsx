@@ -215,19 +215,27 @@ export function CityPulse({ city, isLocal }: CityPulseProps) {
         }
       },
     },
-    // 📅 Events this week → navigate
+    // 📅 Events this week → scroll to events section on home page
     {
       emoji: "📅",
       count: data?.eventsThisWeek || 0,
       label: "events this week",
-      onClick: () => setLocation("/events"),
+      onClick: () => {
+        const el = document.querySelector('[data-testid="local-events-section"]');
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        else setLocation("/events");
+      },
     },
-    // ✨ Events created today → navigate
+    // ✨ Events created today → scroll to events section on home page
     {
       emoji: "✨",
       count: data?.eventsCreatedToday || 0,
       label: "events created today",
-      onClick: () => setLocation("/events"),
+      onClick: () => {
+        const el = document.querySelector('[data-testid="local-events-section"]');
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        else setLocation("/events");
+      },
     },
     // 🤝 New connections today → popover
     {
