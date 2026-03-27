@@ -93,7 +93,7 @@ import {
   notifications,
 } from "../shared/schema";
 import { sql, eq, or, count, and, ne, desc, gte, lte, lt, isNotNull, inArray, asc, ilike, like, isNull, gt } from "drizzle-orm";
-import { waitlistLeads, availableNow, availableNowRequests, meetupChatrooms, meetupChatroomMessages, liveLocationShares, liveShareReactions, microExperiences, microExperienceParticipants, activityTemplates, meetupShareCards, communityTags, userCommunityTags, communityPosts, communityPostLikes, communityPostReplies, eventIntegrations, externalEvents, activityLog, savedTravelers, chatroomInviteTokens, chatroomModerationRecords, chatroomBlocks, hostingOffers } from "../shared/schema";
+import { waitlistLeads, availableNow, availableNowRequests, meetupChatrooms, meetupChatroomMessages, liveLocationShares, liveShareReactions, microExperiences, microExperienceParticipants, activityTemplates, meetupShareCards, communityTags, userCommunityTags, communityPosts, communityPostLikes, communityPostReplies, eventIntegrations, externalEvents, activityLog, savedTravelers, chatroomInviteTokens, chatroomModerationRecords, chatroomBlocks, hostingOffers, cityPosts, cityPostReplies } from "../shared/schema";
 import { writeActivityLog } from "./services/activityLogService";
 import { alias } from "drizzle-orm/pg-core";
 
@@ -29732,6 +29732,149 @@ Questions? Just reply to this message. Welcome aboard!
     } catch (error: any) {
       console.error("Auto-join error:", error);
       res.json({ joined: [] }); // Non-fatal
+    }
+  });
+
+  // ---------- CITY BULLETIN BOARD ----------
+
+  app.get("/api/city-posts", async (req: any, res) => {
+    try {
+      const rawCity = (req.query.city as string || "").trim();
+      if (!rawCity) return res.status(400).json({ error: "city param required" });
+      const city = getMetroAreaName(rawCity);
+
+      const posts = await db.select({
+        id: cityPosts.id,
+        cityName: cityPosts.cityName,
+        title: cityPosts.title,
+        content: cityPosts.content,
+        createdAt: cityPosts.createdAt,
+        authorId: cityPosts.authorId,
+        username: users.username,
+        name: users.name,
+        firstName: users.firstName,
+        profileImage: users.profileImage,
+      })
+        .from(cityPosts)
+        .innerJoin(users, eq(cityPosts.authorId, users.id))
+        .where(eq(cityPosts.cityName, city))
+        .orderBy(desc(cityPosts.createdAt))
+        .limit(50);
+
+      // Batch reply counts
+      const postIds = posts.map(p => p.id);
+      let replyCounts: Record<number, number> = {};
+      if (postIds.length > 0) {
+        const counts = await db.select({
+          postId: cityPostReplies.postId,
+          count: sql<number>`COUNT(*)::int`,
+        })
+          .from(cityPostReplies)
+          .where(inArray(cityPostReplies.postId, postIds))
+          .groupBy(cityPostReplies.postId);
+        for (const c of counts) replyCounts[c.postId] = c.count;
+      }
+
+      res.json(posts.map(p => ({ ...p, replyCount: replyCounts[p.id] || 0 })));
+    } catch (error: any) {
+      console.error("Error fetching city posts:", error);
+      res.status(500).json({ error: "Failed to fetch city posts" });
+    }
+  });
+
+  app.post("/api/city-posts", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || Number(req.headers['x-user-id']);
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+      const { cityName, title, content } = req.body;
+      if (!cityName || !title?.trim() || !content?.trim()) return res.status(400).json({ error: "cityName, title, and content are required" });
+
+      const normalizedCity = getMetroAreaName(cityName.trim());
+      const [post] = await db.insert(cityPosts).values({
+        cityName: normalizedCity,
+        authorId: Number(userId),
+        title: title.trim(),
+        content: content.trim(),
+      }).returning();
+      res.json(post);
+    } catch (error: any) {
+      console.error("Error creating city post:", error);
+      res.status(500).json({ error: "Failed to create post" });
+    }
+  });
+
+  app.get("/api/city-posts/:id", async (req: any, res) => {
+    try {
+      const postId = parseInt(req.params.id);
+      const [post] = await db.select({
+        id: cityPosts.id,
+        cityName: cityPosts.cityName,
+        title: cityPosts.title,
+        content: cityPosts.content,
+        createdAt: cityPosts.createdAt,
+        authorId: cityPosts.authorId,
+        username: users.username,
+        name: users.name,
+        profileImage: users.profileImage,
+      })
+        .from(cityPosts)
+        .innerJoin(users, eq(cityPosts.authorId, users.id))
+        .where(eq(cityPosts.id, postId));
+      if (!post) return res.status(404).json({ error: "Post not found" });
+
+      const replies = await db.select({
+        id: cityPostReplies.id,
+        content: cityPostReplies.content,
+        createdAt: cityPostReplies.createdAt,
+        authorId: cityPostReplies.authorId,
+        username: users.username,
+        name: users.name,
+        profileImage: users.profileImage,
+      })
+        .from(cityPostReplies)
+        .innerJoin(users, eq(cityPostReplies.authorId, users.id))
+        .where(eq(cityPostReplies.postId, postId))
+        .orderBy(asc(cityPostReplies.createdAt));
+
+      res.json({ ...post, replies });
+    } catch (error: any) {
+      console.error("Error fetching city post:", error);
+      res.status(500).json({ error: "Failed to fetch post" });
+    }
+  });
+
+  app.post("/api/city-posts/:id/replies", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || Number(req.headers['x-user-id']);
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+      const postId = parseInt(req.params.id);
+      const { content } = req.body;
+      if (!content?.trim()) return res.status(400).json({ error: "content is required" });
+
+      const [reply] = await db.insert(cityPostReplies).values({
+        postId,
+        authorId: Number(userId),
+        content: content.trim(),
+      }).returning();
+
+      // Return with author info
+      const [withUser] = await db.select({
+        id: cityPostReplies.id,
+        content: cityPostReplies.content,
+        createdAt: cityPostReplies.createdAt,
+        authorId: cityPostReplies.authorId,
+        username: users.username,
+        name: users.name,
+        profileImage: users.profileImage,
+      })
+        .from(cityPostReplies)
+        .innerJoin(users, eq(cityPostReplies.authorId, users.id))
+        .where(eq(cityPostReplies.id, reply.id));
+
+      res.json(withUser);
+    } catch (error: any) {
+      console.error("Error creating city post reply:", error);
+      res.status(500).json({ error: "Failed to create reply" });
     }
   });
 

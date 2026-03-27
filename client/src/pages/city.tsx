@@ -22,6 +22,7 @@ import { SecretExperiencesWidget } from "@/components/SecretExperiencesWidget";
 import { AICityGuideWidget } from "@/components/AICityGuideWidget";
 import { CityArrivalsWidget } from "@/components/CityArrivalsWidget";
 import { CityLiveFeed } from "@/components/CityLiveFeed";
+import { CityBulletinBoard } from "@/components/CityBulletinBoard";
 import { useAuth } from "@/App";
 import { getApiBaseUrl } from "@/lib/queryClient";
 import type { User, Event } from "@shared/schema";
@@ -687,6 +688,7 @@ export default function CityPage({ cityName }: CityPageProps) {
                   <SecretExperiencesWidget city={parsedCityName} state={parsedStateName} country={parsedCountryName} />
                 </div>
                 <div className={isLAArea ? 'ring-2 ring-orange-200/50 rounded-xl p-1' : ''}>
+                  <CityBulletinBoard cityName={parsedCityName} />
                   <CityChatlroomsWidget city={parsedCityName} country={parsedCountryName} />
                 </div>
                 {/* City Map Widget - Always Loaded */}

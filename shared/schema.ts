@@ -2990,6 +2990,25 @@ export const communityPostReplies = pgTable("community_post_replies", {
 export type CommunityPostLike = typeof communityPostLikes.$inferSelect;
 export type CommunityPostReply = typeof communityPostReplies.$inferSelect;
 
+// City Bulletin Board
+export const cityPosts = pgTable("city_posts", {
+  id: serial("id").primaryKey(),
+  cityName: text("city_name").notNull(),
+  authorId: integer("author_id").notNull().references(() => users.id),
+  title: text("title").notNull(),
+  content: text("content").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const cityPostReplies = pgTable("city_post_replies", {
+  id: serial("id").primaryKey(),
+  postId: integer("post_id").notNull().references(() => cityPosts.id, { onDelete: "cascade" }),
+  authorId: integer("author_id").notNull().references(() => users.id),
+  content: text("content").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 export const eventIntegrations = pgTable("event_integrations", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
