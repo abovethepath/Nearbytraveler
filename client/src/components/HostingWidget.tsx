@@ -71,7 +71,6 @@ export function HostingWidget({ communityId }: { communityId: number }) {
   const formatDate = (d: string) => new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric" });
 
   const COUCH_TYPES = ["Private Room", "Shared Room", "Couch", "Floor Space", "Entire Place"];
-  const AMENITY_OPTIONS = ["WiFi", "Kitchen", "Parking", "Pet Friendly", "Smoking OK", "Quiet Hours", "LGBTQ+ Friendly"];
 
   const openForm = (type: "hosting" | "seeking") => {
     setFormType(type);
@@ -89,22 +88,14 @@ export function HostingWidget({ communityId }: { communityId: number }) {
     setShowForm(true);
   };
 
-  const toggleAmenity = (a: string) => {
-    setForm(f => ({
-      ...f,
-      amenities: f.amenities.includes(a) ? f.amenities.filter(x => x !== a) : [...f.amenities, a],
-    }));
-  };
-
   const handleSubmit = () => {
     if (!form.flexible && (!form.availableFrom || !form.availableTo)) return;
-    const amenityStr = form.amenities.length > 0 ? ` | ${form.amenities.join(", ")}` : "";
     createMutation.mutate({
       offerType: formType === "hosting" ? form.couchType.toLowerCase().replace(/ /g, '_') : "seeking",
       title: formType === "hosting"
         ? `${form.couchType} in ${form.city || "my city"}`
         : `Looking for a host in ${form.city || "your city"}`,
-      description: (form.description + amenityStr).slice(0, 200),
+      description: form.description.slice(0, 200),
       maxGuests: form.maxGuests,
       availableFrom: form.flexible ? new Date().toISOString() : form.availableFrom,
       availableTo: form.flexible ? new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString() : form.availableTo,
@@ -272,22 +263,6 @@ export function HostingWidget({ communityId }: { communityId: number }) {
                   <span className="text-lg font-bold text-gray-900 dark:text-white w-6 text-center">{form.maxGuests}</span>
                   <button type="button" onClick={() => setForm(f => ({ ...f, maxGuests: Math.min(4, f.maxGuests + 1) }))}
                     className="w-8 h-8 rounded-full border border-gray-300 dark:border-gray-600 flex items-center justify-center text-lg font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">+</button>
-                </div>
-              </div>
-
-              {/* Amenity pills */}
-              <div>
-                <label className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2 block">Your place (optional)</label>
-                <div className="flex flex-wrap gap-1.5">
-                  {AMENITY_OPTIONS.map(a => (
-                    <button key={a} type="button" onClick={() => toggleAmenity(a)}
-                      className={`px-2.5 py-1 rounded-full text-[11px] font-medium border transition-colors ${
-                        form.amenities.includes(a)
-                          ? "bg-emerald-500 text-white border-emerald-500"
-                          : "bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:border-emerald-300"
-                      }`}
-                    >{a}</button>
-                  ))}
                 </div>
               </div>
 
