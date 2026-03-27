@@ -33,10 +33,14 @@ interface AvailableNowStripProps {
 
 const SCROLL_AMOUNT = 170;
 
-export default function AvailableNowStrip({ currentUserId, userCity, isCurrentlyTraveling, travelDestination }: AvailableNowStripProps) {
+export default function AvailableNowStrip({ currentUserId: propUserId, userCity, isCurrentlyTraveling, travelDestination }: AvailableNowStripProps) {
   const [, setLocation] = useLocation();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [sendingTo, setSendingTo] = useState<number | null>(null);
+  // Fallback: resolve userId from localStorage if prop is temporarily undefined during re-render
+  const currentUserId = propUserId || (() => {
+    try { const u = JSON.parse(localStorage.getItem('user') || localStorage.getItem('travelconnect_user') || '{}'); return Number(u?.id) || undefined; } catch { return undefined; }
+  })();
 
   // City switcher: default to travel destination if traveling
   const homeCity = userCity || "";

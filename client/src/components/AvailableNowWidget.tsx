@@ -1084,15 +1084,8 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
                           </Button>
                         );
                       }
-                      return (
-                        <Button
-                          className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold text-sm py-2 border-0"
-                          onClick={() => sendRequestMutation.mutate({ toUserId: entry.userId })}
-                          disabled={sendRequestMutation.isPending}
-                        >
-                          Join
-                        </Button>
-                      );
+                      // Join button removed — the green Join on the AvailableNowStrip card handles this
+                      return null;
                     })()}
                   </div>
                 </div>
