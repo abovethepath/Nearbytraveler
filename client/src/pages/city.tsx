@@ -367,8 +367,8 @@ export default function CityPage({ cityName }: CityPageProps) {
           <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
             {/* Main Content */}
             <div className="lg:col-span-2 xl:col-span-3">
-              {/* Live Presence — mobile only (also in sidebar for desktop) */}
-              <div className="lg:hidden mb-4">
+              {/* Live Presence — full width, top of main content */}
+              <div className="mb-4">
                 <LivePresenceWidget cityName={parsedCityName} country={parsedCountryName} />
               </div>
 
@@ -694,7 +694,6 @@ export default function CityPage({ cityName }: CityPageProps) {
                   <SecretExperiencesWidget city={parsedCityName} state={parsedStateName} country={parsedCountryName} />
                 </div>
                 <div className={isLAArea ? 'ring-2 ring-orange-200/50 rounded-xl p-1' : ''}>
-                  <LivePresenceWidget cityName={parsedCityName} country={parsedCountryName} />
                   <CityBulletinBoard cityName={parsedCityName} />
                   <CityChatlroomsWidget city={parsedCityName} country={parsedCountryName} />
                 </div>
