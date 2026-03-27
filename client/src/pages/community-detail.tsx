@@ -469,9 +469,8 @@ export default function CommunityDetail({ communityId }: { communityId: number }
             className={activeSection === "feed" ? "bg-orange-500 hover:bg-orange-600" : ""}>
             <MessageSquare className="w-4 h-4 mr-1" /> Feed
           </Button>
-          <Button variant={activeSection === "chat" ? "default" : "outline"} size="sm"
-            onClick={() => setActiveSection("chat")}
-            className={activeSection === "chat" ? "bg-orange-500 hover:bg-orange-600" : ""}>
+          <Button variant="outline" size="sm"
+            onClick={() => community.chatroomId ? setLocation(`/chatroom/${community.chatroomId}`) : setActiveSection("chat")}>
             <MessageCircle className="w-4 h-4 mr-1" /> Chat
           </Button>
           <Button variant={activeSection === "members" ? "default" : "outline"} size="sm"
@@ -631,14 +630,14 @@ export default function CommunityDetail({ communityId }: { communityId: number }
                       <MessageCircle className="w-4 h-4 text-emerald-500" />
                       <h3 className="font-bold text-sm">Community Chat</h3>
                     </div>
-                    <Button variant="ghost" size="sm" className="text-xs text-gray-500 h-6 px-2" onClick={() => setActiveSection("chat")}>
+                    <Button variant="ghost" size="sm" className="text-xs text-gray-500 h-6 px-2" onClick={() => community.chatroomId ? setLocation(`/chatroom/${community.chatroomId}`) : null}>
                       Open Chat <ChevronRight className="w-3 h-3 ml-1" />
                     </Button>
                   </div>
                   {chatMessages.length === 0 ? (
                     <div className="text-center py-4">
                       <p className="text-xs text-gray-400">No messages yet — start the conversation!</p>
-                      <Button size="sm" variant="outline" className="mt-2 text-xs h-7" onClick={() => setActiveSection("chat")}>
+                      <Button size="sm" variant="outline" className="mt-2 text-xs h-7" onClick={() => community.chatroomId ? setLocation(`/chatroom/${community.chatroomId}`) : null}>
                         Open Chat
                       </Button>
                     </div>
