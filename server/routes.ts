@@ -25626,10 +25626,14 @@ Questions? Just reply to this message. Welcome aboard!
       if (metroDetection.isMetroCity && metroDetection.metroAreaName) {
         const metroCities = getMetroCities(metroDetection.metroAreaName);
         cityCondition = or(
+          // Match each suburb/city in the metro
           ...metroCities.flatMap(mc => [
             ilike(availableNow.city, mc),
             ilike(availableNow.city, `${mc},%`),
-          ])
+          ]),
+          // Also match the metro area name itself (e.g. "Los Angeles Metro")
+          // in case it was stored that way from older client code
+          ilike(availableNow.city, metroDetection.metroAreaName),
         );
       } else {
         cityCondition = or(
