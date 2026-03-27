@@ -1345,8 +1345,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       const data = await response.json();
       return Array.isArray(data) ? data : [];
     },
-    // Lazy load: only fetch when chatrooms tab is opened
-    enabled: (isOwnProfile ? !!currentUser?.id : !!effectiveUserId) && loadedTabs.has('chatrooms'),
+    // Always fetch — needed for chatroom count in stats tab bar
+    enabled: isOwnProfile ? !!currentUser?.id : !!effectiveUserId,
     staleTime: 60 * 1000,
   });
 
