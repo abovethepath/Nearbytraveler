@@ -252,7 +252,7 @@ export default function UserCard({
     >
       {/* Photo section - flush to top edge (no padding/margin); identical for current user and others */}
       <div 
-        className={`relative block flex-shrink-0 w-full !m-0 !p-0 self-stretch overflow-hidden ${compact ? 'aspect-square rounded-t-lg' : isNativeIOSApp() ? 'aspect-square lg:aspect-[3/4] rounded-t-[14px]' : 'aspect-square lg:aspect-[4/5] rounded-t-[14px]'}`}
+        className={`relative block flex-shrink-0 w-full !m-0 !p-0 self-stretch overflow-hidden ${compact ? 'aspect-square rounded-t-lg' : 'aspect-square rounded-t-[14px]'}`}
         style={{ margin: 0, padding: 0, minHeight: 0, flexShrink: 0 }}
       >
         {user.profileImage ? (
