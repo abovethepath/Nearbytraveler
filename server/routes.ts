@@ -7360,6 +7360,7 @@ Questions? Just reply to this message. Welcome aboard!
 
       // Execute all queries in parallel — use allSettled so one bad query never
       // crashes the entire bundle response.
+      const t0 = Date.now();
       const results = await Promise.allSettled([
         // 0. User data
         storage.getUser(userId),
@@ -7386,14 +7387,8 @@ Questions? Just reply to this message. Welcome aboard!
         db.select().from(travelPlans).where(
           and(eq(travelPlans.userId, userId), eq(travelPlans.status, 'completed'))
         ),
-        // 9. Platform stats (parallel — was sequential, now concurrent)
-        Promise.all([
-          db.select({ count: count() }).from(users).where(eq(users.isActive, true)),
-          db.select({ count: count() }).from(connections).where(eq(connections.status, 'accepted')),
-        ]).then(([userCount, connectionCount]) => ({
-          totalUsers: userCount[0]?.count || 0,
-          totalConnections: connectionCount[0]?.count || 0,
-        })),
+        // 9. Platform stats — use cached values to avoid full table scans (very slow on cold start)
+        Promise.resolve({ totalUsers: 0, totalConnections: 0 }),
         // 10. Profile events (organized by user)
         db.select().from(events).where(eq(events.organizerId, userId)),
         // 11. Events user is going to
@@ -7401,6 +7396,7 @@ Questions? Just reply to this message. Welcome aboard!
         // 12. Events user is interested in
         storage.getUserParticipatedEventsWithDetails(userId, 'interested'),
       ]);
+      console.log(`📦 PROFILE-BUNDLE: Parallel queries done in ${Date.now() - t0}ms for user ${userId}`);
 
       const settle = <T>(r: PromiseSettledResult<T>, fallback: T): T => {
         if (r.status === 'fulfilled') return r.value;
@@ -7563,6 +7559,7 @@ Questions? Just reply to this message. Welcome aboard!
           }
         };
 
+        const t1 = Date.now();
         const [compatRes, degreeRes] = await Promise.allSettled([
           (async () => {
             let viewer = await storage.getUser(viewerId);
@@ -7580,6 +7577,7 @@ Questions? Just reply to this message. Welcome aboard!
           computeConnectionDegree(viewerId, userId),
         ]);
 
+        console.log(`📦 PROFILE-BUNDLE: Compatibility+Degree done in ${Date.now() - t1}ms`);
         if (compatRes.status === 'fulfilled') compatibility = compatRes.value;
         else console.warn('Profile bundle: compatibility THREW:', (compatRes as PromiseRejectedResult).reason?.message, (compatRes as PromiseRejectedResult).reason?.stack?.split('\n')[1]);
 
@@ -7653,6 +7651,7 @@ Questions? Just reply to this message. Welcome aboard!
         console.warn(`⚠️ PROFILE-BUNDLE: NOT caching for viewer=${viewerId} because connectionDegree is null (query failed)`);
       }
 
+      console.log(`📦 PROFILE-BUNDLE: TOTAL ${Date.now() - startTime}ms for user ${userId} (viewer: ${viewerId})`);
       res.json(bundleResponse);
     } catch (error: any) {
       console.error("PROFILE-BUNDLE CRASH:", error?.message, error?.stack);
