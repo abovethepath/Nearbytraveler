@@ -372,6 +372,11 @@ export default function CityPage({ cityName }: CityPageProps) {
                 <LivePresenceWidget cityName={parsedCityName} country={parsedCountryName} />
               </div>
 
+              {/* City Bulletin Board — full width */}
+              <div className="mb-4">
+                <CityBulletinBoard cityName={parsedCityName} />
+              </div>
+
               {/* Who's Coming to Town — mobile only (also in sidebar for desktop) */}
               <div className="lg:hidden mb-4">
                 <CityArrivalsWidget cityName={parsedCityName} />
@@ -382,7 +387,8 @@ export default function CityPage({ cityName }: CityPageProps) {
                 <CityLiveFeed cityName={parsedCityName} />
               </div>
 
-              {/* Discover and Connect Section */}
+              {/* People, Events, Businesses sections removed — available on Home page */}
+              {false as boolean && (<>
               <div id="people-section" className="mb-6 sm:mb-8">
                 <div className="flex flex-col space-y-4 sm:space-y-0 sm:flex-row justify-between items-start sm:items-center mb-6">
                   <div>
@@ -657,6 +663,7 @@ export default function CityPage({ cityName }: CityPageProps) {
                   </div>
                 )}
               </div>
+              </>)}
             </div>
 
             {/* Sidebar - Enhanced for LA */}
@@ -694,7 +701,6 @@ export default function CityPage({ cityName }: CityPageProps) {
                   <SecretExperiencesWidget city={parsedCityName} state={parsedStateName} country={parsedCountryName} />
                 </div>
                 <div className={isLAArea ? 'ring-2 ring-orange-200/50 rounded-xl p-1' : ''}>
-                  <CityBulletinBoard cityName={parsedCityName} />
                   <CityChatlroomsWidget city={parsedCityName} country={parsedCountryName} />
                 </div>
                 {/* City Map Widget - Always Loaded */}
