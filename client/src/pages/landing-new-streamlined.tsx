@@ -16,6 +16,15 @@ export default function LandingStreamlined() {
   const [, setLocation] = useLocation();
   const [isMobile, setIsMobile] = useState(false);
   const { theme, setTheme } = useTheme();
+
+  // Capture ?ref= referral code from URL for signup flow
+  useState(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const ref = params.get('ref');
+      if (ref) sessionStorage.setItem('referralCode', ref);
+    } catch {}
+  });
   const [currentVideo, setCurrentVideo] = useState(0);
   const [currentTagline, setCurrentTagline] = useState(0);
   

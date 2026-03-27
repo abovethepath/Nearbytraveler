@@ -118,9 +118,19 @@ export function ReferralTrackingWidget({ profileUserId }: { profileUserId: numbe
             <p className="text-lg font-bold text-blue-500">{stats.totalAuraFromReferrals}</p>
             <p className="text-[10px] text-gray-500 dark:text-gray-400">Aura Points</p>
           </div>
-          <div className="text-center p-2 rounded-lg bg-gray-50 dark:bg-gray-800">
-            <p className="text-lg font-bold text-purple-500">{stats.totalAmbassadorPointsFromReferrals}</p>
-            <p className="text-[10px] text-gray-500 dark:text-gray-400">Ambassador Pts</p>
+          <div className="text-center p-2 rounded-lg bg-gray-50 dark:bg-gray-800 relative">
+            {(user as any)?.ambassadorStatus === 'active' ? (
+              <>
+                <p className="text-lg font-bold text-purple-500">{stats.totalAmbassadorPointsFromReferrals}</p>
+                <p className="text-[10px] text-gray-500 dark:text-gray-400">Ambassador Pts</p>
+              </>
+            ) : (
+              <>
+                <p className="text-lg font-bold text-gray-300 dark:text-gray-600">🔒</p>
+                <p className="text-[10px] text-gray-400 dark:text-gray-500">Ambassador Pts</p>
+                <p className="text-[8px] text-gray-400 dark:text-gray-600 mt-0.5">Become an Ambassador to unlock</p>
+              </>
+            )}
           </div>
         </div>
 

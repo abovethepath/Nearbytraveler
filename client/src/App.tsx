@@ -60,7 +60,16 @@ import { HelpChatbot } from "@/components/HelpChatbot";
 // Join page component with sign in option — matches reference: text logo, headline, tagline, choose box
 function JoinPageWithSignIn() {
   const [, setLocation] = useLocation();
-  
+
+  // Capture ?ref= referral code from URL and store for signup flow
+  React.useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const ref = params.get('ref');
+      if (ref) sessionStorage.setItem('referralCode', ref);
+    } catch {}
+  }, []);
+
   return (
     <>
       <style>{`
