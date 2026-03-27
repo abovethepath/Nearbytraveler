@@ -1234,27 +1234,6 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
                 <span>Visible in {userCity ? getMetroAreaName(userCity) : "your city"}</span>
               </div>
             )}
-            {/* Gentle prompt when traveling user posts for hometown instead of destination */}
-            {isTraveling && hasDestination && availCity === 'home' && (
-              <div className="flex items-start gap-2.5 p-3 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700/50 text-sm">
-                <span className="shrink-0 mt-0.5">📍</span>
-                <div>
-                  <p className="text-amber-800 dark:text-amber-300 font-medium">
-                    Heads up — you're currently in {destCity}.
-                  </p>
-                  <p className="text-amber-700 dark:text-amber-400 text-xs mt-1">
-                    Posting for {getMetroAreaName(homeCity)} — is that right?
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => setAvailCity('trip')}
-                    className="mt-2 text-xs font-semibold text-amber-700 dark:text-amber-300 underline underline-offset-2 hover:text-amber-900 dark:hover:text-amber-100"
-                  >
-                    Switch to {destCity} instead
-                  </button>
-                </div>
-              </div>
-            )}
             <button
               type="button"
               className="w-full py-3 rounded-xl bg-white hover:bg-gray-50 text-gray-900 border border-gray-200 shadow-sm font-bold text-sm text-center cursor-pointer disabled:opacity-50 dark:border-transparent dark:bg-gradient-to-r dark:from-purple-600 dark:via-orange-500 dark:to-green-500 dark:hover:from-purple-700 dark:hover:via-orange-600 dark:hover:to-green-600 dark:text-white dark:shadow-lg dark:shadow-orange-500/30"
