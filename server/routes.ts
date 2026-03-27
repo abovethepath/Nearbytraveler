@@ -7387,8 +7387,19 @@ Questions? Just reply to this message. Welcome aboard!
         db.select().from(travelPlans).where(
           and(eq(travelPlans.userId, userId), eq(travelPlans.status, 'completed'))
         ),
-        // 9. Platform stats — use cached values to avoid full table scans (very slow on cold start)
-        Promise.resolve({ totalUsers: 0, totalConnections: 0 }),
+        // 9. Platform stats — cached to avoid full table scans on every profile load
+        (async () => {
+          const statsCacheKey = 'platform-stats';
+          const cached = await cache.get<any>(statsCacheKey);
+          if (cached) return cached;
+          const [uc, cc] = await Promise.all([
+            db.select({ count: count() }).from(users).where(eq(users.isActive, true)),
+            db.select({ count: count() }).from(connections).where(eq(connections.status, 'accepted')),
+          ]);
+          const stats = { totalUsers: uc[0]?.count || 0, totalConnections: cc[0]?.count || 0 };
+          cache.set(statsCacheKey, stats, 300).catch(() => {}); // cache 5 min
+          return stats;
+        })(),
         // 10. Profile events (organized by user)
         db.select().from(events).where(eq(events.organizerId, userId)),
         // 11. Events user is going to

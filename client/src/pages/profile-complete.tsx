@@ -3941,7 +3941,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     user, setLocation, isOwnProfile, shouldShowBackToChat, handleBackToChat, gradientOptions, selectedGradient, setSelectedGradient,
     setShowExpandedPhoto, uploadingPhoto, handleAvatarUpload, toast, connectionDegreeData, userVouches, travelPlans,
     openTab, hostelMatch, currentUser, handleMessage, setShowWriteReferenceModal, getMetropolitanArea,
-    activeTab, userConnections, photos, userTravelMemories, userReferences, setTriggerQuickMeetup, isProfileIncomplete,
+    activeTab,
+    // Use lazy-loaded data if available, otherwise fall back to bundle data for stats counts
+    userConnections: userConnections.length > 0 ? userConnections : (profileBundle?.connections || []),
+    photos, userTravelMemories,
+    userReferences: userReferences.length > 0 ? userReferences : (profileBundle?.references || []),
+    setTriggerQuickMeetup, isProfileIncomplete,
     setIsEditMode, editFormData, isEditingPublicInterests, setIsEditingPublicInterests, setActiveEditSection, setEditFormData, effectiveUserId,
     queryClient, tabRefs, loadedTabs, showConnectionFilters, setShowConnectionFilters, connectionFilters, setConnectionFilters,
     sortedUserConnections, connectionsDisplayCount, setConnectionsDisplayCount, editingConnectionNote, setEditingConnectionNote,
