@@ -33,7 +33,12 @@ export function HostingWidget({ communityId }: { communityId: number }) {
   const [showForm, setShowForm] = useState(false);
   const [formType, setFormType] = useState<"hosting" | "seeking">("hosting");
   const [showDisclaimer, setShowDisclaimer] = useState(false);
-  const [form, setForm] = useState({ title: "", description: "", maxGuests: 1, availableFrom: "", availableTo: "" });
+  const [form, setForm] = useState({
+    title: "", description: "", maxGuests: 1,
+    availableFrom: "", availableTo: "",
+    couchType: "couch", amenities: [] as string[],
+    city: "", flexible: false,
+  });
 
   const { data: offers = [] } = useQuery<HostingOffer[]>({
     queryKey: [`/api/communities/${communityId}/hosting`],
@@ -50,7 +55,7 @@ export function HostingWidget({ communityId }: { communityId: number }) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/communities/${communityId}/hosting`] });
       setShowForm(false);
-      setForm({ title: "", description: "", maxGuests: 1, availableFrom: "", availableTo: "" });
+      setForm({ title: "", description: "", maxGuests: 1, availableFrom: "", availableTo: "", couchType: "Couch", amenities: [], city: "", flexible: false });
     },
   });
 
@@ -65,6 +70,9 @@ export function HostingWidget({ communityId }: { communityId: number }) {
 
   const formatDate = (d: string) => new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric" });
 
+  const COUCH_TYPES = ["Private Room", "Shared Room", "Couch", "Floor Space", "Entire Place"];
+  const AMENITY_OPTIONS = ["WiFi", "Kitchen", "Parking", "Pet Friendly", "Smoking OK", "Quiet Hours", "LGBTQ+ Friendly"];
+
   const openForm = (type: "hosting" | "seeking") => {
     setFormType(type);
     setForm({
@@ -73,19 +81,33 @@ export function HostingWidget({ communityId }: { communityId: number }) {
       maxGuests: 1,
       availableFrom: "",
       availableTo: "",
+      couchType: "Couch",
+      amenities: [],
+      city: (user as any)?.hometownCity || "",
+      flexible: false,
     });
     setShowForm(true);
   };
 
+  const toggleAmenity = (a: string) => {
+    setForm(f => ({
+      ...f,
+      amenities: f.amenities.includes(a) ? f.amenities.filter(x => x !== a) : [...f.amenities, a],
+    }));
+  };
+
   const handleSubmit = () => {
-    if (!form.availableFrom || !form.availableTo) return;
+    if (!form.flexible && (!form.availableFrom || !form.availableTo)) return;
+    const amenityStr = form.amenities.length > 0 ? ` | ${form.amenities.join(", ")}` : "";
     createMutation.mutate({
-      offerType: formType === "hosting" ? "couch" : "seeking",
-      title: form.title,
-      description: form.description,
+      offerType: formType === "hosting" ? form.couchType.toLowerCase().replace(/ /g, '_') : "seeking",
+      title: formType === "hosting"
+        ? `${form.couchType} in ${form.city || "my city"}`
+        : `Looking for a host in ${form.city || "your city"}`,
+      description: (form.description + amenityStr).slice(0, 200),
       maxGuests: form.maxGuests,
-      availableFrom: form.availableFrom,
-      availableTo: form.availableTo,
+      availableFrom: form.flexible ? new Date().toISOString() : form.availableFrom,
+      availableTo: form.flexible ? new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString() : form.availableTo,
     });
   };
 
@@ -192,48 +214,163 @@ export function HostingWidget({ communityId }: { communityId: number }) {
         </Button>
       </div>
 
-      {/* Form modal */}
+      {/* Hosting/Seeking form modal */}
       <Dialog open={showForm} onOpenChange={setShowForm}>
-        <DialogContent className="sm:max-w-sm bg-white dark:bg-gray-900">
+        <DialogContent className="sm:max-w-md bg-white dark:bg-gray-900 max-h-[85vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="text-base">
-              {formType === "hosting" ? "🛋️ Offer Hosting" : "🎒 Request a Host"}
+            <DialogTitle className="text-lg">
+              {formType === "hosting" ? "🛋️ Share Your Space" : "🎒 Looking for a Host"}
             </DialogTitle>
           </DialogHeader>
-          <div className="space-y-3">
-            <Input placeholder="Title" value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} className="text-sm" />
-            <textarea
-              placeholder={formType === "hosting" ? "Brief note about your space..." : "Brief note about your trip..."}
-              value={form.description}
-              onChange={e => setForm(f => ({ ...f, description: e.target.value.slice(0, 200) }))}
-              maxLength={200}
-              rows={2}
-              className="w-full p-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-sm resize-none"
-            />
-            <div className="flex gap-2">
-              <div className="flex-1">
-                <label className="text-xs text-gray-500 mb-1 block">From</label>
-                <Input type="date" value={form.availableFrom} onChange={e => setForm(f => ({ ...f, availableFrom: e.target.value }))} className="text-sm" />
-              </div>
-              <div className="flex-1">
-                <label className="text-xs text-gray-500 mb-1 block">To</label>
-                <Input type="date" value={form.availableTo} onChange={e => setForm(f => ({ ...f, availableTo: e.target.value }))} className="text-sm" />
-              </div>
-            </div>
-            {formType === "hosting" && (
+
+          {formType === "hosting" ? (
+            <div className="space-y-4">
+              {/* Couch type pills */}
               <div>
-                <label className="text-xs text-gray-500 mb-1 block">Max guests</label>
-                <Input type="number" min={1} max={10} value={form.maxGuests} onChange={e => setForm(f => ({ ...f, maxGuests: parseInt(e.target.value) || 1 }))} className="text-sm w-20" />
+                <label className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2 block">Space type</label>
+                <div className="flex flex-wrap gap-1.5">
+                  {COUCH_TYPES.map(t => (
+                    <button key={t} type="button" onClick={() => setForm(f => ({ ...f, couchType: t }))}
+                      className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+                        form.couchType === t
+                          ? "bg-orange-500 text-white border-orange-500"
+                          : "bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-orange-300"
+                      }`}
+                    >{t}</button>
+                  ))}
+                </div>
               </div>
-            )}
-            <Button
-              onClick={handleSubmit}
-              disabled={createMutation.isPending || !form.availableFrom || !form.availableTo}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-            >
-              {createMutation.isPending ? "Posting..." : "Post"}
-            </Button>
-          </div>
+
+              {/* Dates */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-xs font-medium text-gray-600 dark:text-gray-400">Available dates</label>
+                  <label className="flex items-center gap-1.5 text-xs text-gray-500 cursor-pointer">
+                    <input type="checkbox" checked={form.flexible} onChange={e => setForm(f => ({ ...f, flexible: e.target.checked }))}
+                      className="rounded border-gray-300 text-orange-500 focus:ring-orange-500 w-3.5 h-3.5" />
+                    Flexible / ongoing
+                  </label>
+                </div>
+                {!form.flexible && (
+                  <div className="flex gap-2">
+                    <div className="flex-1">
+                      <Input type="date" value={form.availableFrom} onChange={e => setForm(f => ({ ...f, availableFrom: e.target.value }))} className="text-sm" />
+                    </div>
+                    <div className="flex-1">
+                      <Input type="date" value={form.availableTo} onChange={e => setForm(f => ({ ...f, availableTo: e.target.value }))} className="text-sm" />
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Max guests counter */}
+              <div>
+                <label className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2 block">Max guests</label>
+                <div className="flex items-center gap-3">
+                  <button type="button" onClick={() => setForm(f => ({ ...f, maxGuests: Math.max(1, f.maxGuests - 1) }))}
+                    className="w-8 h-8 rounded-full border border-gray-300 dark:border-gray-600 flex items-center justify-center text-lg font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">−</button>
+                  <span className="text-lg font-bold text-gray-900 dark:text-white w-6 text-center">{form.maxGuests}</span>
+                  <button type="button" onClick={() => setForm(f => ({ ...f, maxGuests: Math.min(4, f.maxGuests + 1) }))}
+                    className="w-8 h-8 rounded-full border border-gray-300 dark:border-gray-600 flex items-center justify-center text-lg font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">+</button>
+                </div>
+              </div>
+
+              {/* Amenity pills */}
+              <div>
+                <label className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2 block">Your place (optional)</label>
+                <div className="flex flex-wrap gap-1.5">
+                  {AMENITY_OPTIONS.map(a => (
+                    <button key={a} type="button" onClick={() => toggleAmenity(a)}
+                      className={`px-2.5 py-1 rounded-full text-[11px] font-medium border transition-colors ${
+                        form.amenities.includes(a)
+                          ? "bg-emerald-500 text-white border-emerald-500"
+                          : "bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:border-emerald-300"
+                      }`}
+                    >{a}</button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Note */}
+              <Input
+                placeholder='e.g. "I have a cozy couch in Silver Lake..."'
+                value={form.description}
+                onChange={e => setForm(f => ({ ...f, description: e.target.value.slice(0, 200) }))}
+                maxLength={200}
+                className="text-sm"
+              />
+
+              {/* City */}
+              <Input
+                placeholder="City"
+                value={form.city}
+                onChange={e => setForm(f => ({ ...f, city: e.target.value }))}
+                className="text-sm"
+              />
+
+              <Button
+                onClick={handleSubmit}
+                disabled={createMutation.isPending || (!form.flexible && (!form.availableFrom || !form.availableTo))}
+                className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold"
+              >
+                {createMutation.isPending ? "Posting..." : "List My Space"}
+              </Button>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {/* Travel dates */}
+              <div>
+                <label className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2 block">Travel dates</label>
+                <div className="flex gap-2">
+                  <div className="flex-1">
+                    <label className="text-[10px] text-gray-400 mb-0.5 block">Arriving</label>
+                    <Input type="date" value={form.availableFrom} onChange={e => setForm(f => ({ ...f, availableFrom: e.target.value }))} className="text-sm" />
+                  </div>
+                  <div className="flex-1">
+                    <label className="text-[10px] text-gray-400 mb-0.5 block">Leaving</label>
+                    <Input type="date" value={form.availableTo} onChange={e => setForm(f => ({ ...f, availableTo: e.target.value }))} className="text-sm" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Destination */}
+              <Input
+                placeholder="Destination city"
+                value={form.city}
+                onChange={e => setForm(f => ({ ...f, city: e.target.value }))}
+                className="text-sm"
+              />
+
+              {/* About me */}
+              <Input
+                placeholder='e.g. "Clean quiet traveler, 3 years on CS..."'
+                value={form.description}
+                onChange={e => setForm(f => ({ ...f, description: e.target.value.slice(0, 200) }))}
+                maxLength={200}
+                className="text-sm"
+              />
+
+              {/* Guests counter */}
+              <div>
+                <label className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2 block">How many people</label>
+                <div className="flex items-center gap-3">
+                  <button type="button" onClick={() => setForm(f => ({ ...f, maxGuests: Math.max(1, f.maxGuests - 1) }))}
+                    className="w-8 h-8 rounded-full border border-gray-300 dark:border-gray-600 flex items-center justify-center text-lg font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">−</button>
+                  <span className="text-lg font-bold text-gray-900 dark:text-white w-6 text-center">{form.maxGuests}</span>
+                  <button type="button" onClick={() => setForm(f => ({ ...f, maxGuests: Math.min(4, f.maxGuests + 1) }))}
+                    className="w-8 h-8 rounded-full border border-gray-300 dark:border-gray-600 flex items-center justify-center text-lg font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">+</button>
+                </div>
+              </div>
+
+              <Button
+                onClick={handleSubmit}
+                disabled={createMutation.isPending || !form.availableFrom || !form.availableTo}
+                className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold"
+              >
+                {createMutation.isPending ? "Posting..." : "Post My Request"}
+              </Button>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </div>
