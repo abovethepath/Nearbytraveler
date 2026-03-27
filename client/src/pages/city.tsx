@@ -25,6 +25,7 @@ import { CityLiveFeed } from "@/components/CityLiveFeed";
 import { CityBulletinBoard } from "@/components/CityBulletinBoard";
 import { LivePresenceWidget } from "@/components/LivePresenceWidget";
 import { useAuth } from "@/App";
+import { getMetroAreaName } from "@shared/metro-areas";
 import { getApiBaseUrl } from "@/lib/queryClient";
 import type { User, Event } from "@shared/schema";
 
@@ -47,24 +48,38 @@ export default function CityPage({ cityName }: CityPageProps) {
   const loadedWidgets = new Set(['stats', 'secrets', 'tips', 'map']);
   const { isAuthenticated } = useAuth();
   const queryClient = useQueryClient();
-  
+
   // Auth is session/cookie based; do not fall back to localStorage.
   const authContext = useAuth();
   const isActuallyAuthenticated = authContext.isAuthenticated;
   const currentUserId = authContext.user?.id;
+  const currentUser = authContext.user;
+
+  // City view toggle — hometown vs travel destination
+  const [cityView, setCityView] = useState<'default' | 'home' | 'trip'>('default');
+  const userHometown = currentUser?.hometownCity || '';
+  const userDestination = (() => {
+    if (!currentUser?.isCurrentlyTraveling) return '';
+    return currentUser?.destinationCity || (currentUser?.travelDestination ? String(currentUser.travelDestination).split(',')[0]?.trim() : '') || '';
+  })();
+  const hasTripCity = !!userDestination && userDestination.toLowerCase() !== userHometown.toLowerCase();
 
   // Extract city name from URL if not provided as prop
   const urlCityName = cityName || (location.split('/')[2] ? decodeURIComponent(location.split('/')[2]) : '');
-  const decodedCityName = urlCityName;
-  
-  // Debug logging
-  console.log('🏙️ CityPage Debug:', { cityName, location, urlCityName, decodedCityName });
-  
+
+  // Apply toggle override: if user switches to home/trip, override the URL city
+  const resolvedCityName = (() => {
+    if (cityView === 'home' && userHometown) return userHometown;
+    if (cityView === 'trip' && userDestination) return userDestination;
+    return urlCityName;
+  })();
+  const decodedCityName = resolvedCityName;
+
   // Parse city location data for weather widget
   const locationParts = decodedCityName.split(',').map(part => part.trim());
   const parsedCityName = locationParts[0] || '';
   const parsedStateName = locationParts[1] || '';
-  const parsedCountryName = locationParts[2] || locationParts[1] || 'United States'; // Default to US if no country specified
+  const parsedCountryName = locationParts[2] || locationParts[1] || 'United States';
   
   // Check if this is a Los Angeles area city for enhanced prominence
   const isLAArea = parsedCityName.toLowerCase().includes('los angeles') || 
@@ -367,6 +382,34 @@ export default function CityPage({ cityName }: CityPageProps) {
           <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
             {/* Main Content */}
             <div className="lg:col-span-2 xl:col-span-3">
+              {/* City toggle — hometown vs travel destination */}
+              {hasTripCity && (
+                <div className="flex items-center gap-1 p-1 rounded-lg bg-gray-100 dark:bg-gray-800 text-xs font-medium mb-4">
+                  <button
+                    type="button"
+                    onClick={() => setCityView('home')}
+                    className={`flex-1 px-3 py-1.5 rounded-md transition-colors ${
+                      cityView !== 'trip'
+                        ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
+                        : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                    }`}
+                  >
+                    🏠 {getMetroAreaName(userHometown)}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setCityView('trip')}
+                    className={`flex-1 px-3 py-1.5 rounded-md transition-colors ${
+                      cityView === 'trip'
+                        ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
+                        : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                    }`}
+                  >
+                    ✈️ {getMetroAreaName(userDestination)}
+                  </button>
+                </div>
+              )}
+
               {/* Live Presence — full width, top of main content */}
               <div className="mb-4">
                 <LivePresenceWidget cityName={parsedCityName} country={parsedCountryName} />
