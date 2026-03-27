@@ -7583,6 +7583,8 @@ Questions? Just reply to this message. Welcome aboard!
               return null;
             }
             const viewerPlans = await storage.getUserTravelPlans(viewerId);
+            // Debug: log interests for both users to diagnose "0 things in common" bug
+            console.log(`🔍 COMPAT DEBUG: viewer(${viewerId}) interests=${JSON.stringify((viewer as any).interests?.slice?.(0, 5))} target(${userId}) interests=${JSON.stringify((user as any).interests?.slice?.(0, 5))}`);
             return matchingService.calculateCompatibilityScore(viewer, user, viewerPlans, travelPlansData);
           })(),
           computeConnectionDegree(viewerId, userId),

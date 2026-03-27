@@ -1026,9 +1026,11 @@ export class TravelMatchingService {
     return allUsers.filter(user => user.id !== excludeUserId);
   }
 
-  private parseInterests(interests: string[] | null): string[] {
+  private parseInterests(interests: string[] | string | null | undefined): string[] {
     if (!interests) return [];
-    return interests.map(i => i.trim().toLowerCase());
+    // Handle string (comma-separated) or array
+    const arr = Array.isArray(interests) ? interests : typeof interests === 'string' ? interests.split(',') : [];
+    return arr.map(i => String(i || '').trim().toLowerCase()).filter(Boolean);
   }
 
   private parseCustomInterests(customInterests: string | null | undefined): string[] {
