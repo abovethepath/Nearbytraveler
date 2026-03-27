@@ -372,6 +372,71 @@ export default function CityPage({ cityName }: CityPageProps) {
                 <LivePresenceWidget cityName={parsedCityName} country={parsedCountryName} />
               </div>
 
+              {/* PEOPLE STRIP — horizontal scrolling avatar carousel */}
+              {filteredUsers.length > 0 && (
+                <div className="mb-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="font-bold text-sm text-gray-900 dark:text-white flex items-center gap-1.5">
+                      <Users className="w-4 h-4 text-orange-500" /> People in {decodedCityName}
+                    </h3>
+                    <button onClick={() => setLocation(`/city/${encodeURIComponent(parsedCityName)}`)} className="text-xs text-orange-500 hover:underline">
+                      See all {filteredUsers.length}
+                    </button>
+                  </div>
+                  <div className="flex gap-3 overflow-x-auto pb-2" style={{ scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}>
+                    {filteredUsers.slice(0, 20).map((u: any) => (
+                      <div key={u.id} className="flex-shrink-0 w-[72px] text-center cursor-pointer" onClick={() => setLocation(`/profile/${u.id}`)}>
+                        <div className="relative mx-auto w-14 h-14 mb-1">
+                          {u.profileImage ? (
+                            <img src={u.profileImage} alt="" className="w-14 h-14 rounded-full object-cover border-2 border-orange-300 dark:border-orange-600" loading="lazy" />
+                          ) : (
+                            <div className="w-14 h-14 rounded-full flex items-center justify-center font-bold text-white text-lg border-2 border-orange-300 dark:border-orange-600"
+                                 style={{ backgroundColor: u.avatarColor || "#F97316" }}>
+                              {(u.username || "?")[0].toUpperCase()}
+                            </div>
+                          )}
+                        </div>
+                        <p className="text-[10px] font-medium text-gray-700 dark:text-gray-300 truncate">@{u.username}</p>
+                        <p className="text-[9px] text-gray-400 truncate">
+                          {u.cityMatchType === "travel" ? "Traveler" : "Local"}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* EVENTS STRIP — horizontal scrolling compact event cards */}
+              {events.length > 0 && (
+                <div className="mb-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="font-bold text-sm text-gray-900 dark:text-white flex items-center gap-1.5">
+                      <Calendar className="w-4 h-4 text-blue-500" /> Events in {decodedCityName}
+                    </h3>
+                    <button onClick={() => setLocation('/events')} className="text-xs text-blue-500 hover:underline">
+                      See all {events.length}
+                    </button>
+                  </div>
+                  <div className="flex gap-3 overflow-x-auto pb-2" style={{ scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}>
+                    {events.slice(0, 10).map((event: any) => (
+                      <div key={event.id} className="flex-shrink-0 w-48 cursor-pointer rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-hidden hover:border-orange-300 dark:hover:border-orange-600 transition-colors"
+                           onClick={() => setLocation(`/events/${event.id}`)}>
+                        {event.imageUrl && (
+                          <img src={event.imageUrl} alt="" className="w-full h-20 object-cover" loading="lazy" />
+                        )}
+                        <div className="p-2">
+                          <p className="text-xs font-bold text-gray-900 dark:text-white line-clamp-1">{event.title}</p>
+                          <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5">
+                            {new Date(event.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                            {event.participantCount ? ` · ${event.participantCount} going` : ''}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* City Bulletin Board — full width */}
               <div className="mb-4">
                 <CityBulletinBoard cityName={parsedCityName} />
