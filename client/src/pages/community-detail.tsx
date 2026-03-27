@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { ArrowLeft, Users, MessageSquare, Send, Lock, Trash2, Clock, Heart, MessageCircle, ChevronDown, ChevronUp, MapPin, Zap, ChevronRight } from "lucide-react";
+import { ArrowLeft, Users, UserPlus, MessageSquare, Send, Lock, Trash2, Clock, Heart, MessageCircle, ChevronDown, ChevronUp, MapPin, Zap, ChevronRight, Activity } from "lucide-react";
 import { SkeletonList, SkeletonUserCard } from "@/components/ui/skeleton-loaders";
 import WhatsAppChat from "@/components/WhatsAppChat";
 
@@ -552,6 +552,70 @@ export default function CommunityDetail({ communityId }: { communityId: number }
               </Card>
             )}
 
+            {/* WIDGET — Welcome / Pinned Message */}
+            <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gradient-to-br from-blue-50 to-orange-50 dark:from-gray-800 dark:to-gray-800 p-4">
+              <p className="text-sm text-gray-700 dark:text-gray-300 flex items-start gap-2">
+                <span className="shrink-0">📌</span>
+                <span>Welcome to <strong>{community.displayName || community.name}</strong>! Introduce yourself in the chat and connect with fellow members.</span>
+              </p>
+            </div>
+
+            {/* WIDGET — Suggested Members to Connect */}
+            {(() => {
+              const suggestions = members
+                .filter((m: any) => m.id !== currentUser?.id)
+                .slice(0, 4);
+              if (suggestions.length < 2) return null;
+              return (
+                <Card className="border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <UserPlus className="w-4 h-4 text-purple-500" />
+                      <h3 className="font-bold text-sm">People to Connect With</h3>
+                    </div>
+                    <div className="space-y-2">
+                      {suggestions.map((m: any) => (
+                        <div key={m.id} className="flex items-center gap-2.5">
+                          <div className="cursor-pointer" onClick={() => setLocation(`/profile/${m.id}`)}>
+                            <UserAvatar user={{ profileImage: m.profileImage, username: m.username, avatarColor: m.avatarColor }} size="sm" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs font-semibold text-gray-900 dark:text-white truncate cursor-pointer hover:underline" onClick={() => setLocation(`/profile/${m.id}`)}>@{m.username}</p>
+                            <p className="text-[10px] text-gray-500 dark:text-gray-400 truncate">{m.hometownCity || m.location || ''}</p>
+                          </div>
+                          <Button size="sm" variant="outline" className="text-[10px] h-6 px-2" onClick={() => setLocation(`/messages?target=${m.id}`)}>
+                            Say Hi
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })()}
+
+            {/* WIDGET — Recent Activity */}
+            {members.length > 0 && (
+              <Card className="border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Activity className="w-4 h-4 text-green-500" />
+                    <h3 className="font-bold text-sm">Recent Activity</h3>
+                  </div>
+                  <div className="space-y-2">
+                    {members.slice(0, 5).map((m: any, i: number) => (
+                      <div key={m.id} className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
+                        <div className="w-5 h-5 rounded-full overflow-hidden shrink-0">
+                          <UserAvatar user={{ profileImage: m.profileImage, username: m.username, avatarColor: m.avatarColor }} size="xs" />
+                        </div>
+                        <span><strong className="text-gray-900 dark:text-white">@{m.username}</strong> joined the community</span>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             {/* CouchSurfing Hosting & Requests — only for CouchSurfing community */}
             {community.name?.toLowerCase().includes('couchsurf') && (
               <HostingWidget communityId={communityId} />
@@ -642,8 +706,8 @@ export default function CommunityDetail({ communityId }: { communityId: number }
                 ) : posts.length === 0 ? (
                   <div className="text-center py-6">
                     <MessageSquare className="w-8 h-8 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
-                    <p className="text-gray-500 dark:text-gray-400 font-medium text-sm">No posts yet</p>
-                    <p className="text-gray-400 text-xs">Be the first to share something!</p>
+                    <p className="text-gray-500 dark:text-gray-400 font-medium text-sm">🌟 You're one of the first members!</p>
+                    <p className="text-gray-400 text-xs mt-1">Set the tone — share why you joined {community.displayName || community.name} or what you're hoping to find here.</p>
                   </div>
                 ) : (
                   <div className="space-y-3">
