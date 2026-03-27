@@ -140,6 +140,7 @@ export default function LandingStreamlined() {
               className={`absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out pointer-events-none ${
                 index === currentVideo ? 'opacity-100' : 'opacity-0'
               }`}
+              style={{ objectPosition: 'center 20%' }}
               autoPlay
               loop
               muted
@@ -151,6 +152,8 @@ export default function LandingStreamlined() {
           
           {/* Dark overlay for text readability — pointer-events:none so it never blocks taps on Android */}
           <div className="absolute top-0 left-0 w-full h-full bg-black/50 pointer-events-none"></div>
+          {/* Bottom gradient — covers video watermark area */}
+          <div className="absolute bottom-0 left-0 w-full h-1/3 bg-gradient-to-t from-black/90 via-black/40 to-transparent pointer-events-none"></div>
           
           {/* Content overlay */}
           <div className="relative z-10 pt-8 pb-12 sm:pt-12 sm:pb-16">
