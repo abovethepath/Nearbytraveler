@@ -781,7 +781,7 @@ export default function CommunityDetail({ communityId }: { communityId: number }
 
         {activeSection === "chat" && community.chatroomId && (
           isMember ? (
-            <div className="flex-1 min-h-0 overflow-hidden">
+            <div className="flex-1 min-h-0 overflow-hidden max-w-[1100px] mx-auto w-full" style={{ paddingBottom: 'calc(60px + env(safe-area-inset-bottom, 0px))' }}>
               <WhatsAppChat
                 chatId={community.chatroomId}
                 chatType="chatroom"
