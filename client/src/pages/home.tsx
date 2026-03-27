@@ -2243,12 +2243,14 @@ export default function Home() {
             )}
 
             {/* City toggle + widgets — hometown by default, toggle to trip destination */}
-            {effectiveUser?.hometownCity && (() => {
-              const destCity = effectiveUser.isCurrentlyTraveling && effectiveUser.travelDestination
+            {(() => {
+              const htCity = effectiveUser?.hometownCity || effectiveUser?.city || effectiveUser?.location?.split(',')[0]?.trim() || '';
+              if (!htCity) return null;
+              const destCity = effectiveUser?.isCurrentlyTraveling && effectiveUser?.travelDestination
                 ? String(effectiveUser.travelDestination).split(',')[0]?.trim()
                 : null;
-              const hasTripCity = destCity && destCity.toLowerCase() !== (effectiveUser.hometownCity || '').toLowerCase();
-              const activeCity = sidebarCityView === 'trip' && hasTripCity ? destCity : effectiveUser.hometownCity;
+              const hasTripCity = destCity && destCity.toLowerCase() !== htCity.toLowerCase();
+              const activeCity = sidebarCityView === 'trip' && hasTripCity ? destCity : htCity;
 
               return (
                 <>
@@ -2264,7 +2266,7 @@ export default function Home() {
                             : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
                         }`}
                       >
-                        🏠 {getMetroAreaName(effectiveUser.hometownCity)}
+                        🏠 {getMetroAreaName(htCity)}
                       </button>
                       <button
                         type="button"
