@@ -3538,10 +3538,12 @@ export class DatabaseStorage implements IStorage {
 
   async createUserPhoto(photoData: any): Promise<any> {
     try {
-      console.log('Creating photo with data:', { 
-        userId: photoData.userId, 
+      console.log('📸 STORAGE: Creating photo:', {
+        userId: photoData.userId,
+        hasImageUrl: !!photoData.imageUrl,
         hasImageData: !!photoData.imageData,
-        caption: photoData.caption 
+        urlLen: photoData.imageUrl?.length || 0,
+        dataLen: photoData.imageData?.length || 0,
       });
       
       const [photo] = await db
@@ -3556,8 +3558,7 @@ export class DatabaseStorage implements IStorage {
         })
         .returning();
 
-      console.log('Photo created successfully:', photo.id);
-      console.log('Photo object being returned:', JSON.stringify(photo, null, 2));
+      console.log('📸 STORAGE: Photo created id=' + photo.id);
       return photo;
     } catch (error) {
       console.error('Error creating user photo:', error);

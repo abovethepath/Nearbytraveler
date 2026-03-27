@@ -19967,7 +19967,7 @@ Questions? Just reply to this message. Welcome aboard!
       const userId = parseInt(req.params.id || '0');
       const { imageData, title, isPublic } = req.body;
 
-      if (process.env.NODE_ENV === 'development') console.log(`📸 UPLOAD: Uploading photo for user ${userId}, title: ${title}, public: ${isPublic}`);
+      console.log(`📸 UPLOAD: Uploading photo for user ${userId}, title: ${title}, public: ${isPublic}, dataLen: ${imageData?.length || 0}`);
 
       if (isNaN(userId)) {
         return res.status(400).json({ message: "Invalid user ID" });
@@ -20015,8 +20015,8 @@ Questions? Just reply to this message. Welcome aboard!
       
       return res.json(response);
     } catch (error: any) {
-      if (process.env.NODE_ENV === 'development') console.error("Error uploading user photo:", error);
-      return res.status(500).json({ message: "Failed to upload photo" });
+      console.error("📸 UPLOAD ERROR:", error?.message || error);
+      return res.status(500).json({ message: "Failed to upload photo", error: error?.message });
     }
   });
 
