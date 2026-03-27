@@ -93,7 +93,7 @@ import {
   notifications,
 } from "../shared/schema";
 import { sql, eq, or, count, and, ne, desc, gte, lte, lt, isNotNull, inArray, asc, ilike, like, isNull, gt } from "drizzle-orm";
-import { waitlistLeads, availableNow, availableNowRequests, meetupChatrooms, meetupChatroomMessages, liveLocationShares, liveShareReactions, microExperiences, microExperienceParticipants, activityTemplates, meetupShareCards, communityTags, userCommunityTags, communityPosts, communityPostLikes, communityPostReplies, eventIntegrations, externalEvents, activityLog, savedTravelers, chatroomInviteTokens, chatroomModerationRecords, chatroomBlocks, hostingOffers, cityPosts, cityPostReplies, cityPostLikes } from "../shared/schema";
+import { waitlistLeads, availableNow, availableNowRequests, meetupChatrooms, meetupChatroomMessages, liveLocationShares, liveShareReactions, microExperiences, microExperienceParticipants, activityTemplates, meetupShareCards, communityTags, userCommunityTags, communityPosts, communityPostLikes, communityPostReplies, eventIntegrations, externalEvents, activityLog, savedTravelers, chatroomInviteTokens, chatroomModerationRecords, chatroomBlocks, hostingOffers, cityPosts, cityPostReplies, cityPostLikes, referralEvents } from "../shared/schema";
 import { writeActivityLog } from "./services/activityLogService";
 import { alias } from "drizzle-orm/pg-core";
 
@@ -6266,6 +6266,16 @@ Questions? Just reply here — I read every message.
                 })
                 .where(eq(users.id, referrer.id));
 
+              // Track referral event for history
+              try {
+                await db.insert(referralEvents).values({
+                  referrerId: referrer.id,
+                  referredUserId: user.id,
+                  eventType: 'signup',
+                  points: 10,
+                });
+              } catch { /* non-fatal */ }
+
               const { addAmbassadorPoints } = await import("./services/ambassadorStatus");
               await addAmbassadorPoints(referrer.id, 50);
 
@@ -7999,6 +8009,23 @@ Questions? Just reply to this message. Welcome aboard!
           if (completedUser?.referredBy) {
             await awardAuraPoints(completedUser.referredBy, 5, 'referred user completed profile');
             console.log(`✨ AURA: Awarded 5 bonus points to referrer ${completedUser.referredBy} because user ${userId} completed profile`);
+            // Track referral event for history (only once per referred user)
+            try {
+              const [existing] = await db.select({ id: referralEvents.id }).from(referralEvents)
+                .where(and(
+                  eq(referralEvents.referrerId, completedUser.referredBy),
+                  eq(referralEvents.referredUserId, userId),
+                  eq(referralEvents.eventType, 'bio_complete')
+                )).limit(1);
+              if (!existing) {
+                await db.insert(referralEvents).values({
+                  referrerId: completedUser.referredBy,
+                  referredUserId: userId,
+                  eventType: 'bio_complete',
+                  points: 5,
+                });
+              }
+            } catch { /* non-fatal */ }
           }
         } catch (error) {
           console.error('❌ Error awarding referral profile-completion bonus:', error);
@@ -29734,6 +29761,85 @@ Questions? Just reply to this message. Welcome aboard!
     } catch (error: any) {
       console.error("Auto-join error:", error);
       res.json({ joined: [] }); // Non-fatal
+    }
+  });
+
+  // ---------- REFERRAL TRACKING ----------
+
+  app.get("/api/referrals/my-stats", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || Number(req.headers['x-user-id']);
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+
+      // Also allow viewing another user's stats if admin (user id=2)
+      const targetUserId = req.query.userId ? Number(req.query.userId) : userId;
+      if (targetUserId !== userId && userId !== 2) {
+        return res.status(403).json({ error: "Not authorized" });
+      }
+
+      // Get user's referral code
+      const [userData] = await db.select({ referralCode: users.referralCode })
+        .from(users).where(eq(users.id, targetUserId));
+
+      // Count total referrals
+      const [refCount] = await db.select({ count: sql<number>`COUNT(*)::int` })
+        .from(users).where(eq(users.referredBy, targetUserId));
+
+      // Get referral events with referred user info
+      const events = await db.select({
+        id: referralEvents.id,
+        referredUserId: referralEvents.referredUserId,
+        eventType: referralEvents.eventType,
+        points: referralEvents.points,
+        createdAt: referralEvents.createdAt,
+        username: users.username,
+        name: users.name,
+        profileImage: users.profileImage,
+        hometownCity: users.hometownCity,
+        userCreatedAt: users.createdAt,
+        bio: users.bio,
+      })
+        .from(referralEvents)
+        .innerJoin(users, eq(referralEvents.referredUserId, users.id))
+        .where(eq(referralEvents.referrerId, targetUserId))
+        .orderBy(desc(referralEvents.createdAt));
+
+      // Compute totals
+      const totalAura = events.reduce((sum, e) => sum + (e.points || 0), 0);
+      const signupCount = events.filter(e => e.eventType === 'signup').length;
+
+      // Build referred users list with bio bonus status
+      const referredUserMap = new Map<number, any>();
+      for (const e of events) {
+        if (!referredUserMap.has(e.referredUserId)) {
+          referredUserMap.set(e.referredUserId, {
+            id: e.referredUserId,
+            username: e.username,
+            name: e.name,
+            profileImage: e.profileImage,
+            hometownCity: e.hometownCity,
+            joinDate: e.userCreatedAt,
+            hasBio: !!(e.bio && e.bio.trim()),
+            bioBonusEarned: false,
+          });
+        }
+        if (e.eventType === 'bio_complete') {
+          referredUserMap.get(e.referredUserId)!.bioBonusEarned = true;
+        }
+      }
+
+      res.json({
+        referralCode: userData?.referralCode || null,
+        inviteUrl: userData?.referralCode ? `https://nearbytraveler.org?ref=${userData.referralCode}` : null,
+        totalReferrals: refCount?.count || 0,
+        totalAuraFromReferrals: totalAura,
+        totalAmbassadorPointsFromReferrals: signupCount * 50,
+        referredUsers: Array.from(referredUserMap.values()),
+        events,
+      });
+    } catch (error: any) {
+      console.error("Error fetching referral stats:", error);
+      res.status(500).json({ error: "Failed to fetch referral stats" });
     }
   });
 

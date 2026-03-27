@@ -3009,6 +3009,16 @@ export const cityPostReplies = pgTable("city_post_replies", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Referral event tracking (history of points awarded for referrals)
+export const referralEvents = pgTable("referral_events", {
+  id: serial("id").primaryKey(),
+  referrerId: integer("referrer_id").notNull().references(() => users.id),
+  referredUserId: integer("referred_user_id").notNull().references(() => users.id),
+  eventType: text("event_type").notNull(), // 'signup' or 'bio_complete'
+  points: integer("points").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 export const cityPostLikes = pgTable("city_post_likes", {
   id: serial("id").primaryKey(),
   postId: integer("post_id").notNull().references(() => cityPosts.id, { onDelete: "cascade" }),

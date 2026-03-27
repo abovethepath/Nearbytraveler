@@ -316,6 +316,7 @@ import { ReportUserButton } from "@/components/report-user-button";
 import { StealthToggle } from "@/components/stealth-toggle";
 import { StealthToggleInline } from "@/components/stealth-toggle-inline";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
+import { ReferralTrackingWidget } from "@/components/ReferralTrackingWidget";
 import { ProfileTabs } from "@/components/profile/ProfileTabs";
 import { ProfileDialogs } from "@/components/profile/ProfileDialogs";
 import type { ProfilePageProps } from "@/components/profile/profile-complete-types";
@@ -4255,6 +4256,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       <ProfileHeader {...profileProps} />
       <ProfileTabs {...profileProps} />
       {isOwnProfile && <NotificationPreferencesSection currentUserId={currentUser?.id} />}
+      <ReferralTrackingWidget profileUserId={effectiveUserId!} />
       {isNearbytrav && <AdminDashboard />}
       <ProfileDialogs {...profileProps} />
 
