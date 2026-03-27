@@ -26359,6 +26359,11 @@ Questions? Just reply to this message. Welcome aboard!
 
   app.get("/api/available-now/active-ids", async (req: any, res) => {
     try {
+      // 30-second server-side cache — this endpoint fires on every home page load
+      const cacheKey = 'available-now:active-ids';
+      const cached = await cache.get<number[]>(cacheKey);
+      if (cached) return res.json(cached);
+
       const now = new Date();
       const currentUserId = req.session?.user?.id || req.user?.id || parseInt(req.headers['x-user-id'] as string) || 0;
       const results = await db.select({ userId: availableNow.userId })
@@ -26398,6 +26403,7 @@ Questions? Just reply to this message. Welcome aboard!
         activeIds = activeIds.filter(id => !excludeIds.has(id));
       }
       
+      cache.set(cacheKey, activeIds, 30).catch(() => {}); // 30 seconds
       res.json(activeIds);
     } catch (error: any) {
       res.json([]);
