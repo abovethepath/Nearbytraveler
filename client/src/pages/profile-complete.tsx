@@ -1270,7 +1270,24 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   });
 
   // Extract data from bundle with fallbacks
-  const fetchedUser = profileBundle?.user ?? fallbackUser;
+  // If bundle stripped base64 profileImage, fetch it separately via lightweight endpoint
+  const profileImageStripped = !!(profileBundle?.user as any)?.profileImageStripped;
+  const { data: avatarData } = useQuery<{ profileImage: string | null }>({
+    queryKey: ['/api/users', effectiveUserId, 'avatar'],
+    queryFn: async () => {
+      const res = await fetch(`${getApiBaseUrl()}/api/users/${effectiveUserId}/avatar`, { credentials: 'include' });
+      if (!res.ok) return { profileImage: null };
+      return res.json();
+    },
+    enabled: profileImageStripped && !!effectiveUserId,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const rawFetchedUser = profileBundle?.user ?? fallbackUser;
+  // Merge separately-fetched avatar back into user object
+  const fetchedUser = rawFetchedUser && profileImageStripped && avatarData?.profileImage
+    ? { ...rawFetchedUser, profileImage: avatarData.profileImage }
+    : rawFetchedUser;
   const userLoading = bundleLoading && !fallbackUser;
   const userError = bundleError && !fallbackUser ? bundleError : null;
   const refetchUser = refetchBundle;

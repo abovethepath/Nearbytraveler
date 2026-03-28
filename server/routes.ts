@@ -7455,8 +7455,12 @@ Questions? Just reply to this message. Welcome aboard!
         return res.status(404).json({ message: "User not found" });
       }
 
-      // Remove password before sending
+      // Remove password and strip base64 profileImage (can be 10MB+) from bundle
       const { password: _, ...userOut } = user;
+      if (userOut.profileImage && String(userOut.profileImage).startsWith('data:')) {
+        (userOut as any).profileImage = null;
+        (userOut as any).profileImageStripped = true; // signal frontend to fetch separately
+      }
 
       // Legacy backfill: some profiles stored secret activities only in secret_local_experiences
       try {
@@ -7655,14 +7659,22 @@ Questions? Just reply to this message. Welcome aboard!
         ms: endTime - startTime,
       });
 
+      // Strip base64 profileImages from nested arrays to keep bundle small
+      const stripBase64 = (arr: any[]) => arr.map((item: any) => {
+        if (item?.profileImage && String(item.profileImage).startsWith('data:')) {
+          return { ...item, profileImage: null };
+        }
+        return item;
+      });
+
       const bundleResponse = {
         user: userOut,
         travelPlans: travelPlansData,
-        connections: connectionsData,
-        connectionRequests,
-        outgoingConnectionRequests,
-        references: referencesData,
-        vouches: vouchesData,
+        connections: stripBase64(connectionsData),
+        connectionRequests: stripBase64(connectionRequests),
+        outgoingConnectionRequests: stripBase64(outgoingConnectionRequests),
+        references: stripBase64(referencesData),
+        vouches: stripBase64(vouchesData),
         photos,
         travelMemories,
         passportStamps: [],
@@ -8353,6 +8365,35 @@ Questions? Just reply to this message. Welcome aboard!
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error clearing profile photo:", error);
       return res.status(500).json({ message: "Failed to clear profile photo" });
+    }
+  });
+
+  // Lightweight avatar endpoint — returns just the profileImage for a user
+  // Used when profile-bundle strips base64 data to keep the bundle small
+  app.get("/api/users/:id/avatar", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id || '0');
+      if (!userId) return res.status(400).json({ message: "Invalid user ID" });
+
+      const cacheKey = `avatar:${userId}`;
+      const cached = await cache.get<{ profileImage: string | null }>(cacheKey);
+      if (cached) return res.json(cached);
+
+      const [row] = await db
+        .select({ profileImage: users.profileImage })
+        .from(users)
+        .where(eq(users.id, userId))
+        .limit(1);
+
+      const result = { profileImage: row?.profileImage || null };
+      // Only cache if it's NOT a huge base64 — if it is, still return it but don't cache
+      if (!result.profileImage || result.profileImage.length < 500000) {
+        cache.set(cacheKey, result, 600).catch(() => {}); // 10 min cache
+      }
+      return res.json(result);
+    } catch (error: any) {
+      console.error("Error fetching avatar:", error?.message?.slice(0, 100));
+      return res.status(500).json({ message: "Failed to fetch avatar" });
     }
   });
 
