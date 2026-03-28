@@ -7314,7 +7314,13 @@ Questions? Just reply to this message. Welcome aboard!
       }
       
       // Note: Travel intent fields are already in camelCase from database
-      
+
+      // Strip base64 profileImage — use /api/users/:id/avatar for the actual image
+      if (userWithoutPassword.profileImage && String(userWithoutPassword.profileImage).startsWith('data:')) {
+        userWithoutPassword.profileImage = null;
+        (userWithoutPassword as any).profileImageStripped = true;
+      }
+
       return res.json(userWithoutPassword);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error fetching user:", error);
@@ -7659,12 +7665,22 @@ Questions? Just reply to this message. Welcome aboard!
         ms: endTime - startTime,
       });
 
-      // Strip base64 profileImages from nested arrays to keep bundle small
+      // Strip base64 data from nested arrays to keep bundle small
       const stripBase64 = (arr: any[]) => arr.map((item: any) => {
-        if (item?.profileImage && String(item.profileImage).startsWith('data:')) {
-          return { ...item, profileImage: null };
+        const copy = { ...item };
+        if (copy.profileImage && String(copy.profileImage).startsWith('data:')) copy.profileImage = null;
+        return copy;
+      });
+      // For photos: replace inline base64 with a proxy URL so the browser fetches on demand
+      const stripPhotos = (arr: any[]) => arr.map((item: any) => {
+        const copy = { ...item };
+        if (copy.imageUrl && String(copy.imageUrl).startsWith('data:')) {
+          copy.imageUrl = `/api/photos/${copy.id}/image`;
+          copy.imageData = null;
+        } else if (copy.imageData && String(copy.imageData).startsWith('data:')) {
+          copy.imageData = null; // imageUrl is a real URL, drop redundant base64
         }
-        return item;
+        return copy;
       });
 
       const bundleResponse = {
@@ -7675,8 +7691,8 @@ Questions? Just reply to this message. Welcome aboard!
         outgoingConnectionRequests: stripBase64(outgoingConnectionRequests),
         references: stripBase64(referencesData),
         vouches: stripBase64(vouchesData),
-        photos,
-        travelMemories,
+        photos: stripPhotos(photos),
+        travelMemories: stripPhotos(travelMemories),
         passportStamps: [],
         platformStats,
         profileEvents,
@@ -20518,6 +20534,41 @@ Questions? Just reply to this message. Welcome aboard!
         message: "Failed to add photos to travel memory",
         error: error instanceof Error ? error.message : "Unknown error"
       });
+    }
+  });
+
+  // Serve photo image on demand — used when bundle strips inline base64
+  app.get("/api/photos/:id/image", async (req, res) => {
+    try {
+      const photoId = parseInt(req.params.id || '0');
+      if (!photoId) return res.status(400).json({ message: "Invalid photo ID" });
+
+      const [photo] = await db
+        .select({ imageUrl: userPhotos.imageUrl, imageData: userPhotos.imageData })
+        .from(userPhotos)
+        .where(eq(userPhotos.id, photoId))
+        .limit(1);
+
+      const data = photo?.imageUrl || photo?.imageData || null;
+      if (!data) return res.status(404).json({ message: "Photo not found" });
+
+      // If it's a base64 data URL, decode and serve as binary with proper content type
+      if (data.startsWith('data:')) {
+        const match = data.match(/^data:([^;]+);base64,(.+)$/);
+        if (match) {
+          const contentType = match[1];
+          const buffer = Buffer.from(match[2], 'base64');
+          res.setHeader('Content-Type', contentType);
+          res.setHeader('Cache-Control', 'public, max-age=86400'); // 24h browser cache
+          return res.send(buffer);
+        }
+      }
+
+      // It's a regular URL — redirect to it
+      return res.redirect(data);
+    } catch (error: any) {
+      console.error("Error serving photo:", error?.message?.slice(0, 100));
+      return res.status(500).json({ message: "Failed to serve photo" });
     }
   });
 
