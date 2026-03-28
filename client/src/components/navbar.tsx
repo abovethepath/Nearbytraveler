@@ -408,9 +408,9 @@ function Navbar() {
     }
 
     return [
-      { path: "/explore", label: "Explore", icon: "⚡" },
+      { path: "/explore", label: "Communities", icon: "⚡" },
       { path: null, label: "Search", icon: "🔍", action: "search" as const },
-      { path: "/discover", label: "Cities", icon: "🌍" },
+      { path: "/cities", label: "Cities", icon: "🌍" },
       { path: "/events", label: "Events", icon: "📅" },
       { path: "/match-in-city", label: "City Plans", icon: "🎯" },
       { path: "/plan-trip", label: "Trip Planning", icon: "🧭" },
@@ -657,6 +657,18 @@ function Navbar() {
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => {
+                      setLocation("/cities");
+                      setTimeout(
+                        () => window.scrollTo({ top: 0, behavior: "smooth" }),
+                        100,
+                      );
+                    }}
+                  >
+                    <Globe className="mr-2 h-4 w-4" />
+                    <span>Cities</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => {
                       setLocation("/explore");
                       setTimeout(
                         () => window.scrollTo({ top: 0, behavior: "smooth" }),
@@ -665,7 +677,7 @@ function Navbar() {
                     }}
                   >
                     <Zap className="mr-2 h-4 w-4" />
-                    <span>Explore</span>
+                    <span>Communities</span>
                   </DropdownMenuItem>
 
                   {directUser?.userType === "business" && (
