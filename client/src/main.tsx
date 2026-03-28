@@ -28,7 +28,7 @@ if (rootEl) {
         align-items: center;
         justify-content: center;
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-        background: #0b0b0f;
+        background: #111827;
         color: rgba(255,255,255,0.85);
         padding: 24px;
         text-align: center;
