@@ -1385,9 +1385,9 @@ export default function Messages() {
                       >
                         <MessageCircle className="w-4 h-4" />
                       </button>
-                      {/* Delete conversation — visible on hover */}
+                      {/* Delete conversation — desktop hover only, never on mobile */}
                       <button
-                        className="shrink-0 w-6 h-6 items-center justify-center rounded-full text-gray-500 hover:text-red-400 hover:bg-red-500/10 transition-colors hidden group-hover:flex"
+                        className="shrink-0 w-6 h-6 items-center justify-center rounded-full text-gray-500 hover:text-red-400 hover:bg-red-500/10 transition-colors hidden lg:group-hover:flex"
                         title="Remove conversation"
                         onClick={(e) => {
                           e.stopPropagation();

@@ -12772,7 +12772,10 @@ Questions? Just reply to this message. Welcome aboard!
         .where(
           and(
             eq(messages.receiverId, userId),
-            eq(messages.isRead, false)
+            eq(messages.isRead, false),
+            // Exclude system/auto messages that shouldn't count as unread
+            sql`${messages.senderId} != ${userId}`,
+            sql`COALESCE(${messages.messageType}, 'text') NOT IN ('conversation_opened', 'system')`
           )
         );
       
