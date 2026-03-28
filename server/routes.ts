@@ -13885,27 +13885,32 @@ Questions? Just reply to this message. Welcome aboard!
       const cityIds = userChatrooms.filter((c: any) => c.chatroom_type === 'city').map((c: any) => c.id);
       const meetupIds = userChatrooms.filter((c: any) => c.chatroom_type === 'meetup').map((c: any) => c.id);
 
+      // Cast arrays to PG int[] for ANY() — Neon driver doesn't auto-convert JS arrays
+      const pgChatroomIds = sql.raw(`ARRAY[${chatroomIds.join(',')}]::int[]`);
+      const pgCityIds = cityIds.length > 0 ? sql.raw(`ARRAY[${cityIds.join(',')}]::int[]`) : null;
+      const pgMeetupIds = meetupIds.length > 0 ? sql.raw(`ARRAY[${meetupIds.join(',')}]::int[]`) : null;
+
       // Batch: member counts, last messages (from both message tables), unread counts
       const [memberCounts, cityMessages, meetupMessages] = await Promise.all([
         // Member counts — chatroom_members is shared across both types
         db.execute(sql`
           SELECT chatroom_id AS cid, COUNT(*)::int AS cnt
-          FROM chatroom_members WHERE is_active = true AND chatroom_id = ANY(${chatroomIds})
+          FROM chatroom_members WHERE is_active = true AND chatroom_id = ANY(${pgChatroomIds})
           GROUP BY chatroom_id
         `),
         // Latest message per CITY chatroom
-        cityIds.length > 0
+        pgCityIds
           ? db.execute(sql`
               SELECT DISTINCT ON (chatroom_id) chatroom_id AS cid, content, created_at, message_type
-              FROM chatroom_messages WHERE chatroom_id = ANY(${cityIds})
+              FROM chatroom_messages WHERE chatroom_id = ANY(${pgCityIds})
               ORDER BY chatroom_id, created_at DESC
             `)
           : Promise.resolve({ rows: [] }),
         // Latest message per MEETUP chatroom
-        meetupIds.length > 0
+        pgMeetupIds
           ? db.execute(sql`
               SELECT DISTINCT ON (meetup_chatroom_id) meetup_chatroom_id AS cid, content, created_at, message_type
-              FROM meetup_chatroom_messages WHERE meetup_chatroom_id = ANY(${meetupIds})
+              FROM meetup_chatroom_messages WHERE meetup_chatroom_id = ANY(${pgMeetupIds})
               ORDER BY meetup_chatroom_id, created_at DESC
             `)
           : Promise.resolve({ rows: [] }),
