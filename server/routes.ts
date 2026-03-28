@@ -7345,6 +7345,9 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // In-flight request deduplication for profile bundles
+  const bundleInFlight = new Map<string, Promise<any>>();
+
   // OPTIMIZED: Profile bundle endpoint - returns ALL profile data in one request
   // This replaces 18 separate API calls with a single batched request
   app.get("/api/users/:userId/profile-bundle", async (req, res) => {
@@ -7376,6 +7379,27 @@ Questions? Just reply to this message. Welcome aboard!
         console.log(`⚡ PROFILE-BUNDLE CACHE HIT: ${userId} (viewer: ${viewerId}) in ${Date.now() - startTime}ms`);
         return res.json(bundleCached);
       }
+
+      // In-flight deduplication: if a request for this exact key is already running,
+      // wait for it instead of firing duplicate DB queries
+      if (bundleInFlight.has(bundleCacheKey)) {
+        console.log(`⏳ PROFILE-BUNDLE: Dedup — waiting for in-flight request for ${bundleCacheKey}`);
+        try {
+          const result = await bundleInFlight.get(bundleCacheKey);
+          return res.json(result);
+        } catch {
+          // In-flight request failed — fall through to compute fresh
+        }
+      }
+
+      // Register this request as in-flight for deduplication
+      let resolveInFlight: (v: any) => void;
+      let rejectInFlight: (e: any) => void;
+      const inFlightPromise = new Promise<any>((resolve, reject) => {
+        resolveInFlight = resolve;
+        rejectInFlight = reject;
+      });
+      bundleInFlight.set(bundleCacheKey, inFlightPromise);
 
       // Execute all queries in parallel — use allSettled so one bad query never
       // crashes the entire bundle response.
@@ -7499,6 +7523,12 @@ Questions? Just reply to this message. Welcome aboard!
       let connectionStatus = { status: 'none' as string, connectionId: null as number | null, senderId: null as number | null };
       let compatibility = null;
       let connectionDegree: { degree: number; mutualCount: number; mutuals: any[] } | null = null;
+
+      // When viewing own profile, return a zero-degree result instead of null
+      // This prevents "NOT caching because connectionDegree is null" on every own-profile visit
+      if (viewerId && viewerId === userId) {
+        connectionDegree = { degree: 0, mutualCount: 0, mutuals: [] };
+      }
 
       if (viewerId && viewerId !== userId) {
         try {
@@ -7722,8 +7752,12 @@ Questions? Just reply to this message. Welcome aboard!
       }
 
       console.log(`📦 PROFILE-BUNDLE: TOTAL ${Date.now() - startTime}ms for user ${userId} (viewer: ${viewerId})`);
+      resolveInFlight!(bundleResponse);
+      bundleInFlight.delete(bundleCacheKey);
       res.json(bundleResponse);
     } catch (error: any) {
+      rejectInFlight!(error);
+      bundleInFlight.delete(bundleCacheKey);
       console.error("PROFILE-BUNDLE CRASH:", error?.message, error?.stack);
       return res.status(500).json({ message: "Failed to fetch user", error: error?.message });
     }
@@ -8759,7 +8793,19 @@ Questions? Just reply to this message. Welcome aboard!
         .orderBy(desc(notifications.createdAt))
         .limit(50);
 
-      return res.json(userNotifications);
+      // Strip base64 from notification data payloads to keep response small
+      const cleaned = userNotifications.map((n: any) => {
+        if (!n.data) return n;
+        const d = typeof n.data === 'string' ? (() => { try { return JSON.parse(n.data); } catch { return n.data; } })() : { ...n.data };
+        if (d && typeof d === 'object') {
+          for (const key of Object.keys(d)) {
+            if (typeof d[key] === 'string' && d[key].startsWith('data:image')) d[key] = null;
+          }
+          return { ...n, data: d };
+        }
+        return n;
+      });
+      return res.json(cleaned);
     } catch (error: any) {
       console.error("Error fetching notifications:", error);
       return res.status(500).json({ message: "Failed to fetch notifications" });
@@ -9044,7 +9090,22 @@ Questions? Just reply to this message. Welcome aboard!
       }).slice(0, 50);
 
       const unreadCount = allItems.filter(i => i.unread).length;
-      return res.json({ items: allItems, unreadCount });
+      // Strip base64 image data from activity feed items to keep response small
+      const cleaned = allItems.map((item: any) => {
+        const copy = { ...item };
+        if (copy.profileImage && String(copy.profileImage).startsWith('data:')) copy.profileImage = null;
+        if (copy.data) {
+          const d = typeof copy.data === 'string' ? (() => { try { return JSON.parse(copy.data); } catch { return copy.data; } })() : { ...copy.data };
+          if (d && typeof d === 'object') {
+            if (d.profileImage && String(d.profileImage).startsWith('data:')) d.profileImage = null;
+            if (d.senderProfileImage && String(d.senderProfileImage).startsWith('data:')) d.senderProfileImage = null;
+            if (d.targetProfileImage && String(d.targetProfileImage).startsWith('data:')) d.targetProfileImage = null;
+            copy.data = d;
+          }
+        }
+        return copy;
+      });
+      return res.json({ items: cleaned, unreadCount });
     } catch (error: any) {
       console.error("Error fetching activity feed:", error);
       return res.status(500).json({ message: "Failed to fetch activity feed" });
@@ -12042,7 +12103,13 @@ Questions? Just reply to this message. Welcome aboard!
     try {
       const { userId, targetUserIds } = req.body;
       
-      if (!userId || !targetUserIds || !Array.isArray(targetUserIds)) {
+      if (!userId || !targetUserIds || !Array.isArray(targetUserIds) || targetUserIds.length === 0) {
+        return res.json({ degrees: {} });
+      }
+
+      // Ensure all IDs are valid integers for ANY() operator
+      const safeTargetIds = targetUserIds.map((id: any) => parseInt(id)).filter((id: number) => !isNaN(id) && id > 0);
+      if (safeTargetIds.length === 0) {
         return res.json({ degrees: {} });
       }
 
@@ -12085,20 +12152,20 @@ Questions? Just reply to this message. Welcome aboard!
       
       // OPTIMIZED: Fetch all connections for all target users in a single query to avoid N+1
       const allTargetConnections = await db.execute(sql`
-        SELECT 
-          requester_id, 
+        SELECT
+          requester_id,
           receiver_id,
-          CASE 
-            WHEN requester_id = ANY(${targetUserIds}) THEN requester_id
+          CASE
+            WHEN requester_id = ANY(${safeTargetIds}) THEN requester_id
             ELSE receiver_id
           END as target_user_id,
-          CASE 
-            WHEN requester_id = ANY(${targetUserIds}) THEN receiver_id
+          CASE
+            WHEN requester_id = ANY(${safeTargetIds}) THEN receiver_id
             ELSE requester_id
           END as connected_user_id
-        FROM connections 
-        WHERE status = 'accepted' 
-        AND (requester_id = ANY(${targetUserIds}) OR receiver_id = ANY(${targetUserIds}))
+        FROM connections
+        WHERE status = 'accepted'
+        AND (requester_id = ANY(${safeTargetIds}) OR receiver_id = ANY(${safeTargetIds}))
       `);
 
       const targetConnectionsMap: { [targetId: number]: Set<number> } = {};
