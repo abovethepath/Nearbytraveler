@@ -209,7 +209,10 @@ input:-webkit-autofill {
   min-height: 100vh;
   width: 100%;
   max-width: 100%;
-  overflow-x: hidden;
+  /* overflow-x: clip prevents horizontal scroll without creating a new stacking/scroll
+     container — unlike overflow-x:hidden which (on iOS Safari/WKWebView) traps
+     position:fixed descendants so they scroll with the page instead of the viewport. */
+  overflow-x: clip;
   position: relative;
   z-index: 1 !important;
 }

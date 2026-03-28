@@ -78,8 +78,20 @@ export default function LandingStreamlined() {
     return () => clearInterval(taglineInterval);
   }, [taglines.length]);
 
-  // Theme toggle available - removed forced light mode
-
+  // On mount: clear any stuck body scroll-lock states left over from Radix UI
+  // dialogs/sheets in the authenticated app, then scroll to top.
+  useEffect(() => {
+    try {
+      document.body.removeAttribute('data-scroll-locked');
+      document.body.style.removeProperty('overflow');
+      document.body.style.removeProperty('padding-right');
+      // Remove any orphaned Radix portal overlays that may block touch events
+      document.querySelectorAll('[data-radix-dialog-overlay],[data-radix-sheet-overlay],[data-radix-alert-dialog-overlay]').forEach(el => {
+        try { el.parentNode?.removeChild(el); } catch {}
+      });
+      window.scrollTo(0, 0);
+    } catch {}
+  }, []);
 
   // Intersection Observer for fade-in animations
   useEffect(() => {
@@ -109,7 +121,7 @@ export default function LandingStreamlined() {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-900 font-sans transition-colors duration-200">
+    <div className="bg-white dark:bg-gray-900 font-sans">
       
       
       <div className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-50">

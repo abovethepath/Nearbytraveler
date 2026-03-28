@@ -10,7 +10,19 @@ export default function LandingHeader() {
   };
   
   return (
-    <div className="fixed inset-x-0 top-0 z-[100]" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
+    <div
+      className="fixed inset-x-0 top-0 z-[100]"
+      style={{
+        paddingTop: 'env(safe-area-inset-top, 0px)',
+        /* Force GPU compositing so iOS WKWebView keeps this element fixed
+           during scroll. Without this, position:fixed can scroll with the page
+           when parent elements have overflow:clip or certain background transitions. */
+        WebkitTransform: 'translateZ(0)',
+        transform: 'translateZ(0)',
+        WebkitBackfaceVisibility: 'hidden',
+        backfaceVisibility: 'hidden',
+      }}
+    >
       <div className="xl:hidden bg-gradient-to-r from-blue-600 to-orange-500 text-white py-3 px-4 shadow-lg">
         <div className="max-w-6xl mx-auto flex items-center justify-center">
           <Button
