@@ -2143,11 +2143,12 @@ function App() {
           <Toaster />
           <NetworkStatus />
           <DarkModeSuggestionBanner />
-          <PWAInstallPrompt />
-          <Router />
-          {!isNativeIOSApp() && !disableFloatingChatbot && (
-            <div className="hidden md:contents"><HelpChatbot /></div>
-          )}
+          <PWAInstallPrompt>
+            <Router />
+            {!isNativeIOSApp() && !disableFloatingChatbot && (
+              <div className="hidden md:contents"><HelpChatbot /></div>
+            )}
+          </PWAInstallPrompt>
       </ThemeProvider>
     </QueryClientProvider>
   );

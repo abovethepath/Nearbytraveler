@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Camera, MessageSquare, MessageCircle, Share2, Users, UserPlus, Building2, Calendar, Plane, MoreVertical, Copy, Mail, Moon, Sun, Palette, Heart, Smartphone } from "lucide-react";
+import { usePWAInstall } from "@/components/PWAInstallPrompt";
 import { SimpleAvatar } from "@/components/simple-avatar";
 import ConnectButton from "@/components/ConnectButton";
 import { VouchButton } from "@/components/VouchButton";
@@ -36,6 +37,7 @@ function SupportBadge({ tier }: { tier?: string | null }) {
 }
 
 export function ProfileHeaderUser(props: ProfilePageProps) {
+  const pwaInstall = usePWAInstall();
   const {
     user,
     setLocation,
@@ -404,15 +406,20 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                       New to Town
                     </span>
                   )}
-                  {showInlineQr && (
+                  {showInlineQr && !pwaInstall.isAppInstalled && pwaInstall.canInstall && (
                     <button
                       type="button"
-                      onClick={() => setQrInstallOpen(true)}
-                      className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold cursor-pointer animate-pulse"
-                      style={{ backgroundColor: '#3B82F6', color: '#ffffff', border: '2px solid #ffffff' }}
+                      onClick={() => pwaInstall.triggerInstall()}
+                      className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold cursor-pointer animate-pulse lg:hidden"
+                      style={{ backgroundColor: '#F97316', color: '#ffffff', border: '2px solid #ffffff' }}
                     >
-                      Add Nearby Traveler App on Phone Here
+                      📱 Get the App
                     </button>
+                  )}
+                  {showInlineQr && pwaInstall.isAppInstalled && (
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold text-white/60 lg:hidden">
+                      ✓ App Installed
+                    </span>
                   )}
                 </div>
                 {hasValidTravelDestination && (
