@@ -767,7 +767,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                         <span className="truncate block">
                           @{user?.username || 'User'}
                           {(user as any)?.firstName && (
-                            <span className="font-normal text-gray-500 dark:text-gray-400"> · aka {(user as any).firstName}</span>
+                            <span className="font-normal text-gray-500 dark:text-gray-400 hidden sm:inline"> · aka {(user as any).firstName}</span>
                           )}
                         </span>
                       )}
