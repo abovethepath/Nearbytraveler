@@ -40,12 +40,18 @@ export default function LandingHeader() {
 
       <style>{`
         .landing-header-nav {
-          background: rgba(255, 255, 255, 0.92);
+          background: rgba(255, 255, 255, 0.97);
           backdrop-filter: saturate(180%) blur(20px);
           -webkit-backdrop-filter: saturate(180%) blur(20px);
         }
         .dark .landing-header-nav {
-          background: rgba(17, 24, 39, 0.92);
+          background: rgba(17, 24, 39, 0.97);
+        }
+        /* iOS Safari: backdrop-filter can drop during fast scroll.
+           Use near-opaque fallback so nav never becomes invisible. */
+        @supports not (backdrop-filter: blur(1px)) {
+          .landing-header-nav { background: #ffffff; }
+          .dark .landing-header-nav { background: #111827; }
         }
       `}</style>
     </div>
