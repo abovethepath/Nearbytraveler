@@ -127,7 +127,6 @@ export default function AvailableNowStrip({ currentUserId: propUserId, userCity,
   });
 
   const filtered = availableUsers.filter((e) => e.user?.id !== currentUserId && e.isAvailable);
-  if (filtered.length === 0) return null;
 
   const scroll = (dir: "left" | "right") => {
     if (!scrollRef.current) return;
@@ -197,6 +196,13 @@ export default function AvailableNowStrip({ currentUserId: propUserId, userCity,
         )}
       </div>
 
+      {filtered.length === 0 ? (
+        <div className="px-4 pb-4">
+          <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">
+            No one available in {activeCity || 'this city'} right now
+          </p>
+        </div>
+      ) : (
       <div className="relative">
         <button
           onClick={() => scroll("left")}
@@ -327,6 +333,7 @@ export default function AvailableNowStrip({ currentUserId: propUserId, userCity,
           <ChevronRight className="w-4 h-4 text-gray-600 dark:text-gray-300" />
         </button>
       </div>
+      )}
     </div>
   );
 }
