@@ -644,7 +644,7 @@ function nudgeIncrementLogin(userId: number) {
   } catch {}
 }
 
-function NotificationPreferencesSection({ currentUserId }: { currentUserId?: number }) {
+function NotificationPreferencesCompact({ currentUserId }: { currentUserId?: number }) {
   const { toast } = useToast();
   const { data: prefs, isLoading } = useQuery<Record<string, boolean>>({
     queryKey: ['/api/notifications/preferences'],
@@ -671,51 +671,43 @@ function NotificationPreferencesSection({ currentUserId }: { currentUserId?: num
   };
 
   const categories = [
-    { key: 'messages', label: 'Messages', desc: 'DMs and chatroom messages' },
-    { key: 'meet_requests', label: 'Meet Requests', desc: 'Available Now requests' },
-    { key: 'connections', label: 'Connections', desc: 'Connection requests and acceptances' },
-    { key: 'events', label: 'Events', desc: 'RSVPs, invites, and traveler arrivals' },
-    { key: 'vouches', label: 'Vouches & References', desc: 'Vouches and written references' },
+    { key: 'messages', label: 'Messages' },
+    { key: 'meet_requests', label: 'Meets' },
+    { key: 'connections', label: 'Connections' },
+    { key: 'events', label: 'Events' },
+    { key: 'vouches', label: 'Vouches' },
   ];
 
   if (isLoading || !currentUserId) return null;
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-2">
-      <Card className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
-        <CardHeader className="pb-2 border-b border-gray-100 dark:border-gray-800">
-          <CardTitle className="flex items-center gap-2 text-base font-semibold text-gray-900 dark:text-white">
-            <Bell className="w-4 h-4 text-orange-500" />
-            Push Notifications
-          </CardTitle>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Choose what you want to be notified about</p>
-        </CardHeader>
-        <CardContent className="pt-3 space-y-3">
-          {categories.map(({ key, label, desc }) => (
-            <div key={key} className="flex items-center justify-between py-1">
-              <div>
-                <p className="text-sm font-medium text-gray-900 dark:text-white">{label}</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">{desc}</p>
-              </div>
-              <button
-                onClick={() => toggle(key)}
-                disabled={saving}
-                className={`no-touch-target relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none disabled:opacity-50 ${
-                  effective[key] ? 'bg-orange-500' : 'bg-gray-300 dark:bg-gray-600'
+    <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 overflow-hidden">
+      <div className="px-3 py-2 border-b border-gray-100 dark:border-gray-800 flex items-center gap-2">
+        <Bell className="w-3.5 h-3.5 text-orange-500" />
+        <span className="text-xs font-bold text-gray-900 dark:text-white">Notifications</span>
+      </div>
+      <div className="px-3 py-1.5">
+        {categories.map(({ key, label }) => (
+          <div key={key} className="flex items-center justify-between py-1">
+            <span className="text-xs text-gray-700 dark:text-gray-300">{label}</span>
+            <button
+              onClick={() => toggle(key)}
+              disabled={saving}
+              className={`no-touch-target relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none disabled:opacity-50 ${
+                effective[key] ? 'bg-orange-500' : 'bg-gray-300 dark:bg-gray-600'
+              }`}
+              role="switch"
+              aria-checked={effective[key]}
+            >
+              <span
+                className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                  effective[key] ? 'translate-x-4' : 'translate-x-0'
                 }`}
-                role="switch"
-                aria-checked={effective[key]}
-              >
-                <span
-                  className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-                    effective[key] ? 'translate-x-5' : 'translate-x-0'
-                  }`}
-                />
-              </button>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
+              />
+            </button>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -4275,9 +4267,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   return (
     <div className="flex flex-col gap-4 md:gap-0">
       <ProfileHeader {...profileProps} />
-      <ProfileTabs {...profileProps} />
-      {isOwnProfile && <NotificationPreferencesSection currentUserId={currentUser?.id} />}
-      <ReferralTrackingWidget profileUserId={effectiveUserId!} />
+      <ProfileTabs {...profileProps} notificationPrefs={isOwnProfile ? <NotificationPreferencesCompact currentUserId={currentUser?.id} /> : null} referralWidget={<ReferralTrackingWidget profileUserId={effectiveUserId!} />} />
       {isNearbytrav && <AdminDashboard />}
       <ProfileDialogs {...profileProps} />
 

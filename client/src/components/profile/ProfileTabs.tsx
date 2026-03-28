@@ -3217,7 +3217,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                       City Chatrooms
                     </span>
                     <div className="flex items-center gap-2">
-                      <span className="font-semibold text-orange-600 dark:text-orange-400">{userChatrooms.length}</span>
+                      <span className="font-semibold text-orange-600 dark:text-orange-400">{chatroomCount ?? userChatrooms?.length ?? 0}</span>
                       <ChevronRight className="w-4 h-4 text-gray-400" />
                     </div>
                   </button>
@@ -3363,6 +3363,12 @@ export function ProfileTabs(props: ProfilePageProps) {
                 </CardContent>
               </Card>
             )}
+
+            {/* Referral Widget — sidebar placement */}
+            {(props as any).referralWidget}
+
+            {/* Notification Preferences — sidebar placement */}
+            {(props as any).notificationPrefs}
 
             {/* Contacts Panel - Lazy Loaded */}
             {activeTab === 'contacts' && loadedTabs.has('contacts') && (
