@@ -1413,11 +1413,13 @@ export class TravelMatchingService {
    * Get shared countries
    */
   private getSharedCountries(user1: User, user2: User): string[] {
-    const user1Countries = this.parseInterests(user1.countriesVisited);
-    const user2Countries = this.parseInterests(user2.countriesVisited);
-    
-    return user1Countries.filter(country => 
-      user2Countries.some(otherCountry => 
+    // Exclude generic countries that nearly everyone has
+    const GENERIC_COUNTRIES = new Set(["united states", "usa", "us", "america"]);
+    const user1Countries = this.parseInterests(user1.countriesVisited).filter(c => !GENERIC_COUNTRIES.has(c));
+    const user2Countries = this.parseInterests(user2.countriesVisited).filter(c => !GENERIC_COUNTRIES.has(c));
+
+    return user1Countries.filter(country =>
+      user2Countries.some(otherCountry =>
         this.areInterestsSimilar(country, otherCountry)
       )
     );

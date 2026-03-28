@@ -126,6 +126,11 @@ export function computeCommonStats(
     "welcome to los angeles metro",
     "welcome to nearby traveler",
     "same gender",
+    "united states",
+    "usa",
+    "english",
+    "us",
+    "america",
   ]);
   const otherCommonalities = dedupe(extraArrays)
     .filter((v) => !blockedOtherCommonalities.has(v.toLowerCase()))
