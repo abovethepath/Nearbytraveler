@@ -1337,6 +1337,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
 
   // Fetch user's chatrooms for Travel Stats display (created AND joined)
   // NOTE: This is NOT in the bundle as it requires separate endpoint
+  // Lazy-load full chatroom data only when Chatrooms tab is opened.
+  // The tab badge uses profileBundle.chatroomCount instead (lightweight).
   const { data: userChatrooms = [] } = useQuery<any[]>({
     queryKey: ['/api/users', effectiveUserId, 'chatroom-participation'],
     queryFn: async () => {
@@ -1346,10 +1348,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       const data = await response.json();
       return Array.isArray(data) ? data : [];
     },
-    // Always fetch — needed for chatroom count in stats tab bar
-    enabled: isOwnProfile ? !!currentUser?.id : !!effectiveUserId,
+    enabled: (isOwnProfile ? !!currentUser?.id : !!effectiveUserId) && loadedTabs.has('chatrooms'),
     staleTime: 60 * 1000,
   });
+  // Bundle provides a lightweight count for the tab badge without loading full chatroom data
+  const chatroomCount = userChatrooms.length > 0 ? userChatrooms.length : ((profileBundle as any)?.chatroomCount ?? 0);
 
   // BUNDLE-DERIVED: Compatibility score from profile bundle
   const compatibilityData = profileBundle?.compatibility;
@@ -3954,7 +3957,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     sortedUserConnections, connectionsDisplayCount, setConnectionsDisplayCount, editingConnectionNote, setEditingConnectionNote,
     connectionNoteText, setConnectionNoteText, showWriteReferenceModal, setShowReferenceForm, showReferenceForm, referenceForm,
     createReference, connectionRequests, outgoingConnectionRequests, countriesVisited, tempCountries, setTempCountries, customCountryInput, setCustomCountryInput,
-    editingCountries, updateCountries, userChatrooms, setShowChatroomList, vouches, compatibilityData, eventsGoing, eventsInterested,
+    editingCountries, updateCountries, userChatrooms, chatroomCount, setShowChatroomList, vouches, compatibilityData, eventsGoing, eventsInterested,
     commonStats,
     businessDealsLoading, businessDeals, ownerContactForm, setOwnerContactForm, editingOwnerInfo, updateOwnerContact, handleSaveOwnerContact,
     apiRequest, handleEditCountries, handleSaveCountries, handleCancelCountries, COUNTRIES_OPTIONS, GENDER_OPTIONS, SEXUAL_PREFERENCE_OPTIONS,

@@ -7418,6 +7418,8 @@ Questions? Just reply to this message. Welcome aboard!
         storage.getUserParticipatedEventsWithDetails(userId, 'going'),
         // 12. Events user is interested in
         storage.getUserParticipatedEventsWithDetails(userId, 'interested'),
+        // 13. Chatroom count (lightweight — just a number for the tab badge)
+        db.execute(sql`SELECT COUNT(*)::int AS cnt FROM chatroom_members cm JOIN city_chatrooms cc ON cc.id = cm.chatroom_id WHERE cm.user_id = ${userId} AND cm.is_active = true AND cc.is_active = true`).then(r => ((r as any).rows?.[0]?.cnt || 0)).catch(() => 0),
       ]);
       console.log(`📦 PROFILE-BUNDLE: Parallel queries done in ${Date.now() - t0}ms for user ${userId}`);
 
@@ -7442,6 +7444,7 @@ Questions? Just reply to this message. Welcome aboard!
       const profileEvents              = settle(results[10] as PromiseSettledResult<any[]>,  []);
       const eventsGoing                = settle(results[11] as PromiseSettledResult<any[]>,  []);
       const eventsInterested           = settle(results[12] as PromiseSettledResult<any[]>, []);
+      const chatroomCount              = settle(results[13] as PromiseSettledResult<number>,  0);
 
       if (!user) {
         return res.status(404).json({ message: "User not found" });
@@ -7666,6 +7669,7 @@ Questions? Just reply to this message. Welcome aboard!
         compatibility,
         connectionDegree,
         businessDeals,
+        chatroomCount,
       };
 
       // Write to Redis cache — but ONLY if connectionDegree was successfully computed.

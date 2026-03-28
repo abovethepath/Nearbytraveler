@@ -233,7 +233,7 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
           >
             Chatrooms
             <span className={badgeClass} style={badgeStyle}>
-              {userChatrooms?.length || 0}
+              {(props as any).chatroomCount ?? userChatrooms?.length ?? 0}
             </span>
           </button>
         )}
