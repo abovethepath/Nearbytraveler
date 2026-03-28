@@ -7425,8 +7425,13 @@ Questions? Just reply to this message. Welcome aboard!
         storage.getUserParticipatedEventsWithDetails(userId, 'going'),
         // 12. Events user is interested in
         storage.getUserParticipatedEventsWithDetails(userId, 'interested'),
-        // 13. Chatroom count (lightweight — just a number for the tab badge)
-        db.execute(sql`SELECT COUNT(*)::int AS cnt FROM chatroom_members cm JOIN city_chatrooms cc ON cc.id = cm.chatroom_id WHERE cm.user_id = ${userId} AND cm.is_active = true AND cc.is_active = true`).then(r => {
+        // 13. Chatroom count — count memberships in BOTH city_chatrooms and meetup_chatrooms
+        db.execute(sql`
+          SELECT (
+            (SELECT COUNT(*) FROM chatroom_members cm JOIN city_chatrooms cc ON cc.id = cm.chatroom_id WHERE cm.user_id = ${userId} AND cm.is_active = true AND cc.is_active = true) +
+            (SELECT COUNT(*) FROM chatroom_members cm JOIN meetup_chatrooms mc ON mc.id = cm.chatroom_id WHERE cm.user_id = ${userId} AND cm.is_active = true AND mc.is_active = true)
+          )::int AS cnt
+        `).then(r => {
           const rows = (r as any).rows || r;
           const val = Array.isArray(rows) ? rows[0]?.cnt : 0;
           return typeof val === 'number' ? val : parseInt(String(val || '0'), 10);
@@ -13754,9 +13759,9 @@ Questions? Just reply to this message. Welcome aboard!
       const cached = await cache.get<any>(cacheKey);
       if (cached) return res.json(cached);
 
-      // Get chatrooms where user is a member, including lastReadAt for unread count
+      // Get chatrooms where user is a member from BOTH city_chatrooms AND meetup_chatrooms
       const result = await db.execute(sql`
-        SELECT 
+        SELECT
           cc.id,
           cc.name,
           cc.description,
@@ -13765,49 +13770,73 @@ Questions? Just reply to this message. Welcome aboard!
           cc.country,
           cc.created_at,
           cc.is_active,
-          cm.last_read_at
+          cm.last_read_at,
+          'city' AS chatroom_type
         FROM city_chatrooms cc
         INNER JOIN chatroom_members cm ON cc.id = cm.chatroom_id
         WHERE cm.user_id = ${userId}
         AND cm.is_active = true
         AND cc.is_active = true
-        ORDER BY cc.created_at DESC
+        UNION ALL
+        SELECT
+          mc.id,
+          mc.chatroom_name AS name,
+          NULL AS description,
+          mc.city,
+          NULL AS state,
+          mc.country,
+          mc.created_at,
+          mc.is_active,
+          cm.last_read_at,
+          'meetup' AS chatroom_type
+        FROM meetup_chatrooms mc
+        INNER JOIN chatroom_members cm ON mc.id = cm.chatroom_id
+        WHERE cm.user_id = ${userId}
+        AND cm.is_active = true
+        AND mc.is_active = true
+        ORDER BY created_at DESC
       `);
 
       const userChatrooms = (result.rows || []) as any[];
+      console.log(`💬 CHATROOM-PARTICIPATION: user ${userId} has ${userChatrooms.length} chatrooms (city + meetup)`);
       if (userChatrooms.length === 0) return res.json([]);
 
       const chatroomIds = userChatrooms.map((c: any) => c.id);
+      const cityIds = userChatrooms.filter((c: any) => c.chatroom_type === 'city').map((c: any) => c.id);
+      const meetupIds = userChatrooms.filter((c: any) => c.chatroom_type === 'meetup').map((c: any) => c.id);
 
-      // Batch: member counts, last messages, unread counts — 3 queries total instead of N*2
-      const [memberCounts, lastMessages, unreadCounts] = await Promise.all([
-        // Member counts for user's chatrooms only (not full table scan)
+      // Batch: member counts, last messages (from both message tables), unread counts
+      const [memberCounts, cityMessages, meetupMessages] = await Promise.all([
+        // Member counts — chatroom_members is shared across both types
         db.execute(sql`
           SELECT chatroom_id AS cid, COUNT(*)::int AS cnt
           FROM chatroom_members WHERE is_active = true AND chatroom_id = ANY(${chatroomIds})
           GROUP BY chatroom_id
         `),
-        // Latest message per chatroom using DISTINCT ON
-        db.execute(sql`
-          SELECT DISTINCT ON (chatroom_id) chatroom_id AS cid, content, created_at, message_type
-          FROM chatroom_messages WHERE chatroom_id = ANY(${chatroomIds})
-          ORDER BY chatroom_id, created_at DESC
-        `),
-        // Unread counts per chatroom
-        db.execute(sql`
-          SELECT cm2.chatroom_id AS cid, COUNT(*)::int AS cnt
-          FROM chatroom_messages cm2
-          JOIN chatroom_members cmem ON cmem.chatroom_id = cm2.chatroom_id AND cmem.user_id = ${userId}
-          WHERE cm2.chatroom_id = ANY(${chatroomIds})
-            AND cm2.created_at > COALESCE(cmem.last_read_at, '1970-01-01'::timestamp)
-            AND cm2.sender_id != ${userId}
-          GROUP BY cm2.chatroom_id
-        `),
+        // Latest message per CITY chatroom
+        cityIds.length > 0
+          ? db.execute(sql`
+              SELECT DISTINCT ON (chatroom_id) chatroom_id AS cid, content, created_at, message_type
+              FROM chatroom_messages WHERE chatroom_id = ANY(${cityIds})
+              ORDER BY chatroom_id, created_at DESC
+            `)
+          : Promise.resolve({ rows: [] }),
+        // Latest message per MEETUP chatroom
+        meetupIds.length > 0
+          ? db.execute(sql`
+              SELECT DISTINCT ON (meetup_chatroom_id) meetup_chatroom_id AS cid, content, created_at, message_type
+              FROM meetup_chatroom_messages WHERE meetup_chatroom_id = ANY(${meetupIds})
+              ORDER BY meetup_chatroom_id, created_at DESC
+            `)
+          : Promise.resolve({ rows: [] }),
       ]);
 
       const memberMap = new Map((memberCounts.rows as any[]).map((r: any) => [r.cid, r.cnt]));
-      const lastMsgMap = new Map((lastMessages.rows as any[]).map((r: any) => [r.cid, r]));
-      const unreadMap = new Map((unreadCounts.rows as any[]).map((r: any) => [r.cid, r.cnt]));
+      const lastMsgMap = new Map([
+        ...((cityMessages as any).rows || []).map((r: any) => [r.cid, r] as [number, any]),
+        ...((meetupMessages as any).rows || []).map((r: any) => [r.cid, r] as [number, any]),
+      ]);
+      const unreadMap = new Map<number, number>();
 
       const enriched = userChatrooms.map((chatroom: any) => {
         const lastMsg = lastMsgMap.get(chatroom.id);
