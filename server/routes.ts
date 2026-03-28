@@ -7700,7 +7700,9 @@ Questions? Just reply to this message. Welcome aboard!
         eventsGoing,
         eventsInterested,
         connectionStatus,
-        compatibility,
+        compatibility: compatibility && (compatibility as any).sharedPrivateInterests && !viewerId
+          ? { ...compatibility, sharedPrivateInterests: [] }
+          : compatibility,
         connectionDegree,
         businessDeals,
         chatroomCount,
@@ -20784,6 +20786,13 @@ Questions? Just reply to this message. Welcome aboard!
         userTypeCompatibility: false,
         travelIntentCompatibility: false
       };
+
+      // Strip private interests unless viewer is one of the two users or admin
+      const viewerId = (req as any).session?.user?.id || parseInt(req.headers['x-user-id'] as string || '0');
+      const isAuthorized = viewerId === userId1 || viewerId === userId2 || viewerId === 2;
+      if (!isAuthorized && (response as any).sharedPrivateInterests) {
+        (response as any).sharedPrivateInterests = [];
+      }
 
       console.log(`⏱️ /api/compatibility took ${Date.now() - _compatStart}ms — users ${userId1}↔${userId2}`);
       res.json(response);

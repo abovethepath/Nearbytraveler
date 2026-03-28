@@ -27,6 +27,10 @@ export type CompatibilityLike = {
   bothNewToTown?: boolean | null;
   bothVeterans?: boolean | null;
   bothActiveDuty?: boolean | null;
+  // Private interests — only populated when viewer is authorized
+  sharedPrivateInterests?: string[] | null;
+  // Metro area match
+  sameMetroArea?: string | null;
 };
 
 export type ConnectionDegreeLike = {
@@ -100,6 +104,7 @@ export function computeCommonStats(
   // "Both new to town" removed — being new to different cities is not a shared thing
   if (compatibilityData?.bothVeterans) booleanLabels.push('Both veterans');
   if (compatibilityData?.bothActiveDuty) booleanLabels.push('Both active duty');
+  if (compatibilityData?.sameMetroArea) booleanLabels.push(`Both in ${compatibilityData.sameMetroArea}`);
 
   // Roll remaining breakdown arrays + new arrays + boolean labels into otherCommonalities
   const extraArrays: string[] = [
@@ -115,6 +120,7 @@ export function computeCommonStats(
     ...(Array.isArray(compatibilityData?.sharedCommunityTags) ? compatibilityData!.sharedCommunityTags!.filter(Boolean) : []),
     ...(Array.isArray(compatibilityData?.sharedTravelPlans) ? compatibilityData!.sharedTravelPlans!.filter(Boolean) : []),
     ...(Array.isArray(compatibilityData?.sameHostel) ? compatibilityData!.sameHostel!.filter(Boolean) : []),
+    ...(Array.isArray(compatibilityData?.sharedPrivateInterests) ? compatibilityData!.sharedPrivateInterests!.filter(Boolean) : []),
     ...booleanLabels,
   ];
   const alreadyShown = new Set([

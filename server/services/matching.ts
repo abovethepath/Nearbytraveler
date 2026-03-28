@@ -3,6 +3,7 @@ import { db } from "../db";
 import { chatroomMembers, citychatrooms, communityTags, userCommunityTags } from "@shared/schema";
 import { eq, and, inArray, sql } from "drizzle-orm";
 import type { User, TravelPlan } from "@shared/schema";
+import { getMetroAreaName } from "@shared/metro-areas";
 
 export interface MatchScore {
   userId: number;
@@ -45,6 +46,10 @@ export interface MatchScore {
   bothHaveChildren: boolean;
   childrenAgesSimilar: boolean;
   bothNewToTown: boolean;
+  // Private interests — only include in response when viewer is the other user or admin
+  sharedPrivateInterests: string[];
+  // Metro area match — both users in same metro area
+  sameMetroArea: string | null;
 }
 
 export interface MatchingPreferences {
@@ -293,6 +298,24 @@ export class TravelMatchingService {
       reasons.push(...newToTownScore.reasons);
     }
 
+    // Metro area match — uses getMetroAreaName for proper consolidation (e.g. Manhattan Beach → LA Metro)
+    let sameMetroArea: string | null = null;
+    if (user1.hometownCity && user2.hometownCity) {
+      const metro1 = getMetroAreaName(user1.hometownCity);
+      const metro2 = getMetroAreaName(user2.hometownCity);
+      if (metro1 && metro2 && metro1.toLowerCase() === metro2.toLowerCase() && !sameHometown) {
+        // Only add if not already counted as sameHometown (avoid double-counting)
+        sameMetroArea = metro1;
+        matchCount += 1;
+        reasons.push(`Both in ${metro1}`);
+      }
+    }
+
+    // Shared private interests — extracted separately so they can be conditionally included
+    // These are already folded into sharedInterests above, but we track them separately
+    // so the API endpoint can strip them for non-authorized viewers
+    const sharedPrivateInterests = this.getSharedPrivateInterests(user1, user2);
+
     // NOT COUNTED per spec: same gender, same age, user type compatibility, bio overlap, countries visited
     const sameGender = this.haveSameGender(user1, user2);
     const ageScore = this.calculateAgeCompatibility(user1, user2);
@@ -345,6 +368,8 @@ export class TravelMatchingService {
       bothHaveChildren,
       childrenAgesSimilar,
       bothNewToTown,
+      sharedPrivateInterests,
+      sameMetroArea,
     };
   }
 
@@ -1141,6 +1166,13 @@ export class TravelMatchingService {
         this.areInterestsSimilar(interest, otherInterest)
       )
     );
+  }
+
+  private getSharedPrivateInterests(user1: User, user2: User): string[] {
+    const u1 = this.parseInterests(user1.privateInterests);
+    const u2 = this.parseInterests(user2.privateInterests);
+    if (u1.length === 0 || u2.length === 0) return [];
+    return u1.filter(i => u2.some(j => this.areInterestsSimilar(i, j)));
   }
 
   private getSharedActivities(user1: User, user2: User): string[] {
