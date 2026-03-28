@@ -25,6 +25,7 @@ type AliveWS = WebSocket & { isAlive?: boolean };
 import express from "express";
 import path from "path";
 import { storage } from "./storage";
+import { compressAvatar, compressPhoto, compressCoverPhoto } from "./imageCompression";
 import appleSignin from "apple-signin-auth";
 import { db, pool, withRetry } from "./db";
 import { sendBrevoEmail } from "./email/brevoSend";
@@ -7951,6 +7952,14 @@ Questions? Just reply to this message. Welcome aboard!
         }
       }
 
+      // Compress images before saving to database
+      if (updates.profileImage && String(updates.profileImage).startsWith('data:')) {
+        updates.profileImage = await compressAvatar(updates.profileImage);
+      }
+      if (updates.coverPhoto && String(updates.coverPhoto).startsWith('data:')) {
+        updates.coverPhoto = await compressCoverPhoto(updates.coverPhoto);
+      }
+
       // Update user in database
       const updatedUser = await storage.updateUser(userId, updates);
 
@@ -8297,7 +8306,14 @@ Questions? Just reply to this message. Welcome aboard!
         }
       }
 
-      // Remove password from response
+      // Compress images before saving
+      if (mappedUpdates.profileImage && String(mappedUpdates.profileImage).startsWith('data:')) {
+        mappedUpdates.profileImage = await compressAvatar(mappedUpdates.profileImage);
+      }
+      if (mappedUpdates.coverPhoto && String(mappedUpdates.coverPhoto).startsWith('data:')) {
+        mappedUpdates.coverPhoto = await compressCoverPhoto(mappedUpdates.coverPhoto);
+      }
+
       const updatedUser = await storage.updateUser(userId, mappedUpdates);
 
       if (!updatedUser) {
@@ -8335,10 +8351,11 @@ Questions? Just reply to this message. Welcome aboard!
         return res.status(400).json({ message: "Image data is required" });
       }
 
-      if (process.env.NODE_ENV === 'development') console.log(`PUT: Updating profile photo for user ${userId}, image size: ${imageData.length}`);
+      const compressed = await compressAvatar(imageData);
+      if (process.env.NODE_ENV === 'development') console.log(`PUT: Profile photo for user ${userId}: ${imageData.length} → ${compressed.length} bytes`);
 
-      // Update user with new profile photo
-      const updatedUser = await storage.updateUser(userId, { profileImage: imageData });
+      // Update user with compressed profile photo
+      const updatedUser = await storage.updateUser(userId, { profileImage: compressed });
 
       if (!updatedUser) {
         return res.status(404).json({ message: "User not found" });
@@ -8659,10 +8676,11 @@ Questions? Just reply to this message. Welcome aboard!
         return res.status(400).json({ message: "Image data is required" });
       }
 
-      if (process.env.NODE_ENV === 'development') console.log(`POST: Updating cover photo for user ${userId}, image size: ${imageData.length}`);
+      const compressedCover = await compressCoverPhoto(imageData);
+      if (process.env.NODE_ENV === 'development') console.log(`POST: Cover photo for user ${userId}: ${imageData.length} → ${compressedCover.length} bytes`);
 
-      // Update user with new cover photo
-      const updatedUser = await storage.updateUser(userId, { coverPhoto: imageData });
+      // Update user with compressed cover photo
+      const updatedUser = await storage.updateUser(userId, { coverPhoto: compressedCover });
 
       if (!updatedUser) {
         return res.status(404).json({ message: "User not found" });
@@ -8693,10 +8711,11 @@ Questions? Just reply to this message. Welcome aboard!
         return res.status(400).json({ message: "Image data is required" });
       }
 
-      if (process.env.NODE_ENV === 'development') console.log(`PUT: Updating cover photo for user ${userId}, image size: ${imageData.length}`);
+      const compressedCover = await compressCoverPhoto(imageData);
+      if (process.env.NODE_ENV === 'development') console.log(`PUT: Cover photo for user ${userId}: ${imageData.length} → ${compressedCover.length} bytes`);
 
-      // Update user with new cover photo
-      const updatedUser = await storage.updateUser(userId, { coverPhoto: imageData });
+      // Update user with compressed cover photo
+      const updatedUser = await storage.updateUser(userId, { coverPhoto: compressedCover });
 
       if (!updatedUser) {
         return res.status(404).json({ message: "User not found" });
@@ -20074,10 +20093,14 @@ Questions? Just reply to this message. Welcome aboard!
         return res.status(400).json({ message: "Image data is required" });
       }
 
+      // Compress before saving to database
+      const compressedImage = await compressPhoto(imageData);
+      console.log(`📸 UPLOAD: Compressed photo for user ${userId}: ${imageData.length} → ${compressedImage.length} bytes`);
+
       // Create the photo record
       const photo = await storage.createUserPhoto({
         userId: userId,
-        imageUrl: imageData,
+        imageUrl: compressedImage,
         title: title || null,
         isPublic: isPublic !== false, // Default to true if not specified
         uploadedAt: new Date()
