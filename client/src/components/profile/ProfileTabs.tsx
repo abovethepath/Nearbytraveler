@@ -2832,7 +2832,12 @@ export function ProfileTabs(props: ProfilePageProps) {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    {userChatrooms && userChatrooms.length > 0 ? (
+                    {(props as any).chatroomsLoading ? (
+                      <div className="flex items-center justify-center py-8">
+                        <div className="animate-spin w-6 h-6 border-2 border-orange-500 border-t-transparent rounded-full" />
+                        <span className="ml-3 text-sm text-gray-500 dark:text-gray-400">Loading chatrooms...</span>
+                      </div>
+                    ) : userChatrooms && userChatrooms.length > 0 ? (
                       <div className="space-y-2">
                         {userChatrooms.map((chatroom: any) => {
                           const displayName = chatroom.name || chatroom.cityName || 'Chatroom';

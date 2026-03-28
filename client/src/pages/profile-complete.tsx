@@ -1353,13 +1353,20 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   // NOTE: This is NOT in the bundle as it requires separate endpoint
   // Lazy-load full chatroom data only when Chatrooms tab is opened.
   // The tab badge uses profileBundle.chatroomCount instead (lightweight).
-  const { data: userChatrooms = [] } = useQuery<any[]>({
+  const { data: userChatrooms = [], isLoading: chatroomsLoading } = useQuery<any[]>({
     queryKey: ['/api/users', effectiveUserId, 'chatroom-participation'],
     queryFn: async () => {
       if (!effectiveUserId) return [];
-      const response = await fetch(`${getApiBaseUrl()}/api/users/${effectiveUserId}/chatroom-participation`);
-      if (!response.ok) return [];
+      console.log(`💬 CHATROOM-FETCH: Fetching chatrooms for user ${effectiveUserId}`);
+      const response = await fetch(`${getApiBaseUrl()}/api/users/${effectiveUserId}/chatroom-participation`, {
+        credentials: 'include',
+      });
+      if (!response.ok) {
+        console.error(`💬 CHATROOM-FETCH: Failed with status ${response.status}`);
+        return [];
+      }
       const data = await response.json();
+      console.log(`💬 CHATROOM-FETCH: Got ${Array.isArray(data) ? data.length : 0} chatrooms for user ${effectiveUserId}`);
       return Array.isArray(data) ? data : [];
     },
     enabled: (isOwnProfile ? !!currentUser?.id : !!effectiveUserId) && loadedTabs.has('chatrooms'),
@@ -3971,7 +3978,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     sortedUserConnections, connectionsDisplayCount, setConnectionsDisplayCount, editingConnectionNote, setEditingConnectionNote,
     connectionNoteText, setConnectionNoteText, showWriteReferenceModal, setShowReferenceForm, showReferenceForm, referenceForm,
     createReference, connectionRequests, outgoingConnectionRequests, countriesVisited, tempCountries, setTempCountries, customCountryInput, setCustomCountryInput,
-    editingCountries, updateCountries, userChatrooms, chatroomCount, setShowChatroomList, vouches, compatibilityData, eventsGoing, eventsInterested,
+    editingCountries, updateCountries, userChatrooms, chatroomsLoading, chatroomCount, setShowChatroomList, vouches, compatibilityData, eventsGoing, eventsInterested,
     commonStats,
     businessDealsLoading, businessDeals, ownerContactForm, setOwnerContactForm, editingOwnerInfo, updateOwnerContact, handleSaveOwnerContact,
     apiRequest, handleEditCountries, handleSaveCountries, handleCancelCountries, COUNTRIES_OPTIONS, GENDER_OPTIONS, SEXUAL_PREFERENCE_OPTIONS,

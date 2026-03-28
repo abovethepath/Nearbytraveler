@@ -13759,8 +13759,8 @@ Questions? Just reply to this message. Welcome aboard!
       const cached = await cache.get<any>(cacheKey);
       if (cached) return res.json(cached);
 
-      // Get chatrooms where user is a member from BOTH city_chatrooms AND meetup_chatrooms
-      const result = await db.execute(sql`
+      // Get chatrooms from city_chatrooms first, then try meetup_chatrooms
+      const cityResult = await db.execute(sql`
         SELECT
           cc.id,
           cc.name,
@@ -13777,28 +13777,41 @@ Questions? Just reply to this message. Welcome aboard!
         WHERE cm.user_id = ${userId}
         AND cm.is_active = true
         AND cc.is_active = true
-        UNION ALL
-        SELECT
-          mc.id,
-          mc.chatroom_name AS name,
-          NULL AS description,
-          mc.city,
-          NULL AS state,
-          mc.country,
-          mc.created_at,
-          mc.is_active,
-          cm.last_read_at,
-          'meetup' AS chatroom_type
-        FROM meetup_chatrooms mc
-        INNER JOIN chatroom_members cm ON mc.id = cm.chatroom_id
-        WHERE cm.user_id = ${userId}
-        AND cm.is_active = true
-        AND mc.is_active = true
-        ORDER BY created_at DESC
+        ORDER BY cc.created_at DESC
       `);
+      const cityChatrooms = ((cityResult as any).rows || []) as any[];
 
-      const userChatrooms = (result.rows || []) as any[];
-      console.log(`💬 CHATROOM-PARTICIPATION: user ${userId} has ${userChatrooms.length} chatrooms (city + meetup)`);
+      // Meetup chatrooms — separate query so a missing table doesn't break city chatrooms
+      let meetupChatroomsArr: any[] = [];
+      try {
+        const meetupResult = await db.execute(sql`
+          SELECT
+            mc.id,
+            mc.chatroom_name AS name,
+            NULL AS description,
+            mc.city,
+            NULL AS state,
+            mc.country,
+            mc.created_at,
+            mc.is_active,
+            cm.last_read_at,
+            'meetup' AS chatroom_type
+          FROM meetup_chatrooms mc
+          INNER JOIN chatroom_members cm ON mc.id = cm.chatroom_id
+          WHERE cm.user_id = ${userId}
+          AND cm.is_active = true
+          AND mc.is_active = true
+          ORDER BY mc.created_at DESC
+        `);
+        meetupChatroomsArr = ((meetupResult as any).rows || []) as any[];
+      } catch (e) {
+        console.warn(`💬 CHATROOM-PARTICIPATION: meetup_chatrooms query failed (table may not exist):`, (e as Error).message?.slice(0, 80));
+      }
+
+      const userChatrooms = [...cityChatrooms, ...meetupChatroomsArr].sort(
+        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      );
+      console.log(`💬 CHATROOM-PARTICIPATION: user ${userId} has ${userChatrooms.length} chatrooms (${cityChatrooms.length} city + ${meetupChatroomsArr.length} meetup)`);
       if (userChatrooms.length === 0) return res.json([]);
 
       const chatroomIds = userChatrooms.map((c: any) => c.id);
