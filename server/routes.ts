@@ -7711,7 +7711,7 @@ Questions? Just reply to this message. Welcome aboard!
       // Write to Redis cache — but ONLY if connectionDegree was successfully computed.
       // If it's null (query failed), do NOT cache — the next request should retry fresh.
       if (connectionDegree !== null || !viewerId) {
-        cache.set(bundleCacheKey, bundleResponse, CACHE_TTL.MEDIUM).catch(() => {/* non-fatal */});
+        cache.set(bundleCacheKey, bundleResponse, CACHE_TTL.SHORT).catch(() => {/* non-fatal */});
       } else {
         console.warn(`⚠️ PROFILE-BUNDLE: NOT caching for viewer=${viewerId} because connectionDegree is null (query failed)`);
       }
@@ -24095,6 +24095,7 @@ Questions? Just reply to this message. Welcome aboard!
           // Toggle off - remove it
           await db.delete(userCityInterests).where(eq(userCityInterests.id, existingInterest.id));
           console.log(`🔄 TOGGLED OFF: Removed interest ${existingInterest.id} for "${dbActivityName}"`);
+          cache.deletePattern(`profile-bundle:${userId}:viewer:*`).catch(() => {});
           return res.json({ removed: true, interest: existingInterest });
         }
         
@@ -24111,6 +24112,7 @@ Questions? Just reply to this message. Welcome aboard!
           .returning();
         
         console.log(`✅ ADDED interest: ${newInterest.id} for "${dbActivityName}" in ${cityName}`);
+        cache.deletePattern(`profile-bundle:${userId}:viewer:*`).catch(() => {});
         return res.json(newInterest);
       }
       
@@ -24269,6 +24271,7 @@ Questions? Just reply to this message. Welcome aboard!
         .returning();
       
       if (process.env.NODE_ENV === 'development') console.log(`✅ USER INTERESTS POST: Created interest ${newInterest.id} for user ${userId}`);
+      cache.deletePattern(`profile-bundle:${userId}:viewer:*`).catch(() => {});
       res.json(newInterest);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error('Error creating user city interest:', error);
@@ -24293,6 +24296,7 @@ Questions? Just reply to this message. Welcome aboard!
           
           if (deletedInterest.length > 0) {
             if (process.env.NODE_ENV === 'development') console.log(`🔄 USER INTERESTS TOGGLE: Removed interest ${deletedInterest[0].id} for user ${userId}`);
+            cache.deletePattern(`profile-bundle:${userId}:viewer:*`).catch(() => {});
             return res.json({ removed: true, interest: deletedInterest[0] });
           }
         } catch (deleteError) {
@@ -24372,6 +24376,7 @@ Questions? Just reply to this message. Welcome aboard!
         );
       
       if (process.env.NODE_ENV === 'development') console.log(`✅ USER INTERESTS DELETE: Removed interest ${interestId} for user ${userId}`);
+      cache.deletePattern(`profile-bundle:${userId}:viewer:*`).catch(() => {});
       res.json({ success: true });
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error('Error deleting user city interest:', error);
