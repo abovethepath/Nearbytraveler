@@ -268,6 +268,76 @@ function shouldShowNudge(userId: number, section: 'bio' | 'interests' | 'thingsT
   return s.logins <= 5 && !s[section];
 }
 
+const CHATROOMS_PAGE_SIZE = 4;
+
+function ChatroomsList({ chatrooms, setLocation, isMobileWeb }: { chatrooms: any[]; setLocation: (path: string) => void; isMobileWeb: boolean }) {
+  const [displayCount, setDisplayCount] = React.useState(CHATROOMS_PAGE_SIZE);
+  const gradients = [
+    'from-blue-500 to-orange-500', 'from-purple-500 to-pink-500',
+    'from-green-500 to-teal-500', 'from-amber-500 to-orange-500',
+    'from-cyan-500 to-blue-500', 'from-rose-500 to-orange-500',
+    'from-indigo-500 to-purple-500',
+  ];
+
+  return (
+    <div className="space-y-2">
+      {chatrooms.slice(0, displayCount).map((chatroom: any) => {
+        const displayName = chatroom.name || chatroom.cityName || 'Chatroom';
+        const initial = displayName.startsWith('Welcome to ')
+          ? displayName.replace('Welcome to ', '').trim().split(' ').filter((w: string) => w.length > 0).map((w: string) => w[0].toUpperCase()).join('').slice(0, 3)
+          : displayName[0]?.toUpperCase() || '?';
+        const gradient = gradients[displayName.split('').reduce((a: number, c: string) => a + c.charCodeAt(0), 0) % 7];
+        const lastAt = chatroom.lastMessageAt || chatroom.created_at;
+        const activityText = lastAt ? (() => {
+          const diff = Date.now() - new Date(lastAt).getTime();
+          const mins = Math.floor(diff / 60000);
+          if (mins < 1) return 'Active just now';
+          if (mins < 60) return `Active ${mins}m ago`;
+          const hrs = Math.floor(diff / 3600000);
+          if (hrs < 24) return `Active ${hrs}h ago`;
+          return `Active ${Math.floor(diff / 86400000)}d ago`;
+        })() : null;
+
+        return (
+          <button
+            key={`${chatroom.chatroom_type}-${chatroom.id}`}
+            onClick={() => setLocation(`/chatroom/${chatroom.id}`)}
+            className={`w-full flex items-center justify-between p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 md:hover:bg-gray-50 dark:md:hover:bg-gray-700 md:hover:border-gray-300 md:hover:shadow-sm transition-all duration-200 text-left ${
+              isMobileWeb ? "dark:bg-gray-600 dark:border-gray-500 dark:text-white" : "dark:bg-gray-800 dark:border-gray-700"
+            }`}
+          >
+            <div className="flex items-center gap-3 min-w-0 flex-1">
+              <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${gradient} flex items-center justify-center text-white font-bold text-sm flex-shrink-0`}>
+                {initial}
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="font-semibold text-gray-900 dark:text-white truncate">{displayName}</div>
+                <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                  <span className="text-xs text-gray-500 dark:text-gray-300">{chatroom.memberCount ?? 0} members</span>
+                  {activityText && <span className="text-xs text-gray-400 dark:text-gray-300">· {activityText}</span>}
+                </div>
+                {chatroom.lastMessagePreview && (
+                  <p className="text-xs text-gray-500 dark:text-gray-300 truncate mt-0.5">{chatroom.lastMessagePreview}</p>
+                )}
+              </div>
+            </div>
+            <ChevronRight className="w-4 h-4 text-gray-400 dark:text-gray-100 flex-shrink-0 ml-2" />
+          </button>
+        );
+      })}
+      {displayCount < chatrooms.length && (
+        <button
+          type="button"
+          onClick={() => setDisplayCount(prev => prev + CHATROOMS_PAGE_SIZE)}
+          className="w-full py-2.5 text-sm font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+        >
+          Show more ({chatrooms.length - displayCount} remaining)
+        </button>
+      )}
+    </div>
+  );
+}
+
 export function ProfileTabs(props: ProfilePageProps) {
   const {
     activeTab, openTab, user, setLocation, isOwnProfile, userConnections, photos, userTravelMemories, userReferences, travelPlans, userVouches, setTriggerQuickMatch, setTriggerQuickMeetup, triggerQuickMeetup, isProfileIncomplete, setIsEditMode, editFormData, isEditingPublicInterests, setIsEditingPublicInterests, setActiveEditSection, setEditFormData, effectiveUserId, queryClient, toast, tabRefs, loadedTabs, showConnectionFilters, setShowConnectionFilters, connectionFilters, setConnectionFilters, sortedUserConnections, connectionsDisplayCount, setConnectionsDisplayCount, editingConnectionNote, setEditingConnectionNote, connectionNoteText, setConnectionNoteText, currentUser, showWriteReferenceModal, setShowWriteReferenceModal, showReferenceForm, setShowReferenceForm, referenceForm, createReference, connectionRequests, countriesVisited, tempCountries, setTempCountries, customCountryInput, setCustomCountryInput, editingCountries, updateCountries, userChatrooms, chatroomCount, setShowChatroomList, vouches, compatibilityData, eventsGoing, eventsInterested, businessDealsLoading, businessDeals, ownerContactForm, setOwnerContactForm, editingOwnerInfo, updateOwnerContact, handleSaveOwnerContact, getMetropolitanArea, apiRequest, handleEditCountries, handleSaveCountries, handleCancelCountries, COUNTRIES_OPTIONS, GENDER_OPTIONS, SEXUAL_PREFERENCE_OPTIONS, safeGetAllActivities, getApiBaseUrl, getHometownInterests, getTravelInterests, getProfileInterests, MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS, ALL_INTERESTS, ALL_ACTIVITIES, customInterestInput, setCustomInterestInput, customActivityInput, setCustomActivityInput, editingInterests, editingActivities, showCreateDeal, setShowCreateDeal, quickDeals, setShowFullGallery, setSelectedPhotoIndex, uploadingPhoto, EventOrganizerHubSection, editingLanguages, handleEditLanguages, LANGUAGES_OPTIONS, tempLanguages, setTempLanguages, customLanguageInput, setCustomLanguageInput, handleSaveLanguages, handleCancelLanguages, updateLanguages
@@ -2838,74 +2908,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                         <span className="ml-3 text-sm text-gray-500 dark:text-gray-400">Loading chatrooms...</span>
                       </div>
                     ) : userChatrooms && userChatrooms.length > 0 ? (
-                      <div className="space-y-2">
-                        {userChatrooms.map((chatroom: any) => {
-                          const displayName = chatroom.name || chatroom.cityName || 'Chatroom';
-                          const initial = (() => {
-                            if (displayName.startsWith('Welcome to ')) {
-                              const city = displayName.replace('Welcome to ', '').trim();
-                              return city.split(' ').filter((w: string) => w.length > 0).map((w: string) => w[0].toUpperCase()).join('').slice(0, 3);
-                            }
-                            return displayName[0]?.toUpperCase() || '?';
-                          })();
-                          const gradientIndex = (displayName.split('').reduce((a: number, c: string) => a + c.charCodeAt(0), 0) % 7);
-                          const gradients = [
-                            'from-blue-500 to-orange-500',
-                            'from-purple-500 to-pink-500',
-                            'from-green-500 to-teal-500',
-                            'from-amber-500 to-orange-500',
-                            'from-cyan-500 to-blue-500',
-                            'from-rose-500 to-orange-500',
-                            'from-indigo-500 to-purple-500'
-                          ];
-                          const gradient = gradients[gradientIndex];
-                          const lastAt = chatroom.lastMessageAt || chatroom.created_at;
-                          const activityText = lastAt ? (() => {
-                            const diff = Date.now() - new Date(lastAt).getTime();
-                            const mins = Math.floor(diff / 60000);
-                            const hrs = Math.floor(diff / 3600000);
-                            const days = Math.floor(diff / 86400000);
-                            if (mins < 1) return 'Active just now';
-                            if (mins < 60) return `Active ${mins}m ago`;
-                            if (hrs < 24) return `Active ${hrs}h ago`;
-                            return `Active ${days}d ago`;
-                          })() : null;
-                          return (
-                            <button
-                              key={chatroom.id}
-                              onClick={() => setLocation(`/chatroom/${chatroom.id}`)}
-                              className={`w-full flex items-center justify-between p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 md:hover:bg-gray-50 dark:md:hover:bg-gray-700 md:hover:border-gray-300 md:hover:shadow-sm transition-all duration-200 text-left ${
-                                isMobileWeb
-                                  ? "dark:bg-gray-600 dark:border-gray-500 dark:text-white"
-                                  : "dark:bg-gray-800 dark:border-gray-700 md:dark:hover:bg-gray-700 md:dark:hover:border-gray-600"
-                              }`}
-                            >
-                              <div className="flex items-center gap-3 min-w-0 flex-1">
-                                <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${gradient} flex items-center justify-center text-white font-bold text-sm flex-shrink-0`}>
-                                  {initial}
-                                </div>
-                                <div className="min-w-0 flex-1">
-                                  <div className="font-semibold text-gray-900 dark:text-white dark:!text-white truncate">
-                                    {displayName}
-                                  </div>
-                                  <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-                                    <span className="text-xs text-gray-500 dark:!text-gray-200">
-                                      {chatroom.memberCount ?? 0} members
-                                    </span>
-                                    {activityText && (
-                                      <span className="text-xs text-gray-400 dark:!text-gray-200">· {activityText}</span>
-                                    )}
-                                  </div>
-                                  {chatroom.lastMessagePreview && (
-                                    <p className="text-xs text-gray-500 dark:!text-gray-200 truncate mt-0.5">{chatroom.lastMessagePreview}</p>
-                                  )}
-                                </div>
-                              </div>
-                              <ChevronRight className="w-4 h-4 text-gray-400 dark:!text-gray-100 flex-shrink-0 ml-2" />
-                            </button>
-                          );
-                        })}
-                      </div>
+                      <ChatroomsList chatrooms={userChatrooms} setLocation={setLocation} isMobileWeb={isMobileWeb} />
                     ) : (
                       <p className="text-gray-500 dark:text-gray-400 text-sm">{isOwnProfile ? "You haven't joined any chatrooms yet. Visit a city page to join its chatroom!" : "This user hasn't joined any chatrooms yet."}</p>
                     )}
