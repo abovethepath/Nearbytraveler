@@ -2,20 +2,28 @@ import { useMemo } from "react";
 import { User } from "lucide-react";
 
 /** Single source of truth for avatar URL from any user-like object (used in navbar, chat, messages). */
-export function getProfileImageUrl(user: { profileImage?: string | null; profilePhoto?: string | null; profile_image?: string | null; avatar?: string | null } | null | undefined): string | null {
+export function getProfileImageUrl(user: { profileImage?: string | null; profilePhoto?: string | null; profile_image?: string | null; avatar?: string | null; id?: number; profileImageStripped?: boolean } | null | undefined): string | null {
   if (!user) return null;
   const url = (user as any).profileImage ?? (user as any).profilePhoto ?? (user as any).profile_image ?? (user as any).avatar;
-  if (!url || typeof url !== 'string' || url.trim() === '') return null;
-  if (url.startsWith('data:image/')) return url;
-  if (url.startsWith('https://')) return url;
-  if (url.startsWith('http://')) return url.replace('http://', 'https://');
-  if (url.startsWith('/')) {
-    if (typeof window !== 'undefined' && window.location.origin) {
-      return `${window.location.origin}${url}`;
+  if (url && typeof url === 'string' && url.trim() !== '') {
+    if (url.startsWith('data:image/')) return url;
+    if (url.startsWith('https://')) return url;
+    if (url.startsWith('http://')) return url.replace('http://', 'https://');
+    if (url.startsWith('/')) {
+      if (typeof window !== 'undefined' && window.location.origin) {
+        return `${window.location.origin}${url}`;
+      }
+      return url;
     }
-    return url;
+    if (url.startsWith('blob:')) return url;
   }
-  if (url.startsWith('blob:')) return url;
+  // Fallback: if user has an ID but no image URL, try the binary avatar endpoint.
+  // This handles base64-stripped responses (profileImageStripped: true) and also
+  // conversation list objects where profileImage may be null.
+  // Users with no photo will get a 404 → <img> onerror → AvatarFallback shows initials.
+  if ((user as any).id) {
+    return `/api/users/${(user as any).id}/avatar-image`;
+  }
   return null;
 }
 

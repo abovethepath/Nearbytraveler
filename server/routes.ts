@@ -8471,6 +8471,36 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // Serve avatar as binary image — used by <img src> when profileImage was stripped from JSON
+  app.get("/api/users/:id/avatar-image", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id || '0');
+      if (!userId) return res.status(404).send();
+
+      const [row] = await db
+        .select({ profileImage: users.profileImage })
+        .from(users)
+        .where(eq(users.id, userId))
+        .limit(1);
+
+      const data = row?.profileImage;
+      if (!data) return res.status(404).send();
+
+      if (data.startsWith('data:')) {
+        const match = data.match(/^data:([^;]+);base64,(.+)$/);
+        if (match) {
+          res.setHeader('Content-Type', match[1]);
+          res.setHeader('Cache-Control', 'public, max-age=3600'); // 1h browser cache
+          return res.send(Buffer.from(match[2], 'base64'));
+        }
+      }
+      // URL — redirect
+      return res.redirect(data);
+    } catch {
+      return res.status(404).send();
+    }
+  });
+
   // Delete my account (in-app account deletion for App Store compliance)
   app.delete("/api/users/me", async (req, res) => {
     try {
