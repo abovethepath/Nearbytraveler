@@ -12,7 +12,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
 import GlobalHotfixes from "@/GlobalHotfixes";
 import { DarkModeSuggestionBanner } from "@/components/DarkModeSuggestionBanner";
-import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
+
 import { FullPageSkeleton } from "@/components/FullPageSkeleton";
 import { OneSignalInit } from "@/components/OneSignalInit";
 import { NotificationPermissionModal } from "@/components/NotificationPermissionModal";
@@ -2158,12 +2158,10 @@ function App() {
           <Toaster />
           <NetworkStatus />
           <DarkModeSuggestionBanner />
-          <PWAInstallPrompt>
             <Router />
             {!isNativeIOSApp() && !disableFloatingChatbot && (
               <div className="hidden md:contents"><HelpChatbot /></div>
             )}
-          </PWAInstallPrompt>
       </ThemeProvider>
     </QueryClientProvider>
   );
