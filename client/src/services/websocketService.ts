@@ -51,10 +51,31 @@ class WebSocketService {
     }
   }
 
+  private connecting = false;
+
   connect(userId: number, username: string): Promise<void> {
+    // Guard: don't open a new connection if one is already open or connecting
+    if (this.ws && (this.ws.readyState === WebSocket.OPEN || this.ws.readyState === WebSocket.CONNECTING)) {
+      // Re-auth if user changed
+      if (this.userId !== userId) {
+        this.userId = userId;
+        this.username = username;
+        this.authenticate();
+      }
+      return Promise.resolve();
+    }
+    if (this.connecting) return Promise.resolve();
+    this.connecting = true;
+
     return new Promise((resolve, reject) => {
       this.userId = userId;
       this.username = username;
+
+      // Close any stale socket before opening a new one
+      if (this.ws) {
+        try { this.ws.close(); } catch {}
+        this.ws = null;
+      }
 
       const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
       const wsUrl = `${protocol}//${window.location.host}/ws`;
@@ -66,13 +87,9 @@ class WebSocketService {
       this.ws.onopen = () => {
         console.log('🟢 WebSocket connected');
         this.reconnectAttempts = 0;
-        
-        // Authenticate immediately
+        this.connecting = false;
         this.authenticate();
-        
-        // Start client-side heartbeat to keep connection alive (prevents proxy timeouts)
         this.startHeartbeat();
-        
         resolve();
       };
 
@@ -88,12 +105,17 @@ class WebSocketService {
       this.ws.onclose = (event) => {
         console.log('🔴 WebSocket disconnected:', event.code, event.reason);
         this.isAuthenticated = false;
+        this.connecting = false;
         this.stopHeartbeat();
-        this.attemptReconnect();
+        // Only auto-reconnect if we have credentials and it wasn't a clean close
+        if (this.userId && this.username && event.code !== 1000) {
+          this.attemptReconnect();
+        }
       };
 
       this.ws.onerror = (error) => {
         console.error('🔴 WebSocket error:', error);
+        this.connecting = false;
         reject(error);
       };
     });
@@ -133,19 +155,24 @@ class WebSocketService {
     }
   }
 
+  private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+
   private attemptReconnect() {
     if (this.reconnectAttempts >= this.maxReconnectAttempts) {
-      console.error('Max reconnection attempts reached');
+      console.error('Max reconnection attempts reached — stopping');
       return;
     }
+    // Clear any pending reconnect timer to prevent stacking
+    if (this.reconnectTimer) { clearTimeout(this.reconnectTimer); this.reconnectTimer = null; }
 
-    // Dramatically reduce reconnection frequency to prevent spam
     this.reconnectAttempts++;
-    const delay = Math.min(this.reconnectInterval * Math.pow(3, this.reconnectAttempts - 1), 60000); // Cap at 60 seconds, slower exponential backoff
-    
+    // Exponential backoff: 1s → 2s → 4s → 8s → 16s, capped at 30s
+    const delay = Math.min(1000 * Math.pow(2, this.reconnectAttempts - 1), 30000);
+
     console.log(`WebSocket reconnecting in ${delay}ms... (attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts})`);
-    
-    setTimeout(() => {
+
+    this.reconnectTimer = setTimeout(() => {
+      this.reconnectTimer = null;
       if (this.userId && this.username && this.reconnectAttempts <= this.maxReconnectAttempts) {
         this.connect(this.userId, this.username).catch(console.error);
       }
@@ -353,6 +380,10 @@ class WebSocketService {
   }
 
   disconnect() {
+    // Cancel any pending reconnect
+    if (this.reconnectTimer) { clearTimeout(this.reconnectTimer); this.reconnectTimer = null; }
+    this.connecting = false;
+    this.stopHeartbeat();
     if (this.ws) {
       this.updateStatus('offline');
       this.ws.close(1000, 'User disconnected');

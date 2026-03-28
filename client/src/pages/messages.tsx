@@ -415,8 +415,8 @@ export default function Messages() {
   useEffect(() => {
     if (!userId) return;
 
-    // Connect to WebSocket
-    websocketService.connect(userId, user.username);
+    // Ensure WebSocket is connected (singleton guards against duplicates)
+    websocketService.ensureConnected().catch(console.error);
 
     // Set up instant message handlers
     const handleInstantMessage = (data: any) => {

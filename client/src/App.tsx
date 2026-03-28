@@ -934,9 +934,12 @@ function Router() {
     !isAuthRoute;
 
   // Initialize WebSocket connection for authenticated users
+  // Depend on user.id only (not the full user object) to avoid reconnection storms
+  const wsUserId = user?.id;
+  const wsUsername = user?.username;
   useEffect(() => {
     if (user && isAuthenticating) stopAuthenticating();
-    if (user && user.id && user.username) {
+    if (wsUserId && wsUsername) {
       console.log('🔌 Initializing WebSocket connection for user:', user.username);
 
       // Request notification permission (static method)
@@ -962,7 +965,7 @@ function Router() {
     }
     // Return undefined for empty else case
     return undefined;
-  }, [isAuthenticating, stopAuthenticating, user]);
+  }, [isAuthenticating, stopAuthenticating, wsUserId, wsUsername]);
 
   // REMOVED: Hydration from localStorage - it could show wrong user (e.g. admin) before
   // session check completes. Session is the only source of truth; wait for checkServerAuth.
