@@ -5860,8 +5860,8 @@ Questions? Just reply here — I read every message.
           
           if (referrer) {
             (userData as any).referredBy = referrer.id;
-            if (process.env.NODE_ENV === 'development') console.log('🔗 REFERRAL: Found referrer ID:', referrer.id, 'from code:', incomingReferralCode);
-          } else if (process.env.NODE_ENV === 'development') {
+            console.log('🔗 REFERRAL: Found referrer ID:', referrer.id, 'from code:', incomingReferralCode);
+          } else {
             console.log('🔗 REFERRAL: No referrer found for code:', incomingReferralCode);
           }
         } catch (error) {
@@ -6011,7 +6011,7 @@ Questions? Just reply here — I read every message.
         delete (userData as any).referralCode;
       }
       
-      if (process.env.NODE_ENV === 'development') console.log("Creating new user:", userData.email);
+      console.log("🔗 REFERRAL PRE-CREATE: referredBy =", (userData as any).referredBy, "referralCode in body =", req.body.referralCode, "preserved =", preservedReferralCode);
       const user = await storage.createUser(userData);
       const { password, ...userWithoutPassword } = user;
 

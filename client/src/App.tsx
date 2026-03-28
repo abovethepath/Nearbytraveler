@@ -2104,6 +2104,12 @@ function App() {
     if (isNativeIOSApp()) {
       document.body.setAttribute('data-native-ios', 'true');
     }
+    // Global: capture ?ref= referral code from ANY page URL into sessionStorage
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const ref = params.get('ref');
+      if (ref) sessionStorage.setItem('referralCode', ref);
+    } catch {}
   }, []);
 
   // Disable floating chatbot on small screens only (< 768px)
