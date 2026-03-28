@@ -2,572 +2,53 @@ import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Users, Heart, MapPin, Calendar, Plane, Shield, User } from "lucide-react";
-import { computeCommonStats } from "@/lib/whatYouHaveInCommonStats";
+import { Users, Heart, MapPin, Calendar, User } from "lucide-react";
+import { computeCommonStats, type CompatibilityLike } from "@/lib/whatYouHaveInCommonStats";
 
 interface WhatYouHaveInCommonProps {
   currentUserId: number;
   otherUserId: number;
 }
 
-interface MatchData {
-  userId: number;
-  score: number;
-  matchCount?: number; // Count of things in common - no point system
-  reasons: string[];
-  compatibilityLevel: 'high' | 'medium' | 'low';
-  sharedInterests: string[];
-  sharedActivities?: string[];
-  sharedEvents?: string[];
-  sharedCityActivities?: string[];
-  locationOverlap: boolean;
-  dateOverlap: boolean;
-  userTypeCompatibility: boolean;
-  sharedSexualPreferences?: string[];
-  bothVeterans?: boolean;
-  bothActiveDuty?: boolean;
-  sharedLanguages?: string[];
-  sharedCountries?: string[];
-  otherCommonalities?: string[];
-}
-
-interface User {
-  id: number;
-  username: string;
-  interests?: string[];
-  activities?: string[];
-  events?: string[];
-  localActivities?: string[];
-  localEvents?: string[];
-  sexualPreference?: string[];
-  isVeteran?: boolean;
-  isActiveDuty?: boolean;
-  languagesSpoken?: string[];
-  countriesVisited?: string[];
-  hometownCity?: string;
-  age?: number;
-  gender?: string;
-  travelStyle?: string[];
-  travelWhy?: string;
-  travelHow?: string;
-  travelBudget?: string;
-  travelGroup?: string;
-  travelWhat?: string[];
-  travelingWithChildren?: boolean;
-  childrenAges?: string;
-}
-
-interface SharedTripData {
-  destination: string;
-  dateOverlap: boolean;
-  startDate?: string;
-  endDate?: string;
-}
-
-interface TravelPlan {
-  id: number;
-  destination: string;
-  startDate: string;
-  endDate: string;
-  userId: number;
-  travelGroup?: string; // Per-trip override: solo, couple, friends, family
-  destinationCity?: string;
-}
-
 export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveInCommonProps) {
   const [showAllSharedInterests, setShowAllSharedInterests] = React.useState(false);
   const [showAllOtherCommon, setShowAllOtherCommon] = React.useState(false);
 
-  // Fetch both users' data to calculate comprehensive commonalities
-  const { data: currentUser } = useQuery<User>({
-    queryKey: [`/api/users/${currentUserId}`]
+  // Single authoritative data source: server's compatibility calculation
+  const { data: compatibilityData, isLoading } = useQuery<CompatibilityLike>({
+    queryKey: [`/api/compatibility/${currentUserId}/${otherUserId}`],
+    enabled: !!currentUserId && !!otherUserId && currentUserId !== otherUserId,
   });
 
-  const { data: otherUser } = useQuery<User>({
-    queryKey: [`/api/users/${otherUserId}`]
-  });
-
-  // Fetch their city interests
-  const { data: currentUserCityInterests = [] } = useQuery({
-    queryKey: [`/api/user-city-interests/${currentUserId}`]
-  });
-
-  const { data: otherUserCityInterests = [] } = useQuery({
-    queryKey: [`/api/user-city-interests/${otherUserId}`]
-  });
-
-  // Fetch their travel plans for date overlap analysis
-  const { data: currentUserTravelPlans = [] } = useQuery<TravelPlan[]>({
-    queryKey: [`/api/travel-plans/user/${currentUserId}`]
-  });
-
-  const { data: otherUserTravelPlans = [] } = useQuery<TravelPlan[]>({
-    queryKey: [`/api/travel-plans/user/${otherUserId}`]
-  });
-
-  // Fetch mutual connections between the two users
+  // Mutual connections for display (not counted in badge)
   const { data: rawMutualConnections = [] } = useQuery<any[]>({
     queryKey: [`/api/mutual-connections/${currentUserId}/${otherUserId}`],
-    enabled: !!(currentUserId && otherUserId && currentUserId !== otherUserId)
+    enabled: !!(currentUserId && otherUserId && currentUserId !== otherUserId),
   });
-
-  // nearbytrav counts as universal connection — do NOT filter it out
-  // Only filter test/admin accounts
-  const mutualConnections = rawMutualConnections.filter((connection: any) => 
-    connection.username !== 'admin' &&
-    connection.username !== 'test'
+  const mutualConnections = rawMutualConnections.filter(
+    (c: any) => c.username !== "admin" && c.username !== "test"
   );
 
-  // Fetch direct compatibility data from the API (consistent with discover page)
-  const { data: compatibilityData, isLoading } = useQuery<{
-    userId: number;
-    score: number;
-    sharedInterests: string[];
-    sharedActivities: string[];
-    sharedEvents: string[];
-    reasons: string[];
-  }>({
-    queryKey: [`/api/compatibility/${currentUserId}/${otherUserId}`],
-    enabled: !!currentUserId && !!otherUserId && currentUserId !== otherUserId
+  // ONE source of truth: server data → computeCommonStats → pills + badge
+  const commonStats = computeCommonStats(compatibilityData, {
+    mutualCount: mutualConnections.length,
   });
 
-  // Fetch matching data from the API (fallback)
-  const { data: allMatches, isLoading: matchesLoading } = useQuery<MatchData[]>({
-    queryKey: [`/api/users/${currentUserId}/matches`]
-  });
+  const {
+    sharedInterests,
+    sharedActivities,
+    sharedEvents,
+    sharedLanguagesNonEnglish,
+    sharedCityActivities,
+    sharedSexualPreferences,
+    otherCommonalities,
+    sharedContactsCount,
+    totalCommon,
+  } = commonStats;
 
-  // Find the match data for the specific user
-  const matchData = allMatches?.find(match => match.userId === otherUserId);
+  const badgeLabel = `${totalCommon} ${totalCommon === 1 ? "thing" : "things"} in common`;
 
-  // ONE source of truth for the "things in common" total:
-  // always compute from the compatibility endpoint payload.
-  const mutualCountForStats = Array.isArray(mutualConnections) ? mutualConnections.length : 0;
-  const commonStats = computeCommonStats(compatibilityData as any, { mutualCount: mutualCountForStats });
-  const thingsInCommonTotal = commonStats.totalCommon;
-  const thingsInCommonLabel = `${thingsInCommonTotal} ${thingsInCommonTotal === 1 ? "thing" : "things"} in common`;
-
-  // Calculate comprehensive commonalities
-  const calculateCommonalities = () => {
-    if (!currentUser || !otherUser) return null;
-
-    const commonalities: {
-      sharedInterests: string[];
-      sharedActivities: string[];
-      sharedEvents: string[];
-      sharedCityActivities: string[];
-      sharedCityActivitiesWithCity?: { activity: string; city: string }[];
-      sharedSexualPreferences: string[];
-      bothVeterans: boolean;
-      bothActiveDuty: boolean;
-      sharedLanguages: string[];
-      sharedCountries: string[];
-      sharedTravelDestinations: string[];
-      overlappingTravelDates: Array<{destination: string; overlap: string}>;
-      sharedTravelIntent: string[];
-      sameHometown: boolean;
-      sameAge: boolean;
-      sameGender: boolean;
-      sameTravelStyle: boolean;
-      otherCommonalities: string[];
-      mutualConnections?: any[];
-      mutualConnectionsCount?: number;
-      totalCount: number;
-      compatibilityPercentage: number;
-    } = {
-      sharedInterests: [],
-      sharedActivities: [],
-      sharedEvents: [],
-      sharedCityActivities: [],
-      sharedCityActivitiesWithCity: [],
-      sharedSexualPreferences: [],
-      bothVeterans: false,
-      bothActiveDuty: false,
-      sharedLanguages: [],
-      sharedCountries: [],
-      sharedTravelDestinations: [],
-      overlappingTravelDates: [],
-      sharedTravelIntent: [],
-      sameHometown: false,
-      sameAge: false,
-      sameGender: false,
-      sameTravelStyle: false,
-      otherCommonalities: [],
-      totalCount: 0,
-      compatibilityPercentage: 0
-    };
-
-    // Shared interests
-    if (currentUser.interests && otherUser.interests) {
-      commonalities.sharedInterests = currentUser.interests.filter(interest =>
-        otherUser.interests?.includes(interest)
-      );
-    }
-
-    // Shared activities
-    if (currentUser.activities && otherUser.activities) {
-      commonalities.sharedActivities = currentUser.activities.filter(activity =>
-        otherUser.activities?.includes(activity)
-      );
-    }
-
-    // Shared events
-    if (currentUser.events && otherUser.events) {
-      commonalities.sharedEvents = currentUser.events.filter(event =>
-        otherUser.events?.includes(event)
-      );
-    }
-
-    // Shared city activities - preserve city context
-    const sharedCityActivitiesWithCity: { activity: string; city: string }[] = [];
-    
-    if (Array.isArray(currentUserCityInterests) && Array.isArray(otherUserCityInterests)) {
-      currentUserCityInterests.forEach((currentInterest: any) => {
-        otherUserCityInterests.forEach((otherInterest: any) => {
-          // Check if it's the same city and same activity
-          if (currentInterest.cityName === otherInterest.cityName && 
-              currentInterest.activityName === otherInterest.activityName) {
-            sharedCityActivitiesWithCity.push({
-              activity: currentInterest.activityName,
-              city: currentInterest.cityName
-            });
-          }
-        });
-      });
-    }
-    
-    commonalities.sharedCityActivities = sharedCityActivitiesWithCity.map(item => item.activity);
-    commonalities.sharedCityActivitiesWithCity = sharedCityActivitiesWithCity;
-
-    // Shared sexual preferences
-    if (currentUser.sexualPreference && otherUser.sexualPreference) {
-      commonalities.sharedSexualPreferences = currentUser.sexualPreference.filter(pref =>
-        otherUser.sexualPreference?.includes(pref)
-      );
-    }
-
-    // Military status
-    commonalities.bothVeterans = !!(currentUser.isVeteran && otherUser.isVeteran);
-    commonalities.bothActiveDuty = !!(currentUser.isActiveDuty && otherUser.isActiveDuty);
-
-    // Shared languages
-    if (currentUser.languagesSpoken && otherUser.languagesSpoken) {
-      commonalities.sharedLanguages = currentUser.languagesSpoken.filter(lang =>
-        otherUser.languagesSpoken?.includes(lang)
-      );
-    }
-
-    // Shared countries
-    if (currentUser.countriesVisited && otherUser.countriesVisited) {
-      commonalities.sharedCountries = currentUser.countriesVisited.filter(country =>
-        otherUser.countriesVisited?.includes(country)
-      );
-    }
-
-    // Travel destination matching
-    if (currentUserTravelPlans && otherUserTravelPlans) {
-      const currentDestinations = currentUserTravelPlans.map(plan => plan.destination);
-      const otherDestinations = otherUserTravelPlans.map(plan => plan.destination);
-      commonalities.sharedTravelDestinations = currentDestinations.filter(dest =>
-        otherDestinations.includes(dest)
-      );
-
-      // Check for overlapping travel dates
-      currentUserTravelPlans.forEach(currentPlan => {
-        otherUserTravelPlans.forEach(otherPlan => {
-          if (currentPlan.destination === otherPlan.destination) {
-            const currentStart = new Date(currentPlan.startDate);
-            const currentEnd = new Date(currentPlan.endDate);
-            const otherStart = new Date(otherPlan.startDate);
-            const otherEnd = new Date(otherPlan.endDate);
-
-            // Check for date overlap
-            if (currentStart <= otherEnd && currentEnd >= otherStart) {
-              const overlapStart = new Date(Math.max(currentStart.getTime(), otherStart.getTime()));
-              const overlapEnd = new Date(Math.min(currentEnd.getTime(), otherEnd.getTime()));
-              
-              commonalities.overlappingTravelDates.push({
-                destination: currentPlan.destination,
-                overlap: `${overlapStart.toLocaleDateString()} - ${overlapEnd.toLocaleDateString()}`
-              });
-            }
-          }
-        });
-      });
-    }
-
-    // Personal compatibility checks
-    commonalities.sameHometown = !!(currentUser.hometownCity && otherUser.hometownCity && 
-      currentUser.hometownCity === otherUser.hometownCity);
-    
-    commonalities.sameAge = !!(currentUser.age && otherUser.age && 
-      Math.abs((currentUser.age as number) - (otherUser.age as number)) <= 2);
-    
-    commonalities.sameGender = !!(currentUser.gender && otherUser.gender && 
-      currentUser.gender === otherUser.gender);
-    
-    commonalities.sameTravelStyle = !!(currentUser.travelStyle && otherUser.travelStyle && 
-      Array.isArray(currentUser.travelStyle) && Array.isArray(otherUser.travelStyle) &&
-      currentUser.travelStyle.some(style => otherUser.travelStyle?.includes(style)));
-
-    // Travel Intent Quiz compatibility
-    const travelIntentCommonalities = [];
-    
-    // Travel Why - handle both field name variants
-    const currentTravelWhy = (currentUser as any).travelWhy || (currentUser as any).travel_why;
-    const otherTravelWhy = (otherUser as any).travelWhy || (otherUser as any).travel_why;
-    
-    if (currentTravelWhy && otherTravelWhy && currentTravelWhy === otherTravelWhy) {
-      const whyNames = {
-        adventure: 'Adventure & Discovery',
-        connection: 'Meeting People',
-        culture: 'Cultural Immersion',
-        relaxation: 'Rest & Recharge'
-      };
-      travelIntentCommonalities.push(whyNames[currentTravelWhy] || currentTravelWhy);
-    }
-
-    // Travel How (style) - handle both field name variants
-    const currentTravelHow = (currentUser as any).travelHow || (currentUser as any).travel_how;
-    const otherTravelHow = (otherUser as any).travelHow || (otherUser as any).travel_how;
-    
-    if (currentTravelHow && otherTravelHow && currentTravelHow === otherTravelHow) {
-      const styleNames = {
-        planner: 'Detailed Planning',
-        spontaneous: 'Spontaneous Exploration', 
-        social: 'Social Activities',
-        independent: 'Independent Exploration'
-      };
-      travelIntentCommonalities.push(styleNames[currentTravelHow] || currentTravelHow);
-    }
-
-    // Travel Budget - handle both field name variants  
-    const currentTravelBudget = (currentUser as any).travelBudget || (currentUser as any).travel_budget;
-    const otherTravelBudget = (otherUser as any).travelBudget || (otherUser as any).travel_budget;
-    
-    if (currentTravelBudget && otherTravelBudget && currentTravelBudget === otherTravelBudget) {
-      const budgetNames = {
-        budget: 'Budget-conscious',
-        moderate: 'Moderate budget',
-        premium: 'Premium budget'
-      };
-      travelIntentCommonalities.push(budgetNames[currentTravelBudget] || currentTravelBudget);
-    }
-
-    // Travel Group - use trip's travelGroup if available, otherwise fall back to profile
-    // This ensures per-trip overrides work correctly (e.g., solo traveler on a family trip)
-    const now = new Date();
-    
-    // Find active trips for each user
-    const currentUserActiveTrip = (currentUserTravelPlans as TravelPlan[])?.find(plan => {
-      const start = new Date(plan.startDate);
-      const end = new Date(plan.endDate);
-      return start <= now && end >= now;
-    });
-    const otherUserActiveTrip = (otherUserTravelPlans as TravelPlan[])?.find(plan => {
-      const start = new Date(plan.startDate);
-      const end = new Date(plan.endDate);
-      return start <= now && end >= now;
-    });
-    
-    // Priority: trip travelGroup > profile travelGroup
-    const currentTravelGroup = (currentUserActiveTrip as any)?.travelGroup || 
-                               (currentUser as any).travelGroup || 
-                               (currentUser as any).travel_group;
-    const otherTravelGroup = (otherUserActiveTrip as any)?.travelGroup || 
-                             (otherUser as any).travelGroup || 
-                             (otherUser as any).travel_group;
-    
-    if (currentTravelGroup && otherTravelGroup && currentTravelGroup === otherTravelGroup) {
-      const groupNames: Record<string, string> = {
-        solo: 'Solo travelers',
-        couple: 'Couple travel',
-        friends: 'Friends group',
-        family: 'Family travel'
-      };
-      travelIntentCommonalities.push(groupNames[currentTravelGroup] || currentTravelGroup);
-    }
-
-    // Travel What (interests from quiz)
-    const currentTravelInterests = (currentUser as any).travelInterests || (currentUser as any).travel_interests;
-    const otherTravelInterests = (otherUser as any).travelInterests || (otherUser as any).travel_interests;
-    
-    if (currentTravelInterests && otherTravelInterests) {
-      const currentInterests = Array.isArray(currentTravelInterests) ? currentTravelInterests : [];
-      const otherInterests = Array.isArray(otherTravelInterests) ? otherTravelInterests : [];
-      
-      const sharedTravelInterests = currentInterests.filter(interest => 
-        otherInterests.includes(interest)
-      );
-
-      // Convert to display names
-      const interestNames = {
-        food: 'Foodie experiences',
-        art: 'Art & Museums',
-        music: 'Music & Nightlife',
-        photography: 'Photography',
-        coffee: 'Coffee Culture',
-        nature: 'Nature & Outdoors'
-      };
-
-      sharedTravelInterests.forEach(interest => {
-        travelIntentCommonalities.push(interestNames[interest] || interest);
-      });
-    }
-
-    commonalities.sharedTravelIntent = travelIntentCommonalities;
-
-    // CHILDREN AGES - CRITICAL FOR PARENTS!
-    if (currentUser.travelingWithChildren && otherUser.travelingWithChildren &&
-        currentUser.childrenAges && otherUser.childrenAges) {
-      // Parse children ages from strings like "5, 8, 12" or "7 Boy" - extract all numbers
-      const extractAges = (ageString: string): number[] => {
-        return ageString.match(/\d+/g)?.map(num => parseInt(num)).filter(age => !isNaN(age)) || [];
-      };
-      
-      const currentAges = extractAges(currentUser.childrenAges);
-      const otherAges = extractAges(otherUser.childrenAges);
-      
-      // Find exact matches
-      const exactMatches = currentAges.filter(age => otherAges.includes(age));
-      
-      // Find close matches (within 1-2 years)
-      const closeMatches = currentAges.filter(age => 
-        otherAges.some(otherAge => Math.abs(age - otherAge) <= 2 && Math.abs(age - otherAge) > 0)
-      );
-      
-      if (exactMatches.length > 0) {
-        const agesList = exactMatches.join(', ');
-        commonalities.otherCommonalities.push(`🎉 Both have kids age ${agesList}!`);
-      }
-      
-      if (closeMatches.length > 0 && exactMatches.length === 0) {
-        commonalities.otherCommonalities.push(`👶 Both have kids of similar ages`);
-      }
-      
-      // General parent connection if they both have kids
-      if (exactMatches.length === 0 && closeMatches.length === 0) {
-        commonalities.otherCommonalities.push(`👨‍👩‍👧‍👦 Both traveling with children`);
-      }
-    }
-
-    // Other commonalities
-    if (commonalities.bothVeterans) {
-      commonalities.otherCommonalities.push("Both Veterans");
-    }
-    if (commonalities.bothActiveDuty) {
-      commonalities.otherCommonalities.push("Both Active Duty");
-    }
-    if (commonalities.sameHometown) {
-      commonalities.otherCommonalities.push(`Both from ${currentUser.hometownCity}`);
-    }
-    if (commonalities.sameAge) {
-      commonalities.otherCommonalities.push("Similar age");
-    }
-    if (commonalities.sameTravelStyle && currentUser.travelStyle && Array.isArray(currentUser.travelStyle)) {
-      const commonStyles = currentUser.travelStyle.filter(style => 
-        Array.isArray(otherUser.travelStyle) && otherUser.travelStyle.includes(style));
-      if (commonStyles.length > 0) {
-        commonalities.otherCommonalities.push(`Both love ${commonStyles[0]} travel`);
-      }
-    }
-
-    // Add mutual connections to other commonalities - make them prominent!
-    if (mutualConnections && mutualConnections.length > 0) {
-      // Instead of just adding to other commonalities, we'll show mutual connections prominently at the top
-      commonalities.mutualConnections = mutualConnections;
-      commonalities.mutualConnectionsCount = mutualConnections.length;
-    }
-
-    // Calculate total count including mutual connections as a major factor
-    commonalities.totalCount = 
-      commonalities.sharedInterests.length +
-      commonalities.sharedActivities.length +
-      commonalities.sharedEvents.length +
-      commonalities.sharedCityActivities.length +
-      commonalities.sharedSexualPreferences.length +
-      commonalities.sharedLanguages.length +
-      commonalities.sharedCountries.length +
-      commonalities.sharedTravelDestinations.length +
-      commonalities.overlappingTravelDates.length +
-      commonalities.sharedTravelIntent.length +
-      (commonalities.mutualConnectionsCount || 0) + // Add mutual connections to total count
-      commonalities.otherCommonalities.length;
-
-    // Calculate ASYMMETRIC compatibility percentage based on CURRENT USER'S selections
-    // This ensures if you select 5 interests and they all match, you see 100% compatibility
-    // But if other user selected 50 interests and only 5 match, they see 10% compatibility
-    const currentUserInterests = Math.max((currentUser.interests?.length || 0), 1);
-    const currentUserActivities = Math.max((currentUser.activities?.length || 0), 1);
-    const currentUserEvents = Math.max((currentUser.events?.length || 0), 1);
-    const currentUserCityActivitiesCount = Array.isArray(currentUserCityInterests) ? currentUserCityInterests.length : 1;
-    const currentUserCityActivities = Math.max(currentUserCityActivitiesCount, 1);
-
-    // Weighted compatibility score calculation (from current user's perspective)
-    const interestScore = (commonalities.sharedInterests.length / currentUserInterests) * 30;
-    const activityScore = (commonalities.sharedActivities.length / currentUserActivities) * 25;
-    const eventScore = (commonalities.sharedEvents.length / currentUserEvents) * 20;
-    const cityActivityScore = (commonalities.sharedCityActivities.length / currentUserCityActivities) * 15;
-    const personalScore = ((commonalities.sameHometown ? 2 : 0) + (commonalities.sameAge ? 2 : 0) + (commonalities.sameGender ? 1 : 0) + (commonalities.sameTravelStyle ? 2 : 0) + (commonalities.bothVeterans ? 1 : 0) + (commonalities.bothActiveDuty ? 1 : 0)) / 9 * 10;
-
-    commonalities.compatibilityPercentage = Math.round(interestScore + activityScore + eventScore + cityActivityScore + personalScore);
-
-    // Remove non-signal "welcome" strings (not real matches)
-    commonalities.otherCommonalities = (commonalities.otherCommonalities || []).filter((v) => {
-      const n = String(v || "").trim().toLowerCase();
-      return n !== "welcome to los angeles metro" && n !== "welcome to nearby traveler";
-    });
-
-    return commonalities;
-  };
-
-  const commonalities = calculateCommonalities();
-
-  // Fetch travel plans for both users to calculate shared trips
-  const { data: currentUserPlans = [] } = useQuery<TravelPlan[]>({
-    queryKey: [`/api/travel-plans/${currentUserId}`]
-  });
-
-  const { data: otherUserPlans = [] } = useQuery<TravelPlan[]>({
-    queryKey: [`/api/travel-plans/${otherUserId}`]
-  });
-
-  // Calculate shared trips based on overlapping destinations and dates
-  const getSharedTrips = (): SharedTripData[] => {
-    if (!currentUserPlans || !otherUserPlans) return [];
-    
-    const sharedTrips: SharedTripData[] = [];
-    
-    for (const currentPlan of currentUserPlans) {
-      for (const otherPlan of otherUserPlans) {
-        // Check if destinations are similar
-        if (currentPlan.destination && otherPlan.destination &&
-            currentPlan.destination.toLowerCase().includes(otherPlan.destination.toLowerCase()) ||
-            otherPlan.destination.toLowerCase().includes(currentPlan.destination.toLowerCase())) {
-          
-          // Check for date overlap
-          const currentStart = new Date(currentPlan.startDate);
-          const currentEnd = new Date(currentPlan.endDate);
-          const otherStart = new Date(otherPlan.startDate);
-          const otherEnd = new Date(otherPlan.endDate);
-          
-          const hasDateOverlap = currentStart <= otherEnd && otherStart <= currentEnd;
-          
-          sharedTrips.push({
-            destination: currentPlan.destination,
-            dateOverlap: hasDateOverlap,
-            startDate: hasDateOverlap ? Math.max(currentStart.getTime(), otherStart.getTime()).toString() : undefined,
-            endDate: hasDateOverlap ? Math.min(currentEnd.getTime(), otherEnd.getTime()).toString() : undefined
-          });
-        }
-      }
-    }
-    
-    return sharedTrips;
-  };
-
-  const sharedTrips = getSharedTrips();
-
-  if (isLoading || !currentUser || !otherUser) {
+  if (isLoading) {
     return (
       <Card className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm">
         <CardHeader className="pb-3">
@@ -575,9 +56,6 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
             <Heart className="w-6 h-6 text-red-500 animate-pulse" />
             What You Have in Common
           </CardTitle>
-          <p className="text-sm text-gray-900 dark:text-gray-100 font-medium mt-1">
-            Discover your shared interests and travel experiences
-          </p>
         </CardHeader>
         <CardContent>
           <p className="text-gray-900 dark:text-gray-100 text-sm">Loading compatibility data...</p>
@@ -586,7 +64,7 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
     );
   }
 
-  if (!commonalities || commonalities.totalCount === 0) {
+  if (totalCommon === 0) {
     return (
       <Card className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm">
         <CardHeader className="pb-3">
@@ -594,9 +72,6 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
             <Heart className="w-6 h-6 text-red-500 animate-pulse" />
             What You Have in Common
           </CardTitle>
-          <p className="text-sm text-gray-900 dark:text-gray-100 font-medium mt-1">
-            Discover your shared interests and travel experiences
-          </p>
         </CardHeader>
         <CardContent>
           <p className="text-gray-900 dark:text-gray-100 text-sm italic">
@@ -607,59 +82,17 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
     );
   }
 
-  // Merge local-calc otherCommonalities with API-computed otherCommonalities.
-  // The API stats count all of these in the badge total — every counted item must render as a pill.
-  const localOther = commonalities.otherCommonalities ?? [];
-  const localOtherSet = new Set(localOther.map((v) => v.toLowerCase()));
-  const extraFromStats = commonStats.otherCommonalities.filter(
-    (item) => !localOtherSet.has(item.toLowerCase())
-  );
-  const allOtherCommonalities = [...localOther, ...extraFromStats];
-
-  // Debug: log every category and its values before render so mismatches are visible in console
-  console.log('[WhatYouHaveInCommon] Category breakdown before render:', {
-    'sharedInterests': commonalities.sharedInterests,
-    'sharedActivities': commonalities.sharedActivities,
-    'sharedEvents': commonalities.sharedEvents,
-    'sharedLanguages (pills, local)': commonalities.sharedLanguages,
-    'sharedCountries (pills, not counted)': commonalities.sharedCountries,
-    'sharedSexualPreferences': commonalities.sharedSexualPreferences,
-    'sharedCityActivities': commonalities.sharedCityActivities,
-    'sharedTravelIntent': commonalities.sharedTravelIntent,
-    'sharedTravelDestinations': commonalities.sharedTravelDestinations,
-    'overlappingTravelDates': commonalities.overlappingTravelDates,
-    'otherCommonalities (local only)': localOther,
-    'extraFromStats (previously missing pills)': extraFromStats,
-    'allOtherCommonalities (merged)': allOtherCommonalities,
-    'mutualConnections count': mutualConnections?.length ?? 0,
-    '--- RAW API fields that feed the count ---': '',
-    'sharedChatrooms': (compatibilityData as any)?.sharedChatrooms,
-    'sharedCommunityTags': (compatibilityData as any)?.sharedCommunityTags,
-    'sharedTravelPlans': (compatibilityData as any)?.sharedTravelPlans,
-    'sameHostel': (compatibilityData as any)?.sameHostel,
-    'sameCurrentCity': (compatibilityData as any)?.sameCurrentCity,
-    'bothNewToTown': (compatibilityData as any)?.bothNewToTown,
-    'sharedTravelStyle': (compatibilityData as any)?.sharedTravelStyle,
-    'sharedCustomActivities': (compatibilityData as any)?.sharedCustomActivities,
-    'sharedCustomEvents': (compatibilityData as any)?.sharedCustomEvents,
-    'sharedDefaultInterests': (compatibilityData as any)?.sharedDefaultInterests,
-    'badge totalCommon': commonStats.totalCommon,
-  });
-
-  // Count exactly what is rendered as pills so the badge matches the visual output.
-  const renderedPillCount =
-    (commonalities?.sharedInterests.length ?? 0) +
-    (commonalities?.sharedActivities.length ?? 0) +
-    (commonalities?.sharedEvents.length ?? 0) +
-    (commonalities?.sharedCityActivities.length ?? 0) +
-    (commonalities?.sharedTravelIntent.length ?? 0) +
-    (commonalities?.sharedTravelDestinations.length ?? 0) +
-    (commonalities?.overlappingTravelDates.length ?? 0) +
-    (commonalities?.sharedSexualPreferences.length ?? 0) +
-    (commonalities?.sharedCountries.length ?? 0) +
-    (commonalities?.sharedLanguages.length ?? 0) +
-    allOtherCommonalities.length;
-  const renderedLabel = `${renderedPillCount} ${renderedPillCount === 1 ? "thing" : "things"} in common`;
+  // City activities: parse "Activity (City)" strings back to grouped display
+  const cityActivityGroups: Record<string, string[]> = {};
+  const rawCityActivities = Array.isArray((compatibilityData as any)?.sharedCityActivities)
+    ? (compatibilityData as any).sharedCityActivities as { activity: string; city: string }[]
+    : [];
+  for (const item of rawCityActivities) {
+    if (!item?.activity) continue;
+    const city = item.city || "Unknown";
+    if (!cityActivityGroups[city]) cityActivityGroups[city] = [];
+    cityActivityGroups[city].push(item.activity);
+  }
 
   return (
     <Card className="what-you-have-in-common-card border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-sm overflow-hidden">
@@ -669,40 +102,38 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
             <Heart className="w-6 h-6 text-red-500 animate-pulse" />
             What You Have in Common
           </CardTitle>
-          <div className="flex items-center gap-1.5 flex-wrap">
-            <span
-              className="inline-flex items-center justify-center rounded-full bg-blue-600 dark:bg-blue-500 text-white shadow-md border border-blue-700 dark:border-blue-600 text-sm font-bold px-4 py-2.5 min-h-[2.5rem]"
-              data-testid="common-count-badge"
-            >
-              {renderedLabel}
-            </span>
-          </div>
+          <span
+            className="inline-flex items-center justify-center rounded-full bg-blue-600 dark:bg-blue-500 text-white shadow-md border border-blue-700 dark:border-blue-600 text-sm font-bold px-4 py-2.5 min-h-[2.5rem]"
+            data-testid="common-count-badge"
+          >
+            {badgeLabel}
+          </span>
         </div>
         <p className="text-sm text-gray-900 dark:text-gray-100 font-medium mt-1">
           All your shared interests, activities, and experiences
         </p>
       </CardHeader>
       <CardContent className="space-y-4 lg:space-y-3 overflow-hidden">
-        {/* Desktop: keep card wide/compact by placing these two sections side-by-side */}
+        {/* Desktop: two-column layout for interests + other */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 min-w-0">
           {/* Shared Interests */}
-          {commonalities.sharedInterests.length > 0 && (
-            <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:bg-gradient-to-r dark:from-blue-900/30 dark:to-purple-900/30 rounded-lg p-3 border border-blue-200 dark:border-blue-600">
+          {sharedInterests.length > 0 && (
+            <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 rounded-lg p-3 border border-blue-200 dark:border-blue-600">
               <h5 className="font-bold text-gray-900 dark:text-gray-100 mb-3 lg:mb-2 flex items-center gap-1 text-base">
                 <Heart className="w-5 h-5 text-red-500" />
-                Shared Interests ({commonalities.sharedInterests.length})
+                Shared Interests ({sharedInterests.length})
               </h5>
               <div className="flex flex-wrap gap-1.5">
-                {(showAllSharedInterests ? commonalities.sharedInterests : commonalities.sharedInterests.slice(0, 5)).map((interest, index) => (
+                {(showAllSharedInterests ? sharedInterests : sharedInterests.slice(0, 5)).map((interest, i) => (
                   <div
-                    key={`shared-interest-${interest}-${index}`}
-                    className="common-shared-interest-pill inline-flex items-center justify-center py-1.5 sm:py-2 lg:py-1 rounded-full px-3 sm:px-4 lg:px-2.5 text-xs sm:text-sm lg:text-xs font-medium leading-tight bg-transparent text-blue-700 border border-blue-400 dark:bg-blue-900/50 dark:text-gray-100 dark:border-blue-700 max-w-full text-center break-words"
+                    key={`interest-${i}`}
+                    className="inline-flex items-center justify-center py-1.5 sm:py-2 lg:py-1 rounded-full px-3 sm:px-4 lg:px-2.5 text-xs sm:text-sm lg:text-xs font-medium leading-tight bg-transparent text-blue-700 border border-blue-400 dark:bg-blue-900/50 dark:text-gray-100 dark:border-blue-700 max-w-full text-center break-words"
                   >
                     {interest}
                   </div>
                 ))}
               </div>
-              {commonalities.sharedInterests.length > 5 && (
+              {sharedInterests.length > 5 && (
                 <button
                   type="button"
                   onClick={() => setShowAllSharedInterests((v) => !v)}
@@ -714,71 +145,51 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
             </div>
           )}
 
-          {/* Other Things in Common - Combined Section */}
-          {(commonalities.sharedSexualPreferences.length > 0 || 
-            commonalities.sharedCountries.length > 0 || 
-            commonalities.sharedLanguages.length > 0 || 
-            allOtherCommonalities.length > 0) && (
+          {/* Other Things in Common (languages, sexual prefs, otherCommonalities) */}
+          {(sharedSexualPreferences.length > 0 ||
+            sharedLanguagesNonEnglish.length > 0 ||
+            otherCommonalities.length > 0) && (
             <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-slate-800 dark:to-slate-800 rounded-lg p-3 border border-blue-200 dark:border-slate-600">
               <h5 className="font-bold text-gray-900 dark:text-slate-100 mb-3 lg:mb-2 flex items-center gap-1 text-base">
                 <User className="w-5 h-5 text-gray-600 dark:text-slate-300" />
-                Other Things in Common ({commonalities.sharedSexualPreferences.length + commonalities.sharedCountries.length + commonalities.sharedLanguages.length + allOtherCommonalities.length})
+                Other ({sharedSexualPreferences.length + sharedLanguagesNonEnglish.length + otherCommonalities.length})
               </h5>
               <div className="space-y-3 lg:space-y-2">
-                {/* Sexual Preferences */}
-                {commonalities.sharedSexualPreferences.length > 0 && (
+                {sharedSexualPreferences.length > 0 && (
                   <div>
                     <h6 className="text-sm font-medium text-gray-800 dark:text-slate-200 mb-2">Sexual Preferences</h6>
                     <div className="flex flex-wrap gap-2 lg:gap-1.5">
-                      {commonalities.sharedSexualPreferences.map((preference, index) => (
-                        <Badge key={`shared-preference-${preference}-${index}`} className="bg-transparent text-gray-700 border-gray-300 dark:bg-slate-700 dark:text-slate-100 dark:border-slate-600 font-medium">
-                          {preference}
+                      {sharedSexualPreferences.map((pref, i) => (
+                        <Badge key={`pref-${i}`} className="bg-transparent text-gray-700 border-gray-300 dark:bg-slate-700 dark:text-slate-100 dark:border-slate-600 font-medium">
+                          {pref}
                         </Badge>
                       ))}
                     </div>
                   </div>
                 )}
-                
-                {/* Countries Visited */}
-                {commonalities.sharedCountries.length > 0 && (
-                  <div>
-                    <h6 className="text-sm font-medium text-gray-800 dark:text-slate-200 mb-2">Countries You've Both Visited</h6>
-                    <div className="flex flex-wrap gap-2 lg:gap-1.5">
-                      {commonalities.sharedCountries.map((country, index) => (
-                        <Badge key={`shared-country-${country}-${index}`} className="bg-transparent text-gray-700 border-gray-300 dark:bg-slate-700 dark:text-slate-100 dark:border-slate-600 font-medium">
-                          🌍 {country}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                
-                {/* Languages */}
-                {commonalities.sharedLanguages.length > 0 && (
+                {sharedLanguagesNonEnglish.length > 0 && (
                   <div>
                     <h6 className="text-sm font-medium text-gray-800 dark:text-slate-200 mb-2">Shared Languages</h6>
                     <div className="flex flex-wrap gap-2 lg:gap-1.5">
-                      {commonalities.sharedLanguages.map((language, index) => (
-                        <Badge key={`shared-language-${language}-${index}`} className="bg-transparent text-gray-700 border-gray-300 dark:bg-slate-700 dark:text-slate-100 dark:border-slate-600 font-medium">
-                          💬 {language}
+                      {sharedLanguagesNonEnglish.map((lang, i) => (
+                        <Badge key={`lang-${i}`} className="bg-transparent text-gray-700 border-gray-300 dark:bg-slate-700 dark:text-slate-100 dark:border-slate-600 font-medium">
+                          💬 {lang}
                         </Badge>
                       ))}
                     </div>
                   </div>
                 )}
-                
-                {/* All other commonalities — merged from local calc + API stats so every counted item has a pill */}
-                {allOtherCommonalities.length > 0 && (
+                {otherCommonalities.length > 0 && (
                   <div>
-                    <h6 className="text-sm font-medium text-gray-800 dark:text-slate-200 mb-2">Other Things In Common</h6>
+                    <h6 className="text-sm font-medium text-gray-800 dark:text-slate-200 mb-2">Other</h6>
                     <div className="flex flex-wrap gap-2 lg:gap-1.5">
-                      {(showAllOtherCommon ? allOtherCommonalities : allOtherCommonalities.slice(0, 3)).map((commonality, index) => (
-                        <Badge key={`other-commonality-${commonality}-${index}`} className="bg-transparent text-gray-700 border-gray-300 dark:bg-slate-700 dark:text-slate-100 dark:border-slate-600 font-medium">
-                          🎖️ {commonality}
+                      {(showAllOtherCommon ? otherCommonalities : otherCommonalities.slice(0, 3)).map((item, i) => (
+                        <Badge key={`other-${i}`} className="bg-transparent text-gray-700 border-gray-300 dark:bg-slate-700 dark:text-slate-100 dark:border-slate-600 font-medium">
+                          {item}
                         </Badge>
                       ))}
                     </div>
-                    {allOtherCommonalities.length > 3 && (
+                    {otherCommonalities.length > 3 && (
                       <button
                         type="button"
                         onClick={() => setShowAllOtherCommon((v) => !v)}
@@ -795,15 +206,15 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
         </div>
 
         {/* Shared Activities */}
-        {commonalities.sharedActivities.length > 0 && (
-          <div className="bg-gradient-to-r from-green-50 to-teal-50 dark:bg-gradient-to-r dark:from-green-900/30 dark:to-teal-900/30 rounded-lg p-3 border border-green-200 dark:border-green-600">
+        {sharedActivities.length > 0 && (
+          <div className="bg-gradient-to-r from-green-50 to-teal-50 dark:from-green-900/30 dark:to-teal-900/30 rounded-lg p-3 border border-green-200 dark:border-green-600">
             <h5 className="font-bold text-gray-900 dark:text-gray-100 mb-3 flex items-center gap-1 text-base">
               <Users className="w-5 h-5 text-green-500" />
-              Shared Activities ({commonalities.sharedActivities.length})
+              Shared Activities ({sharedActivities.length})
             </h5>
             <div className="flex flex-wrap gap-1.5">
-              {commonalities.sharedActivities.map((activity, index) => (
-                <div key={`shared-activity-${activity}-${index}`} className="inline-flex items-center justify-center py-1.5 sm:py-2 rounded-full px-3 sm:px-4 text-xs sm:text-sm font-medium leading-tight bg-transparent text-orange-700 border border-orange-500 dark:bg-orange-500 dark:text-white dark:border-0 appearance-none select-none max-w-full text-center break-words">
+              {sharedActivities.map((activity, i) => (
+                <div key={`activity-${i}`} className="inline-flex items-center justify-center py-1.5 sm:py-2 rounded-full px-3 sm:px-4 text-xs sm:text-sm font-medium leading-tight bg-transparent text-orange-700 border border-orange-500 dark:bg-orange-500 dark:text-white dark:border-0 max-w-full text-center break-words">
                   {activity}
                 </div>
               ))}
@@ -812,43 +223,32 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
         )}
 
         {/* Shared City Activities - Grouped by City */}
-        {commonalities.sharedCityActivities.length > 0 && commonalities.sharedCityActivitiesWithCity && (() => {
-          // Group activities by city
-          const activitiesByCity: { [city: string]: string[] } = {};
-          commonalities.sharedCityActivitiesWithCity.forEach(item => {
-            if (!activitiesByCity[item.city]) {
-              activitiesByCity[item.city] = [];
-            }
-            activitiesByCity[item.city].push(item.activity);
-          });
-          
-          return Object.entries(activitiesByCity).map(([city, activities]) => (
-            <div key={`city-${city}`} className="bg-gradient-to-r from-orange-50 to-yellow-50 dark:bg-gradient-to-r dark:from-orange-900/30 dark:to-yellow-900/30 rounded-lg p-3 border border-orange-200 dark:border-orange-600">
-              <h5 className="font-bold text-gray-900 dark:text-gray-100 mb-3 flex items-center gap-1 text-base">
-                <MapPin className="w-5 h-5 text-orange-500" />
-                Things You Both Want to Do in {city} ({activities.length})
-              </h5>
-              <div className="flex flex-wrap gap-2">
-                {activities.map((activity, index) => (
-                  <Badge key={`shared-city-activity-${city}-${activity}-${index}`} className="bg-transparent text-orange-700 border-orange-500 dark:bg-orange-900 dark:text-orange-200 dark:border-orange-700 font-medium">
-                    ✓ {activity}
-                  </Badge>
-                ))}
-              </div>
+        {Object.entries(cityActivityGroups).map(([city, activities]) => (
+          <div key={`city-${city}`} className="bg-gradient-to-r from-orange-50 to-yellow-50 dark:from-orange-900/30 dark:to-yellow-900/30 rounded-lg p-3 border border-orange-200 dark:border-orange-600">
+            <h5 className="font-bold text-gray-900 dark:text-gray-100 mb-3 flex items-center gap-1 text-base">
+              <MapPin className="w-5 h-5 text-orange-500" />
+              Things You Both Want to Do in {city} ({activities.length})
+            </h5>
+            <div className="flex flex-wrap gap-2">
+              {activities.map((activity, i) => (
+                <Badge key={`ca-${city}-${i}`} className="bg-transparent text-orange-700 border-orange-500 dark:bg-orange-900 dark:text-orange-200 dark:border-orange-700 font-medium">
+                  ✓ {activity}
+                </Badge>
+              ))}
             </div>
-          ));
-        })()}
+          </div>
+        ))}
 
         {/* Shared Events */}
-        {commonalities.sharedEvents.length > 0 && (
-          <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:bg-gradient-to-r dark:from-purple-900/30 dark:to-pink-900/30 rounded-lg p-3 border border-purple-200 dark:border-purple-600">
+        {sharedEvents.length > 0 && (
+          <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/30 dark:to-pink-900/30 rounded-lg p-3 border border-purple-200 dark:border-purple-600">
             <h5 className="font-bold text-gray-900 dark:text-gray-100 mb-3 flex items-center gap-1 text-base">
               <Calendar className="w-5 h-5 text-purple-500" />
-              Shared Events ({commonalities.sharedEvents.length})
+              Shared Events ({sharedEvents.length})
             </h5>
             <div className="flex flex-wrap gap-1.5">
-              {commonalities.sharedEvents.map((event, index) => (
-                <div key={`shared-event-${event}-${index}`} className="inline-flex items-center justify-center py-1.5 sm:py-2 rounded-full px-3 sm:px-4 text-xs sm:text-sm font-medium leading-tight bg-transparent text-purple-800 border border-purple-500 dark:bg-purple-500 dark:text-white dark:border-0 appearance-none select-none max-w-full text-center break-words">
+              {sharedEvents.map((event, i) => (
+                <div key={`event-${i}`} className="inline-flex items-center justify-center py-1.5 sm:py-2 rounded-full px-3 sm:px-4 text-xs sm:text-sm font-medium leading-tight bg-transparent text-purple-800 border border-purple-500 dark:bg-purple-500 dark:text-white dark:border-0 max-w-full text-center break-words">
                   {event}
                 </div>
               ))}
@@ -856,161 +256,31 @@ export function WhatYouHaveInCommon({ currentUserId, otherUserId }: WhatYouHaveI
           </div>
         )}
 
-        {/* Shared Travel Intent */}
-        {commonalities.sharedTravelIntent.length > 0 && (
-          <div className="bg-gradient-to-r from-indigo-50 to-violet-50 dark:bg-gradient-to-r dark:from-indigo-900/30 dark:to-violet-900/30 rounded-lg p-3 border border-indigo-200 dark:border-indigo-600">
-            <h5 className="font-bold text-gray-900 dark:text-gray-100 mb-3 flex items-center gap-1 text-base">
-              <MapPin className="w-5 h-5 text-indigo-600" />
-              Shared Travel Style ({commonalities.sharedTravelIntent.length})
-            </h5>
-            <div className="flex flex-wrap gap-2">
-              {commonalities.sharedTravelIntent.map((intent, index) => (
-                <Badge key={`shared-intent-${intent}-${index}`} className="bg-transparent text-indigo-700 border-indigo-500 dark:bg-indigo-900 dark:text-indigo-200 dark:border-indigo-700 font-medium">
-                  ✨ {intent}
-                </Badge>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Shared Travel Destinations */}
-        {commonalities.sharedTravelDestinations.length > 0 && (
-          <div className="bg-gradient-to-r from-cyan-50 to-blue-50 dark:bg-gradient-to-r dark:from-cyan-900/30 dark:to-blue-900/30 rounded-lg p-3 border border-cyan-200 dark:border-cyan-600">
-            <h5 className="font-bold text-gray-900 dark:text-gray-100 mb-3 flex items-center gap-1 text-base">
-              <MapPin className="w-5 h-5 text-cyan-500" />
-              Shared Travel Destinations ({commonalities.sharedTravelDestinations.length})
-            </h5>
-            <div className="flex flex-wrap gap-2">
-              {commonalities.sharedTravelDestinations.map((destination, index) => (
-                <Badge key={`shared-destination-${destination}-${index}`} className="bg-transparent text-cyan-700 border-cyan-500 dark:bg-cyan-900 dark:text-cyan-200 dark:border-cyan-700 font-medium">
-                  ✈️ {destination}
-                </Badge>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Overlapping Travel Dates */}
-        {commonalities.overlappingTravelDates.length > 0 && (
-          <div className="bg-gradient-to-r from-red-50 to-orange-50 dark:bg-gradient-to-r dark:from-red-900/30 dark:to-orange-900/30 rounded-lg p-3 border border-red-200 dark:border-red-600">
-            <h5 className="font-bold text-gray-900 dark:text-gray-100 mb-3 flex items-center gap-1 text-base">
-              <Calendar className="w-5 h-5 text-red-500" />
-              Overlapping Travel Dates ({commonalities.overlappingTravelDates.length})
-            </h5>
-            <div className="space-y-2">
-              {commonalities.overlappingTravelDates.map((overlap, index) => (
-                <div key={`overlap-${index}`} className="bg-red-100 dark:bg-red-900/50 rounded p-2">
-                  <div className="font-medium text-red-800 dark:text-red-200">{overlap.destination}</div>
-                  <div className="text-sm text-red-600 dark:text-red-300">📅 {overlap.overlap}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Special Travel Safety Notice for Mutual Friends */}
-        {mutualConnections && mutualConnections.length > 0 && (
-          <div className="mb-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-lg p-3 border-l-4 border-green-400">
+        {/* Mutual Connections (informational, not counted in badge) */}
+        {mutualConnections.length > 0 && (
+          <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-lg p-3 border-l-4 border-green-400">
             <div className="flex items-center gap-2 mb-2">
-              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-              <span className="text-gray-900 dark:text-gray-100 font-semibold text-sm">Travel Safety Boost</span>
+              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+              <span className="text-gray-900 dark:text-gray-100 font-semibold text-sm">
+                {mutualConnections.length} mutual {mutualConnections.length === 1 ? "connection" : "connections"}
+              </span>
             </div>
-            <p className="text-gray-900 dark:text-gray-100 text-sm">
-              ✈️ Perfect for travelers! Having {mutualConnections.length} mutual friend{mutualConnections.length > 1 ? 's' : ''} makes this connection much safer and more trustworthy when exploring a new city together.
-            </p>
-          </div>
-        )}
-
-        {/* Mutual Connections - Enhanced for Travel Context */}
-        {mutualConnections && mutualConnections.length > 0 && (
-          <div className="bg-gradient-to-r from-pink-50 to-rose-50 dark:bg-gradient-to-r dark:from-pink-900/30 dark:to-rose-900/30 rounded-lg p-4 border-2 border-pink-300 dark:border-pink-500 shadow-lg">
-            <h5 className="font-bold text-gray-900 dark:text-gray-100 mb-3 flex items-center gap-2 text-lg">
-              <Users className="w-6 h-6 text-pink-500" />
-              🤝 Mutual Friends ({mutualConnections.length})
-            </h5>
-            <div className="mb-3 text-sm text-gray-900 dark:text-gray-100 font-medium bg-pink-100 dark:bg-pink-900/50 rounded-lg p-2">
-              💫 You both know these people - perfect for introductions when meeting up!
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {mutualConnections.map((connection: any, index: number) => (
-                <div key={`mutual-${connection.id}-${index}`} className="flex flex-col items-center text-center p-2 bg-white dark:bg-gray-800 rounded-lg border border-pink-200 dark:border-pink-700">
-                  {connection.profileImage ? (
-                    <img
-                      src={connection.profileImage}
-                      alt={connection.firstName || connection.name || connection.username}
-                      className="w-10 h-10 rounded-full object-cover mb-2"
-                    />
+            <div className="flex flex-wrap gap-3">
+              {mutualConnections.slice(0, 6).map((c: any, i: number) => (
+                <div key={`mutual-${c.id}-${i}`} className="flex flex-col items-center text-center p-2 bg-white dark:bg-gray-800 rounded-lg border border-green-200 dark:border-green-700 w-[90px]">
+                  {c.profileImage ? (
+                    <img src={c.profileImage} alt={c.name || c.username} className="w-8 h-8 rounded-full object-cover mb-1" />
                   ) : (
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-r from-pink-400 to-rose-400 flex items-center justify-center text-white text-xs font-bold mb-2">
-                      {(connection.firstName || connection.name || connection.username).charAt(0).toUpperCase()}
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-green-400 to-emerald-400 flex items-center justify-center text-white text-xs font-bold mb-1">
+                      {(c.name || c.username || "?").charAt(0).toUpperCase()}
                     </div>
                   )}
-                  <div className="text-xs font-medium text-gray-900 dark:text-gray-100 truncate max-w-full">
-                    {connection.firstName || connection.name || connection.username}
-                  </div>
-                  {connection.hometownCity && connection.hometownCountry && (
-                    <div className="text-xs text-gray-900 dark:text-gray-100 truncate max-w-full">
-                      {connection.hometownCity}, {connection.hometownCountry.replace('United States', 'USA')}
-                    </div>
-                  )}
+                  <span className="text-[10px] font-medium text-gray-900 dark:text-gray-100 truncate max-w-full">
+                    {c.firstName || c.name || c.username}
+                  </span>
                 </div>
               ))}
             </div>
-          </div>
-        )}
-
-        {/* Shared Trips */}
-        {sharedTrips.length > 0 && (
-          <div className="bg-gradient-to-r from-emerald-50 to-green-50 dark:bg-gradient-to-r dark:from-emerald-900/30 dark:to-green-900/30 rounded-lg p-3 border border-emerald-200 dark:border-emerald-600">
-            <h5 className="font-bold text-gray-900 dark:text-gray-100 mb-3 flex items-center gap-1 text-base">
-              <Plane className="w-5 h-5 text-emerald-500" />
-              Shared Trips ({sharedTrips.length})
-            </h5>
-            <div className="space-y-2">
-              {sharedTrips.map((trip, index) => (
-                <div key={index} className="bg-gradient-to-r from-blue-50 to-orange-50 dark:from-blue-900/30 dark:to-orange-900/30 rounded-lg p-3 border border-blue-300 dark:border-blue-600">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-blue-900 dark:text-blue-300">{trip.destination}</span>
-                    {trip.dateOverlap && (
-                      <Badge className="bg-transparent text-orange-700 border-orange-500 dark:bg-orange-500 dark:text-white dark:border-orange-600 shadow-md font-medium">
-                        Overlapping Dates
-                      </Badge>
-                    )}
-                  </div>
-                  {trip.dateOverlap && trip.startDate && trip.endDate && (
-                    <p className="text-sm text-gray-900 dark:text-gray-100 mt-1 font-medium">
-                      Overlap: {new Date(parseInt(trip.startDate)).toLocaleDateString()} - {new Date(parseInt(trip.endDate)).toLocaleDateString()}
-                    </p>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Legacy Match Data Display (fallback) */}
-        {matchData && matchData.locationOverlap && (
-          <div className="bg-gradient-to-r from-blue-50 to-cyan-50 dark:bg-gradient-to-r dark:from-blue-900/30 dark:to-cyan-900/30 rounded-lg p-3 border border-blue-200 dark:border-blue-600">
-            <h5 className="font-bold text-gray-900 dark:text-gray-100 mb-2 flex items-center gap-1 text-base">
-              <MapPin className="w-5 h-5 text-blue-500" />
-              Location Compatibility
-            </h5>
-            <Badge className="bg-transparent text-blue-700 border-blue-500 dark:bg-blue-900 dark:text-blue-200 dark:border-blue-700 font-medium">
-              Similar destinations planned
-            </Badge>
-          </div>
-        )}
-
-        {/* Date Compatibility */}
-        {matchData && matchData.dateOverlap && (
-          <div className="bg-gradient-to-r from-purple-50 to-indigo-50 dark:bg-gradient-to-r dark:from-purple-900/30 dark:to-indigo-900/30 rounded-lg p-3 border border-purple-200 dark:border-purple-600">
-            <h5 className="font-bold text-gray-900 dark:text-gray-100 mb-2 flex items-center gap-1 text-base">
-              <Calendar className="w-5 h-5 text-purple-500" />
-              Travel Date Compatibility
-            </h5>
-            <Badge className="bg-transparent text-purple-800 border-purple-500 dark:bg-purple-900 dark:text-purple-200 dark:border-purple-700 font-medium">
-              Overlapping travel dates
-            </Badge>
           </div>
         )}
       </CardContent>
