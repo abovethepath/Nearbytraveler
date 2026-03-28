@@ -300,7 +300,7 @@ const SESSION_CACHE_KEY = 'nt_cached_session';
 // localStorage so the cache survives navigating away to other sites and coming back —
 // sessionStorage is wiped the moment the user leaves the origin, causing a 2-4s
 // auth-loading spinner every time they return.
-const SESSION_CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
+const SESSION_CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days (matches session recovery window)
 const readSessionCache = (): User | null => {
   try {
     if (sessionStorage.getItem("nt_session_verified") !== "1") return null;
@@ -309,12 +309,27 @@ const readSessionCache = (): User | null => {
     const parsed = JSON.parse(raw);
     // Basic sanity: must have id and username
     if (!parsed?.id || !parsed?.username) return null;
-    // Ignore entries older than 24 h — background check will re-establish the session
+    // Ignore entries older than TTL — background check will re-establish the session
     if (parsed._ts && Date.now() - parsed._ts > SESSION_CACHE_TTL_MS) {
       localStorage.removeItem(SESSION_CACHE_KEY);
       return null;
     }
     return parsed as User;
+  } catch {
+    return null;
+  }
+};
+// Reads cached user data directly from localStorage, bypassing the nt_session_verified
+// gate. ONLY used for session recovery — not for auth decisions.
+const readRawLocalCache = (): { id: number; username: string; email?: string } | null => {
+  try {
+    const raw = localStorage.getItem(SESSION_CACHE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!parsed?.id || !parsed?.username) return null;
+    // Don't use entries older than 7 days for recovery either
+    if (parsed._ts && Date.now() - parsed._ts > SESSION_CACHE_TTL_MS) return null;
+    return { id: parsed.id, username: parsed.username, email: parsed.email };
   } catch {
     return null;
   }
@@ -901,6 +916,42 @@ function Router() {
           if (msSinceLogin < 30_000) {
             console.log("Initial auth check: 401 within login grace period, skipping clear");
           } else {
+            // Before giving up, attempt session recovery using locally-cached credentials.
+            // This handles server restarts and transient Redis unavailability — the session
+            // cookie is still in the browser but the server-side session record is gone.
+            const cachedCreds = readRawLocalCache();
+            if (cachedCreds?.id && (cachedCreds?.email || cachedCreds?.username)) {
+              try {
+                console.log('🔄 Auth 401 — attempting session recovery for user', cachedCreds.username);
+                const recoveryRes = await fetch(`${getApiBaseUrl()}/api/auth/recover-session`, {
+                  method: 'POST',
+                  credentials: 'include',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    userId: cachedCreds.id,
+                    email: cachedCreds.email,
+                    username: cachedCreds.username,
+                  }),
+                });
+                if (recoveryRes.ok) {
+                  const recoveredUser = await recoveryRes.json();
+                  console.log('✅ Session recovered for:', recoveredUser.username);
+                  clearSessionInvalid();
+                  markSessionVerified();
+                  writeSessionCache(recoveredUser);
+                  setUser(recoveredUser);
+                  stopAuthenticating();
+                  setLoginPendingFlag(false);
+                  setIsLoading(false);
+                  setAuthInitialized(true);
+                  return;
+                }
+                console.log('⚠️ Session recovery returned', recoveryRes.status, '— proceeding to clear auth');
+              } catch (recoveryErr) {
+                console.warn('Session recovery request failed:', recoveryErr);
+              }
+            }
+            // Session is genuinely gone — clear local auth state so user can log in fresh.
             writeSessionCache(null);
             clearLocalAuthState("checkServerAuth:401");
             setUser(null);
