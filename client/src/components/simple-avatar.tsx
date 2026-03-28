@@ -17,11 +17,11 @@ export function getProfileImageUrl(user: { profileImage?: string | null; profile
     }
     if (url.startsWith('blob:')) return url;
   }
-  // Fallback: if user has an ID but no image URL, try the binary avatar endpoint.
-  // This handles base64-stripped responses (profileImageStripped: true) and also
-  // conversation list objects where profileImage may be null.
-  // Users with no photo will get a 404 → <img> onerror → AvatarFallback shows initials.
-  if ((user as any).id) {
+  // Only use the API endpoint when the image was explicitly stripped from the response
+  // (profileImageStripped: true means the user HAS a photo but it was omitted for bandwidth).
+  // If profileImage is simply null/undefined, skip the API call and go straight to the
+  // letter fallback — avoids broken-image icons in iOS WebView when the endpoint returns 404.
+  if ((user as any).profileImageStripped === true && (user as any).id) {
     return `/api/users/${(user as any).id}/avatar-image`;
   }
   return null;
