@@ -218,7 +218,11 @@ export default function UserCard({
   const effectiveConnectionDegree =
     (connectionDegree && connectionDegree.mutualCount > 0) ? connectionDegree : (selfFetchedDegree ?? connectionDegree);
   const effectiveCompatibilityData = (compatibilityFromApi as any) ?? compatibilityData;
-  const thingsInCommon = computeCommonStats(effectiveCompatibilityData, effectiveConnectionDegree).totalCommon;
+  // Use server's matchCount directly when available (authoritative), fall back to client recomputation
+  const serverMatchCount = effectiveCompatibilityData?.matchCount;
+  const thingsInCommon = (typeof serverMatchCount === 'number' && serverMatchCount > 0)
+    ? serverMatchCount
+    : computeCommonStats(effectiveCompatibilityData, effectiveConnectionDegree).totalCommon;
   const contactsInCommon = effectiveConnectionDegree?.mutualCount ?? 0;
   const bioText = truncateBioToSentences(user.bio, 3);
 

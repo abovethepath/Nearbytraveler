@@ -130,6 +130,8 @@ export default function ResponsiveUserGrid({
   const getThingsInCommon = (user: User) => {
     const data = compatibilityDataMap?.[user.id];
     if (!data) return 0;
+    // Use server's matchCount directly when available (authoritative)
+    if (typeof data.matchCount === 'number' && data.matchCount > 0) return data.matchCount;
     return computeCommonStats(data, null).totalCommon;
   };
 
