@@ -2,7 +2,6 @@
 const CITY_ABBREVIATIONS: Record<string, string> = {
   'new york city': 'NYC',
   'new york': 'NYC',
-  'los angeles': 'LA',
   'san francisco': 'SF',
   'washington dc': 'DC',
   'washington d.c.': 'DC',
