@@ -109,10 +109,10 @@ export function VouchButton({ currentUserId, targetUserId, targetUsername, hideW
       <>
         <Button
           onClick={() => setShowVouchDialog(true)}
-          className={`${isGhost ? "bg-[#e8eeff] hover:bg-[#dfe7ff] text-blue-700 border border-blue-200 dark:bg-purple-600 dark:hover:bg-purple-700 dark:text-white dark:border-0" : "bg-blue-600 hover:bg-blue-700 dark:bg-purple-600 dark:hover:bg-purple-700 text-white border-0"} px-6 py-2 rounded-lg shadow-md transition-all ${className}`}
+          className={`${isGhost ? "bg-[#e8eeff] hover:bg-[#dfe7ff] text-blue-700 border border-blue-200 dark:bg-purple-600 dark:hover:bg-purple-700 dark:text-white dark:border-0" : "bg-blue-600 hover:bg-blue-700 dark:bg-purple-600 dark:hover:bg-purple-700 text-white border-0"} px-3 sm:px-6 py-1.5 sm:py-2 rounded-lg shadow-md transition-all ${className}`}
           data-testid="button-vouch"
         >
-          <ThumbsUp className="w-4 h-4 mr-2" />
+          <ThumbsUp className="w-4 h-4 mr-2 hidden sm:inline-block" />
           Vouch
         </Button>
 
