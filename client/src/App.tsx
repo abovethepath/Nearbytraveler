@@ -2113,6 +2113,21 @@ function App() {
       const ref = params.get('ref');
       if (ref) sessionStorage.setItem('referralCode', ref);
     } catch {}
+
+    // Safety: clean up stale Radix scroll locks that can get stuck after
+    // dialogs unmount improperly, causing overflow:hidden on body and
+    // blocking all touch interaction on mobile.
+    const cleanupScrollLock = () => {
+      if (document.body.hasAttribute('data-scroll-locked') && !document.querySelector('[data-state="open"][role="dialog"]')) {
+        document.body.removeAttribute('data-scroll-locked');
+        document.body.style.removeProperty('overflow');
+        document.body.style.removeProperty('padding-right');
+      }
+    };
+    // Check on mount + periodically
+    cleanupScrollLock();
+    const scrollLockInterval = setInterval(cleanupScrollLock, 2000);
+    return () => clearInterval(scrollLockInterval);
   }, []);
 
   // Disable floating chatbot on small screens only (< 768px)

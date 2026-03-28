@@ -148,10 +148,10 @@ export function PWAInstallPrompt({ children }: { children?: React.ReactNode }) {
     <PWAInstallContext.Provider value={ctx}>
       {children}
 
-      {/* ── MOBILE BANNER ── */}
+      {/* ── MOBILE BANNER ── pointer-events:none on wrapper so it never blocks content below */}
       {showMobileBanner && (
-        <div className="fixed top-0 left-0 right-0 z-[9998] lg:hidden animate-in slide-in-from-top duration-500">
-          <div className="bg-gradient-to-r from-orange-500 to-pink-500 px-3 py-2.5 flex items-center gap-2.5 shadow-lg">
+        <div className="fixed top-0 left-0 right-0 z-[9998] lg:hidden pointer-events-none">
+          <div className="pointer-events-auto bg-gradient-to-r from-orange-500 to-pink-500 px-3 py-2.5 flex items-center gap-2.5 shadow-lg">
             <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center shrink-0">
               <Smartphone className="w-4 h-4 text-white" />
             </div>
@@ -173,10 +173,10 @@ export function PWAInstallPrompt({ children }: { children?: React.ReactNode }) {
         </div>
       )}
 
-      {/* ── DESKTOP BANNER ── */}
+      {/* ── DESKTOP BANNER ── pointer-events:none on wrapper so it never blocks content above */}
       {showDesktopBanner && (
-        <div className="fixed bottom-0 left-0 right-0 z-[9998] hidden lg:block animate-in slide-in-from-bottom duration-700">
-          <div className="bg-gradient-to-r from-orange-500 via-orange-600 to-pink-500 shadow-[0_-4px_20px_rgba(249,115,22,0.4)]">
+        <div className="fixed bottom-0 left-0 right-0 z-[9998] hidden lg:block pointer-events-none">
+          <div className="pointer-events-auto bg-gradient-to-r from-orange-500 via-orange-600 to-pink-500 shadow-[0_-4px_20px_rgba(249,115,22,0.4)]">
             <div className="max-w-5xl mx-auto px-4 py-3 flex items-center gap-4">
               <div className="w-11 h-11 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center shrink-0">
                 <Smartphone className="w-6 h-6 text-white" />
