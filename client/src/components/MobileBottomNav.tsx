@@ -172,7 +172,7 @@ export function MobileBottomNav({ hideOnMobile = false }: { hideOnMobile?: boole
   ] : [
     { label: "Create Event", path: "/create-event", icon: Calendar, color: "#f97316" },
     { label: "Plan Trip", path: "/plan-trip", icon: MapPin, color: "#3b82f6" },
-    { label: "Cities", path: "/cities", icon: Globe, color: "#10b981" },
+    { label: "Cities", path: "/discover", icon: Globe, color: "#10b981" },
     { label: "Communities", path: "/explore?tab=communities", icon: Users, color: "#8b5cf6" },
   ];
 

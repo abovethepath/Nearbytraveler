@@ -410,7 +410,7 @@ function Navbar() {
     return [
       { path: "/explore", label: "Communities", icon: "⚡" },
       { path: null, label: "Search", icon: "🔍", action: "search" as const },
-      { path: "/cities", label: "Cities", icon: "🌍" },
+      { path: "/discover", label: "Cities", icon: "🌍" },
       { path: "/events", label: "Events", icon: "📅" },
       { path: "/match-in-city", label: "City Plans", icon: "🎯" },
       { path: "/plan-trip", label: "Trip Planning", icon: "🧭" },
@@ -657,7 +657,7 @@ function Navbar() {
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => {
-                      setLocation("/cities");
+                      setLocation("/discover");
                       setTimeout(
                         () => window.scrollTo({ top: 0, behavior: "smooth" }),
                         100,
