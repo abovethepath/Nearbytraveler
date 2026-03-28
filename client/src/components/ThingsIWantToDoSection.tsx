@@ -312,20 +312,36 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
     return combined.filter(e => !dismissedEventIds.has(e.id));
   }, [joinedEvents, eventInterestsData, userId, dismissedEventIds]);
 
-  // Delete activity
+  // Delete activity — optimistic update for instant UI feedback
   const deleteActivity = useMutation({
     mutationFn: async (activityId: number) => {
       const response = await apiRequest('DELETE', `/api/user-city-interests/${activityId}`);
       if (!response.ok) throw new Error('Failed to delete');
+      return activityId;
+    },
+    onMutate: async (activityId: number) => {
+      // Cancel any in-flight refetches so they don't overwrite our optimistic update
+      await queryClient.cancelQueries({ queryKey: [`/api/user-city-interests/${userId}`] });
+      // Snapshot current data for rollback
+      const previous = queryClient.getQueryData<any[]>([`/api/user-city-interests/${userId}`]);
+      // Optimistically remove the item from the cache
+      queryClient.setQueryData<any[]>([`/api/user-city-interests/${userId}`], (old) =>
+        (old || []).filter((item: any) => item.id !== activityId)
+      );
+      return { previous };
     },
     onSuccess: () => {
-      // Just invalidate cache - no local state updates needed
       queryClient.invalidateQueries({ queryKey: [`/api/user-city-interests/${userId}`] });
-      toast({ title: "Removed", description: "Activity deleted successfully." });
+      // Also invalidate profile bundle so the profile page reflects the change
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/profile-bundle`] });
     },
-    onError: () => {
+    onError: (_err, _id, context) => {
+      // Rollback on error
+      if (context?.previous) {
+        queryClient.setQueryData([`/api/user-city-interests/${userId}`], context.previous);
+      }
       toast({ title: "Error", description: "Failed to remove activity", variant: "destructive" });
-    }
+    },
   });
 
   const addActivity = useMutation({
