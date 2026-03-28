@@ -1243,10 +1243,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       return response.json();
     },
     enabled: !!effectiveUserId,
-    staleTime: 2 * 60 * 1000, // 2 min — returning to a visited profile shows data instantly
+    staleTime: 5 * 60 * 1000, // 5 min — prevent rapid re-fetches on re-renders
     gcTime: 30 * 60 * 1000,   // 30 min — keep in memory for the session
-    refetchOnMount: true,
+    refetchOnMount: false,     // Don't refetch if data is already cached
     refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
     retry: 1,
   });
 
@@ -1280,10 +1281,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   });
 
   const rawFetchedUser = profileBundle?.user ?? fallbackUser;
-  // Merge separately-fetched avatar back into user object
-  const fetchedUser = rawFetchedUser && profileImageStripped && avatarData?.profileImage
-    ? { ...rawFetchedUser, profileImage: avatarData.profileImage }
-    : rawFetchedUser;
+  // Merge separately-fetched avatar back into user object.
+  // Memoize to prevent creating a new object reference every render (causes render loops).
+  const fetchedUser = useMemo(() => {
+    if (rawFetchedUser && profileImageStripped && avatarData?.profileImage) {
+      return { ...rawFetchedUser, profileImage: avatarData.profileImage };
+    }
+    return rawFetchedUser;
+  }, [rawFetchedUser, profileImageStripped, avatarData?.profileImage]);
   const userLoading = bundleLoading && !fallbackUser;
   const userError = bundleError && !fallbackUser ? bundleError : null;
   const refetchUser = refetchBundle;
@@ -1337,9 +1342,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       const gradientCSS = gradientCSSMap[selectedGradient];
       if (gradientCSS) {
         apiRequest('PATCH', '/api/user/profile', { avatarGradient: gradientCSS }).then(() => {
-          // Invalidate all user queries so cards refresh with new gradient
-          queryClient.invalidateQueries({ queryKey: ['/api/users'] });
-          queryClient.invalidateQueries({ queryKey: [`/api/users/${user.id}`] });
+          // Only invalidate the specific user query, not ALL /api/users/* queries
+          queryClient.invalidateQueries({ queryKey: [`/api/users/${user.id}`], exact: true });
         }).catch((err) => console.error('Failed to save gradient:', err));
       }
     }
