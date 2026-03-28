@@ -721,13 +721,12 @@ button.user-card:first-child > div:first-of-type {
     max-height: 90vh !important;
   }
   
-  /* Touch targets: minimum 44x44px for accessibility on mobile */
-  button:not(.no-touch-target):not([role="checkbox"]),
-  [role="button"]:not(.no-touch-target),
-  .touch-target,
-  a[class*="button"] {
+  /* Touch targets: minimum 44px height for primary action buttons on mobile.
+     DO NOT apply min-width — it causes small icon buttons and tab buttons to
+     expand and overlap, blocking taps on adjacent elements.
+     Exclude: toggle switches, tab buttons, inline pills, and icon-only buttons. */
+  .touch-target {
     min-height: 44px !important;
-    min-width: 44px !important;
   }
   
   /* Prevent fixed elements from causing overflow */

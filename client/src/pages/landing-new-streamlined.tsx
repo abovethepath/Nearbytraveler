@@ -140,7 +140,7 @@ export default function LandingStreamlined() {
         </div>
 
         {/* HERO SECTION - Full Video Background with Rotation */}
-        <div className="relative min-h-[600px] sm:min-h-[700px] overflow-hidden">
+        <div className="relative min-h-[600px] sm:min-h-[700px] overflow-hidden bg-gradient-to-br from-gray-900 via-blue-950 to-gray-900">
           {/* Rotating Video Backgrounds with Crossfade */}
           {heroVideos.map((video, index) => (
             <video
