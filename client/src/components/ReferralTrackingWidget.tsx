@@ -84,14 +84,14 @@ export function ReferralTrackingWidget({ profileUserId }: { profileUserId: numbe
   const isAmbassador = (user as any)?.ambassadorStatus === 'active';
 
   return (
-    <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 overflow-hidden">
+    <div className="lg:max-w-sm lg:ml-auto rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 overflow-hidden">
       {/* Header */}
       <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-800 flex items-center gap-2">
         <Share2 className="w-4 h-4 text-orange-500" />
         <h3 className="text-sm font-bold text-gray-900 dark:text-white">Your Referral Link</h3>
       </div>
 
-      <div className="p-4 space-y-3">
+      <div className="p-3 lg:p-3 space-y-2.5">
         {/* Invite link — dark input + copy icon */}
         {stats.inviteUrl && (
           <div className="flex items-center gap-1.5">
