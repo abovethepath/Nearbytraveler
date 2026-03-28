@@ -13662,6 +13662,11 @@ Questions? Just reply to this message. Welcome aboard!
     try {
       const userId = parseInt(req.params.userId || '0');
 
+      // 60-second cache to avoid repeated queries on profile revisits
+      const cacheKey = `chatroom-participation:${userId}`;
+      const cached = await cache.get<any>(cacheKey);
+      if (cached) return res.json(cached);
+
       // Get chatrooms where user is a member, including lastReadAt for unread count
       const result = await db.execute(sql`
         SELECT 
@@ -13682,69 +13687,63 @@ Questions? Just reply to this message. Welcome aboard!
         ORDER BY cc.created_at DESC
       `);
 
-      const userChatrooms = result.rows || [];
+      const userChatrooms = (result.rows || []) as any[];
+      if (userChatrooms.length === 0) return res.json([]);
 
-      // Add member counts to each chatroom
-      const memberCountQuery = await db
-        .select({
-          chatroomId: chatroomMembers.chatroomId,
-          count: sql<string>`COUNT(*)::text`.as('count')
-        })
-        .from(chatroomMembers)
-        .where(eq(chatroomMembers.isActive, true))
-        .groupBy(chatroomMembers.chatroomId);
-      
-      const memberCountMap = new Map();
-      memberCountQuery.forEach(mc => {
-        memberCountMap.set(mc.chatroomId, parseInt(mc.count || '0') || 1);
-      });
+      const chatroomIds = userChatrooms.map((c: any) => c.id);
 
-      // Get last message and unread count for each chatroom
-      const chatroomsWithMemberCount = await Promise.all(userChatrooms.map(async (chatroom) => {
-        const lastReadAt = chatroom.last_read_at ? new Date(chatroom.last_read_at) : new Date(0);
-        const chatroomId = chatroom.id;
+      // Batch: member counts, last messages, unread counts — 3 queries total instead of N*2
+      const [memberCounts, lastMessages, unreadCounts] = await Promise.all([
+        // Member counts for user's chatrooms only (not full table scan)
+        db.execute(sql`
+          SELECT chatroom_id AS cid, COUNT(*)::int AS cnt
+          FROM chatroom_members WHERE is_active = true AND chatroom_id = ANY(${chatroomIds})
+          GROUP BY chatroom_id
+        `),
+        // Latest message per chatroom using DISTINCT ON
+        db.execute(sql`
+          SELECT DISTINCT ON (chatroom_id) chatroom_id AS cid, content, created_at, message_type
+          FROM chatroom_messages WHERE chatroom_id = ANY(${chatroomIds})
+          ORDER BY chatroom_id, created_at DESC
+        `),
+        // Unread counts per chatroom
+        db.execute(sql`
+          SELECT cm2.chatroom_id AS cid, COUNT(*)::int AS cnt
+          FROM chatroom_messages cm2
+          JOIN chatroom_members cmem ON cmem.chatroom_id = cm2.chatroom_id AND cmem.user_id = ${userId}
+          WHERE cm2.chatroom_id = ANY(${chatroomIds})
+            AND cm2.created_at > COALESCE(cmem.last_read_at, '1970-01-01'::timestamp)
+            AND cm2.sender_id != ${userId}
+          GROUP BY cm2.chatroom_id
+        `),
+      ]);
 
-        // Get last message
-        const lastMsgResult = await db.select({
-          content: chatroomMessages.content,
-          createdAt: chatroomMessages.createdAt,
-          messageType: chatroomMessages.messageType
-        })
-          .from(chatroomMessages)
-          .where(eq(chatroomMessages.chatroomId, chatroomId))
-          .orderBy(desc(chatroomMessages.createdAt))
-          .limit(1);
+      const memberMap = new Map((memberCounts.rows as any[]).map((r: any) => [r.cid, r.cnt]));
+      const lastMsgMap = new Map((lastMessages.rows as any[]).map((r: any) => [r.cid, r]));
+      const unreadMap = new Map((unreadCounts.rows as any[]).map((r: any) => [r.cid, r.cnt]));
 
-        const lastMessage = lastMsgResult[0];
+      const enriched = userChatrooms.map((chatroom: any) => {
+        const lastMsg = lastMsgMap.get(chatroom.id);
         let lastMessagePreview = null;
-        if (lastMessage) {
-          if (lastMessage.messageType === 'image' || lastMessage.messageType === 'photo') lastMessagePreview = '[Photo]';
-          else if (lastMessage.messageType === 'voice') lastMessagePreview = '[Voice message]';
-          else if (lastMessage.messageType === 'location') lastMessagePreview = '[Location]';
-          else if (lastMessage.content) lastMessagePreview = lastMessage.content.length > 100 ? lastMessage.content.slice(0, 100) + '…' : lastMessage.content;
+        if (lastMsg) {
+          const mt = lastMsg.message_type;
+          if (mt === 'image' || mt === 'photo') lastMessagePreview = '[Photo]';
+          else if (mt === 'voice') lastMessagePreview = '[Voice message]';
+          else if (mt === 'location') lastMessagePreview = '[Location]';
+          else if (lastMsg.content) lastMessagePreview = lastMsg.content.length > 100 ? lastMsg.content.slice(0, 100) + '…' : lastMsg.content;
         }
-
-        // Count unread (messages after lastReadAt, excluding own)
-        const unreadResult = await db.select({ count: sql<number>`count(*)::int` })
-          .from(chatroomMessages)
-          .where(and(
-            eq(chatroomMessages.chatroomId, chatroomId),
-            gt(chatroomMessages.createdAt, lastReadAt),
-            ne(chatroomMessages.senderId, userId)
-          ));
-        const unreadCount = unreadResult[0]?.count || 0;
-
         const { last_read_at, ...rest } = chatroom;
         return {
           ...rest,
-          memberCount: memberCountMap.get(chatroomId) || 1,
+          memberCount: memberMap.get(chatroom.id) || 1,
           lastMessagePreview,
-          lastMessageAt: lastMessage?.createdAt || chatroom.created_at,
-          unreadCount
+          lastMessageAt: lastMsg?.created_at || chatroom.created_at,
+          unreadCount: unreadMap.get(chatroom.id) || 0,
         };
-      }));
+      });
 
-      return res.json(chatroomsWithMemberCount);
+      cache.set(cacheKey, enriched, 60).catch(() => {});
+      return res.json(enriched);
     } catch (error: any) {
       console.error("Error fetching user chatroom participation:", error);
       return res.status(500).json({ message: "Failed to fetch chatroom participation" });
