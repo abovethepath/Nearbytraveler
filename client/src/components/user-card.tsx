@@ -192,11 +192,17 @@ export default function UserCard({
   };
 
   const matchPercent = getMatchPercent();
+  // Fetch from API if no useful compatibility data was passed as prop.
+  // "Useful" = has matchCount > 0 OR has sharedInterests array (full server result).
+  // An empty/stub prop like { score: 0 } should NOT prevent the API call.
+  const hasUsefulCompatData = compatibilityData && (
+    (typeof compatibilityData.matchCount === 'number' && compatibilityData.matchCount > 0) ||
+    (Array.isArray(compatibilityData.sharedInterests) && compatibilityData.sharedInterests.length > 0)
+  );
   const { data: compatibilityFromApi } = useQuery<any>({
     queryKey: currentUserId ? [`/api/compatibility/${currentUserId}/${user.id}`] : [],
-    // Only fetch if no compatibility data was passed as prop (avoids N+1 on home page)
-    enabled: !!currentUserId && !isCurrentUser && !compatibilityData,
-    staleTime: 5 * 60 * 1000, // 5 min — compatibility scores don't change often
+    enabled: !!currentUserId && !isCurrentUser && !hasUsefulCompatData,
+    staleTime: 5 * 60 * 1000,
   });
 
   // Self-fetch connection degree from source of truth endpoint.
@@ -224,7 +230,7 @@ export default function UserCard({
     ? serverMatchCount
     : computeCommonStats(effectiveCompatibilityData, effectiveConnectionDegree).totalCommon;
   const contactsInCommon = effectiveConnectionDegree?.mutualCount ?? 0;
-  const bioText = truncateBioToSentences(user.bio, 3);
+  const bioText = truncateBioToSentences(user.bio, 2);
 
   return (
     <button 
@@ -365,12 +371,12 @@ export default function UserCard({
                 style={{
                   fontSize: 12.5,
                   lineHeight: 1.5,
-                  minHeight: "4.5em",
-                  maxHeight: "4.5em",
+                  minHeight: "3em",
+                  maxHeight: "3em",
                   overflow: "hidden",
                   display: "-webkit-box",
                   WebkitBoxOrient: "vertical" as any,
-                  WebkitLineClamp: 3 as any,
+                  WebkitLineClamp: 2 as any,
                   textAlign: "center",
                   wordBreak: "break-word",
                   whiteSpace: "normal",
@@ -437,7 +443,7 @@ export default function UserCard({
                   overflow: 'hidden',
                   display: '-webkit-box',
                   WebkitBoxOrient: 'vertical' as any,
-                  WebkitLineClamp: 3 as any,
+                  WebkitLineClamp: 2 as any,
                   textAlign: 'center',
                   wordBreak: 'break-word',
                   whiteSpace: 'normal',
@@ -515,12 +521,12 @@ export default function UserCard({
                 style={{
                   fontSize: 12.5,
                   lineHeight: 1.5,
-                  minHeight: "4.5em",
-                  maxHeight: "4.5em",
+                  minHeight: "3em",
+                  maxHeight: "3em",
                   overflow: "hidden",
                   display: "-webkit-box",
                   WebkitBoxOrient: "vertical" as any,
-                  WebkitLineClamp: 3 as any,
+                  WebkitLineClamp: 2 as any,
                   textAlign: "center",
                   wordBreak: "break-word",
                   whiteSpace: "normal",
@@ -586,7 +592,7 @@ export default function UserCard({
                   overflow: 'hidden',
                   display: '-webkit-box',
                   WebkitBoxOrient: 'vertical' as any,
-                  WebkitLineClamp: 3 as any,
+                  WebkitLineClamp: 2 as any,
                   textAlign: 'center',
                   wordBreak: 'break-word',
                   whiteSpace: 'normal',
