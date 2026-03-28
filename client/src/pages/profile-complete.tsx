@@ -832,15 +832,19 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     setLoadedTabs(prev => new Set([...prev, key]));
     let attempts = 0;
     const tryScroll = () => {
-      const el = tabRefs[key].current;
+      // Try ref first, then fallback to id-based lookup
+      const el = tabRefs[key]?.current || document.getElementById(`panel-${key}`);
       if (el && el.offsetHeight > 0) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      } else if (attempts < 10) {
+        // Use a manual scroll offset to account for fixed headers (~60px)
+        const y = el.getBoundingClientRect().top + window.scrollY - 70;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+      } else if (attempts < 20) {
         attempts++;
-        setTimeout(tryScroll, 50);
+        setTimeout(tryScroll, 100);
       }
     };
-    setTimeout(tryScroll, 80);
+    // Allow React state update + render before first scroll attempt
+    setTimeout(tryScroll, 150);
   }
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
