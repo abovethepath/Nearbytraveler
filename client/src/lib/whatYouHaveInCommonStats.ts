@@ -97,7 +97,7 @@ export function computeCommonStats(
   if (compatibilityData?.sameCurrentCity) booleanLabels.push('Both in same city');
   if (compatibilityData?.bothHaveChildren) booleanLabels.push('Both traveling with kids');
   if (compatibilityData?.childrenAgesSimilar) booleanLabels.push("Kids similar ages");
-  if (compatibilityData?.bothNewToTown) booleanLabels.push('Both new to town');
+  // "Both new to town" removed — being new to different cities is not a shared thing
   if (compatibilityData?.bothVeterans) booleanLabels.push('Both veterans');
   if (compatibilityData?.bothActiveDuty) booleanLabels.push('Both active duty');
 
@@ -131,9 +131,14 @@ export function computeCommonStats(
     "english",
     "us",
     "america",
+    "new to town",
+    "new-to-town",
+    "both new to town",
+    "both new in town",
   ]);
   const otherCommonalities = dedupe(extraArrays)
     .filter((v) => !blockedOtherCommonalities.has(v.toLowerCase()))
+    .filter((v) => !v.toLowerCase().startsWith("welcome to"))
     .filter((v) => !alreadyShown.has(v.toLowerCase()));
 
   const sharedContactsCount = Math.max(0, Number(connectionDegreeData?.mutualCount || 0) || 0);

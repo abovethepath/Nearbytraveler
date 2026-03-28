@@ -1222,6 +1222,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     compatibility: any;
     connectionDegree: any;
     businessDeals: any[];
+    chatroomCount?: number;
   }>({
     // Include currentUser?.id in the key so the bundle re-fetches once the viewer's
     // identity is known (needed to compute compatibility on the server side).
@@ -1352,7 +1353,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     staleTime: 60 * 1000,
   });
   // Bundle provides a lightweight count for the tab badge without loading full chatroom data
-  const chatroomCount = userChatrooms.length > 0 ? userChatrooms.length : ((profileBundle as any)?.chatroomCount ?? 0);
+  const chatroomCount = userChatrooms.length > 0 ? userChatrooms.length : (profileBundle?.chatroomCount ?? 0);
 
   // BUNDLE-DERIVED: Compatibility score from profile bundle
   const compatibilityData = profileBundle?.compatibility;
