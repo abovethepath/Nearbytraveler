@@ -1,3 +1,4 @@
+import React from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Switch } from "@/components/ui/switch";
 import { MapPin, Trash2, Plus, Pencil, X } from "lucide-react";
@@ -126,6 +127,102 @@ function shouldShowThingsNudge(userId: number) {
     const s = raw ? JSON.parse(raw) : { logins: 0, thingsToDo: false };
     return (s.logins || 0) <= 5 && !s.thingsToDo;
   } catch { return false; }
+}
+
+function HostelPill({ hostelName, travelPlanId, cityName, country, isOwnProfile, pillBaseClass, pillStyle, setLocation, toast, queryClient, userId }: {
+  hostelName: string; travelPlanId?: number; cityName: string; country: string;
+  isOwnProfile: boolean; pillBaseClass: string; pillStyle: React.CSSProperties;
+  setLocation: (p: string) => void; toast: any; queryClient: any; userId: number;
+}) {
+  const [editing, setEditing] = React.useState(false);
+  const [editValue, setEditValue] = React.useState(hostelName);
+  const [saving, setSaving] = React.useState(false);
+
+  const openChatroom = async () => {
+    try {
+      const result = await resolveAndJoinHostelChatroom({ hostelName, city: cityName, country });
+      setLocation(`/chatroom/${result.chatroomId}`);
+    } catch (err: any) {
+      toast?.({ title: "Can't open hostel chatroom", description: err?.message || "Please try again.", variant: "destructive" });
+    }
+  };
+
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!travelPlanId) return;
+    try {
+      await apiRequest('PUT', `/api/travel-plans/${travelPlanId}`, { hostelName: null, hostelVisibility: 'private' });
+      queryClient.invalidateQueries({ queryKey: [`/api/travel-plans/user/${userId}`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/user-city-interests/${userId}`] });
+      toast?.({ title: "Removed", description: "Accommodation removed." });
+    } catch {
+      toast?.({ title: "Error", description: "Failed to remove accommodation.", variant: "destructive" });
+    }
+  };
+
+  const handleSave = async () => {
+    if (!travelPlanId || !editValue.trim()) return;
+    setSaving(true);
+    try {
+      await apiRequest('PUT', `/api/travel-plans/${travelPlanId}`, { hostelName: editValue.trim(), hostelVisibility: 'public' });
+      queryClient.invalidateQueries({ queryKey: [`/api/travel-plans/user/${userId}`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/user-city-interests/${userId}`] });
+      setEditing(false);
+      toast?.({ title: "Updated", description: "Accommodation updated." });
+    } catch {
+      toast?.({ title: "Error", description: "Failed to update.", variant: "destructive" });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (editing) {
+    return (
+      <div className="inline-flex items-center gap-1 rounded-full border px-2 py-1" style={{ borderColor: pillStyle.borderColor, backgroundColor: pillStyle.backgroundColor }}>
+        <Building2 className="w-3.5 h-3.5 shrink-0" style={{ color: pillStyle.color }} />
+        <input
+          autoFocus
+          value={editValue}
+          onChange={(e) => setEditValue(e.target.value)}
+          onKeyDown={(e) => { if (e.key === 'Enter') handleSave(); if (e.key === 'Escape') setEditing(false); }}
+          className="bg-transparent border-none outline-none text-xs w-28 sm:w-40"
+          style={{ color: pillStyle.color }}
+          placeholder="Hotel name"
+        />
+        <button type="button" onClick={handleSave} disabled={saving} className="text-green-500 hover:text-green-600 text-xs font-bold px-1">✓</button>
+        <button type="button" onClick={() => setEditing(false)} className="text-gray-400 hover:text-gray-500 text-xs px-1">✕</button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative group/hostel">
+      <button
+        type="button"
+        className={`${pillBaseClass} hover:shadow-md text-left pr-7`}
+        style={pillStyle}
+        onClick={isOwnProfile ? () => setEditing(true) : openChatroom}
+        data-testid="button-open-hostel-chatroom"
+        title={isOwnProfile ? "Click to edit, or tap chatroom icon to open chat" : "Open hostel chatroom"}
+      >
+        <span className="inline-flex items-center gap-1.5">
+          <Building2 className="w-3.5 h-3.5" />
+          <span className="break-words">Staying at {hostelName}</span>
+        </span>
+      </button>
+      {isOwnProfile && (
+        <button
+          type="button"
+          onClick={handleDelete}
+          className="absolute right-1.5 top-1/2 -translate-y-1/2 opacity-0 group-hover/hostel:opacity-100 transition-opacity w-4 h-4 flex items-center justify-center rounded-full hover:bg-black/20"
+          title="Remove accommodation"
+        >
+          <X className="w-3 h-3" />
+        </button>
+      )}
+    </div>
+  );
 }
 
 export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDoSectionProps) {
@@ -686,40 +783,21 @@ export function ThingsIWantToDoSection({ userId, isOwnProfile }: ThingsIWantToDo
 
         {/* Pills row: activities/events below header */}
         <div className="mt-2 flex flex-wrap gap-2">
-          {/* Public hostel (trip) */}
+          {/* Public hostel (trip) — with edit/delete for own profile */}
           {showHostel && (
-            <button
-              type="button"
-              className={`${pillBaseClass} hover:shadow-md hover:underline underline-offset-2 text-left`}
-              style={pillStyle}
-              onClick={async (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                try {
-                  // IMPORTANT: Use the trip's underlying destination city (not a metro display label)
-                  const city = String(cityData.travelPlan?.cityName || cityData.travelPlan?.fullDestination || "").split(",")[0]?.trim();
-                  const country = (cityData.travelPlan as any)?.destinationCountry || "United States";
-                  const result = await resolveAndJoinHostelChatroom({
-                    hostelName: String(cityData.travelPlan?.hostelName || ""),
-                    city,
-                    country,
-                  });
-                  setLocation(`/chatroom/${result.chatroomId}`);
-                } catch (err: any) {
-                  toast?.({
-                    title: "Can't open hostel chatroom",
-                    description: err?.message || "Please try again.",
-                    variant: "destructive",
-                  });
-                }
-              }}
-              data-testid="button-open-hostel-chatroom"
-            >
-              <span className="inline-flex items-center gap-1.5">
-                <Building2 className="w-3.5 h-3.5" />
-                <span className="break-words">Staying at {cityData.travelPlan?.hostelName}</span>
-              </span>
-            </button>
+            <HostelPill
+              hostelName={String(cityData.travelPlan?.hostelName || "")}
+              travelPlanId={cityData.travelPlan?.tripId}
+              cityName={String(cityData.travelPlan?.cityName || cityData.travelPlan?.fullDestination || "").split(",")[0]?.trim()}
+              country={(cityData.travelPlan as any)?.destinationCountry || "United States"}
+              isOwnProfile={isOwnProfile}
+              pillBaseClass={pillBaseClass}
+              pillStyle={pillStyle}
+              setLocation={setLocation}
+              toast={toast}
+              queryClient={queryClient}
+              userId={userId}
+            />
           )}
           {/* Sub-Interest Pills - for travel destinations */}
           {cityData.travelPlan && citySubInterests.map((subInterest, idx) => (
