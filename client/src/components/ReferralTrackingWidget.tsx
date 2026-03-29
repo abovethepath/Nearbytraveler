@@ -86,6 +86,7 @@ export function ReferralTrackingWidget({ profileUserId }: { profileUserId: numbe
           <p>✦ <span className="font-semibold text-orange-600 dark:text-orange-400">5 Aura Points</span> per signup</p>
           <p>✦ <span className="font-semibold text-orange-600 dark:text-orange-400">15 more Aura Points</span> when they complete their profile</p>
           <p>✦ <span className="font-semibold text-orange-600 dark:text-orange-400">50 Ambassador Points</span> per signup</p>
+          <p>✦ <span className={`font-semibold ${isAmbassador ? "text-orange-600 dark:text-orange-400" : "text-gray-400 dark:text-gray-500"}`}>{!isAmbassador && "🔒 "}25 more Ambassador Points</span> when they complete their profile</p>
         </div>
 
         {/* Copy link */}
