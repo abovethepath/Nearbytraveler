@@ -4691,7 +4691,7 @@ export class DatabaseStorage implements IStorage {
     }
   }
   async updateChatroomMember(): Promise<any> { return undefined; }
-  async createChatroomMessage(chatroomId: number, senderId: number, content: string, messageType: string = 'text', mediaUrl?: string | null): Promise<any> {
+  async createChatroomMessage(chatroomId: number, senderId: number, content: string, messageType: string = 'text', mediaUrl?: string | null, audioData?: { audioUrl?: string; audioDuration?: number; audioWaveform?: any; audioExpiresAt?: string } | null): Promise<any> {
     try {
       const [message] = await db.insert(chatroomMessages).values({
         chatroomId,
@@ -4699,6 +4699,12 @@ export class DatabaseStorage implements IStorage {
         content,
         messageType: messageType || 'text',
         mediaUrl: mediaUrl || null,
+        ...(audioData?.audioUrl ? {
+          audioUrl: audioData.audioUrl,
+          audioDuration: audioData.audioDuration ? parseInt(String(audioData.audioDuration)) : null,
+          audioWaveform: audioData.audioWaveform || null,
+          audioExpiresAt: audioData.audioExpiresAt ? new Date(audioData.audioExpiresAt) : null,
+        } : {}),
       }).returning();
 
       return message;

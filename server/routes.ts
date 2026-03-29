@@ -13263,30 +13263,38 @@ Questions? Just reply to this message. Welcome aboard!
   // CRITICAL: Send message for IM system (handles offline message delivery)
   app.post("/api/messages", async (req, res) => {
     try {
-      const { senderId: bodySenderId, receiverId, content, isInstantMessage, replyToId, messageType, mediaUrl } = req.body;
+      const { senderId: bodySenderId, receiverId, content, isInstantMessage, replyToId, messageType, mediaUrl, audioUrl, audioDuration, audioWaveform, audioExpiresAt } = req.body;
       // Accept senderId from body or x-user-id header (for clients that send auth in header)
       const senderId = bodySenderId || (req.headers['x-user-id'] ? parseInt(req.headers['x-user-id'] as string) : null);
 
       const hasContent = content != null && String(content).trim().length > 0;
       const hasMedia = mediaUrl != null && String(mediaUrl).trim().length > 0;
+      const hasAudio = audioUrl != null && String(audioUrl).trim().length > 0;
 
-      if (!senderId || !receiverId || (!hasContent && !hasMedia)) {
-        return res.status(400).json({ message: "senderId (or x-user-id header), receiverId, and (content or mediaUrl) are required" });
+      if (!senderId || !receiverId || (!hasContent && !hasMedia && !hasAudio)) {
+        return res.status(400).json({ message: "senderId (or x-user-id header), receiverId, and (content or mediaUrl or audioUrl) are required" });
       }
 
       if (process.env.NODE_ENV === 'development') console.log(`💬 ${isInstantMessage ? 'IM' : 'REGULAR'} MESSAGE: Storing message from ${senderId} to ${receiverId}${replyToId ? ` (replying to ${replyToId})` : ''} for offline delivery`);
 
       // Store message in database for offline delivery
+      const effectiveType = typeof messageType === 'string'
+        ? messageType
+        : (hasAudio ? 'voice' : isInstantMessage ? 'instant' : (hasMedia ? 'image' : 'text'));
+      const effectiveContent = hasContent ? String(content).trim() : (hasAudio ? '🎤 Voice message' : (hasMedia ? '[Photo]' : ''));
+
       const newMessage = await db
         .insert(messages)
         .values({
           senderId: parseInt(senderId || '0'),
           receiverId: parseInt(receiverId || '0'),
-          content: hasContent ? String(content).trim() : (hasMedia ? '[Photo]' : ''),
-          messageType: typeof messageType === 'string'
-            ? messageType
-            : (isInstantMessage ? 'instant' : (hasMedia ? 'image' : 'text')),
+          content: effectiveContent,
+          messageType: effectiveType,
           mediaUrl: hasMedia ? String(mediaUrl).trim() : null,
+          audioUrl: hasAudio ? String(audioUrl).trim() : null,
+          audioDuration: hasAudio && audioDuration ? parseInt(audioDuration) : null,
+          audioWaveform: hasAudio && audioWaveform ? audioWaveform : null,
+          audioExpiresAt: hasAudio && audioExpiresAt ? new Date(audioExpiresAt) : null,
           isRead: false,
           replyToId: replyToId ? parseInt(replyToId) : null,
           createdAt: new Date()
@@ -21784,16 +21792,17 @@ Questions? Just reply to this message. Welcome aboard!
     try {
       const roomId = parseInt(req.params.roomId || '0');
       const userId = req.headers['x-user-id'];
-      const { content, messageType, mediaUrl } = req.body;
-      
+      const { content, messageType, mediaUrl, audioUrl, audioDuration, audioWaveform, audioExpiresAt } = req.body;
+
       if (!userId) {
         return res.status(401).json({ message: "User ID required" });
       }
 
       const hasContent = content != null && String(content).trim().length > 0;
       const hasMedia = mediaUrl != null && String(mediaUrl).trim().length > 0;
-      if (!hasContent && !hasMedia) {
-        return res.status(400).json({ message: "Message content or mediaUrl required" });
+      const hasAudio = audioUrl != null && String(audioUrl).trim().length > 0;
+      if (!hasContent && !hasMedia && !hasAudio) {
+        return res.status(400).json({ message: "Message content, mediaUrl, or audioUrl required" });
       }
 
       // 🔒 SECURITY CHECK: Verify user is a member of the chatroom before allowing message posting
@@ -21829,9 +21838,9 @@ Questions? Just reply to this message. Welcome aboard!
 
       if (process.env.NODE_ENV === 'development') console.log(`🏠 CHATROOM MESSAGE: User ${userId} sending message to chatroom ${roomId}`);
 
-      const safeContent = hasContent ? String(content) : '[Photo]';
-      const safeType = typeof messageType === 'string' ? messageType : (hasMedia ? 'image' : 'text');
-      const message = await storage.createChatroomMessage(roomId, parseInt(userId as string), safeContent, safeType, hasMedia ? String(mediaUrl) : null);
+      const safeContent = hasContent ? String(content) : (hasAudio ? '🎤 Voice message' : '[Photo]');
+      const safeType = typeof messageType === 'string' ? messageType : (hasAudio ? 'voice' : hasMedia ? 'image' : 'text');
+      const message = await storage.createChatroomMessage(roomId, parseInt(userId as string), safeContent, safeType, hasMedia ? String(mediaUrl) : null, hasAudio ? { audioUrl, audioDuration, audioWaveform, audioExpiresAt } : undefined);
 
       // OneSignal push to all chatroom members except sender (non-blocking)
       const senderIdNum = parseInt(userId as string);
