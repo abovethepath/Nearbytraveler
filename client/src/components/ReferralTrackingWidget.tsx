@@ -108,17 +108,17 @@ export function ReferralTrackingWidget({ profileUserId }: { profileUserId: numbe
         {/* Stats row */}
         <div className="flex gap-1">
           <div className="flex-1 text-center py-1 rounded bg-orange-50 dark:bg-orange-900/20 border border-orange-200/40 dark:border-orange-800/20">
-            <p className="text-xs font-bold text-orange-600 dark:text-orange-400">{stats.totalReferrals}</p>
+            <p className="text-xs font-bold text-orange-600 dark:text-orange-400">{stats.totalReferrals ?? 0}</p>
             <p className="text-[8px] text-gray-500 dark:text-gray-400 leading-tight">Signups</p>
           </div>
           <div className="flex-1 text-center py-1 rounded bg-orange-50 dark:bg-orange-900/20 border border-orange-200/40 dark:border-orange-800/20">
-            <p className="text-xs font-bold text-orange-600 dark:text-orange-400">{stats.totalAuraFromReferrals}</p>
+            <p className="text-xs font-bold text-orange-600 dark:text-orange-400">{stats.totalAuraFromReferrals ?? 0}</p>
             <p className="text-[8px] text-gray-500 dark:text-gray-400 leading-tight">Aura</p>
           </div>
           <div className="flex-1 text-center py-1 rounded bg-orange-50 dark:bg-orange-900/20 border border-orange-200/40 dark:border-orange-800/20">
             {isAmbassador ? (
               <>
-                <p className="text-xs font-bold text-orange-600 dark:text-orange-400">{stats.totalAmbassadorPointsFromReferrals}</p>
+                <p className="text-xs font-bold text-orange-600 dark:text-orange-400">{stats.totalAmbassadorPointsFromReferrals ?? 0}</p>
                 <p className="text-[8px] text-gray-500 dark:text-gray-400 leading-tight">Amb. Pts</p>
               </>
             ) : (
@@ -131,9 +131,9 @@ export function ReferralTrackingWidget({ profileUserId }: { profileUserId: numbe
         </div>
 
         {/* Referred users list */}
-        {stats.referredUsers.length > 0 ? (
+        {(stats.referredUsers?.length ?? 0) > 0 ? (
           <div className="space-y-0.5">
-            {stats.referredUsers.slice(0, 5).map((u) => (
+            {(stats.referredUsers || []).slice(0, 5).map((u) => (
               <div key={u.id} className="flex items-center gap-1.5 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded px-1 py-0.5 -mx-1 transition-colors"
                    onClick={() => setLocation(`/profile/${u.id}`)}>
                 <SimpleAvatar user={{ id: u.id, username: u.username, profileImage: u.profileImage }} size="xs" />

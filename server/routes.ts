@@ -6262,12 +6262,14 @@ Questions? Just reply here — I read every message.
                 connectionNote: finalConnectionNote
               });
 
-              await db.update(users)
-                .set({
-                  referralCount: (referrer.referralCount || 0) + 1,
-                  aura: (referrer.aura || 0) + 5, // Award 5 aura points per referral signup
-                })
-                .where(eq(users.id, referrer.id));
+              try {
+                await db.update(users)
+                  .set({
+                    referralCount: (referrer.referralCount || 0) + 1,
+                    aura: (referrer.aura || 0) + 5, // Award 5 aura points per referral signup
+                  })
+                  .where(eq(users.id, referrer.id));
+              } catch (e) { console.error('Referral aura award error:', e); }
 
               // Track referral event for history
               try {
@@ -6279,8 +6281,10 @@ Questions? Just reply here — I read every message.
                 });
               } catch { /* non-fatal */ }
 
-              const { addAmbassadorPoints } = await import("./services/ambassadorStatus");
-              await addAmbassadorPoints(referrer.id, 50);
+              try {
+                const { addAmbassadorPoints } = await import("./services/ambassadorStatus");
+                await addAmbassadorPoints(referrer.id, 50);
+              } catch (e) { console.error('Ambassador points award error:', e); }
 
               // Track ambassador referral chain for 5% bonus
               try {
