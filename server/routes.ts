@@ -13847,9 +13847,12 @@ Questions? Just reply to this message. Welcome aboard!
   });
 
   // Get user's chatroom participation for profile display
+  // Supports ?limit=N&offset=M for pagination (default: all)
   app.get("/api/users/:userId/chatroom-participation", async (req, res) => {
     try {
       const userId = parseInt(req.params.userId || '0');
+      const limit = parseInt(req.query.limit as string || '0') || 0; // 0 = all
+      const offset = parseInt(req.query.offset as string || '0') || 0;
 
       // 60-second cache to avoid repeated queries on profile revisits
       const cacheKey = `chatroom-participation:${userId}`;
@@ -13973,6 +13976,12 @@ Questions? Just reply to this message. Welcome aboard!
         };
       });
 
+      // Paginate if limit requested, return total count in header
+      if (limit > 0) {
+        res.setHeader('X-Total-Count', enriched.length.toString());
+        cache.set(cacheKey, enriched, 60).catch(() => {});
+        return res.json(enriched.slice(offset, offset + limit));
+      }
       cache.set(cacheKey, enriched, 60).catch(() => {});
       return res.json(enriched);
     } catch (error: any) {

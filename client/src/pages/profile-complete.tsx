@@ -830,12 +830,25 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   function openTab(key: TabKey) {
     setActiveTab(key);
     setLoadedTabs(prev => new Set([...prev, key]));
+
+    // Prefetch chatroom data immediately when tab is clicked — fires the fetch
+    // before React re-renders and re-evaluates the query's enabled condition.
+    if (key === 'chatrooms' && effectiveUserId) {
+      queryClient.prefetchQuery({
+        queryKey: ['/api/users', effectiveUserId, 'chatroom-participation'],
+        queryFn: async () => {
+          const res = await fetch(`${getApiBaseUrl()}/api/users/${effectiveUserId}/chatroom-participation`, { credentials: 'include' });
+          if (!res.ok) return [];
+          const data = await res.json();
+          return Array.isArray(data) ? data : [];
+        },
+      });
+    }
+
     let attempts = 0;
     const tryScroll = () => {
-      // Try ref first, then fallback to id-based lookup
       const el = tabRefs[key]?.current || document.getElementById(`panel-${key}`);
       if (el && el.offsetHeight > 0) {
-        // Use a manual scroll offset to account for fixed headers (~60px)
         const y = el.getBoundingClientRect().top + window.scrollY - 70;
         window.scrollTo({ top: y, behavior: 'smooth' });
       } else if (attempts < 20) {
@@ -843,7 +856,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
         setTimeout(tryScroll, 100);
       }
     };
-    // Allow React state update + render before first scroll attempt
     setTimeout(tryScroll, 150);
   }
   const [selectedCountry, setSelectedCountry] = useState("");
@@ -1361,21 +1373,14 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     queryKey: ['/api/users', effectiveUserId, 'chatroom-participation'],
     queryFn: async () => {
       if (!effectiveUserId) return [];
-      console.log(`💬 CHATROOM-FETCH: Fetching chatrooms for user ${effectiveUserId}`);
       const response = await fetch(`${getApiBaseUrl()}/api/users/${effectiveUserId}/chatroom-participation`, {
         credentials: 'include',
       });
-      if (!response.ok) {
-        console.error(`💬 CHATROOM-FETCH: Failed with status ${response.status}`);
-        return [];
-      }
+      if (!response.ok) return [];
       const data = await response.json();
-      console.log(`💬 CHATROOM-FETCH: Got ${Array.isArray(data) ? data.length : 0} chatrooms for user ${effectiveUserId}`);
       return Array.isArray(data) ? data : [];
     },
-    // Fetch immediately (no lazy-load gate) so data is ready when tab is clicked.
-    // The endpoint is fast (~60ms, cached) and returns minimal JSON.
-    enabled: isOwnProfile ? !!currentUser?.id : !!effectiveUserId,
+    enabled: (isOwnProfile ? !!currentUser?.id : !!effectiveUserId) && loadedTabs.has('chatrooms'),
     staleTime: 2 * 60 * 1000,
   });
   // Bundle provides a lightweight count for the tab badge without loading full chatroom data
