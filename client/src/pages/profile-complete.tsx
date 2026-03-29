@@ -1373,8 +1373,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       console.log(`💬 CHATROOM-FETCH: Got ${Array.isArray(data) ? data.length : 0} chatrooms for user ${effectiveUserId}`);
       return Array.isArray(data) ? data : [];
     },
-    enabled: (isOwnProfile ? !!currentUser?.id : !!effectiveUserId) && loadedTabs.has('chatrooms'),
-    staleTime: 60 * 1000,
+    // Fetch immediately (no lazy-load gate) so data is ready when tab is clicked.
+    // The endpoint is fast (~60ms, cached) and returns minimal JSON.
+    enabled: isOwnProfile ? !!currentUser?.id : !!effectiveUserId,
+    staleTime: 2 * 60 * 1000,
   });
   // Bundle provides a lightweight count for the tab badge without loading full chatroom data
   const chatroomCount = userChatrooms.length > 0 ? userChatrooms.length : (profileBundle?.chatroomCount ?? 0);
