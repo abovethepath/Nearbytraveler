@@ -317,6 +317,13 @@ import { StealthToggle } from "@/components/stealth-toggle";
 import { StealthToggleInline } from "@/components/stealth-toggle-inline";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
 import { ReferralTrackingWidget } from "@/components/ReferralTrackingWidget";
+import { Component } from "react";
+class SilentErrorBoundary extends Component<{ children: React.ReactNode }, { hasError: boolean }> {
+  state = { hasError: false };
+  static getDerivedStateFromError() { return { hasError: true }; }
+  componentDidCatch(err: any) { console.warn('SilentErrorBoundary caught:', err?.message?.slice(0, 80)); }
+  render() { return this.state.hasError ? null : this.props.children; }
+}
 import { ProfileTabs } from "@/components/profile/ProfileTabs";
 import { ProfileDialogs } from "@/components/profile/ProfileDialogs";
 import type { ProfilePageProps } from "@/components/profile/profile-complete-types";
@@ -4359,7 +4366,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   return (
     <div className="flex flex-col gap-4 md:gap-0">
       <ProfileHeader {...profileProps} />
-      <ProfileTabs {...profileProps} notificationPrefs={isOwnProfile ? <NotificationPreferencesCompact currentUserId={currentUser?.id} /> : null} referralWidget={<ReferralTrackingWidget profileUserId={effectiveUserId!} />} />
+      <ProfileTabs {...profileProps} notificationPrefs={isOwnProfile ? <NotificationPreferencesCompact currentUserId={currentUser?.id} /> : null} referralWidget={<SilentErrorBoundary><ReferralTrackingWidget profileUserId={effectiveUserId!} /></SilentErrorBoundary>} />
       {isNearbytrav && <AdminDashboard />}
       {isNearbytrav && isOwnProfile && <ReferralLeaderboard />}
       <ProfileDialogs {...profileProps} />
