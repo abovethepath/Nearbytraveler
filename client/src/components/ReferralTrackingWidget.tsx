@@ -3,19 +3,8 @@ import { getApiBaseUrl } from "@/lib/queryClient";
 import { useAuth } from "@/App";
 import { useToast } from "@/hooks/use-toast";
 import { SimpleAvatar } from "@/components/simple-avatar";
-import { Copy, Share2, Check, Clock } from "lucide-react";
+import { Copy, Check, Clock } from "lucide-react";
 import { useLocation } from "wouter";
-
-function timeAgo(dateStr: string | null | undefined) {
-  if (!dateStr) return "";
-  const then = new Date(dateStr).getTime();
-  if (isNaN(then)) return "";
-  const days = Math.floor((Date.now() - then) / 86400000);
-  if (days === 0) return "today";
-  if (days === 1) return "yesterday";
-  if (days < 30) return `${days}d ago`;
-  return new Date(dateStr).toLocaleDateString(undefined, { month: "short", day: "numeric" });
-}
 
 interface ReferralStats {
   referralCode: string | null;
@@ -84,15 +73,22 @@ export function ReferralTrackingWidget({ profileUserId }: { profileUserId: numbe
   const isAmbassador = (user as any)?.ambassadorStatus === 'active';
 
   return (
-    <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 overflow-hidden">
-      {/* Header — matches NotificationPreferencesCompact */}
-      <div className="px-3 py-2 border-b border-gray-100 dark:border-gray-800 flex items-center gap-2">
-        <Share2 className="w-3.5 h-3.5 text-orange-500" />
-        <span className="text-xs font-bold text-gray-900 dark:text-white">Referrals</span>
+    <div className="rounded-xl border border-orange-200/50 dark:border-orange-800/30 bg-white dark:bg-gray-900 overflow-hidden">
+      {/* Header */}
+      <div className="px-3 py-2 border-b border-orange-100 dark:border-orange-900/30 bg-orange-50/50 dark:bg-orange-950/20">
+        <span className="text-xs font-bold text-gray-900 dark:text-white">🎁 Refer Friends, Earn Rewards</span>
       </div>
 
-      <div className="px-3 py-1.5 space-y-2">
-        {/* Invite link — compact */}
+      <div className="px-3 py-2 space-y-2">
+        {/* Rewards description */}
+        <div className="text-[10px] text-gray-600 dark:text-gray-400 leading-relaxed space-y-0.5">
+          <p className="font-medium text-gray-700 dark:text-gray-300">Share your link — when friends sign up you earn:</p>
+          <p>✦ <span className="font-semibold text-orange-600 dark:text-orange-400">5 Aura Points</span> per signup</p>
+          <p>✦ <span className="font-semibold text-orange-600 dark:text-orange-400">15 more Aura Points</span> when they complete their profile</p>
+          <p>✦ <span className="font-semibold text-orange-600 dark:text-orange-400">50 Ambassador Points</span> per signup</p>
+        </div>
+
+        {/* Copy link */}
         {stats.inviteUrl && (
           <div className="flex items-center gap-1">
             <div className="flex-1 min-w-0 bg-gray-100 dark:bg-gray-800 rounded px-2 py-1 border border-gray-200 dark:border-gray-700">
@@ -100,27 +96,28 @@ export function ReferralTrackingWidget({ profileUserId }: { profileUserId: numbe
             </div>
             <button
               onClick={handleCopy}
-              className="shrink-0 w-7 h-7 rounded bg-orange-500 hover:bg-orange-600 text-white flex items-center justify-center transition-colors"
+              className="shrink-0 h-7 px-2.5 rounded bg-orange-500 hover:bg-orange-600 text-white flex items-center gap-1 transition-colors text-[10px] font-semibold"
             >
               <Copy className="w-3 h-3" />
+              Copy Link
             </button>
           </div>
         )}
 
-        {/* Stat pills row — compact */}
+        {/* Stats row */}
         <div className="flex gap-1">
-          <div className="flex-1 text-center py-1 rounded bg-orange-50 dark:bg-orange-900/20">
+          <div className="flex-1 text-center py-1 rounded bg-orange-50 dark:bg-orange-900/20 border border-orange-200/40 dark:border-orange-800/20">
             <p className="text-xs font-bold text-orange-600 dark:text-orange-400">{stats.totalReferrals}</p>
-            <p className="text-[8px] text-gray-500 dark:text-gray-400 leading-tight">Joined</p>
+            <p className="text-[8px] text-gray-500 dark:text-gray-400 leading-tight">Signups</p>
           </div>
-          <div className="flex-1 text-center py-1 rounded bg-blue-50 dark:bg-blue-900/20">
-            <p className="text-xs font-bold text-blue-600 dark:text-blue-400">{stats.totalAuraFromReferrals}</p>
+          <div className="flex-1 text-center py-1 rounded bg-orange-50 dark:bg-orange-900/20 border border-orange-200/40 dark:border-orange-800/20">
+            <p className="text-xs font-bold text-orange-600 dark:text-orange-400">{stats.totalAuraFromReferrals}</p>
             <p className="text-[8px] text-gray-500 dark:text-gray-400 leading-tight">Aura</p>
           </div>
-          <div className="flex-1 text-center py-1 rounded bg-purple-50 dark:bg-purple-900/20">
+          <div className="flex-1 text-center py-1 rounded bg-orange-50 dark:bg-orange-900/20 border border-orange-200/40 dark:border-orange-800/20">
             {isAmbassador ? (
               <>
-                <p className="text-xs font-bold text-purple-600 dark:text-purple-400">{stats.totalAmbassadorPointsFromReferrals}</p>
+                <p className="text-xs font-bold text-orange-600 dark:text-orange-400">{stats.totalAmbassadorPointsFromReferrals}</p>
                 <p className="text-[8px] text-gray-500 dark:text-gray-400 leading-tight">Amb. Pts</p>
               </>
             ) : (
@@ -132,7 +129,7 @@ export function ReferralTrackingWidget({ profileUserId }: { profileUserId: numbe
           </div>
         </div>
 
-        {/* Referred users — compact list */}
+        {/* Referred users list */}
         {stats.referredUsers.length > 0 ? (
           <div className="space-y-0.5">
             {stats.referredUsers.slice(0, 5).map((u) => (
@@ -152,7 +149,9 @@ export function ReferralTrackingWidget({ profileUserId }: { profileUserId: numbe
             ))}
           </div>
         ) : (
-          <p className="text-[10px] text-gray-400 dark:text-gray-500 text-center py-2">No referrals yet — share your link!</p>
+          <p className="text-[10px] text-gray-400 dark:text-gray-500 text-center py-2">
+            You haven't referred anyone yet. Share your link and start earning!
+          </p>
         )}
       </div>
     </div>

@@ -6263,7 +6263,7 @@ Questions? Just reply here — I read every message.
               await db.update(users)
                 .set({
                   referralCount: (referrer.referralCount || 0) + 1,
-                  aura: (referrer.aura || 0) + 10, // Award 10 aura points per referral signup
+                  aura: (referrer.aura || 0) + 5, // Award 5 aura points per referral signup
                 })
                 .where(eq(users.id, referrer.id));
 
@@ -6273,7 +6273,7 @@ Questions? Just reply here — I read every message.
                   referrerId: referrer.id,
                   referredUserId: user.id,
                   eventType: 'signup',
-                  points: 10,
+                  points: 5,
                 });
               } catch { /* non-fatal */ }
 
@@ -8094,8 +8094,14 @@ Questions? Just reply to this message. Welcome aboard!
         try {
           const completedUser = await storage.getUserById(userId);
           if (completedUser?.referredBy) {
-            await awardAuraPoints(completedUser.referredBy, 5, 'referred user completed profile');
-            console.log(`✨ AURA: Awarded 5 bonus points to referrer ${completedUser.referredBy} because user ${userId} completed profile`);
+            await awardAuraPoints(completedUser.referredBy, 15, 'referred user completed profile');
+            console.log(`✨ AURA: Awarded 15 bonus points to referrer ${completedUser.referredBy} because user ${userId} completed profile`);
+            // Award 25 ambassador points for bio completion
+            try {
+              const { addAmbassadorPoints } = await import("./services/ambassadorStatus");
+              await addAmbassadorPoints(completedUser.referredBy, 25);
+              console.log(`🏅 AMBASSADOR: Awarded 25 points to referrer ${completedUser.referredBy} for referred user ${userId} bio completion`);
+            } catch { /* non-fatal */ }
             // Track referral event for history (only once per referred user)
             try {
               const [existing] = await db.select({ id: referralEvents.id }).from(referralEvents)
@@ -8109,7 +8115,7 @@ Questions? Just reply to this message. Welcome aboard!
                   referrerId: completedUser.referredBy,
                   referredUserId: userId,
                   eventType: 'bio_complete',
-                  points: 5,
+                  points: 15,
                 });
               }
             } catch { /* non-fatal */ }
