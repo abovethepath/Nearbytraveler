@@ -5043,6 +5043,8 @@ A few things to know:
 
 Questions? Just reply here — I read every message.
 
+🎁 Want to earn rewards? Share your invite link with friends — you'll earn Aura Points for every signup! Find your personal link on your profile page.
+
 — Aaron`);
             console.log(`✓ PROFILE COMPLETION: Sent welcome message from nearbytrav to ${user.username}`);
           } else {

@@ -51,6 +51,8 @@ export async function sendWelcomeEmail(userId: number): Promise<EmailResult> {
     const userTypeLabel = user.userType === "traveler" ? "Nearby Traveler" : 
                           user.userType === "local" ? "Nearby Local" : "Business Partner";
     const ctaUrl = `https://nearbytraveler.org/profile/${userId}`;
+    const referralCode = user.referralCode || '';
+    const inviteUrl = referralCode ? `https://nearbytraveler.org?ref=${referralCode}` : '';
 
     console.log("📧 WELCOME EMAIL: BEFORE SEND", {
       userId,
@@ -98,6 +100,24 @@ export async function sendWelcomeEmail(userId: number): Promise<EmailResult> {
               <div style="text-align: center; margin: 30px 0;">
                 <a href="${ctaUrl}" style="display: inline-block; background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); color: #ffffff; text-decoration: none; padding: 14px 40px; border-radius: 8px; font-size: 16px; font-weight: 600;">Explore Now</a>
               </div>
+              ${inviteUrl ? `
+              <div style="background-color: #fff7ed; border: 1px solid #fed7aa; border-radius: 8px; padding: 20px; margin: 30px 0;">
+                <p style="font-size: 16px; font-weight: 600; color: #c2410c; margin: 0 0 10px;">🎁 Invite Friends, Earn Rewards</p>
+                <p style="font-size: 14px; color: #555555; line-height: 1.6; margin: 0 0 12px;">Share your personal invite link and earn:</p>
+                <ul style="font-size: 14px; color: #555555; line-height: 1.8; margin: 0 0 15px; padding-left: 20px;">
+                  <li><strong>5 Aura Points</strong> when a friend signs up</li>
+                  <li><strong>15 more Aura Points</strong> when they complete their profile</li>
+                  <li><strong>50 Ambassador Points</strong> per signup (Ambassadors)</li>
+                </ul>
+                <p style="font-size: 13px; color: #888888; margin: 0 0 12px;">Your invite link:</p>
+                <div style="background-color: #f3f4f6; border-radius: 6px; padding: 10px 14px; font-family: monospace; font-size: 13px; color: #374151; word-break: break-all;">
+                  ${inviteUrl}
+                </div>
+                <div style="text-align: center; margin-top: 15px;">
+                  <a href="${inviteUrl}" style="display: inline-block; background: #f97316; color: #ffffff; text-decoration: none; padding: 10px 24px; border-radius: 6px; font-size: 14px; font-weight: 600;">Copy Your Link</a>
+                </div>
+              </div>
+              ` : ''}
               <p style="font-size: 14px; color: #888888; margin: 30px 0 0; text-align: center;">
                 Have questions? Just reply to this email — we're here to help!
               </p>
