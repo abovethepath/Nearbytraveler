@@ -4010,6 +4010,76 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     connectionStatus,
   };
 
+  function ReferralLeaderboard() {
+    const [sortBy, setSortBy] = useState<'total' | 'month' | 'week'>('total');
+    const { data: lb } = useQuery<{ leaderboard: any[]; totalReferrers: number }>({
+      queryKey: ['/api/admin/referral-leaderboard', sortBy],
+      queryFn: async () => {
+        const res = await fetch(`${getApiBaseUrl()}/api/admin/referral-leaderboard?sort=${sortBy}`, {
+          credentials: 'include', headers: { 'x-user-id': '2' },
+        });
+        if (!res.ok) return { leaderboard: [], totalReferrers: 0 };
+        return res.json();
+      },
+      staleTime: 60000,
+    });
+    const board = lb?.leaderboard || [];
+    const formatDate = (d: string | null) => {
+      if (!d) return '—';
+      const diff = Date.now() - new Date(d).getTime();
+      const days = Math.floor(diff / 86400000);
+      if (days === 0) return 'Today';
+      if (days === 1) return 'Yesterday';
+      if (days < 30) return `${days}d ago`;
+      return new Date(d).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+    };
+
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-2">
+        <Card className="border border-orange-200 dark:border-orange-800/30 bg-white dark:bg-gray-900">
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2 text-base font-semibold text-gray-900 dark:text-white">
+              <Award className="w-4 h-4 text-orange-500" />
+              Ambassador Referral Board
+            </CardTitle>
+            <p className="text-xs text-gray-500 dark:text-gray-400">{lb?.totalReferrers || 0} users have referred friends</p>
+            <div className="flex gap-1 mt-2">
+              {(['total', 'month', 'week'] as const).map((s) => (
+                <button key={s} type="button" onClick={() => setSortBy(s)}
+                  className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors ${sortBy === s ? 'bg-orange-500 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'}`}>
+                  {s === 'total' ? 'All Time' : s === 'month' ? 'This Month' : 'This Week'}
+                </button>
+              ))}
+            </div>
+          </CardHeader>
+          <CardContent className="pt-1">
+            {board.length === 0 ? (
+              <p className="text-sm text-gray-400 text-center py-4">No referrals yet</p>
+            ) : (
+              <div className="space-y-1">
+                {board.slice(0, 20).map((r: any) => (
+                  <button key={r.userId} type="button" onClick={() => setLocation(`/profile/${r.userId}`)}
+                    className="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-left">
+                    <span className="w-5 text-xs font-bold text-gray-400 text-right shrink-0">{r.rank}</span>
+                    <SimpleAvatar user={{ id: r.userId, username: r.username, profileImage: r.profileImage }} size="xs" />
+                    <div className="flex-1 min-w-0">
+                      <span className="text-xs font-semibold text-gray-900 dark:text-white truncate block">@{r.username}</span>
+                    </div>
+                    <span className="text-xs font-bold text-orange-600 dark:text-orange-400 shrink-0">
+                      {sortBy === 'week' ? r.referralsThisWeek : sortBy === 'month' ? r.referralsThisMonth : r.totalReferrals}
+                    </span>
+                    <span className="text-[10px] text-gray-400 shrink-0 w-12 text-right">{r.totalAuraEarned} aura</span>
+                    <span className="text-[10px] text-gray-400 shrink-0 w-14 text-right hidden sm:block">{formatDate(r.lastReferralAt)}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   function AdminDashboard() {
     if (!isNearbytrav) return null;
 
@@ -4291,6 +4361,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       <ProfileHeader {...profileProps} />
       <ProfileTabs {...profileProps} notificationPrefs={isOwnProfile ? <NotificationPreferencesCompact currentUserId={currentUser?.id} /> : null} referralWidget={<ReferralTrackingWidget profileUserId={effectiveUserId!} />} />
       {isNearbytrav && <AdminDashboard />}
+      {isNearbytrav && isOwnProfile && <ReferralLeaderboard />}
       <ProfileDialogs {...profileProps} />
 
       {/* Avatar Crop/Reposition Modal */}

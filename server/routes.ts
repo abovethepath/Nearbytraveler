@@ -25746,6 +25746,51 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // GET /api/admin/referral-leaderboard — ranked list of all referrers
+  app.get("/api/admin/referral-leaderboard", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
+      if (userId !== 2) return res.status(403).json({ error: "Admin access required" });
+
+      const sort = (req.query.sort as string) || 'total';
+
+      const rows = await db.execute(sql`
+        SELECT
+          u.id AS "userId",
+          u.username,
+          u.profile_image AS "profileImage",
+          u.referral_count AS "totalReferrals",
+          COALESCE((SELECT COUNT(*) FROM referral_events re WHERE re.referrer_id = u.id AND re.event_type = 'signup' AND re.created_at > NOW() - INTERVAL '7 days'), 0)::int AS "referralsThisWeek",
+          COALESCE((SELECT COUNT(*) FROM referral_events re WHERE re.referrer_id = u.id AND re.event_type = 'signup' AND re.created_at > NOW() - INTERVAL '30 days'), 0)::int AS "referralsThisMonth",
+          COALESCE((SELECT SUM(re.points) FROM referral_events re WHERE re.referrer_id = u.id), 0)::int AS "totalAuraEarned",
+          COALESCE(u.ambassador_points, 0)::int AS "totalAmbassadorPoints",
+          (SELECT MAX(re.created_at) FROM referral_events re WHERE re.referrer_id = u.id) AS "lastReferralAt"
+        FROM users u
+        WHERE u.referral_count > 0
+        ORDER BY ${
+          sort === 'week' ? sql`"referralsThisWeek" DESC` :
+          sort === 'month' ? sql`"referralsThisMonth" DESC` :
+          sort === 'aura' ? sql`"totalAuraEarned" DESC` :
+          sql`u.referral_count DESC`
+        }
+        LIMIT 50
+      `);
+
+      const leaderboard = ((rows as any).rows || []).map((r: any, i: number) => ({
+        rank: i + 1,
+        ...r,
+        totalReferrals: parseInt(r.totalReferrals) || 0,
+        // Strip base64 profileImage
+        profileImage: r.profileImage && String(r.profileImage).startsWith('data:') ? null : r.profileImage,
+      }));
+
+      res.json({ leaderboard, totalReferrers: leaderboard.length });
+    } catch (error: any) {
+      console.error('Error fetching referral leaderboard:', error);
+      res.status(500).json({ message: "Failed to fetch leaderboard" });
+    }
+  });
+
   // GET /api/admin/referrals - List all referrals for admin
   app.get("/api/admin/referrals", async (req: any, res) => {
     try {
