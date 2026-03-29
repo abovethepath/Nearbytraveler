@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getApiBaseUrl } from "@/lib/queryClient";
 import { useAuth } from "@/App";
@@ -30,6 +31,40 @@ interface ReferralStats {
     createdAt: string;
     username: string;
   }[];
+}
+
+function ReferredUsersList({ users, setLocation }: { users: any[]; setLocation: (p: string) => void }) {
+  const [expanded, setExpanded] = useState(false);
+  if (users.length === 0) {
+    return <p className="text-[10px] text-gray-400 dark:text-gray-500 text-center py-2">You haven't referred anyone yet. Share your link and start earning!</p>;
+  }
+  const visible = expanded ? users : users.slice(0, 3);
+  const remaining = users.length - 3;
+  return (
+    <div className="space-y-0.5">
+      {visible.map((u) => (
+        <div key={u.id} className="flex items-center gap-1.5 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded px-1 py-0.5 -mx-1 transition-colors"
+             onClick={() => setLocation(`/profile/${u.id}`)}>
+          <SimpleAvatar user={{ id: u.id, username: u.username, profileImage: u.profileImage }} size="xs" />
+          <div className="flex-1 min-w-0">
+            <span className="text-[10px] font-semibold text-gray-900 dark:text-white">@{u.username}</span>
+            <span className="text-[9px] text-gray-400 ml-1">{u.hometownCity || ""}</span>
+          </div>
+          {u.bioBonusEarned || u.hasBio ? (
+            <Check className="w-2.5 h-2.5 text-green-500 shrink-0" />
+          ) : (
+            <Clock className="w-2.5 h-2.5 text-gray-300 dark:text-gray-600 shrink-0" />
+          )}
+        </div>
+      ))}
+      {!expanded && remaining > 0 && (
+        <button type="button" onClick={() => setExpanded(true)}
+          className="w-full text-center text-[10px] font-semibold text-orange-500 hover:text-orange-600 py-1 transition-colors">
+          See more ({remaining})
+        </button>
+      )}
+    </div>
+  );
 }
 
 export function ReferralTrackingWidget({ profileUserId }: { profileUserId: number }) {
@@ -130,30 +165,8 @@ export function ReferralTrackingWidget({ profileUserId }: { profileUserId: numbe
           </div>
         </div>
 
-        {/* Referred users list */}
-        {(stats.referredUsers?.length ?? 0) > 0 ? (
-          <div className="space-y-0.5">
-            {(stats.referredUsers || []).slice(0, 5).map((u) => (
-              <div key={u.id} className="flex items-center gap-1.5 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded px-1 py-0.5 -mx-1 transition-colors"
-                   onClick={() => setLocation(`/profile/${u.id}`)}>
-                <SimpleAvatar user={{ id: u.id, username: u.username, profileImage: u.profileImage }} size="xs" />
-                <div className="flex-1 min-w-0">
-                  <span className="text-[10px] font-semibold text-gray-900 dark:text-white">@{u.username}</span>
-                  <span className="text-[9px] text-gray-400 ml-1">{u.hometownCity || ""}</span>
-                </div>
-                {u.bioBonusEarned || u.hasBio ? (
-                  <Check className="w-2.5 h-2.5 text-green-500 shrink-0" />
-                ) : (
-                  <Clock className="w-2.5 h-2.5 text-gray-300 dark:text-gray-600 shrink-0" />
-                )}
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p className="text-[10px] text-gray-400 dark:text-gray-500 text-center py-2">
-            You haven't referred anyone yet. Share your link and start earning!
-          </p>
-        )}
+        {/* Referred users list — show 3, expand on demand */}
+        <ReferredUsersList users={stats.referredUsers || []} setLocation={setLocation} />
       </div>
     </div>
   );

@@ -3305,30 +3305,41 @@ export function ProfileTabs(props: ProfilePageProps) {
                       </HoverCardContent>
                     </HoverCard>
                   )}
-                  {isOwnProfile ? (
-                    <button
-                      type="button"
-                      className="flex items-center justify-between cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg p-2 -m-2 transition-colors w-full text-left"
-                      onClick={() => setLocation('/dashboard/ambassador')}
-                    >
-                      <span className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
-                        <Award className="w-4 h-4 text-blue-500" />
-                        Ambassador Points
-                      </span>
-                      <div className="flex items-center gap-2">
-                        <span className="font-semibold text-blue-600 dark:text-blue-400">{user?.ambassadorPoints || 0}</span>
-                        <ChevronRight className="w-4 h-4 text-gray-400" />
+                  {(() => {
+                    const isAmb = (user as any)?.ambassadorStatus === 'active';
+                    return isOwnProfile ? (
+                      <button
+                        type="button"
+                        className="flex items-center justify-between cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg p-2 -m-2 transition-colors w-full text-left"
+                        onClick={() => setLocation(isAmb ? '/dashboard/ambassador' : '/ambassador-info')}
+                      >
+                        <span className={`flex items-center gap-2 ${isAmb ? 'text-gray-600 dark:text-gray-300' : 'text-gray-400 dark:text-gray-500'}`}>
+                          <Award className={`w-4 h-4 ${isAmb ? 'text-orange-500' : 'text-gray-400'}`} />
+                          Ambassador Points
+                        </span>
+                        <div className="flex items-center gap-2">
+                          {isAmb ? (
+                            <span className="font-semibold text-orange-600 dark:text-orange-400">{user?.ambassadorPoints || 0}</span>
+                          ) : (
+                            <span className="text-xs text-gray-400 dark:text-gray-500">🔒 Unlock</span>
+                          )}
+                          <ChevronRight className="w-4 h-4 text-gray-400" />
+                        </div>
+                      </button>
+                    ) : (
+                      <div className="flex items-center justify-between">
+                        <span className={`flex items-center gap-2 ${isAmb ? 'text-gray-600 dark:text-gray-300' : 'text-gray-400 dark:text-gray-500'}`}>
+                          <Award className={`w-4 h-4 ${isAmb ? 'text-orange-500' : 'text-gray-400'}`} />
+                          Ambassador Points
+                        </span>
+                        {isAmb ? (
+                          <span className="font-semibold text-orange-600 dark:text-orange-400">{user?.ambassadorPoints || 0}</span>
+                        ) : (
+                          <span className="text-xs text-gray-400 dark:text-gray-500">🔒</span>
+                        )}
                       </div>
-                    </button>
-                  ) : (
-                    <div className="flex items-center justify-between">
-                      <span className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
-                        <Award className="w-4 h-4 text-blue-500" />
-                        Ambassador Points
-                      </span>
-                      <span className="font-semibold text-blue-600 dark:text-blue-400">{user?.ambassadorPoints || 0}</span>
-                    </div>
-                  )}
+                    );
+                  })()}
                   <button
                     type="button"
                     className="text-sm text-blue-500 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:underline text-left transition-colors"
