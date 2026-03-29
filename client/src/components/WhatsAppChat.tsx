@@ -7,6 +7,8 @@ import { useIsOnline } from "@/components/NetworkStatus";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { getProfileImageUrl } from "@/components/simple-avatar";
+import { VoiceRecorder } from "@/components/VoiceRecorder";
+import { VoiceMessageBubble } from "@/components/VoiceMessageBubble";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -1803,6 +1805,59 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
       scrollToBottom("smooth", 100);
     }
   }, [messages.length]);
+
+  const sendVoiceMessage = async (blob: Blob, duration: number, waveform: number[]) => {
+    if (!currentUserId) return;
+    const base = getApiBaseUrl();
+    try {
+      const formData = new FormData();
+      formData.append('audio', blob, `voice_${Date.now()}.webm`);
+      formData.append('duration', String(duration));
+      const uploadRes = await fetch(`${base}/api/voice-messages/upload`, {
+        method: 'POST',
+        headers: { 'x-user-id': String(currentUserId) },
+        credentials: 'include',
+        body: formData,
+      });
+      if (!uploadRes.ok) throw new Error('Upload failed');
+      const { url, expiresAt } = await uploadRes.json();
+
+      // Send as a message
+      const body: any = {
+        content: '🎤 Voice message',
+        messageType: 'voice',
+        audioUrl: url,
+        audioDuration: duration,
+        audioWaveform: waveform,
+        audioExpiresAt: expiresAt,
+      };
+
+      if (chatType === 'dm') {
+        body.senderId = currentUserId;
+        body.receiverId = chatId;
+        await fetch(`${base}/api/messages`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-user-id': String(currentUserId) },
+          credentials: 'include',
+          body: JSON.stringify(body),
+        });
+      } else {
+        body.senderId = currentUserId;
+        body.chatroomId = chatId;
+        await fetch(`${base}/api/chatroom-messages`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-user-id': String(currentUserId) },
+          credentials: 'include',
+          body: JSON.stringify(body),
+        });
+      }
+      // Trigger refetch by invalidating the query
+      queryClient.invalidateQueries({ queryKey: [`/api/messages/conversation/${chatId}`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/chatroom-messages/${chatId}`] });
+    } catch (err) {
+      console.error('Voice message send failed:', err);
+    }
+  };
 
   const sendMessage = async () => {
     console.log('📤 sendMessage called:', { 
@@ -3621,6 +3676,18 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                             (typeof message.content === 'string' && message.content.startsWith('data:image'));
                           const src = (message.mediaUrl && String(message.mediaUrl)) || (isImage ? message.content : '');
 
+                          // Voice message
+                          if (message.messageType === 'voice' || (message as any).audioUrl) {
+                            return (
+                              <VoiceMessageBubble
+                                audioUrl={(message as any).audioUrl || (message as any).audio_url || null}
+                                duration={(message as any).audioDuration || (message as any).audio_duration || (message as any).voiceDuration || 0}
+                                waveform={(message as any).audioWaveform || (message as any).audio_waveform || undefined}
+                                isOwn={message.senderId === (currentUserId || user?.id)}
+                              />
+                            );
+                          }
+
                           if (!isImage) {
                             return <p className="text-[15px] whitespace-pre-wrap break-words">{message.content}</p>;
                           }
@@ -3825,19 +3892,26 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
               autoCapitalize="sentences"
               spellCheck={true}
             />
-            <Button 
-              onClick={sendMessage} 
-              disabled={!messageText.trim() || !currentUserId || !isOnline || (chatType !== 'dm' && (!messagesLoaded && !isWsConnected))}
-              size="icon"
-              className={`rounded-full min-h-[44px] min-w-[44px] h-11 w-11 md:h-9 md:w-9 shrink-0 touch-target ${
-                !currentUserId || !isOnline || (chatType !== 'dm' && (!messagesLoaded && !isWsConnected))
-                  ? 'bg-gray-500 cursor-not-allowed'
-                  : 'bg-green-600 hover:bg-green-700'
-              }`}
-              title={!isOnline ? 'No internet connection' : !currentUserId ? 'Not logged in' : 'Send message'}
-            >
-              <Send className="w-4 h-4" />
-            </Button>
+            {messageText.trim() ? (
+              <Button
+                onClick={sendMessage}
+                disabled={!messageText.trim() || !currentUserId || !isOnline || (chatType !== 'dm' && (!messagesLoaded && !isWsConnected))}
+                size="icon"
+                className={`rounded-full min-h-[44px] min-w-[44px] h-11 w-11 md:h-9 md:w-9 shrink-0 touch-target ${
+                  !currentUserId || !isOnline || (chatType !== 'dm' && (!messagesLoaded && !isWsConnected))
+                    ? 'bg-gray-500 cursor-not-allowed'
+                    : 'bg-green-600 hover:bg-green-700'
+                }`}
+                title={!isOnline ? 'No internet connection' : !currentUserId ? 'Not logged in' : 'Send message'}
+              >
+                <Send className="w-4 h-4" />
+              </Button>
+            ) : (
+              <VoiceRecorder
+                onSend={sendVoiceMessage}
+                disabled={!currentUserId || !isOnline}
+              />
+            )}
           </div>
           </div>
         </div>

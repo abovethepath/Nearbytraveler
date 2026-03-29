@@ -293,6 +293,10 @@ export const messages = pgTable("messages", {
   editedAt: timestamp("edited_at"),
   isRead: boolean("is_read").default(false),
   readAt: timestamp("read_at"), // When the recipient opened the conversation and read this message
+  audioUrl: text("audio_url"),
+  audioDuration: integer("audio_duration"),
+  audioWaveform: jsonb("audio_waveform"),
+  audioExpiresAt: timestamp("audio_expires_at"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -403,6 +407,10 @@ export const chatroomMessages = pgTable("chatroom_messages", {
   readAt: timestamp("read_at"), // When message was read by all recipients  
   isEdited: boolean("is_edited").default(false),
   editedAt: timestamp("edited_at"),
+  audioUrl: text("audio_url"),
+  audioDuration: integer("audio_duration"),
+  audioWaveform: jsonb("audio_waveform"),
+  audioExpiresAt: timestamp("audio_expires_at"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

@@ -20756,6 +20756,87 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // ── VOICE MESSAGES ──────────────────────────────────────────────
+  const voiceUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } }); // 5MB max
+
+  app.post("/api/voice-messages/upload", voiceUpload.single("audio"), async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string || '0');
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+      if (!req.file) return res.status(400).json({ error: "No audio file" });
+
+      const { uploadAudio } = await import("./services/cloudinary");
+      const filename = `voice_${userId}_${Date.now()}`;
+      const { url, publicId } = await uploadAudio(req.file.buffer, filename);
+      const duration = parseInt(req.body.duration || '0') || 0;
+      const expiresAt = new Date(Date.now() + 10 * 24 * 60 * 60 * 1000); // 10 days
+
+      console.log(`🎤 VOICE: Uploaded ${filename} (${duration}s) for user ${userId} → ${url}`);
+      res.json({ url, publicId, duration, expiresAt: expiresAt.toISOString() });
+    } catch (error: any) {
+      console.error("Voice upload error:", error?.message?.slice(0, 100));
+      res.status(500).json({ error: "Failed to upload voice message" });
+    }
+  });
+
+  // Voice message cleanup — call from cron or scheduled task
+  app.post("/api/voice-messages/cleanup", async (req, res) => {
+    try {
+      const adminId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string || '0');
+      if (adminId !== 2) return res.status(403).json({ error: "Admin only" });
+
+      const { deleteAudio } = await import("./services/cloudinary");
+
+      // Clean expired voice messages from DMs
+      const expiredDMs = await db.execute(sql`
+        SELECT id, audio_url FROM messages
+        WHERE audio_url IS NOT NULL AND audio_expires_at < NOW()
+      `);
+      for (const msg of ((expiredDMs as any).rows || []) as any[]) {
+        try {
+          // Extract publicId from Cloudinary URL
+          const match = msg.audio_url?.match(/voice-messages\/([^.]+)/);
+          if (match) await deleteAudio(`voice-messages/${match[1]}`);
+        } catch { /* non-fatal */ }
+      }
+      if (((expiredDMs as any).rows || []).length > 0) {
+        await db.execute(sql`
+          UPDATE messages
+          SET audio_url = NULL, audio_waveform = NULL,
+              content = CASE WHEN content = '' OR content = '🎤 Voice message' THEN '🎤 Voice message expired' ELSE content END
+          WHERE audio_url IS NOT NULL AND audio_expires_at < NOW()
+        `);
+      }
+
+      // Clean expired voice messages from chatrooms
+      const expiredChatroom = await db.execute(sql`
+        SELECT id, audio_url FROM chatroom_messages
+        WHERE audio_url IS NOT NULL AND audio_expires_at < NOW()
+      `);
+      for (const msg of ((expiredChatroom as any).rows || []) as any[]) {
+        try {
+          const match = msg.audio_url?.match(/voice-messages\/([^.]+)/);
+          if (match) await deleteAudio(`voice-messages/${match[1]}`);
+        } catch { /* non-fatal */ }
+      }
+      if (((expiredChatroom as any).rows || []).length > 0) {
+        await db.execute(sql`
+          UPDATE chatroom_messages
+          SET audio_url = NULL, audio_waveform = NULL,
+              content = CASE WHEN content = '' OR content = '🎤 Voice message' THEN '🎤 Voice message expired' ELSE content END
+          WHERE audio_url IS NOT NULL AND audio_expires_at < NOW()
+        `);
+      }
+
+      const total = ((expiredDMs as any).rows?.length || 0) + ((expiredChatroom as any).rows?.length || 0);
+      console.log(`🎤 VOICE CLEANUP: Cleaned ${total} expired voice messages`);
+      res.json({ cleaned: total });
+    } catch (error: any) {
+      console.error("Voice cleanup error:", error?.message?.slice(0, 100));
+      res.status(500).json({ error: "Failed to clean up voice messages" });
+    }
+  });
+
   // PHOTO DELETION: Delete individual photo endpoint
   app.delete("/api/photos/:id", async (req, res) => {
     try {
