@@ -81,7 +81,7 @@ export const INTEREST_COMMUNITY_MAPPINGS: CommunityMapping[] = [
     icon: "📸",
   },
   {
-    interests: ["Vegan/Vegetarian", "Farm-to-Table Dining", "Food Trucks", "Health-Conscious/Vaccinated"],
+    interests: ["Vegan/Vegetarian"],
     communitySlug: "vegan-conscious-eating",
     communityDisplayName: "Vegan & Conscious Eating",
     icon: "🌱",
@@ -107,7 +107,7 @@ export const INTEREST_COMMUNITY_MAPPINGS: CommunityMapping[] = [
     isPrivate: true,
   },
   {
-    interests: ["Open to Dating", "Meeting New People"],
+    interests: ["Open to Dating"],
     communitySlug: "singles-travelers",
     communityDisplayName: "Singles Travelers",
     icon: "💘",
@@ -155,12 +155,17 @@ export function hasCommunityMapping(interest: string): CommunityMapping | null {
 export function findCommunityForInterest(interest: string): CommunityMapping | null {
   const dismissed = getDismissedCommunities();
   const lower = interest.toLowerCase();
+  // Find ALL matching communities, then return the most specific one
+  // (fewest total interests = most targeted community)
+  let best: CommunityMapping | null = null;
   for (const mapping of INTEREST_COMMUNITY_MAPPINGS) {
     if (mapping.interests.some((i) => i.toLowerCase() === lower)) {
       if (!dismissed.has(mapping.communitySlug)) {
-        return mapping;
+        if (!best || mapping.interests.length < best.interests.length) {
+          best = mapping;
+        }
       }
     }
   }
-  return null;
+  return best;
 }

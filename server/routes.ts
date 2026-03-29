@@ -29980,7 +29980,7 @@ Questions? Just reply to this message. Welcome aboard!
     "outdoor-sports": ["Hiking", "Surfing", "Rock Climbing", "Running & Jogging", "Cycling & Biking", "Beach Volleyball", "Scuba Diving", "Kayaking", "Camping", "Skiing & Snowboarding", "Extreme Sports", "Water Sports", "Beach Activities", "Sailing", "Fishing"],
     "wellness-mindfulness": ["Yoga & Meditation", "Wellness & Mindfulness", "Sober/Alcohol-Free Lifestyle", "Health-Conscious/Vaccinated"],
     "photography-arts": ["Photography & Scenic Spots", "Street Art", "Architecture", "Film Festivals", "Arts", "Crafts", "Cultural Experiences", "Cultural Learning"],
-    "vegan-conscious-eating": ["Vegan/Vegetarian", "Farm-to-Table Dining", "Food Trucks"],
+    "vegan-conscious-eating": ["Vegan/Vegetarian"],
     "pet-lovers": ["Pet Lovers", "Animal Rescue & Shelters"],
     "family-travelers": ["Kid-Friendly Activities", "Parenting Meetups", "Family-Oriented"],
   };

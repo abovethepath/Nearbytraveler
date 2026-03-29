@@ -514,8 +514,6 @@ export function ProfileTabs(props: ProfilePageProps) {
       isJoining={communityPrompt.isJoining}
       onJoin={communityPrompt.handleJoin}
       onSkip={communityPrompt.handleSkip}
-      icebreaker={communityPrompt.icebreaker}
-      onIcebreakerClose={() => communityPrompt.setIcebreaker(null)}
     />
     <div className="min-h-screen profile-page w-full max-w-full overflow-x-hidden bg-gray-50 dark:bg-gray-900 md:mt-0">
       {/* Main Content Container - with overflow-x-hidden for rest of page */}
