@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import Footer from "@/components/footer";
 import LandingCTA from "@/components/LandingCTA";
 import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
-import { Users, MapPin, Globe, RefreshCw, ShieldCheck, Plane, Building2, Handshake, Coffee, Heart, Calendar, Star, CheckCircle, X, Award, MessageCircle, Camera, Compass, Gift } from "lucide-react";
+import { Users, MapPin, Globe, RefreshCw, Home, ShieldCheck, Plane, Building2, Handshake, Coffee, Heart, Calendar, Star, CheckCircle, X, Award, MessageCircle, Camera, Compass, Gift } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 import { useTheme } from "@/components/theme-provider";
 import couchsurfingHeroImage from "@assets/image_1756515286749.png";
@@ -16,19 +16,19 @@ export default function CouchsurfingLanding() {
   const { setTheme } = useTheme();
 
   const wisdomSayings = [
-    "The world becomes smaller when you open your heart to it.",
+    "The world becomes smaller when you open your door to it.",
     "Every stranger is a friend you haven't met yet.",
-    "The best travel companions are the ones you find along the way.",
+    "Home is wherever you find genuine human connection.",
     "The best souvenirs are the people you meet along the way.",
-    "Travel doesn't just show you the world — it shows you yourself.",
+    "Traveling teaches you, but hosting transforms you.",
   ];
 
   const wisdomSayingsMobile = [
-    "Open your heart, shrink the world.",
+    "Open your door, shrink the world.",
     "Every stranger is a future friend.",
-    "Best companions found along the way.",
+    "Home is where connections happen.",
     "Best souvenirs are the people.",
-    "Travel shows you the world and yourself.",
+    "Travel teaches, hosting transforms.",
   ];
 
   useEffect(() => {
@@ -84,7 +84,7 @@ export default function CouchsurfingLanding() {
                 You'll Love This.</span>
               </h1>
               <p className="text-lg sm:text-xl md:text-2xl text-zinc-600 dark:text-zinc-300 mb-8 max-w-4xl mx-auto leading-relaxed">
-                Meet travelers and locals through <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-orange-500 font-semibold">shared commonalities, activities, events and demographics</span> — keeping the spirit of cultural exchange alive.
+                Meet travelers and locals through <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-orange-500 font-semibold">shared commonalities, activities, events and demographics</span> — whether you can host or not.
               </p>
 
               {/* Desktop CTAs */}
@@ -148,6 +148,23 @@ export default function CouchsurfingLanding() {
 
         <LandingCTA />
 
+        {/* FOR EXPERIENCED HOSTS SECTION */}
+        <section className="py-8 sm:py-12 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl mb-6">
+          <div className="px-6 sm:px-8">
+            <div className="text-center mb-6">
+              <div className="inline-block bg-blue-100 dark:bg-blue-900/50 px-4 py-2 rounded-full text-sm font-medium text-blue-700 dark:text-blue-400 mb-4">
+                FOR EXPERIENCED HOSTS
+              </div>
+              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-white mb-4">
+                We Know You've Loved Hosting
+              </h2>
+              <p className="text-lg sm:text-xl text-zinc-600 dark:text-zinc-400 max-w-4xl mx-auto leading-relaxed">
+                If you've hosted before, you know the magic: meeting fascinating people, sharing your city, learning about new cultures. But hosting can also be exhausting, unpredictable, and sometimes just not possible with work or family life. That doesn't mean you're less generous — it just means life changes. With Nearby Traveler, you can keep the spirit of cultural exchange alive in a way that works for you today.
+              </p>
+            </div>
+          </div>
+        </section>
+
         {/* NOW WE CAN ALL CONNECT SECTION */}
         <section className="py-8 sm:py-12 mb-6">
           <div className="text-center mb-6">
@@ -155,7 +172,7 @@ export default function CouchsurfingLanding() {
               Now We Can All Connect
             </h2>
             <p className="text-lg sm:text-xl text-zinc-600 dark:text-zinc-400 max-w-4xl mx-auto leading-relaxed">
-              Imagine our couchsurfing community expanded to include everyone who shares our values — travelers, locals, and everyone in between.
+              Imagine our couchsurfing community expanded to include everyone who shares our values — not just those who can host or surf.
             </p>
             <div className="mt-8 max-w-4xl mx-auto">
               <p className="text-lg sm:text-xl md:text-2xl font-semibold text-zinc-800 dark:text-zinc-200 leading-relaxed">
@@ -191,6 +208,137 @@ export default function CouchsurfingLanding() {
                 <p className="text-xl sm:text-2xl font-semibold text-zinc-800 dark:text-zinc-200">
                   You can still share your love for your city—just differently.
                 </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* CONNECT WHEN YOU CAN'T HOST SECTION */}
+        <section className="py-8 sm:py-12 mb-6">
+          <div className="text-center mb-6">
+            <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Users className="w-8 h-8 text-white" />
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-white mb-4">
+              Connect When You Can't Host
+            </h2>
+            <p className="text-lg sm:text-xl text-zinc-600 dark:text-zinc-400 max-w-4xl mx-auto leading-relaxed">
+              No space but still want to meet travelers? Join them for coffee, show them your favorite spots, or attend events together. Share your city without opening your home.
+            </p>
+          </div>
+        </section>
+
+        {/* WHAT YOU'VE LOVED ABOUT HOSTING SECTION */}
+        <section className="py-8 sm:py-12 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl mb-6">
+          <div className="px-6 sm:px-8">
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Heart className="w-8 h-8 text-white" />
+              </div>
+              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-white mb-4">
+                What You've Loved About Hosting
+              </h2>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-blue-500">
+                <div className="flex items-start">
+                  <Globe className="w-6 h-6 text-blue-600 mt-1 mr-3 flex-shrink-0" />
+                  <p className="text-zinc-700 dark:text-zinc-300">Meeting fascinating people from every corner of the world</p>
+                </div>
+              </div>
+
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-green-500">
+                <div className="flex items-start">
+                  <Users className="w-6 h-6 text-green-600 mt-1 mr-3 flex-shrink-0" />
+                  <p className="text-zinc-700 dark:text-zinc-300">Creating deep connections and lifelong friendships</p>
+                </div>
+              </div>
+
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-orange-500">
+                <div className="flex items-start">
+                  <MapPin className="w-6 h-6 text-orange-600 mt-1 mr-3 flex-shrink-0" />
+                  <p className="text-zinc-700 dark:text-zinc-300">Sharing your city's hidden gems and local culture</p>
+                </div>
+              </div>
+
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-purple-500">
+                <div className="flex items-start">
+                  <Coffee className="w-6 h-6 text-purple-600 mt-1 mr-3 flex-shrink-0" />
+                  <p className="text-zinc-700 dark:text-zinc-300">Experiencing genuine cultural exchange</p>
+                </div>
+              </div>
+
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-rose-500">
+                <div className="flex items-start">
+                  <Gift className="w-6 h-6 text-rose-600 mt-1 mr-3 flex-shrink-0" />
+                  <p className="text-zinc-700 dark:text-zinc-300">The satisfaction of helping fellow travelers</p>
+                </div>
+              </div>
+
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-indigo-500">
+                <div className="flex items-start">
+                  <Plane className="w-6 h-6 text-indigo-600 mt-1 mr-3 flex-shrink-0" />
+                  <p className="text-zinc-700 dark:text-zinc-300">Learning about other cultures without traveling</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* BUT HOSTING CAN BE CHALLENGING SECTION */}
+        <section className="py-8 sm:py-12 bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-2xl mb-6">
+          <div className="px-6 sm:px-8">
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Home className="w-8 h-8 text-white" />
+              </div>
+              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-white mb-4">
+                But Hosting Can Be Challenging
+              </h2>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-orange-500">
+                <div className="flex items-start">
+                  <X className="w-6 h-6 text-orange-500 mt-1 mr-3 flex-shrink-0" />
+                  <p className="text-orange-700 dark:text-orange-300">Hard to find available couches in popular destinations</p>
+                </div>
+              </div>
+
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-red-500">
+                <div className="flex items-start">
+                  <X className="w-6 h-6 text-red-500 mt-1 mr-3 flex-shrink-0" />
+                  <p className="text-orange-700 dark:text-orange-300">Sometimes hosts aren't available to hang out</p>
+                </div>
+              </div>
+
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-yellow-500">
+                <div className="flex items-start">
+                  <X className="w-6 h-6 text-yellow-500 mt-1 mr-3 flex-shrink-0" />
+                  <p className="text-orange-700 dark:text-orange-300">Stressful with work, family, or relationship commitments</p>
+                </div>
+              </div>
+
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-pink-500">
+                <div className="flex items-start">
+                  <X className="w-6 h-6 text-pink-500 mt-1 mr-3 flex-shrink-0" />
+                  <p className="text-orange-700 dark:text-orange-300">Unpredictable with last-minute cancellations or no-shows</p>
+                </div>
+              </div>
+
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-purple-500">
+                <div className="flex items-start">
+                  <X className="w-6 h-6 text-purple-500 mt-1 mr-3 flex-shrink-0" />
+                  <p className="text-orange-700 dark:text-orange-300">Limiting when your living situation changes</p>
+                </div>
+              </div>
+
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md border-l-4 border-indigo-500">
+                <div className="flex items-start">
+                  <X className="w-6 h-6 text-indigo-500 mt-1 mr-3 flex-shrink-0" />
+                  <p className="text-orange-700 dark:text-orange-300">Overwhelming when you just want a quiet weekend</p>
+                </div>
               </div>
             </div>
           </div>
@@ -300,6 +448,21 @@ export default function CouchsurfingLanding() {
           </div>
         </section>
 
+        {/* THE BEST OF BOTH WORLDS SECTION */}
+        <section className="py-8 sm:py-12 mb-6">
+          <div className="max-w-4xl mx-auto">
+            <div className="bg-gradient-to-r from-orange-500 to-blue-600 rounded-2xl p-8 text-center text-white">
+              <h2 className="text-3xl sm:text-4xl font-bold mb-6">The Best of Both Worlds</h2>
+              <p className="text-lg sm:text-xl mb-6 leading-relaxed">
+                Host when your schedule allows. Meet travelers when hosting isn't possible.
+              </p>
+              <p className="text-xl sm:text-2xl font-semibold">
+                Your generosity and love for cultural exchange never has to stop.
+              </p>
+            </div>
+          </div>
+        </section>
+
         {/* FOR EXPERIENCED SURFERS SECTION */}
         <section className="py-8 sm:py-12 bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-2xl mb-6">
           <div className="px-6 sm:px-8">
@@ -333,19 +496,19 @@ export default function CouchsurfingLanding() {
                 </h3>
 
                 <blockquote className="text-balance text-lg leading-relaxed text-zinc-800 dark:text-zinc-200 md:text-xl max-w-3xl mx-auto">
-                  "I've met 400+ travelers from 50+ countries over 15 years of couchsurfing. The magic is the connections, the stories, the late-night conversations about life. I created Nearby Traveler to expand that magic — keeping the spirit of cultural exchange alive for everyone, wherever they are in life."
+                  "I've hosted 400+ travelers from 50+ countries over 15 years. The magic is the connections, the stories, the late-night conversations about life. I created Nearby Traveler because I realized I couldn't always host, but I always wanted to meet travelers. Now you can keep that spirit alive, whether you have space or not."
                 </blockquote>
 
                 <div className="pt-2">
                   <p className="text-sm text-zinc-600 dark:text-zinc-400">
-                    — Aaron Lefkowitz, Founder & 15-Year Couchsurfing Community Member
+                    — Aaron Lefkowitz, Founder & 15-Year Couchsurfing Host
                   </p>
                 </div>
 
                 <div className="flex items-center justify-center gap-4 pt-4">
                   <div className="h-2 w-16 rounded-full bg-gradient-to-r from-blue-500 to-orange-600" />
                   <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">
-                    Couchsurfing Community Member Since 2010
+                    Verified Couchsurfing Host Since 2010
                   </p>
                   <div className="h-2 w-16 rounded-full bg-gradient-to-r from-orange-600 to-blue-500" />
                 </div>
