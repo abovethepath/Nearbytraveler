@@ -6014,10 +6014,9 @@ Questions? Just reply here — I read every message.
         delete (userData as any).referralCode;
       }
       
-      // Founding member: set if invite=true was passed (from waitlist invite email)
-      if (req.body.invite === true || req.body.invite === 'true') {
-        (userData as any).isFoundingMember = true;
-      }
+      // Founding member: all signups during founding period get the badge.
+      // Remove this line when founding period ends.
+      (userData as any).isFoundingMember = true;
 
       console.log("🔗 REFERRAL PRE-CREATE: referredBy =", (userData as any).referredBy, "referralCode in body =", req.body.referralCode, "preserved =", preservedReferralCode);
       const user = await storage.createUser(userData);

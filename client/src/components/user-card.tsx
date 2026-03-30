@@ -180,6 +180,7 @@ export default function UserCard({
   })();
 
   const handle = `@${user.username}`;
+  const isFoundingMember = !!(user as any).isFoundingMember || !!(user as any).is_founding_member;
 
   // Fix percentage - if it's a decimal like 0.234, multiply by 100; if already whole, use as is
   const getMatchPercent = () => {
@@ -341,6 +342,9 @@ export default function UserCard({
               >
                 {handle}
               </div>
+              {isFoundingMember && (
+                <div className="text-center mt-0.5"><span className="text-[9px] font-bold text-amber-400">🌟 Founding Member</span></div>
+              )}
               <div
                 className="mt-0.5 flex items-center justify-center gap-1 min-w-0 !w-full text-[11.5px]"
                 data-role="user-card-location"
