@@ -215,42 +215,6 @@ export function CityPulse({ city, isLocal }: CityPulseProps) {
         }
       },
     },
-    // 📅 Events this week → scroll to events section on home page
-    {
-      emoji: "📅",
-      count: data?.eventsThisWeek || 0,
-      label: "events this week",
-      onClick: () => {
-        const el = document.querySelector('[data-testid="local-events-section"]');
-        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        else setLocation("/events");
-      },
-    },
-    // ✨ Events created today → scroll to events section on home page
-    {
-      emoji: "✨",
-      count: data?.eventsCreatedToday || 0,
-      label: "events created today",
-      onClick: () => {
-        const el = document.querySelector('[data-testid="local-events-section"]');
-        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        else setLocation("/events");
-      },
-    },
-    // 🤝 New connections today → popover
-    {
-      emoji: "🤝",
-      count: data?.connectionsToday || 0,
-      label: "new connections today",
-      popoverType: "connections-today" as PillPopoverType,
-    },
-    // 👥 New members today → popover
-    {
-      emoji: "👥",
-      count: data?.newMembersToday || 0,
-      label: `joined today in ${getMetroAreaName(data?.city || city || "")}`,
-      popoverType: "new-members" as PillPopoverType,
-    },
   ];
 
   const visiblePills = pills.filter((p) => p.count > 0);
@@ -260,12 +224,8 @@ export function CityPulse({ city, isLocal }: CityPulseProps) {
     <div className="w-full bg-orange-50/80 dark:bg-gray-950 border-b border-orange-100 dark:border-gray-800">
       <div className="max-w-7xl mx-auto">
         <div
-          className="flex gap-3 px-4 py-2.5 overflow-x-auto"
-          style={{
-            WebkitOverflowScrolling: "touch",
-            scrollbarWidth: "none",
-            msOverflowStyle: "none",
-          }}
+          className="city-pulse-scroll flex gap-3 px-4 py-2.5 overflow-x-auto"
+          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
           {visiblePills.map((pill, i) => {
             const pillEl = (

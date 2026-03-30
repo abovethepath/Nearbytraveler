@@ -731,7 +731,7 @@ button.user-card:first-child > div:first-of-type {
 @media (max-width: 768px) {
   .container, main, #root {
     max-width: 100vw !important;
-    overflow-x: hidden;
+    overflow-x: clip;
   }
   
   /* Modals/dialogs - max-width 90vw and proper max-height on mobile */
@@ -818,9 +818,9 @@ button.user-card:first-child > div:first-of-type {
   }
   
   /* Fix button groups and action bars */
-  .flex.gap-4:not(.recently-joined-scroll),
-  .flex.gap-3:not(.recently-joined-scroll),
-  .flex.gap-2:not(.recently-joined-scroll) {
+  .flex.gap-4:not(.recently-joined-scroll):not(.city-pulse-scroll),
+  .flex.gap-3:not(.recently-joined-scroll):not(.city-pulse-scroll),
+  .flex.gap-2:not(.recently-joined-scroll):not(.city-pulse-scroll) {
     flex-wrap: wrap !important;
   }
 
@@ -833,6 +833,17 @@ button.user-card:first-child > div:first-of-type {
     -ms-overflow-style: none !important;
   }
   .recently-joined-scroll::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  /* CityPulse pill strip — horizontal scroll row on mobile */
+  .city-pulse-scroll {
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+  }
+  .city-pulse-scroll::-webkit-scrollbar {
     display: none !important;
   }
   
