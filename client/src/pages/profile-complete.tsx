@@ -2406,10 +2406,9 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   // Profile photo update mutation with size validation and compression
   const updateProfilePhoto = useMutation({
     mutationFn: async (file: File) => {
-      // File size validation (5MB limit)
-      const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-      if (file.size > MAX_FILE_SIZE) {
-        throw new Error('Image file is too large. Please choose an image smaller than 5MB.');
+      // Allow large files — Canvas compression below handles the resize
+      if (file.size > 25 * 1024 * 1024) {
+        throw new Error('Photo too large. Please use a photo under 25MB.');
       }
 
       // Image type validation
@@ -2684,8 +2683,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     if (!file) return;
     e.target.value = '';
 
-    if (file.size > 2 * 1024 * 1024) {
-      toast({ title: "File Too Large", description: "Please select an avatar image smaller than 2MB.", variant: "destructive" });
+    if (file.size > 25 * 1024 * 1024) {
+      toast({ title: "File Too Large", description: "Please use a photo under 25MB.", variant: "destructive" });
       return;
     }
     if (!file.type.startsWith('image/')) {
@@ -2694,6 +2693,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     }
 
     try {
+      // Client-side compression first — handles any reasonable phone camera photo
       const compressed = await compressPhotoAdaptive(file).catch(() => file);
       const reader = new FileReader();
       reader.onload = () => {
@@ -2782,11 +2782,11 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   const handleProfilePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Validate file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
+      // Validate file size (allow up to 25MB — compression handles the rest)
+      if (file.size > 25 * 1024 * 1024) {
         toast({
           title: "File Too Large",
-          description: "Please select an image smaller than 5MB.",
+          description: "Please use a photo under 25MB.",
           variant: "destructive",
         });
         return;
@@ -2817,11 +2817,10 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       console.log('Cover photo file selected:', file.name, 'size:', file.size);
       
       // File size validation (5MB limit)
-      const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-      if (file.size > MAX_FILE_SIZE) {
+      if (file.size > 25 * 1024 * 1024) {
         toast({
           title: "File too large",
-          description: "Cover photo must be smaller than 5MB. Please choose a smaller image.",
+          description: "Please use a photo under 25MB.",
           variant: "destructive",
         });
         return;
