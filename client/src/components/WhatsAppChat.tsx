@@ -1810,8 +1810,11 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
     if (!currentUserId) return;
     const base = getApiBaseUrl();
     try {
+      console.log('🎤 VOICE SEND: uploading blob, size:', blob.size, 'type:', blob.type);
       const formData = new FormData();
-      formData.append('audio', blob, `voice_${Date.now()}.webm`);
+      // Use appropriate extension based on MIME type
+      const ext = blob.type.includes('mp4') ? '.m4a' : blob.type.includes('ogg') ? '.ogg' : '.webm';
+      formData.append('audio', blob, `voice_${Date.now()}${ext}`);
       formData.append('duration', String(duration));
       const uploadRes = await fetch(`${base}/api/voice-messages/upload`, {
         method: 'POST',
@@ -1819,43 +1822,64 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
         credentials: 'include',
         body: formData,
       });
-      if (!uploadRes.ok) throw new Error('Upload failed');
-      const { url, expiresAt } = await uploadRes.json();
 
-      // Send as a message
+      let audioUrl: string | null = null;
+      let expiresAt: string | null = null;
+
+      if (uploadRes.ok) {
+        const data = await uploadRes.json();
+        audioUrl = data.url;
+        expiresAt = data.expiresAt;
+        console.log('🎤 VOICE SEND: upload OK, url:', audioUrl);
+      } else {
+        console.error('🎤 VOICE SEND: upload failed, status:', uploadRes.status);
+        // Fall through to send text fallback
+      }
+
+      // Build message body
       const body: any = {
-        content: '🎤 Voice message',
-        messageType: 'voice',
-        audioUrl: url,
-        audioDuration: duration,
-        audioWaveform: waveform,
-        audioExpiresAt: expiresAt,
+        content: audioUrl ? '🎤 Voice message' : '🎤 Voice message (upload failed)',
+        messageType: audioUrl ? 'voice' : 'text',
+        ...(audioUrl && {
+          audioUrl,
+          audioDuration: duration,
+          audioWaveform: waveform,
+          audioExpiresAt: expiresAt,
+        }),
       };
 
       if (chatType === 'dm') {
         body.senderId = currentUserId;
         body.receiverId = chatId;
-        await fetch(`${base}/api/messages`, {
+        const sendRes = await fetch(`${base}/api/messages`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'x-user-id': String(currentUserId) },
           credentials: 'include',
           body: JSON.stringify(body),
         });
+        console.log('🎤 VOICE SEND: DM message sent, status:', sendRes.status);
       } else {
+        // Chatroom messages use /api/chatrooms/:roomId/messages
         body.senderId = currentUserId;
-        body.chatroomId = chatId;
-        await fetch(`${base}/api/chatroom-messages`, {
+        const sendRes = await fetch(`${base}/api/chatrooms/${chatId}/messages`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'x-user-id': String(currentUserId) },
           credentials: 'include',
           body: JSON.stringify(body),
         });
+        console.log('🎤 VOICE SEND: chatroom message sent, status:', sendRes.status);
       }
-      // Trigger refetch by invalidating the query
+
+      // Trigger refetch
       queryClient.invalidateQueries({ queryKey: [`/api/messages/conversation/${chatId}`] });
       queryClient.invalidateQueries({ queryKey: [`/api/chatroom-messages/${chatId}`] });
     } catch (err) {
-      console.error('Voice message send failed:', err);
+      console.error('🎤 VOICE SEND: failed:', err);
+      // Show error as toast if available
+      try {
+        const toastEl = document.querySelector('[data-sonner-toaster]');
+        if (!toastEl) alert('Voice message failed to send. Try again.');
+      } catch {}
     }
   };
 

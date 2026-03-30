@@ -6,6 +6,9 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
+const hasConfig = !!(process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET);
+console.log(`☁️ Cloudinary: ${hasConfig ? `configured (cloud: ${process.env.CLOUDINARY_CLOUD_NAME})` : '⚠️ NOT configured — voice messages will fail'}`);
+
 export { cloudinary };
 
 /** Upload an audio buffer (voice message) to Cloudinary. */
