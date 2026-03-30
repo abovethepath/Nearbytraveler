@@ -2175,19 +2175,33 @@ function App() {
       if (ref) sessionStorage.setItem('referralCode', ref);
     } catch {}
 
-    // Safety: clean up stale Radix scroll locks that can get stuck after
-    // dialogs unmount improperly, causing overflow:hidden on body and
-    // blocking all touch interaction on mobile.
+    // Safety: aggressively clean up stale scroll locks from Radix, modals,
+    // and the chat page body lock. Runs every 500ms on mobile for fast recovery.
     const cleanupScrollLock = () => {
-      if (document.body.hasAttribute('data-scroll-locked') && !document.querySelector('[data-state="open"][role="dialog"]')) {
+      const hasOpenDialog = document.querySelector('[data-state="open"][role="dialog"], [data-state="open"][role="alertdialog"]');
+      const hasChatPage = document.body.classList.contains('chat-page-active');
+      // Remove Radix scroll lock if no dialog is open
+      if (document.body.hasAttribute('data-scroll-locked') && !hasOpenDialog) {
         document.body.removeAttribute('data-scroll-locked');
         document.body.style.removeProperty('overflow');
         document.body.style.removeProperty('padding-right');
       }
+      // Remove stale inline overflow:hidden if no lock source is active
+      if (!hasOpenDialog && !hasChatPage && !document.body.classList.contains('nt-scroll-locked')) {
+        if (document.body.style.overflow === 'hidden') {
+          document.body.style.removeProperty('overflow');
+        }
+        if (document.body.style.position === 'fixed') {
+          document.body.style.removeProperty('position');
+          document.body.style.removeProperty('width');
+          document.body.style.removeProperty('height');
+          document.body.style.removeProperty('top');
+          document.body.style.removeProperty('left');
+        }
+      }
     };
-    // Check on mount + periodically
     cleanupScrollLock();
-    const scrollLockInterval = setInterval(cleanupScrollLock, 2000);
+    const scrollLockInterval = setInterval(cleanupScrollLock, 500);
     return () => clearInterval(scrollLockInterval);
   }, []);
 

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
+import { lockScroll, unlockScroll } from "@/lib/scrollLock";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -46,14 +47,8 @@ export function ReportUserButton({
   const { toast } = useToast();
 
   useEffect(() => {
-    if (showModal) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
+    if (showModal) { lockScroll(); } else { unlockScroll(); }
+    return () => { unlockScroll(); };
   }, [showModal]);
 
   const reportUserMutation = useMutation({

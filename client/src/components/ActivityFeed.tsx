@@ -1,6 +1,7 @@
 import React, { useMemo, useState, useEffect, useRef } from "react";
 import { useLocation } from "wouter";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { lockScroll, unlockScroll } from "@/lib/scrollLock";
 import { MessageSquare, Users, MapPin, X, ExternalLink, UserCheck, Loader2, Calendar, Activity as ActivityIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -288,8 +289,8 @@ function MeetRequestModal({
   }, [onClose]);
 
   useEffect(() => {
-    document.body.style.overflow = "hidden";
-    return () => { document.body.style.overflow = ""; };
+    lockScroll();
+    return () => { unlockScroll(); };
   }, []);
 
   return (

@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
+import { lockScroll, unlockScroll } from "@/lib/scrollLock";
 
 interface SimpleModalProps {
   isOpen: boolean;
@@ -23,13 +24,11 @@ export function SimpleModal({
 
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = 'hidden';
+      lockScroll();
     } else {
-      document.body.style.overflow = 'unset';
+      unlockScroll();
     }
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
+    return () => { unlockScroll(); };
   }, [isOpen]);
 
   useEffect(() => {

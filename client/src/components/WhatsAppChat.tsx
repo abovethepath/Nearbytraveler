@@ -262,29 +262,20 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
     }
   }, [muteKey]);
 
-  // Lock ALL page scroll — position:fixed on body is the only reliable way on iOS Safari.
+  // Lock page scroll via CSS class — safer than inline styles, ensures cleanup.
   // Also add is-chat-page so MobileTopNav + MobileBottomNav are hidden for all chat types.
   useEffect(() => {
-    const s = document.body.style;
-    const h = document.documentElement.style;
-    const prev = { overflow: s.overflow, position: s.position, width: s.width, height: s.height, top: s.top, left: s.left, htmlOverflow: h.overflow };
-    s.overflow = 'hidden';
-    s.position = 'fixed';
-    s.width = '100%';
-    s.height = '100%';
-    s.top = '0';
-    s.left = '0';
-    h.overflow = 'hidden';
+    document.body.classList.add('chat-page-active');
     if (window.innerWidth < 768) document.body.classList.add('is-chat-page');
+
+    const cleanupOnUnload = () => {
+      document.body.classList.remove('chat-page-active', 'is-chat-page');
+    };
+    window.addEventListener('beforeunload', cleanupOnUnload);
+
     return () => {
-      s.overflow = prev.overflow;
-      s.position = prev.position;
-      s.width = prev.width;
-      s.height = prev.height;
-      s.top = prev.top;
-      s.left = prev.left;
-      h.overflow = prev.htmlOverflow;
-      document.body.classList.remove('is-chat-page');
+      document.body.classList.remove('chat-page-active', 'is-chat-page');
+      window.removeEventListener('beforeunload', cleanupOnUnload);
     };
   }, []);
 
@@ -322,22 +313,10 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
 
     vv.addEventListener('resize', onResize);
     vv.addEventListener('scroll', onResize);
-    // Add touchmove listener to prevent bounce/scroll while keyboard is open
-    const preventScroll = (e: TouchEvent) => {
-      if (vv.height < window.innerHeight) {
-        // Keyboard is likely open, prevent default scroll behavior on the root
-        if (e.target === chatContainerRef.current) {
-          e.preventDefault();
-        }
-      }
-    };
-    window.addEventListener('touchmove', preventScroll, { passive: false });
-
     onResize();
     return () => {
       vv.removeEventListener('resize', onResize);
       vv.removeEventListener('scroll', onResize);
-      window.removeEventListener('touchmove', preventScroll);
     };
   }, [isMobileWeb]);
 

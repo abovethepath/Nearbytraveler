@@ -1,6 +1,7 @@
 // Events page - v2.2 - Complete location fix
 import React, { useState } from "react";
 import { useAutoHideHero } from "@/hooks/useAutoHideHero";
+import { lockScroll, unlockScroll } from "@/lib/scrollLock";
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
@@ -68,14 +69,14 @@ export default function Events() {
   React.useEffect(() => {
     if (showCreateEvent) {
       document.body.classList.add('create-event-modal-open');
-      document.body.style.overflow = 'hidden';
+      lockScroll();
     } else {
       document.body.classList.remove('create-event-modal-open');
-      document.body.style.overflow = '';
+      unlockScroll();
     }
     return () => {
       document.body.classList.remove('create-event-modal-open');
-      document.body.style.overflow = '';
+      unlockScroll();
     };
   }, [showCreateEvent]);
 

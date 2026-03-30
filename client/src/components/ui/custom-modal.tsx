@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { lockScroll, unlockScroll } from "@/lib/scrollLock";
 
 interface CustomModalProps {
   isOpen: boolean;
@@ -21,12 +22,12 @@ export function CustomModal({ isOpen, onClose, children, className, title }: Cus
 
     if (isOpen) {
       document.addEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'hidden';
+      lockScroll();
     }
 
     return () => {
       document.removeEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'unset';
+      unlockScroll();
     };
   }, [isOpen, onClose]);
 
