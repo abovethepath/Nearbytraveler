@@ -26,7 +26,7 @@ export default function Auth() {
   const urlParams = new URLSearchParams(window.location.search);
   const mode = urlParams.get('mode');
   const isSignupPage = window.location.pathname === '/signup' || window.location.pathname === '/join';
-  const [isLogin, setIsLogin] = useState(mode === 'register' ? false : !isSignupPage);
+  const [isLogin, setIsLogin] = useState(mode === 'register' || mode === 'signup' ? false : !isSignupPage);
   
   console.log('🔍 AUTH DEBUG - URL:', window.location.pathname, 'mode:', mode, 'isSignupPage:', isSignupPage, 'isLogin:', isLogin);
   

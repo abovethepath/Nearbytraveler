@@ -6617,52 +6617,50 @@ It works like a real app — no app store needed!`;
   async function sendWaitlistInviteEmail(name: string, email: string): Promise<boolean> {
     try {
       const { sendBrevoEmail } = await import('./email/brevoSend');
-      const firstName = (name || 'Traveler').split(' ')[0];
-      const signupUrl = 'https://nearbytraveler.org/auth?invite=true';
+      const firstName = (name || 'there').split(' ')[0];
+      const signupUrl = 'https://nearbytraveler.org/auth?mode=signup&invite=true';
 
+      // Personal-style email — minimal HTML to avoid promotions tab
       const html = `
-<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
-<body style="margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f5f5f5;">
-<table width="100%" cellpadding="0" cellspacing="0" style="background:#f5f5f5;padding:40px 20px;"><tr><td align="center">
-<table width="600" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 6px rgba(0,0,0,0.1);">
-<tr><td style="background:linear-gradient(135deg,#f97316 0%,#3b82f6 100%);padding:40px;text-align:center;">
-  <h1 style="color:#fff;margin:0;font-size:28px;">You're In! 🎉</h1>
-</td></tr>
-<tr><td style="padding:40px;">
-  <p style="font-size:18px;color:#333;margin:0 0 20px;">Hey ${firstName}!</p>
-  <p style="font-size:16px;color:#555;line-height:1.6;margin:0 0 20px;">
-    You signed up for the Nearby Traveler waitlist — <strong>we're officially live and your spot is ready!</strong>
-  </p>
-  <p style="font-size:16px;color:#555;line-height:1.6;margin:0 0 20px;">
-    Nearby Traveler connects travelers and locals through shared interests, activities, and events.
-    Find people near you, discover what's happening in any city, and build friendships that last a lifetime.
-  </p>
-  <div style="text-align:center;margin:30px 0;">
-    <a href="${signupUrl}" style="display:inline-block;background:linear-gradient(135deg,#f97316 0%,#ea580c 100%);color:#fff;text-decoration:none;padding:16px 40px;border-radius:8px;font-size:18px;font-weight:700;">Join Nearby Traveler Free →</a>
-  </div>
-  <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:16px;margin:20px 0;">
-    <p style="font-size:14px;color:#c2410c;font-weight:600;margin:0 0 8px;">🌟 Founding Member Perk</p>
-    <p style="font-size:14px;color:#555;margin:0;">As one of our earliest members, you'll receive a special <strong>Founding Member</strong> badge on your profile — visible to everyone!</p>
-  </div>
-  <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:16px;margin:20px 0;">
-    <p style="font-size:14px;color:#166534;font-weight:600;margin:0 0 8px;">🎁 Invite Friends, Earn Rewards</p>
-    <p style="font-size:14px;color:#555;margin:0;">Once you sign up, share your personal invite link and earn Aura Points for every friend who joins!</p>
-  </div>
-  <p style="font-size:16px;color:#555;line-height:1.6;margin:20px 0 0;">
-    Looking forward to seeing you on the platform!<br><br>
-    — Aaron<br>Founder, Nearby Traveler
-  </p>
-</td></tr>
-<tr><td style="background:#f8f9fa;padding:20px;text-align:center;">
-  <p style="font-size:12px;color:#888;margin:0;">NearbyTraveler.org — Connect with travelers and locals worldwide</p>
-</td></tr>
-</table></td></tr></table></body></html>`;
+<!DOCTYPE html><html><head><meta charset="utf-8"></head>
+<body style="margin:0;padding:20px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#333;line-height:1.6;">
+<p>Hey ${firstName},</p>
+
+<p>It's Aaron from Nearby Traveler. You signed up for our waitlist a while back — I wanted to let you know we're officially live now and your spot is ready.</p>
+
+<p>We built this to connect travelers and locals through shared interests. You can find people near you, see what's happening in any city, and meet up in real life. Think of it as the social layer for travel that should have existed years ago.</p>
+
+<p><strong><a href="${signupUrl}" style="color:#f97316;">Join here — it's free →</a></strong></p>
+
+<p>Since you were on the waitlist early, you'll automatically get a Founding Member badge on your profile. You'll also be able to invite friends and earn Aura Points for every signup.</p>
+
+<p>Would love to have you in the community.</p>
+
+<p>— Aaron<br>
+<span style="color:#888;font-size:14px;">Founder, <a href="https://nearbytraveler.org" style="color:#f97316;">NearbyTraveler.org</a></span></p>
+</body></html>`;
+
+      const textContent = `Hey ${firstName},
+
+It's Aaron from Nearby Traveler. You signed up for our waitlist a while back — I wanted to let you know we're officially live now and your spot is ready.
+
+We built this to connect travelers and locals through shared interests. You can find people near you, see what's happening in any city, and meet up in real life.
+
+Join here — it's free: ${signupUrl}
+
+Since you were on the waitlist early, you'll automatically get a Founding Member badge on your profile. You'll also be able to invite friends and earn Aura Points for every signup.
+
+Would love to have you in the community.
+
+— Aaron
+Founder, NearbyTraveler.org`;
 
       return await sendBrevoEmail({
         toEmail: email,
-        subject: "You're in — Nearby Traveler is now live! 🎉",
+        subject: `Aaron here — Nearby Traveler is live for you`,
         htmlContent: html,
-        textContent: `Hey ${firstName}! You signed up for the Nearby Traveler waitlist — we're officially live and your spot is ready! Join now: ${signupUrl}`,
+        textContent,
+        senderName: 'Aaron from Nearby Traveler',
       });
     } catch (e) {
       console.error('Waitlist invite email failed:', (e as Error).message?.slice(0, 80));

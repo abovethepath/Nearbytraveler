@@ -4,6 +4,7 @@ type SendEmailArgs = {
   subject: string;
   textContent: string;
   htmlContent?: string;
+  senderName?: string;
 };
 
 export async function sendBrevoEmail(args: SendEmailArgs) {
@@ -50,7 +51,7 @@ export async function sendBrevoEmail(args: SendEmailArgs) {
       accept: "application/json",
     },
     body: JSON.stringify({
-      sender: { name: fromName, email: fromEmail },
+      sender: { name: args.senderName || fromName, email: fromEmail },
       to: [{ email: args.toEmail }],
       subject: args.subject,
       textContent: args.textContent,
