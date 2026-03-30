@@ -742,11 +742,16 @@ export default function Messages() {
     mutationFn: async (senderId: number) => {
       return apiRequest('POST', `/api/messages/${userId}/mark-read`, { senderId });
     },
-    onMutate: async () => {
-      // Optimistically set unread count to 0 so badge clears instantly
+    onMutate: async (senderId: number) => {
+      // Optimistically reduce unread count by the number of unread messages from this sender
       await queryClient.cancelQueries({ queryKey: ['/api/messages', userId, 'unread-count'] });
       const prev = queryClient.getQueryData<{ unreadCount: number }>(['/api/messages', userId, 'unread-count']);
-      queryClient.setQueryData(['/api/messages', userId, 'unread-count'], { unreadCount: 0 });
+      const allMsgs = queryClient.getQueryData<any[]>(['/api/messages', userId]) || [];
+      const unreadFromSender = allMsgs.filter((m: any) =>
+        Number(m.senderId) === senderId && Number(m.receiverId) === userId && !m.isRead
+      ).length;
+      const newCount = Math.max(0, (prev?.unreadCount || 0) - unreadFromSender);
+      queryClient.setQueryData(['/api/messages', userId, 'unread-count'], { unreadCount: newCount });
       return { prev };
     },
     onSuccess: () => {

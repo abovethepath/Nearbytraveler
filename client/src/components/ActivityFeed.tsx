@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useState, useEffect, useRef } from "react";
 import { useLocation } from "wouter";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { MessageSquare, Users, MapPin, X, ExternalLink, UserCheck, Loader2, Calendar, Activity as ActivityIcon } from "lucide-react";
@@ -591,6 +591,16 @@ export default function ActivityFeed() {
   };
 
   const items = (data?.items || []) as AnyActivityItem[];
+
+  // Auto-mark all notifications as read when the activity feed opens
+  // This clears the bell badge immediately without requiring user to click "Mark all read"
+  const hasAutoMarkedRef = useRef(false);
+  useEffect(() => {
+    if (currentUser?.id && items.length > 0 && !hasAutoMarkedRef.current) {
+      hasAutoMarkedRef.current = true;
+      markAllRead.mutate();
+    }
+  }, [currentUser?.id, items.length > 0]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const dedupedItems = useMemo(() => {
     const kept: Array<{ typeKey: string; actorId: number; ts: number }> = [];
