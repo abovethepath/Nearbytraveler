@@ -2782,12 +2782,12 @@ export function ProfileTabs(props: ProfilePageProps) {
                               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                             </Button>
                           </PopoverTrigger>
-                          <PopoverContent className="w-full p-0 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600">
+                          <PopoverContent className="w-full p-0 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 z-[9999]" style={{ overflow: 'visible' }}>
                             <Command className="bg-white dark:bg-gray-800">
                               <CommandInput placeholder="Search countries..." className="border-0" />
                               <CommandEmpty>No country found.</CommandEmpty>
                               <CommandGroup className="max-h-64 overflow-auto">
-                                {COUNTRIES_OPTIONS.map((country) => (
+                                {COUNTRIES_OPTIONS.filter(c => c !== 'Other / Custom').map((country) => (
                                   <CommandItem
                                     key={country}
                                     value={country}
@@ -2812,6 +2812,41 @@ export function ProfileTabs(props: ProfilePageProps) {
                             </Command>
                           </PopoverContent>
                         </Popover>
+
+                        {/* Custom country/territory input */}
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            value={customCountryInput || ''}
+                            onChange={(e) => setCustomCountryInput(e.target.value)}
+                            placeholder="Add custom territory or region..."
+                            className="flex-1 px-3 py-2 text-sm rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' && customCountryInput?.trim()) {
+                                const val = customCountryInput.trim();
+                                if (!tempCountries.includes(val)) {
+                                  setTempCountries(c => [...c, val]);
+                                }
+                                setCustomCountryInput('');
+                              }
+                            }}
+                          />
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            disabled={!customCountryInput?.trim()}
+                            onClick={() => {
+                              const val = (customCountryInput || '').trim();
+                              if (val && !tempCountries.includes(val)) {
+                                setTempCountries(c => [...c, val]);
+                              }
+                              setCustomCountryInput('');
+                            }}
+                          >
+                            <Plus className="w-3 h-3 mr-1" /> Add
+                          </Button>
+                        </div>
 
                         {/* Show selected countries */}
                         {tempCountries.length > 0 && (
