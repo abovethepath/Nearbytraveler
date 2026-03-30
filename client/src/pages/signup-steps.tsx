@@ -96,7 +96,40 @@ export default function SignupSteps() {
   const [isRedirecting, setIsRedirecting] = useState(false);
   const totalSteps = 5;
   
-  const [formData, setFormData] = useState<SignupData>({
+  const [formData, setFormData] = useState<SignupData>(() => {
+    // Restore from localStorage if navigating back from a sub-page
+    try {
+      const saved = localStorage.getItem('signup_data');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return {
+          userType: parsed.userType || "",
+          email: parsed.email || "",
+          password: parsed.password || "",
+          username: parsed.username || "",
+          name: parsed.name || "",
+          dateOfBirth: "",
+          gender: "",
+          bio: "",
+          hometownCity: "",
+          hometownState: "",
+          hometownCountry: "",
+          currentCity: "",
+          currentState: "",
+          currentCountry: "",
+          travelStartDate: "",
+          travelEndDate: "",
+          interests: [],
+          activities: [],
+          events: [],
+          languagesSpoken: ["English"],
+          travelerTypes: [],
+          secretActivities: "",
+          isCurrentlyTraveling: false,
+        };
+      }
+    } catch {}
+    return {
     userType: "",
     email: "",
     password: "",
@@ -120,6 +153,7 @@ export default function SignupSteps() {
     travelerTypes: [],
     secretActivities: "",
     isCurrentlyTraveling: false
+  };
   });
 
   const registerMutation = useMutation({
@@ -320,8 +354,8 @@ export default function SignupSteps() {
       travelDestinationCountry: formData.currentCountry,
       secretActivities: formData.secretActivities,
       secretLocalQuestion: formData.secretActivities,
-      // CRITICAL FIX: Set traveler status when user type is traveler
-      isCurrentlyTraveling: formData.userType === 'traveler' ? true : formData.isCurrentlyTraveling
+      // Only mark as currently traveling if they entered a destination
+      isCurrentlyTraveling: formData.userType === 'traveler' && formData.currentCity ? true : formData.isCurrentlyTraveling
     };
 
     startAuthenticating();
@@ -559,7 +593,7 @@ export default function SignupSteps() {
                 {formData.userType === 'traveler' && (
                   <>
                     <div>
-                      <h3 className="text-lg font-medium mb-4 text-teal-700">Current Travel Destination</h3>
+                      <h3 className="text-lg font-medium mb-2 text-teal-700">Current Travel Destination <span className="text-sm font-normal text-gray-400">(optional)</span></h3>
                       <SmartLocationInput
                         city={formData.currentCity}
                         state={formData.currentState}
@@ -583,35 +617,31 @@ export default function SignupSteps() {
                     </div>
 
                     <div>
-                      <h3 className="text-lg font-medium mb-4 text-teal-700">Travel Dates</h3>
+                      <h3 className="text-lg font-medium mb-2 text-teal-700">Travel Dates <span className="text-sm font-normal text-gray-400">(optional)</span></h3>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <Label htmlFor="travelStartDate">Travel Start Date *</Label>
+                          <Label htmlFor="travelStartDate">Travel Start Date</Label>
                           <Input
                             id="travelStartDate"
                             type="date"
                             value={formData.travelStartDate}
                             onChange={(e) => setFormData({ ...formData, travelStartDate: e.target.value })}
-                            required
                             min="1925-01-01"
                             max="9999-12-31"
                             className="calendar-white-icon"
                           />
-                          <p className="text-xs text-gray-500 mt-1">Start date can be tomorrow or in the past</p>
                         </div>
                         <div>
-                          <Label htmlFor="travelEndDate">Travel End Date *</Label>
+                          <Label htmlFor="travelEndDate">Travel End Date</Label>
                           <Input
                             id="travelEndDate"
                             type="date"
                             value={formData.travelEndDate}
                             onChange={(e) => setFormData({ ...formData, travelEndDate: e.target.value })}
-                            required
                             min="1925-01-01"
                             max="9999-12-31"
                             className="calendar-white-icon"
                           />
-                          <p className="text-xs text-gray-500 mt-1">End date can be anytime in the future</p>
                         </div>
                       </div>
                       {formData.travelStartDate && formData.travelEndDate && (
@@ -619,6 +649,17 @@ export default function SignupSteps() {
                           Duration: {Math.ceil((new Date(formData.travelEndDate).getTime() - new Date(formData.travelStartDate).getTime()) / (1000 * 60 * 60 * 24))} days
                         </div>
                       )}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          // Skip travel destination — clear travel fields and proceed
+                          setFormData(prev => ({ ...prev, currentCity: '', currentState: '', currentCountry: '', travelStartDate: '', travelEndDate: '' }));
+                          setCurrentStep(currentStep + 1);
+                        }}
+                        className="w-full mt-4 py-2 text-sm text-gray-500 dark:text-gray-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors underline underline-offset-2"
+                      >
+                        I don't have travel plans yet — Skip this step
+                      </button>
                     </div>
                   </>
                 )}
