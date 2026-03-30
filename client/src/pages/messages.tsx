@@ -742,15 +742,27 @@ export default function Messages() {
     mutationFn: async (senderId: number) => {
       return apiRequest('POST', `/api/messages/${userId}/mark-read`, { senderId });
     },
+    onMutate: async () => {
+      // Optimistically set unread count to 0 so badge clears instantly
+      await queryClient.cancelQueries({ queryKey: ['/api/messages', userId, 'unread-count'] });
+      const prev = queryClient.getQueryData<{ unreadCount: number }>(['/api/messages', userId, 'unread-count']);
+      queryClient.setQueryData(['/api/messages', userId, 'unread-count'], { unreadCount: 0 });
+      return { prev };
+    },
     onSuccess: () => {
-      // Force-refetch all badge sources so all 3 badge locations update instantly
+      // Confirm with server — refetch the actual count
       queryClient.invalidateQueries({ queryKey: ['/api/messages', userId, 'unread-count'] });
       queryClient.invalidateQueries({ queryKey: ['/api/notifications', userId] });
       queryClient.invalidateQueries({ queryKey: ['/api/connections', userId, 'requests'] });
-      // Delayed refetch of messages list — gives server time to process mark-read
       setTimeout(() => {
         queryClient.invalidateQueries({ queryKey: ['/api/messages', userId] });
       }, 1500);
+    },
+    onError: (_err, _vars, context) => {
+      // Rollback on error
+      if (context?.prev) {
+        queryClient.setQueryData(['/api/messages', userId, 'unread-count'], context.prev);
+      }
     },
   });
 

@@ -702,9 +702,11 @@ function Router() {
       const force = !!opts?.force || loginPending || isAuthenticating;
 
       // Throttle: at most once every 60 s for background navigation checks.
-      // Force-mode (login/signup transitions) bypasses this.
+      // Force-mode AND visibility/focus events bypass this — critical for mobile
+      // app-switch scenarios where the session needs immediate verification.
+      const isMobileResume = reason === "focus" || reason === "visible" || reason === "pageshow";
       const now = Date.now();
-      if (!force && now - lastAuthSyncAtRef.current < 60_000) return;
+      if (!force && !isMobileResume && now - lastAuthSyncAtRef.current < 60_000) return;
       lastAuthSyncAtRef.current = now;
 
       if (authSyncInFlightRef.current) return;
@@ -725,10 +727,10 @@ function Router() {
 
         // Auth-transition & resume hardening:
         // After login/signup OR when resuming from background (mobile PWA, tab switch),
-        // the session cookie can lag briefly. Retry before concluding session is gone.
+        // the session cookie can lag briefly. Retry with longer delays before giving up.
         // This prevents the "signed out when switching apps" bug on mobile.
         if (res.status === 401 && (loginPending || isAuthenticating || reason === "focus" || reason === "visible" || reason === "pageshow")) {
-          for (const delayMs of [150, 400, 800]) {
+          for (const delayMs of [200, 500, 1000, 2000]) {
             await new Promise((r) => setTimeout(r, delayMs));
             res = await doCheck();
             if (res.ok) break;
