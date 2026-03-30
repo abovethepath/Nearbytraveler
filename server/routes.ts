@@ -6014,6 +6014,11 @@ Questions? Just reply here — I read every message.
         delete (userData as any).referralCode;
       }
       
+      // Founding member: set if invite=true was passed (from waitlist invite email)
+      if (req.body.invite === true || req.body.invite === 'true') {
+        (userData as any).isFoundingMember = true;
+      }
+
       console.log("🔗 REFERRAL PRE-CREATE: referredBy =", (userData as any).referredBy, "referralCode in body =", req.body.referralCode, "preserved =", preservedReferralCode);
       const user = await storage.createUser(userData);
       const { password, ...userWithoutPassword } = user;
@@ -6605,6 +6610,120 @@ It works like a real app — no app store needed!`;
     } catch (error: any) {
       console.error('Error fetching waitlist leads:', error);
       res.status(500).json({ message: "Failed to fetch waitlist data" });
+    }
+  });
+
+  // ── WAITLIST INVITE SYSTEM ──────────────────────────────────────
+
+  async function sendWaitlistInviteEmail(name: string, email: string): Promise<boolean> {
+    try {
+      const { sendBrevoEmail } = await import('./email/brevoSend');
+      const firstName = (name || 'Traveler').split(' ')[0];
+      const signupUrl = 'https://nearbytraveler.org/auth?invite=true';
+
+      const html = `
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
+<body style="margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f5f5f5;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#f5f5f5;padding:40px 20px;"><tr><td align="center">
+<table width="600" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 6px rgba(0,0,0,0.1);">
+<tr><td style="background:linear-gradient(135deg,#f97316 0%,#3b82f6 100%);padding:40px;text-align:center;">
+  <h1 style="color:#fff;margin:0;font-size:28px;">You're In! 🎉</h1>
+</td></tr>
+<tr><td style="padding:40px;">
+  <p style="font-size:18px;color:#333;margin:0 0 20px;">Hey ${firstName}!</p>
+  <p style="font-size:16px;color:#555;line-height:1.6;margin:0 0 20px;">
+    You signed up for the Nearby Traveler waitlist — <strong>we're officially live and your spot is ready!</strong>
+  </p>
+  <p style="font-size:16px;color:#555;line-height:1.6;margin:0 0 20px;">
+    Nearby Traveler connects travelers and locals through shared interests, activities, and events.
+    Find people near you, discover what's happening in any city, and build friendships that last a lifetime.
+  </p>
+  <div style="text-align:center;margin:30px 0;">
+    <a href="${signupUrl}" style="display:inline-block;background:linear-gradient(135deg,#f97316 0%,#ea580c 100%);color:#fff;text-decoration:none;padding:16px 40px;border-radius:8px;font-size:18px;font-weight:700;">Join Nearby Traveler Free →</a>
+  </div>
+  <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:16px;margin:20px 0;">
+    <p style="font-size:14px;color:#c2410c;font-weight:600;margin:0 0 8px;">🌟 Founding Member Perk</p>
+    <p style="font-size:14px;color:#555;margin:0;">As one of our earliest members, you'll receive a special <strong>Founding Member</strong> badge on your profile — visible to everyone!</p>
+  </div>
+  <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:16px;margin:20px 0;">
+    <p style="font-size:14px;color:#166534;font-weight:600;margin:0 0 8px;">🎁 Invite Friends, Earn Rewards</p>
+    <p style="font-size:14px;color:#555;margin:0;">Once you sign up, share your personal invite link and earn Aura Points for every friend who joins!</p>
+  </div>
+  <p style="font-size:16px;color:#555;line-height:1.6;margin:20px 0 0;">
+    Looking forward to seeing you on the platform!<br><br>
+    — Aaron<br>Founder, Nearby Traveler
+  </p>
+</td></tr>
+<tr><td style="background:#f8f9fa;padding:20px;text-align:center;">
+  <p style="font-size:12px;color:#888;margin:0;">NearbyTraveler.org — Connect with travelers and locals worldwide</p>
+</td></tr>
+</table></td></tr></table></body></html>`;
+
+      return await sendBrevoEmail({
+        toEmail: email,
+        subject: "You're in — Nearby Traveler is now live! 🎉",
+        htmlContent: html,
+        textContent: `Hey ${firstName}! You signed up for the Nearby Traveler waitlist — we're officially live and your spot is ready! Join now: ${signupUrl}`,
+      });
+    } catch (e) {
+      console.error('Waitlist invite email failed:', (e as Error).message?.slice(0, 80));
+      return false;
+    }
+  }
+
+  // Invite a single waitlist lead
+  app.post("/api/admin/waitlist/invite-one/:id", async (req: any, res) => {
+    try {
+      const adminId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string || '0');
+      if (adminId !== 2) return res.status(403).json({ error: "Admin only" });
+
+      const leadId = parseInt(req.params.id || '0');
+      const [lead] = await db.select().from(waitlistLeads).where(eq(waitlistLeads.id, leadId)).limit(1);
+      if (!lead) return res.status(404).json({ error: "Lead not found" });
+
+      // Check if already has an account
+      const [existing] = await db.select({ id: users.id }).from(users).where(eq(users.email, lead.email)).limit(1);
+
+      const sent = await sendWaitlistInviteEmail(lead.name, lead.email);
+      await db.update(waitlistLeads).set({ invitedAt: new Date(), contacted: true }).where(eq(waitlistLeads.id, leadId));
+
+      res.json({ sent, alreadySignedUp: !!existing, leadId });
+    } catch (error: any) {
+      console.error('Invite one error:', error?.message);
+      res.status(500).json({ error: "Failed to send invite" });
+    }
+  });
+
+  // Bulk invite all uninvited waitlist leads
+  app.post("/api/admin/waitlist/invite-all", async (req: any, res) => {
+    try {
+      const adminId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string || '0');
+      if (adminId !== 2) return res.status(403).json({ error: "Admin only" });
+
+      const uninvited = await db.select().from(waitlistLeads).where(sql`invited_at IS NULL`);
+      let invited = 0, alreadySignedUp = 0, failed = 0;
+
+      for (const lead of uninvited) {
+        try {
+          const [existing] = await db.select({ id: users.id }).from(users).where(eq(users.email, lead.email)).limit(1);
+          if (existing) alreadySignedUp++;
+
+          const sent = await sendWaitlistInviteEmail(lead.name, lead.email);
+          if (sent) invited++;
+          else failed++;
+
+          await db.update(waitlistLeads).set({ invitedAt: new Date(), contacted: true }).where(eq(waitlistLeads.id, lead.id));
+
+          // Rate limit: 100ms between emails
+          await new Promise(r => setTimeout(r, 100));
+        } catch { failed++; }
+      }
+
+      console.log(`📧 WAITLIST INVITE: ${invited} invited, ${alreadySignedUp} already signed up, ${failed} failed out of ${uninvited.length}`);
+      res.json({ total: uninvited.length, invited, alreadySignedUp, failed });
+    } catch (error: any) {
+      console.error('Invite all error:', error?.message);
+      res.status(500).json({ error: "Failed to send invites" });
     }
   });
 

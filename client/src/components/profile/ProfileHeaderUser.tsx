@@ -302,6 +302,9 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                   </h1>
                   <span className="text-sm sm:text-base font-medium text-white/80 break-all">@{user?.username}</span>
                   <SupportBadge tier={(user as any)?.supportTier} />
+                  {(user as any)?.isFoundingMember && (
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-400/30">🌟 Founding Member</span>
+                  )}
                 </div>
                 {/* Own profile: ⋮ menu lives on username row (top-right) */}
                 {isOwnProfile && (
@@ -631,6 +634,9 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                               </h1>
                               <div className="text-sm font-medium text-white/75 break-all">@{user?.username}</div>
                               <SupportBadge tier={(user as any)?.supportTier} />
+                  {(user as any)?.isFoundingMember && (
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-400/30">🌟 Founding Member</span>
+                  )}
                             </div>
 
                             {/* DESKTOP ONLY: Nearby Local/Traveler labels in content area (unchanged) */}
@@ -1215,6 +1221,9 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                           </h1>
                           <span className="text-sm font-medium text-white/75 break-all">@{user?.username}</span>
                           <SupportBadge tier={(user as any)?.supportTier} />
+                  {(user as any)?.isFoundingMember && (
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-400/30">🌟 Founding Member</span>
+                  )}
                           </div>
                           {!isOwnProfile && connectionStatus?.status === 'accepted' && (
                             <span className="ml-1.5 inline-flex items-center justify-center w-5 h-5 rounded-full bg-blue-600 shrink-0" title="Connected">

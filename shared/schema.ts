@@ -111,6 +111,7 @@ export const users = pgTable("users", {
   // Military/Veteran Status
   isVeteran: boolean("is_veteran").default(false),
   isActiveDuty: boolean("is_active_duty").default(false),
+  isFoundingMember: boolean("is_founding_member").default(false),
   
   // Diversity Business Ownership Categories
   isMinorityOwned: boolean("is_minority_owned").default(false),
@@ -856,7 +857,8 @@ export const waitlistLeads = pgTable("waitlist_leads", {
   email: text("email").notNull().unique(),
   submittedAt: timestamp("submitted_at").defaultNow(),
   contacted: boolean("contacted").default(false),
-  notes: text("notes"), // For admin notes about follow-up
+  notes: text("notes"),
+  invitedAt: timestamp("invited_at"), // When invite email was sent
 });
 
 export const insertUserSchema = createInsertSchema(users).omit({
