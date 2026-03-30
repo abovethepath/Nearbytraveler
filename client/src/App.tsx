@@ -303,7 +303,8 @@ const SESSION_CACHE_KEY = 'nt_cached_session';
 const SESSION_CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days (matches session recovery window)
 const readSessionCache = (): User | null => {
   try {
-    if (sessionStorage.getItem("nt_session_verified") !== "1") return null;
+    // Use localStorage (not sessionStorage) — sessionStorage is wiped when iOS suspends the tab
+    if (localStorage.getItem("nt_session_verified") !== "1") return null;
     const raw = localStorage.getItem(SESSION_CACHE_KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw);
@@ -510,46 +511,49 @@ function Router() {
   // - avoid destructive localStorage clearing during transient auth issues
   const sessionInvalidKey = "nt_session_invalid";
   const sessionVerifiedKey = "nt_session_verified";
+  // CRITICAL: Use localStorage (NOT sessionStorage) for session flags.
+  // sessionStorage is wiped when iOS Safari suspends/evicts the tab during app switch,
+  // causing the "logged out when switching apps" bug.
   const isSessionMarkedInvalid = React.useCallback(() => {
     try {
-      return sessionStorage.getItem(sessionInvalidKey) === "1";
+      return localStorage.getItem(sessionInvalidKey) === "1";
     } catch {
       return false;
     }
   }, []);
   const isSessionVerified = React.useCallback(() => {
     try {
-      return sessionStorage.getItem(sessionVerifiedKey) === "1";
+      return localStorage.getItem(sessionVerifiedKey) === "1";
     } catch {
       return false;
     }
   }, []);
   const markSessionInvalid = React.useCallback((reason?: string) => {
     try {
-      sessionStorage.setItem(sessionInvalidKey, "1");
-      if (reason) sessionStorage.setItem(sessionInvalidKey + "_reason", reason);
+      localStorage.setItem(sessionInvalidKey, "1");
+      if (reason) localStorage.setItem(sessionInvalidKey + "_reason", reason);
     } catch {
       // ignore storage errors
     }
   }, []);
   const markSessionVerified = React.useCallback(() => {
     try {
-      sessionStorage.setItem(sessionVerifiedKey, "1");
+      localStorage.setItem(sessionVerifiedKey, "1");
     } catch {
       // ignore storage errors
     }
   }, []);
   const clearSessionVerified = React.useCallback(() => {
     try {
-      sessionStorage.removeItem(sessionVerifiedKey);
+      localStorage.removeItem(sessionVerifiedKey);
     } catch {
       // ignore storage errors
     }
   }, []);
   const clearSessionInvalid = React.useCallback(() => {
     try {
-      sessionStorage.removeItem(sessionInvalidKey);
-      sessionStorage.removeItem(sessionInvalidKey + "_reason");
+      localStorage.removeItem(sessionInvalidKey);
+      localStorage.removeItem(sessionInvalidKey + "_reason");
     } catch {
       // ignore storage errors
     }
@@ -723,14 +727,18 @@ function Router() {
             headers: { Accept: "application/json" },
           });
 
+        // On mobile resume, wait 500ms for iOS to restore network + cookies
+        if (isMobileResume) {
+          await new Promise((r) => setTimeout(r, 500));
+        }
+
         let res = await doCheck();
 
         // Auth-transition & resume hardening:
         // After login/signup OR when resuming from background (mobile PWA, tab switch),
         // the session cookie can lag briefly. Retry with longer delays before giving up.
-        // This prevents the "signed out when switching apps" bug on mobile.
-        if (res.status === 401 && (loginPending || isAuthenticating || reason === "focus" || reason === "visible" || reason === "pageshow")) {
-          for (const delayMs of [200, 500, 1000, 2000]) {
+        if (res.status === 401 && (loginPending || isAuthenticating || isMobileResume)) {
+          for (const delayMs of [500, 1000, 2000]) {
             await new Promise((r) => setTimeout(r, delayMs));
             res = await doCheck();
             if (res.ok) break;
