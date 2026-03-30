@@ -1530,7 +1530,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
         <div className="absolute inset-0 bg-black/95" />
         <div
           className="relative w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-4 border border-gray-200 dark:border-gray-700"
-          style={{ zIndex: 1000000, WebkitOverflowScrolling: 'touch', touchAction: 'pan-y' }}
+          style={{ zIndex: 1000000, touchAction: 'manipulation' }}
           onClick={(e) => e.stopPropagation()}
         >
           <button

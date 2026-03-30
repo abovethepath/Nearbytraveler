@@ -1186,13 +1186,13 @@ export function QuickMeetupWidget({
               <Button
                 onClick={handleCreateMeetup}
                 disabled={createMutation.isPending}
-                className="w-full text-lg font-black py-4 h-14 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white border-0 rounded-xl shadow-2xl hover:scale-105 transition-all duration-300 relative overflow-hidden"
+                className="w-full text-lg font-black py-4 h-14 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white border-0 rounded-xl shadow-2xl transition-colors duration-300 relative overflow-hidden"
               >
                 <span className="relative z-10 flex items-center justify-center gap-2">
                   {createMutation.isPending ? 'Posting...' : 'Post — I\'m Out Now'}
                 </span>
-                {/* Animated shine effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 transform translate-x-[-100%] animate-shine"></div>
+                {/* Animated shine effect — pointer-events-none so it never intercepts taps */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 transform translate-x-[-100%] animate-shine pointer-events-none"></div>
               </Button>
               </div>
               )}
