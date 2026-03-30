@@ -1,8 +1,11 @@
 import { METRO_AREAS } from "@shared/metro-areas";
+import { COUNTRIES as SHARED_COUNTRIES } from "@shared/locationData";
 
-// Location data for international travel - popular countries first, then remaining alphabetically
-export const COUNTRIES: string[] = [
-  // Most popular travel destinations first
+// Single source of truth: countries list from shared/locationData.ts
+export const COUNTRIES: string[] = SHARED_COUNTRIES;
+
+// Old inline countries list removed — now imported from shared/locationData.ts
+const _REMOVED: string[] = [
   "United States",
   "United Kingdom",
   "Canada",

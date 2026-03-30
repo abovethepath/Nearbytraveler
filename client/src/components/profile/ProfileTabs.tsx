@@ -2782,7 +2782,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                             </Button>
                           </PopoverTrigger>
-                          <PopoverContent className="w-full p-0 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 z-[9999]" style={{ overflow: 'visible' }}>
+                          <PopoverContent className="w-[300px] p-0 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 z-[9999]" sideOffset={4} align="start">
                             <Command className="bg-white dark:bg-gray-800">
                               <CommandInput placeholder="Search countries..." className="border-0" />
                               <CommandEmpty>No country found.</CommandEmpty>
