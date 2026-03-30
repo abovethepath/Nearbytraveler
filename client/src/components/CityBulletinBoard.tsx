@@ -107,8 +107,26 @@ export function CityBulletinBoard({ cityName }: { cityName: string }) {
   });
 
   const likeMutation = useMutation({
-    mutationFn: async (postId: number) => apiRequest("POST", `/api/city-posts/${postId}/like`),
-    onSuccess: () => {
+    mutationFn: async (postId: number) => {
+      const res = await apiRequest("POST", `/api/city-posts/${postId}/like`);
+      return { postId, ...(await res.json().catch(() => ({}))) };
+    },
+    onMutate: async (postId: number) => {
+      // Optimistic update — toggle heart + count instantly
+      const qk = ["/api/city-posts/likes", postIds.join(",")];
+      await queryClient.cancelQueries({ queryKey: qk });
+      const prev = queryClient.getQueryData<Record<number, { count: number; liked: boolean }>>(qk);
+      queryClient.setQueryData(qk, (old: any) => {
+        if (!old) return old;
+        const cur = old[postId] || { count: 0, liked: false };
+        return { ...old, [postId]: { count: cur.liked ? Math.max(0, cur.count - 1) : cur.count + 1, liked: !cur.liked } };
+      });
+      return { prev, qk };
+    },
+    onError: (_err: any, _postId: number, context: any) => {
+      if (context?.prev) queryClient.setQueryData(context.qk, context.prev);
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/city-posts/likes"] });
     },
   });
