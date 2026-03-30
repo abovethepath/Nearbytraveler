@@ -61,7 +61,6 @@ import BusinessesGrid from "@/components/BusinessesGrid";
 import { QuickMeetupWidget } from "@/components/QuickMeetupWidget";
 import { AvailableNowWidget } from "@/components/AvailableNowWidget";
 import { MeetupAlertBanner } from "@/components/MeetupAlertBanner";
-import { CityPulse } from "@/components/CityPulse";
 import { ChatInviteAlertBar } from "@/components/ChatInviteAlertBar";
 import RecentlyJoined from "@/components/RecentlyJoined";
 import AvailableNowStrip from "@/components/AvailableNowStrip";
@@ -1873,13 +1872,6 @@ export default function Home() {
 
       {effectiveUser && <ChatInviteAlertBar />}
 
-      {/* CityPulse — ALWAYS shows hometown, never replaced by destination */}
-      {effectiveUser && (
-        <CityPulse
-          city={effectiveUser.hometownCity || undefined}
-          isLocal={true}
-        />
-      )}
 
       <div className="pt-2 sm:pt-4 pb-24 md:pb-8 lg:pb-4 relative">
         
