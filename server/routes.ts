@@ -24727,8 +24727,8 @@ Questions? Just reply to this message. Welcome aboard!
   app.delete("/api/user-city-interests/:interestId", async (req, res) => {
     try {
       const { interestId } = req.params;
-      const userId = req.headers['x-user-id'];
-      
+      const userId = req.session?.user?.id || req.headers['x-user-id'];
+
       if (!interestId || !userId) {
         return res.status(400).json({ error: 'Missing required fields: interestId, userId' });
       }
