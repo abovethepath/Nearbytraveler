@@ -13165,6 +13165,21 @@ Questions? Just reply to this message. Welcome aboard!
         }
       }
 
+      // Also clear any new_message notifications from this sender so the bell badge resets
+      try {
+        await db.update(notifications)
+          .set({ isRead: true })
+          .where(and(
+            eq(notifications.userId, userId),
+            eq(notifications.fromUserId, parseInt(senderId)),
+            eq(notifications.type, 'new_message'),
+            eq(notifications.isRead, false)
+          ));
+      } catch (notifErr) {
+        // Non-critical — don't fail the mark-read response
+        if (process.env.NODE_ENV === 'development') console.error('Clear new_message notification error:', notifErr);
+      }
+
       return res.json({ success: true, markedCount: result.rowCount });
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error marking messages as read:", error);
@@ -31292,13 +31307,22 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
-  // Mark event chatroom as read (no-op ack, kept for client compatibility)
+  // Mark event chatroom as read — updates lastReadAt in chatroom_members
   app.post("/api/event-chatrooms/:chatroomId/mark-read", async (req: any, res) => {
     try {
       const userId = req.session?.user?.id || req.headers['x-user-id'];
       if (!userId) return res.status(401).json({ error: "Not authenticated" });
+      const chatroomId = parseInt(req.params.chatroomId || '0');
+      if (!chatroomId) return res.status(400).json({ error: "Invalid chatroom ID" });
+      await db.update(chatroomMembers)
+        .set({ lastReadAt: new Date() })
+        .where(and(
+          eq(chatroomMembers.chatroomId, chatroomId),
+          eq(chatroomMembers.userId, Number(userId))
+        ));
       res.json({ ok: true });
     } catch (error: any) {
+      console.error("Error marking event chatroom as read:", error);
       res.status(500).json({ error: "Failed to mark as read" });
     }
   });

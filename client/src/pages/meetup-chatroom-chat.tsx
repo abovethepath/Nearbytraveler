@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import WhatsAppChat from "@/components/WhatsAppChat";
 import { useAuth } from "@/App";
 import { ChatPageSkeleton } from "@/components/ui/chat-page-skeleton";
-import { getApiBaseUrl, apiRequest } from "@/lib/queryClient";
+import { getApiBaseUrl, apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
 export default function MeetupChatroomChat() {
@@ -68,10 +68,18 @@ export default function MeetupChatroomChat() {
     return () => document.body.classList.remove("is-chat-page");
   }, []);
 
-  // Mark chatroom as read when opened directly via URL
+  // Mark chatroom as read when opened directly via URL, then sync the messages list badge
   useEffect(() => {
     if (!chatroomId || !user?.id) return;
-    apiRequest('POST', `/api/meetup-chatrooms/${chatroomId}/mark-read`).catch(() => {});
+    apiRequest('POST', `/api/meetup-chatrooms/${chatroomId}/mark-read`)
+      .then(() => {
+        // Clear the badge in the messages list without requiring a full page reload
+        queryClient.setQueryData(['/api/meetup-chatrooms/mine'], (old: any) =>
+          Array.isArray(old) ? old.map((r: any) => r.id === chatroomId ? { ...r, unreadCount: 0 } : r) : old
+        );
+        queryClient.invalidateQueries({ queryKey: ['/api/meetup-chatrooms/mine'] });
+      })
+      .catch(() => {});
   }, [chatroomId, user?.id]);
 
   useEffect(() => {

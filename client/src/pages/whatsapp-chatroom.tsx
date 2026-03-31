@@ -93,10 +93,17 @@ export default function WhatsAppChatroom() {
     retry: 2,
   });
 
-  // Mark chatroom as read when opened
+  // Mark chatroom as read when opened, then sync the messages list badge
   useEffect(() => {
     if (!chatroomId || !currentUserId) return;
-    apiRequest('POST', `/api/chatrooms/${chatroomId}/mark-read`).catch(() => {});
+    apiRequest('POST', `/api/chatrooms/${chatroomId}/mark-read`)
+      .then(() => {
+        queryClient.setQueryData(['/api/chatrooms/mine'], (old: any) =>
+          Array.isArray(old) ? old.map((r: any) => r.id === chatroomId ? { ...r, unreadCount: 0 } : r) : old
+        );
+        queryClient.invalidateQueries({ queryKey: ['/api/chatrooms/mine'] });
+      })
+      .catch(() => {});
   }, [chatroomId, currentUserId]);
 
   const joinMutation = useMutation({
