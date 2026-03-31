@@ -1197,8 +1197,8 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
             {/* Open Join toggle */}
             <div className="flex items-center justify-between py-2 px-1">
               <div>
-                <p className="text-sm font-medium text-gray-700 dark:text-gray-300">All are welcome</p>
-                <p className="text-[11px] text-gray-500 dark:text-gray-400">People can join without requesting — no approval needed</p>
+                <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Auto join</p>
+                <p className="text-[11px] text-gray-500 dark:text-gray-400">People can join without requesting</p>
               </div>
               <button
                 type="button"
