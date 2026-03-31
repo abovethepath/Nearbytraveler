@@ -1244,6 +1244,7 @@ export const meetupChatrooms = pgTable("meetup_chatrooms", {
   groupType: text("group_type"), // null = meetup/event/available_now, 'group_dm' = group chat created from a DM
   createdByUserId: integer("created_by_user_id"), // for group_dm chatrooms
   pinnedMessageId: integer("pinned_message_id"),
+  openJoin: boolean("open_join").default(false), // true = anyone can join instantly, false = approval required
 });
 
 // Universal invite tokens for any chatroom type (meetup | event | chatroom | dm)
@@ -2751,6 +2752,7 @@ export const availableNow = pgTable("available_now", {
   state: text("state"),
   country: text("country").notNull(),
   expiresAt: timestamp("expires_at").notNull(),
+  openJoin: boolean("open_join").default(false), // true = anyone can join instantly
   createdAt: timestamp("created_at").defaultNow(),
 });
 

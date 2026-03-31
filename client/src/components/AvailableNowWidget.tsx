@@ -99,6 +99,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
   const [selectedActivities, setSelectedActivities] = useState<string[]>([]);
   const [customNote, setCustomNote] = useState("");
   const [duration, setDuration] = useState("4");
+  const [openJoin, setOpenJoin] = useState(false);
   const [showAllUsers, setShowAllUsers] = useState(false);
   const [localPendingUserIds, setLocalPendingUserIds] = useState<Set<number>>(new Set());
   const [pendingRequestId, setPendingRequestId] = useState<number | null>(null);
@@ -575,6 +576,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
       state: userState,
       country: userCountry,
       durationHours: Number(duration),
+      openJoin,
       // When editing an existing session, preserve the existing meetup chatrooms.
       preserveChatrooms: !!myStatus,
     });
@@ -1191,6 +1193,26 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
                   <SelectItem value="12">All day (12 hours)</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+            {/* Open Join toggle */}
+            <div className="flex items-center justify-between py-2 px-1">
+              <div>
+                <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Open hangout</p>
+                <p className="text-[11px] text-gray-500 dark:text-gray-400">Anyone can join instantly — no approval needed</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setOpenJoin(!openJoin)}
+                className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ${
+                  openJoin ? 'bg-orange-500' : 'bg-gray-300 dark:bg-gray-600'
+                }`}
+                role="switch"
+                aria-checked={openJoin}
+              >
+                <span className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ${
+                  openJoin ? 'translate-x-5' : 'translate-x-0'
+                }`} />
+              </button>
             </div>
             {/* City selector — shown when user has a travel destination */}
             {hasDestination ? (

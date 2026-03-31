@@ -64,10 +64,27 @@ export default function AvailableNowStrip({ currentUserId: propUserId, userCity,
     return set;
   }, [sentRequestsData, localSent]);
 
-  const sendJoinRequest = async (toUserId: number) => {
+  const sendJoinRequest = async (toUserId: number, isOpenJoin?: boolean) => {
     if (!currentUserId || sentRequests.has(toUserId) || sendingTo) return;
     setSendingTo(toUserId);
     try {
+      if (isOpenJoin) {
+        // Open join — skip request, join chatroom directly
+        const res = await fetch(`${getApiBaseUrl()}/api/available-now/open-join`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-user-id': String(currentUserId) },
+          credentials: 'include',
+          body: JSON.stringify({ toUserId }),
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.chatroomId) {
+            setLocation(`/meetup-chatroom-chat/${data.chatroomId}?title=Meetup Chat`);
+            return;
+          }
+        }
+      }
+      // Regular request flow
       const res = await fetch(`${getApiBaseUrl()}/api/available-now/request`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-user-id': String(currentUserId) },
@@ -306,7 +323,7 @@ export default function AvailableNowStrip({ currentUserId: propUserId, userCity,
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        sendJoinRequest(user.id);
+                        sendJoinRequest(user.id, !!(entry as any).openJoin || !!(entry as any).open_join);
                       }}
                       disabled={sendingTo === user.id}
                       className="flex items-center gap-1 w-full justify-center px-2 py-1.5 rounded-full bg-green-500 hover:bg-green-600 text-white text-[11px] font-semibold transition-colors disabled:opacity-50"

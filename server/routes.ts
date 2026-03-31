@@ -26344,7 +26344,7 @@ Questions? Just reply to this message. Welcome aboard!
       const userId = req.session?.user?.id || req.headers['x-user-id'];
       if (!userId) return res.status(401).json({ error: "Not authenticated" });
 
-      const { activities, customNote, city: rawCity, state, country, durationHours, preserveChatrooms } = req.body;
+      const { activities, customNote, city: rawCity, state, country, durationHours, preserveChatrooms, openJoin } = req.body;
       if (!rawCity || !country) return res.status(400).json({ error: "City and country are required" });
       // Normalize city: strip state/country suffix so "Los Angeles, CA" → "Los Angeles"
       const city = (rawCity as string).split(',')[0].trim();
@@ -26407,6 +26407,7 @@ Questions? Just reply to this message. Welcome aboard!
         state: state || null,
         country,
         expiresAt,
+        openJoin: !!openJoin,
       }).returning();
 
       // Respond immediately so the user doesn't wait on background tasks
@@ -26526,6 +26527,61 @@ Questions? Just reply to this message. Welcome aboard!
     } catch (error: any) {
       console.error("Error clearing availability:", error);
       res.status(500).json({ error: "Failed to clear availability" });
+    }
+  });
+
+  // Toggle openJoin on/off for an active session (host only)
+  app.patch("/api/available-now/open-join", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || Number(req.headers['x-user-id']);
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+
+      const { openJoin } = req.body;
+      const [updated] = await db.update(availableNow)
+        .set({ openJoin: !!openJoin })
+        .where(and(eq(availableNow.userId, Number(userId)), eq(availableNow.isAvailable, true)))
+        .returning();
+
+      if (!updated) return res.status(404).json({ error: "No active session" });
+      res.json({ openJoin: updated.openJoin });
+    } catch (error: any) {
+      res.status(500).json({ error: "Failed to update" });
+    }
+  });
+
+  // Open Join — skip request/approval, join chatroom directly
+  app.post("/api/available-now/open-join", async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || Number(req.headers['x-user-id']);
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+
+      const { toUserId } = req.body;
+      if (!toUserId) return res.status(400).json({ error: "Target user is required" });
+
+      // Verify the host's session has openJoin=true
+      const [hostSession] = await db.select().from(availableNow)
+        .where(and(eq(availableNow.userId, Number(toUserId)), eq(availableNow.isAvailable, true)))
+        .limit(1);
+      if (!hostSession) return res.status(404).json({ error: "Host is no longer available" });
+      if (!hostSession.openJoin) return res.status(403).json({ error: "This hangout requires approval to join" });
+
+      // Create or join the meetup chatroom directly
+      const { createOrJoinMeetupChatroom } = await import("./meetupChatroomUtils");
+      const result = await createOrJoinMeetupChatroom({
+        availableNowId: hostSession.id,
+        hostUserId: Number(toUserId),
+        joinerUserId: Number(userId),
+        city: hostSession.city,
+        state: hostSession.state || undefined,
+        country: hostSession.country,
+        activityType: Array.isArray(hostSession.activities) ? hostSession.activities.join(',') : '',
+        customNote: hostSession.customNote || undefined,
+      });
+
+      res.json({ ok: true, chatroomId: result.chatroomId });
+    } catch (error: any) {
+      console.error("Open join error:", error?.message);
+      res.status(500).json({ error: "Failed to join" });
     }
   });
 
