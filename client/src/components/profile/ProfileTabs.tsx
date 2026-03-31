@@ -2768,50 +2768,53 @@ export function ProfileTabs(props: ProfilePageProps) {
                   <CardContent className="bg-white dark:bg-gray-900">
                     {editingCountries ? (
                       <div className="space-y-4">
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <Button
-                              variant="outline"
-                              role="combobox"
-                              className="w-full justify-between bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
-                            >
-                              {tempCountries.length > 0 
-                                ? `${tempCountries.length} countr${tempCountries.length > 1 ? 'ies' : 'y'} selected`
-                                : "Select countries visited..."
-                              }
-                              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                            </Button>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-[300px] p-0 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 z-[9999]" sideOffset={4} align="start">
-                            <Command className="bg-white dark:bg-gray-800">
-                              <CommandInput placeholder="Search countries..." className="border-0" />
-                              <CommandEmpty>No country found.</CommandEmpty>
-                              <CommandGroup className="max-h-64 overflow-auto">
-                                {COUNTRIES_OPTIONS.filter(c => c !== 'Other / Custom').map((country) => (
-                                  <CommandItem
-                                    key={country}
-                                    value={country}
-                                    onSelect={() => {
-                                      setTempCountries(current =>
-                                        current.includes(country)
-                                          ? current.filter(c => c !== country)
-                                          : [...current, country]
-                                      );
-                                    }}
-                                    className="cursor-pointer hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700"
-                                  >
-                                    <Check
-                                      className={`mr-2 h-4 w-4 ${
-                                        tempCountries.includes(country) ? "opacity-100" : "opacity-0"
-                                      }`}
-                                    />
-                                    {country}
-                                  </CommandItem>
-                                ))}
-                              </CommandGroup>
-                            </Command>
-                          </PopoverContent>
-                        </Popover>
+                        {/* Selected countries — always visible above the picker */}
+                        {tempCountries.length > 0 && (
+                          <div className="flex flex-wrap gap-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                            {tempCountries.map((country) => (
+                              <div key={country} className="flex items-center gap-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-md">
+                                <span className="text-sm">{country}</span>
+                                <button
+                                  onClick={() => setTempCountries(current => current.filter(c => c !== country))}
+                                  className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200"
+                                >
+                                  <X className="w-3 h-3" />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Inline country search — rendered in flow, not as a floating overlay */}
+                        <div className="border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden bg-white dark:bg-gray-800">
+                          <Command className="bg-white dark:bg-gray-800">
+                            <CommandInput placeholder="Search countries..." className="border-0" />
+                            <CommandEmpty>No country found.</CommandEmpty>
+                            <CommandGroup className="max-h-64 overflow-auto">
+                              {COUNTRIES_OPTIONS.filter(c => c !== 'Other / Custom').map((country) => (
+                                <CommandItem
+                                  key={country}
+                                  value={country}
+                                  onSelect={() => {
+                                    setTempCountries(current =>
+                                      current.includes(country)
+                                        ? current.filter(c => c !== country)
+                                        : [...current, country]
+                                    );
+                                  }}
+                                  className="cursor-pointer hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700"
+                                >
+                                  <Check
+                                    className={`mr-2 h-4 w-4 ${
+                                      tempCountries.includes(country) ? "opacity-100" : "opacity-0"
+                                    }`}
+                                  />
+                                  {country}
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </Command>
+                        </div>
 
                         {/* Custom country/territory input */}
                         <div className="flex gap-2">
@@ -2847,23 +2850,6 @@ export function ProfileTabs(props: ProfilePageProps) {
                             <Plus className="w-3 h-3 mr-1" /> Add
                           </Button>
                         </div>
-
-                        {/* Show selected countries */}
-                        {tempCountries.length > 0 && (
-                          <div className="flex flex-wrap gap-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                            {tempCountries.map((country) => (
-                              <div key={country} className="flex items-center gap-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-md">
-                                <span className="text-sm">{country}</span>
-                                <button
-                                  onClick={() => setTempCountries(current => current.filter(c => c !== country))}
-                                  className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200"
-                                >
-                                  <X className="w-3 h-3" />
-                                </button>
-                              </div>
-                            ))}
-                          </div>
-                        )}
 
                         <div className="flex gap-2">
                           <Button
@@ -4478,52 +4464,55 @@ export function ProfileTabs(props: ProfilePageProps) {
                 <CardContent>
                   {editingCountries ? (
                     <div className="space-y-3">
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant="outline"
-                            role="combobox"
-                            className="w-full justify-between bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-left"
-                          >
-                            {tempCountries.length > 0 
-                              ? `${tempCountries.length} countr${tempCountries.length > 1 ? 'ies' : 'y'} selected`
-                              : "Select countries visited..."
-                            }
-                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-full p-0 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600">
-                          <Command className="bg-white dark:bg-gray-800">
-                            <CommandInput placeholder="Search countries..." className="border-0" />
-                            <CommandEmpty>No country found.</CommandEmpty>
-                            <CommandGroup className="max-h-64 overflow-auto">
-                              {COUNTRIES_OPTIONS.map((country) => (
-                                <CommandItem
-                                  key={country}
-                                  value={country}
-                                  onSelect={() => {
-                                    const isSelected = tempCountries.includes(country);
-                                    if (isSelected) {
-                                      setTempCountries(tempCountries.filter(c => c !== country));
-                                    } else {
-                                      setTempCountries([...tempCountries, country]);
-                                    }
-                                  }}
-                                  className="cursor-pointer hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700"
-                                >
-                                  <Check
-                                    className={`mr-2 h-4 w-4 ${
-                                      tempCountries.includes(country) ? "opacity-100" : "opacity-0"
-                                    }`}
-                                  />
-                                  {country}
-                                </CommandItem>
-                              ))}
-                            </CommandGroup>
-                          </Command>
-                        </PopoverContent>
-                      </Popover>
-                      
+                      {/* Selected countries — always visible above the picker */}
+                      {tempCountries.length > 0 && (
+                        <div className="flex flex-wrap gap-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                          {tempCountries.map((country) => (
+                            <div key={country} className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none bg-blue-50 dark:bg-blue-900/60 text-blue-800 dark:text-blue-200 border border-blue-200 dark:border-blue-700/50">
+                              {country}
+                              <button
+                                onClick={() => setTempCountries(tempCountries.filter(c => c !== country))}
+                                className="ml-2 text-blue-400 dark:text-blue-300 hover:text-blue-700 dark:hover:text-white"
+                              >
+                                ✕
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Inline country search — rendered in flow, not as a floating overlay */}
+                      <div className="border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden bg-white dark:bg-gray-800">
+                        <Command className="bg-white dark:bg-gray-800">
+                          <CommandInput placeholder="Search countries..." className="border-0" />
+                          <CommandEmpty>No country found.</CommandEmpty>
+                          <CommandGroup className="max-h-64 overflow-auto">
+                            {COUNTRIES_OPTIONS.map((country) => (
+                              <CommandItem
+                                key={country}
+                                value={country}
+                                onSelect={() => {
+                                  const isSelected = tempCountries.includes(country);
+                                  if (isSelected) {
+                                    setTempCountries(tempCountries.filter(c => c !== country));
+                                  } else {
+                                    setTempCountries([...tempCountries, country]);
+                                  }
+                                }}
+                                className="cursor-pointer hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700"
+                              >
+                                <Check
+                                  className={`mr-2 h-4 w-4 ${
+                                    tempCountries.includes(country) ? "opacity-100" : "opacity-0"
+                                  }`}
+                                />
+                                {country}
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </Command>
+                      </div>
+
                       {/* Custom Country Input */}
                       <div className="mt-3">
                         <label className="text-xs font-medium mb-1 block text-gray-600 dark:text-gray-400">
@@ -4564,23 +4553,6 @@ export function ProfileTabs(props: ProfilePageProps) {
                         </div>
                       </div>
 
-                      {/* Show selected countries */}
-                      {tempCountries.length > 0 && (
-                        <div className="flex flex-wrap gap-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                          {tempCountries.map((country) => (
-                            <div key={country} className="inline-flex items-center justify-center h-6 rounded-full px-3 text-xs font-medium whitespace-nowrap leading-none bg-blue-50 dark:bg-blue-900/60 text-blue-800 dark:text-blue-200 border border-blue-200 dark:border-blue-700/50">
-                              {country}
-                              <button
-                                onClick={() => setTempCountries(tempCountries.filter(c => c !== country))}
-                                className="ml-2 text-blue-400 dark:text-blue-300 hover:text-blue-700 dark:hover:text-white"
-                              >
-                                ✕
-                              </button>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                      
                       <div className="flex gap-2">
                         <Button size="sm" onClick={handleSaveCountries} disabled={updateCountries.isPending}>
                           {updateCountries.isPending ? "Saving..." : "Save"}

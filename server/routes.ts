@@ -6618,47 +6618,18 @@ It works like a real app — no app store needed!`;
     try {
       const { sendBrevoEmail } = await import('./email/brevoSend');
       const firstName = (name || 'there').split(' ')[0];
-      const signupUrl = 'https://nearbytraveler.org/auth?mode=signup&invite=true';
-
-      // Personal-style email — minimal HTML to avoid promotions tab
-      const html = `
-<!DOCTYPE html><html><head><meta charset="utf-8"></head>
-<body style="margin:0;padding:20px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#333;line-height:1.6;">
-<p>Hey ${firstName},</p>
-
-<p>It's Aaron from Nearby Traveler. You signed up for our waitlist a while back — I wanted to let you know we're officially live now and your spot is ready.</p>
-
-<p>We built this to connect travelers and locals through shared interests. You can find people near you, see what's happening in any city, and meet up in real life. Think of it as the social layer for travel that should have existed years ago.</p>
-
-<p>Join here: <a href="${signupUrl}">${signupUrl}</a></p>
-
-<p>Since you were on the waitlist early, you'll automatically get a Founding Member badge on your profile. You'll also be able to invite friends and earn Aura Points for every signup.</p>
-
-<p>Would love to have you in the community.</p>
-
-<p>— Aaron<br>
-<span style="color:#888;font-size:14px;">Founder, <a href="https://nearbytraveler.org">NearbyTraveler.org</a></span></p>
-</body></html>`;
 
       const textContent = `Hey ${firstName},
 
-It's Aaron from Nearby Traveler. You signed up for our waitlist a while back — I wanted to let you know we're officially live now and your spot is ready.
+We once chatted about Nearby Traveler, my site connecting travelers and locals to each other. I launched beta and would love your feedback.
 
-We built this to connect travelers and locals through shared interests. You can find people near you, see what's happening in any city, and meet up in real life.
+Join here: https://nearbytraveler.org/join
 
-Join here: ${signupUrl}
-
-Since you were on the waitlist early, you'll automatically get a Founding Member badge on your profile. You'll also be able to invite friends and earn Aura Points for every signup.
-
-Would love to have you in the community.
-
-— Aaron
-Founder, NearbyTraveler.org`;
+— Aaron`;
 
       return await sendBrevoEmail({
         toEmail: email,
-        subject: `Aaron here — Nearby Traveler is live for you`,
-        htmlContent: html,
+        subject: 'Nearby Traveler is live',
         textContent,
         senderName: 'Aaron from Nearby Traveler',
       });
