@@ -1331,6 +1331,28 @@ export default function Messages() {
                       setSelectedMeetupChat(null);
                       setSelectedConversation(conv.userId);
                       navigate(`/messages/${conv.userId}`);
+
+                      // Mark as read immediately on tap — don't wait for the messages cache
+                      if (conv.unreadCount > 0) {
+                        // 1. Clear the conversation badge optimistically
+                        queryClient.setQueryData(['/api/messages', userId], (old: any) => {
+                          if (!Array.isArray(old)) return old;
+                          return old.map((m: any) =>
+                            Number(m.senderId) === conv.userId && Number(m.receiverId) === userId && !m.isRead
+                              ? { ...m, isRead: true }
+                              : m
+                          );
+                        });
+                        // 2. Subtract this conversation's unread count from the bottom-nav badge
+                        const prevCount = queryClient.getQueryData<{ unreadCount: number }>(['/api/messages', userId, 'unread-count']);
+                        if (prevCount !== undefined) {
+                          queryClient.setQueryData(['/api/messages', userId, 'unread-count'], {
+                            unreadCount: Math.max(0, (prevCount.unreadCount || 0) - conv.unreadCount),
+                          });
+                        }
+                        // 3. Fire the server call
+                        markAsReadMutation.mutate(conv.userId);
+                      }
                     }}
                   >
                     <div className="flex items-center gap-3">
