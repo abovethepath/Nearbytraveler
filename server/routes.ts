@@ -20265,8 +20265,21 @@ Questions? Just reply to this message. Welcome aboard!
       // System message
       const targetUser = await db.select({ username: users.username, firstName: users.firstName }).from(users).where(eq(users.id, targetUserId)).limit(1);
       const targetName = targetUser[0]?.firstName || targetUser[0]?.username || 'User';
-      const sysMsg = await storage.createChatroomMessage(chatroomId, actorId, `${targetName} was removed from the chatroom.`, 'system', null);
+      const sysMsg = await storage.createChatroomMessage(chatroomId, actorId, `@${targetName} was removed from the chat.`, 'system', null);
       if (sysMsg) await chatWebSocketService.broadcastSystemMessage(chatroomId, 'chatroom', sysMsg.id, sysMsg.message, actorId, 'Admin');
+
+      // Notify the removed user via WebSocket so their chat view redirects
+      try {
+        const wsMap = app.get("wsConnectedUsers") as Map<number, { send: (data: string) => void; readyState: number }> | undefined;
+        const targetWs = wsMap?.get(targetUserId);
+        if (targetWs && targetWs.readyState === 1) {
+          targetWs.send(JSON.stringify({
+            type: 'chatroom:kicked',
+            chatroomId,
+            message: 'You have been removed from this chat.',
+          }));
+        }
+      } catch { /* non-fatal */ }
 
       res.json({ success: true });
     } catch (error: any) {

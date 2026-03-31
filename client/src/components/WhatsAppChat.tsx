@@ -1631,6 +1631,14 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
             }
             break;
 
+          case 'chatroom:kicked':
+            if ((data.chatroomId === chatId || data.chatroomId == chatId)) {
+              console.log('🚫 WhatsApp Chat: Kicked from chatroom, navigating away');
+              toast({ title: "Removed", description: data.message || "You have been removed from this chat." });
+              navigate("/messages");
+            }
+            break;
+
           case 'chatroom:dissolved':
             if (data.chatroomId === chatId || data.chatroomId == chatId) {
               console.log('💥 WhatsApp Chat: Chatroom dissolved, navigating away');
@@ -2708,24 +2716,16 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                           <VolumeX className="w-3.5 h-3.5" />
                         </Button>
                       )}
-                    {/* Kick & Ban */}
+                    {/* Remove member */}
                     <Button
                       size="sm"
                       variant="ghost"
                       className="h-7 w-7 p-0 text-orange-400 hover:text-orange-300 hover:bg-gray-700"
-                      onClick={() => { if (confirm(`Remove ${member.username} from this chatroom?`)) kickMutation.mutate(member.id); }}
-                      title="Kick from chatroom"
+                      onClick={() => { if (confirm(`Remove @${member.username} from this chat?`)) kickMutation.mutate(member.id); }}
+                      title={`Remove @${member.username}`}
+                      disabled={kickMutation.isPending}
                     >
-                      <LogOut className="w-3.5 h-3.5" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="h-7 w-7 p-0 text-red-400 hover:text-red-300 hover:bg-gray-700"
-                      onClick={() => { if (confirm(`Ban ${member.username} permanently from this chatroom?`)) banMutation.mutate({ targetUserId: member.id }); }}
-                      title="Ban from chatroom"
-                    >
-                      <ShieldAlert className="w-3.5 h-3.5" />
+                      <X className="w-3.5 h-3.5" />
                     </Button>
                     </div>
                   )}
