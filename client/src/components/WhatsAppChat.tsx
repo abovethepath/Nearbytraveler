@@ -2527,6 +2527,17 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
     setEditingMessageId(message.id);
     setEditText(message.content);
     setSelectedMessage(null);
+    setReplyingTo(null);
+    setTimeout(() => {
+      inputRef.current?.focus();
+      // Put cursor at end of text
+      const el = inputRef.current;
+      if (el) {
+        el.selectionStart = el.selectionEnd = el.value.length;
+        el.style.height = 'auto';
+        el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+      }
+    }, 50);
   };
 
   const cancelEdit = () => {
@@ -3598,59 +3609,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                       );
                     })()}
 
-                    {editingMessageId === message.id ? (
-                      <div 
-                        className={`px-3 py-2 rounded-2xl chat-message-bubble ${message.replyToId ? 'rounded-tl-none' : ''}`}
-                        style={{ backgroundColor: isOwnMessage ? '#005c4b' : '#374151', border: 'none' }}
-                      >
-                        <Textarea
-                          value={editText}
-                          onChange={(e) => setEditText(e.target.value)}
-                          onInput={(e) => {
-                            const el = e.currentTarget;
-                            el.style.height = 'auto';
-                            el.style.height = Math.min(el.scrollHeight, 120) + 'px';
-                          }}
-                          className="w-full mb-2 bg-gray-800 border-gray-600 text-white resize-none"
-                          style={{ minHeight: '40px', maxHeight: '120px', overflowY: 'auto' }}
-                          rows={1}
-                          data-testid="textarea-edit-message"
-                        />
-                        <div className="flex gap-2">
-                          <Button 
-                            size="sm" 
-                            onClick={() => handleEditMessage(message.id)} 
-                            onTouchEnd={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              handleEditMessage(message.id);
-                            }}
-                            className="bg-green-600 hover:bg-green-700" 
-                            style={{ touchAction: 'manipulation' }}
-                            data-testid="button-save-edit"
-                          >
-                            <Check className="w-4 h-4 mr-1" />
-                            Save
-                          </Button>
-                          <Button 
-                            size="sm" 
-                            variant="outline" 
-                            onClick={cancelEdit}
-                            onTouchEnd={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              cancelEdit();
-                            }}
-                            style={{ touchAction: 'manipulation' }}
-                            data-testid="button-cancel-edit"
-                          >
-                            <X className="w-4 h-4 mr-1" />
-                            Cancel
-                          </Button>
-                        </div>
-                      </div>
-                    ) : (
-                      <div 
+                    <div 
                         className={`px-3 py-1.5 rounded-2xl chat-message-bubble ${message.replyToId ? 'rounded-tl-none' : ''}`}
                         style={{ 
                           backgroundColor: isOwnMessage ? '#005c4b' : '#202c33', 
@@ -3732,7 +3691,6 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                           )}
                         </div>
                       </div>
-                    )}
 
                     {message.reactions && Object.keys(message.reactions).length > 0 && (
                       <div className="flex gap-1 mt-1 ml-2">
@@ -3771,6 +3729,20 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                 <p className="text-xs text-gray-300 truncate">{replyingTo.content}</p>
               </div>
               <Button variant="ghost" size="sm" onClick={() => setReplyingTo(null)} className="text-gray-400 min-h-[44px] min-w-[44px] h-11 w-11 md:h-6 md:w-6 p-0 flex items-center justify-center">✕</Button>
+            </div>
+          </div>
+        )}
+
+        {editingMessageId && (
+          <div className="px-3 py-1.5 bg-gray-800 border-t border-gray-700">
+            <div className="w-full flex items-center justify-between">
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-blue-400 font-semibold flex items-center gap-1">
+                  <Edit2 className="w-3 h-3" /> Editing message
+                </p>
+                <p className="text-xs text-gray-300 truncate">{editText}</p>
+              </div>
+              <Button variant="ghost" size="sm" onClick={cancelEdit} className="text-gray-400 min-h-[44px] min-w-[44px] h-11 w-11 md:h-6 md:w-6 p-0 flex items-center justify-center">✕</Button>
             </div>
           </div>
         )}
@@ -3870,8 +3842,8 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
             )}
             <Textarea
               ref={inputRef}
-              value={messageText}
-              onChange={(e) => handleTyping(e.target.value)}
+              value={editingMessageId ? editText : messageText}
+              onChange={(e) => editingMessageId ? setEditText(e.target.value) : handleTyping(e.target.value)}
               onInput={(e) => {
                 const el = e.currentTarget;
                 el.style.height = 'auto';
@@ -3880,22 +3852,35 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                   e.preventDefault();
-                  sendMessage();
-                  // Reset height after send
+                  if (editingMessageId) {
+                    handleEditMessage(editingMessageId);
+                  } else {
+                    sendMessage();
+                  }
                   const el = e.currentTarget;
                   requestAnimationFrame(() => { el.style.height = 'auto'; });
                 }
               }}
-              placeholder="Message"
+              placeholder={editingMessageId ? "Edit message…" : "Message"}
               className="flex-1 bg-gray-700 border-gray-600 text-white resize-none rounded-2xl px-3 py-2 text-sm"
               style={{ minHeight: '36px', maxHeight: '120px', overflowY: 'auto' }}
               rows={1}
-              disabled={chatType !== 'dm' && !messagesLoaded && !isWsConnected}
+              disabled={!editingMessageId && chatType !== 'dm' && !messagesLoaded && !isWsConnected}
               autoCorrect="on"
               autoCapitalize="sentences"
               spellCheck={true}
             />
-            {messageText.trim() ? (
+            {editingMessageId ? (
+              <Button
+                onClick={() => handleEditMessage(editingMessageId)}
+                disabled={!editText.trim() || !currentUserId}
+                size="icon"
+                className="rounded-full min-h-[44px] min-w-[44px] h-11 w-11 md:h-9 md:w-9 shrink-0 touch-target bg-blue-600 hover:bg-blue-700"
+                title="Save edit"
+              >
+                <Check className="w-4 h-4" />
+              </Button>
+            ) : messageText.trim() ? (
               <Button
                 onClick={sendMessage}
                 disabled={!messageText.trim() || !currentUserId || !isOnline || (chatType !== 'dm' && (!messagesLoaded && !isWsConnected))}
