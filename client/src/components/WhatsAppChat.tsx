@@ -119,6 +119,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
   
   const [messages, setMessages] = useState<Message[]>([]);
   const [messageText, setMessageText] = useState("");
+  const [voiceUploading, setVoiceUploading] = useState(false);
   const [replyingTo, setReplyingTo] = useState<Message | null>(null);
   const [typingUsers, setTypingUsers] = useState<Set<string>>(new Set());
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
@@ -1796,6 +1797,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
   const sendVoiceMessage = async (blob: Blob, duration: number, waveform: number[]) => {
     if (!currentUserId) return;
     const base = getApiBaseUrl();
+    setVoiceUploading(true);
     try {
       console.log('🎤 VOICE SEND: uploading blob, size:', blob.size, 'type:', blob.type);
       const formData = new FormData();
@@ -1862,11 +1864,9 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
       queryClient.invalidateQueries({ queryKey: [`/api/chatroom-messages/${chatId}`] });
     } catch (err) {
       console.error('🎤 VOICE SEND: failed:', err);
-      // Show error as toast if available
-      try {
-        const toastEl = document.querySelector('[data-sonner-toaster]');
-        if (!toastEl) alert('Voice message failed to send. Try again.');
-      } catch {}
+      toast?.({ title: "Voice message failed", description: "Please try again.", variant: "destructive" });
+    } finally {
+      setVoiceUploading(false);
     }
   };
 
@@ -3909,6 +3909,11 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
               >
                 <Send className="w-4 h-4" />
               </Button>
+            ) : voiceUploading ? (
+              <div className="flex items-center gap-2 px-3 py-2 rounded-full bg-orange-100 dark:bg-orange-900/30 flex-1 min-w-0">
+                <div className="w-4 h-4 border-2 border-orange-500 border-t-transparent rounded-full animate-spin shrink-0" />
+                <span className="text-xs text-orange-600 dark:text-orange-400 font-medium">Sending voice...</span>
+              </div>
             ) : (
               <VoiceRecorder
                 onSend={sendVoiceMessage}
