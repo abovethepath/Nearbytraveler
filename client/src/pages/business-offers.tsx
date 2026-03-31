@@ -303,9 +303,9 @@ export default function BusinessOffers({ businessId, dealId }: BusinessOffersPro
   };
 
   return (
-    <div className="min-h-screen w-full max-w-full bg-gray-50 dark:bg-gray-900 overflow-x-hidden">
+    <div className="min-h-screen w-full max-w-full bg-gray-50 dark:bg-gray-900 overflow-x-clip">
       {/* MobileNav removed - using global MobileTopNav and MobileBottomNav */}
-      <div className="w-full max-w-full px-2 sm:px-4 py-4 sm:py-8 overflow-x-hidden">
+      <div className="w-full max-w-full px-2 sm:px-4 py-4 sm:py-8 overflow-x-clip">
         <div className="mb-6 sm:mb-8">
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
             Nearby Business Offers
@@ -372,7 +372,7 @@ export default function BusinessOffers({ businessId, dealId }: BusinessOffersPro
             <CardTitle className="text-sm font-semibold">Filter Offers</CardTitle>
           </CardHeader>
           <CardContent className="pb-3">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-2 w-full max-w-full overflow-x-hidden">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-2 w-full max-w-full overflow-x-clip">
               <div>
                 <label className="text-xs font-medium mb-1 block text-gray-700 dark:text-gray-300">Location Override</label>
                 <SmartLocationInput
@@ -436,7 +436,7 @@ export default function BusinessOffers({ businessId, dealId }: BusinessOffersPro
 
         {/* Offers Grid */}
         {isLoading ? (
-          <div className="grid grid-cols-1 gap-4 sm:gap-6 w-full max-w-full overflow-x-hidden">
+          <div className="grid grid-cols-1 gap-4 sm:gap-6 w-full max-w-full overflow-x-clip">
             {[1, 2, 3, 4, 5, 6].map(i => (
               <Card key={i} className="animate-pulse w-full max-w-full">
                 <div className="h-32 sm:h-48 bg-gray-200 dark:bg-gray-700"></div>

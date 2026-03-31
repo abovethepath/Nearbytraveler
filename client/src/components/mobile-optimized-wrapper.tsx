@@ -21,7 +21,7 @@ export function MobileOptimizedWrapper({
 }: MobileOptimizedWrapperProps) {
   return (
     <div className={cn(
-      "min-h-screen w-full max-w-full overflow-x-hidden",
+      "min-h-screen w-full max-w-full overflow-x-clip",
       "bg-gray-50 dark:bg-gray-900",
       // Mobile-specific layout
       "md:px-4 lg:px-6 xl:px-8",

@@ -450,7 +450,7 @@ export default function Explore() {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-3 sm:px-4 py-3 md:py-4 min-w-0 overflow-x-hidden">
+      <div className="max-w-6xl mx-auto px-3 sm:px-4 py-3 md:py-4 min-w-0 overflow-x-clip">
           <div className="space-y-4">
           {/* ===== COMMUNITIES ===== */}
             <div className="flex items-center justify-between mb-4">

@@ -789,7 +789,7 @@ export default function PlanTrip() {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-gray-900 dark:via-blue-950 dark:to-purple-950 overflow-hidden break-words w-full max-w-[100vw]">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-gray-900 dark:via-blue-950 dark:to-purple-950 overflow-x-clip break-words w-full max-w-[100vw]">
 
       {/* Show Hero Button — only when hero is hidden, not in native iOS app */}
       {!isNativeIOSApp() && !isHeroVisible && (

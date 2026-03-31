@@ -515,8 +515,8 @@ export function ProfileTabs(props: ProfilePageProps) {
       onJoin={communityPrompt.handleJoin}
       onSkip={communityPrompt.handleSkip}
     />
-    <div className="min-h-screen profile-page w-full max-w-full overflow-x-hidden bg-gray-50 dark:bg-gray-900 md:mt-0">
-      {/* Main Content Container - with overflow-x-hidden for rest of page */}
+    <div className="min-h-screen profile-page w-full max-w-full overflow-x-clip bg-gray-50 dark:bg-gray-900 md:mt-0">
+      {/* Main Content Container - with overflow-x-clip for rest of page */}
 
       {/* Navigation Tabs - Card Style. Desktop user: hidden (tabs in hero). iOS + business: show. */}
       {showTabsCard && (
@@ -767,7 +767,7 @@ export function ProfileTabs(props: ProfilePageProps) {
       )}
       
       {/* Main content section - Mobile Responsive Layout */}
-      <div className={`w-full max-w-full mx-auto ${isNativeIOSApp() && activeTab === 'menu' ? 'pb-2' : 'pb-20 sm:pb-4'} px-2 sm:px-4 lg:px-6 mt-2 overflow-x-hidden box-border`}>
+      <div className={`w-full max-w-full mx-auto ${isNativeIOSApp() && activeTab === 'menu' ? 'pb-2' : 'pb-20 sm:pb-4'} px-2 sm:px-4 lg:px-6 mt-2 overflow-x-clip box-border`}>
         <div className="flex flex-col lg:grid lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
           {/* Main Content Column */}
           <div className="w-full lg:col-span-2 space-y-4 sm:space-y-4 lg:space-y-6 profile-sections-column">

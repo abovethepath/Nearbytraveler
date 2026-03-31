@@ -1703,7 +1703,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 w-full max-w-full overflow-x-hidden" style={{ overflowAnchor: 'none' }}>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 w-full max-w-full overflow-x-clip" style={{ overflowAnchor: 'none' }}>
 
 {/* Native app: Sign Out link at top for users who land via QR code */}
 {isNativeIOSApp() && user && (
@@ -1875,13 +1875,13 @@ export default function Home() {
 
       <div className="pt-2 sm:pt-4 pb-24 md:pb-8 lg:pb-4 relative">
         
-        <div className="w-full max-w-full min-w-0 px-2 sm:px-4 lg:px-6 overflow-x-hidden">
+        <div className="w-full max-w-full min-w-0 px-2 sm:px-4 lg:px-6 overflow-x-clip">
 
         {/* Main Content - Standard three-column layout */}
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-2 sm:gap-4 lg:gap-6 px-2 sm:px-4 lg:px-8 mt-2 sm:mt-0 min-w-0 overflow-x-hidden w-full">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-2 sm:gap-4 lg:gap-6 px-2 sm:px-4 lg:px-8 mt-2 sm:mt-0 min-w-0 overflow-x-clip w-full">
           
           {/* Main Content - Center column */}
-          <div className="col-span-1 lg:col-span-2 space-y-3 sm:space-y-4 md:space-y-4 min-w-0 relative overflow-x-hidden flex flex-col w-full max-w-full">
+          <div className="col-span-1 lg:col-span-2 space-y-3 sm:space-y-4 md:space-y-4 min-w-0 relative overflow-x-clip flex flex-col w-full max-w-full">
 
             {/* Meetup Alert Banner - Shows when there are new meetups nearby */}
             {effectiveUser?.id && effectiveUser?.userType !== 'business' && (
@@ -2227,7 +2227,7 @@ export default function Home() {
           </div>
 
           {/* Right Sidebar - Weather, Messages, Quick Meetups, Events */}
-          <div className="col-span-1 space-y-6 sm:space-y-8 md:space-y-10 min-w-0 overflow-x-hidden max-w-full w-full">
+          <div className="col-span-1 space-y-6 sm:space-y-8 md:space-y-10 min-w-0 overflow-x-clip max-w-full w-full">
 
             {/* Available Now activation widget — top of sidebar */}
             {effectiveUser?.userType !== 'business' && (

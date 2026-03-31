@@ -463,7 +463,7 @@ export default function Deals() {
   const regularDeals = useMemo(() => activeDeals.filter(deal => deal.category !== 'instant_deal'), [activeDeals]);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 overflow-x-hidden break-words">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 overflow-x-clip break-words">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 min-w-0 break-words">
         {/* Header - Mobile Responsive */}
         <div className="text-center mb-6 sm:mb-8 overflow-hidden break-words">

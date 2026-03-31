@@ -539,7 +539,7 @@ export default function Events() {
   // Handle loading state
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-gray-900 dark:via-blue-950 dark:to-purple-950 w-full max-w-[100vw] overflow-x-hidden">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-gray-900 dark:via-blue-950 dark:to-purple-950 w-full max-w-[100vw] overflow-x-clip">
         <div className="container mx-auto px-4 pt-4 pb-24 max-w-2xl">
           <div className="flex items-center gap-3 mb-6">
             <div className="h-8 w-8 rounded-full bg-gray-200 dark:bg-gray-700 animate-pulse" />
@@ -579,7 +579,7 @@ export default function Events() {
   const eventsLoadError = !!error;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-gray-900 dark:via-blue-950 dark:to-purple-950 w-full max-w-[100vw] overflow-x-hidden box-border">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-gray-900 dark:via-blue-950 dark:to-purple-950 w-full max-w-[100vw] overflow-x-clip box-border">
       {/* MobileNav removed - using global MobileTopNav and MobileBottomNav */}
       
       {/* Show Hero Button - Only visible when hero is hidden */}
@@ -930,7 +930,7 @@ export default function Events() {
           {!isLoading && (
             <>
           {/* Events Sections */}
-          <div className="space-y-6 sm:space-y-8 max-w-full overflow-x-hidden">
+          <div className="space-y-6 sm:space-y-8 max-w-full overflow-x-clip">
             {/* User's Events Section - Show first */}
             {currentUser && (() => {
               // Filter events created by the user

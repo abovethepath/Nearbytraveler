@@ -156,7 +156,7 @@ export default function DiscoverPage() {
   }
 
   const pageContent = (
-    <div className="min-h-screen bg-white dark:bg-gray-900 w-full max-w-full overflow-x-hidden">
+    <div className="min-h-screen bg-white dark:bg-gray-900 w-full max-w-full overflow-x-clip">
       {/* Mobile Tagline - Simple one-liner */}
       {isMobile && (
         <div className="px-4 py-4 text-center">
