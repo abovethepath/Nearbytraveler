@@ -56,6 +56,8 @@ export async function sendBrevoEmail(args: SendEmailArgs) {
       subject: args.subject,
       textContent: args.textContent,
       htmlContent: args.htmlContent || args.textContent.replace(/\n/g, "<br/>"),
+      headers: { "List-Unsubscribe": "" },
+      tags: ['transactional'],
     }),
   });
 

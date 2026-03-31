@@ -27,7 +27,8 @@ const EMOJI_MAP: Record<string, string> = {
   shrug: '🤷', kiss: '😘', smile: '😊', happy: '😊',
   doh: '🤦', "d'oh": '🤦', facepalm: '🤦',
   'rolling eyes': '🙄', eyeroll: '🙄',
-  laugh: '😂', lol: '😂',
+  laugh: '😂', lol: '😂', lmao: '🤣', rofl: '🤣',
+  omg: '😱', ily: '❤️',
   heart: '❤️', love: '❤️',
   'thumbs up': '👍', thumbsup: '👍',
   'thumbs down': '👎', thumbsdown: '👎',
@@ -35,7 +36,19 @@ const EMOJI_MAP: Record<string, string> = {
   pray: '🙏', wink: '😉', cry: '😢', angry: '😠',
   confused: '😕', naughty: '😈',
   hmm: '🤔', hmmm: '🤔',
+  brb: '⏰', smh: '🤦', imo: '🤔', imho: '🤔',
+  ngl: '😬', tbh: '💯', wtf: '😤', yas: '🙌',
+  yolo: '🤪', hmu: '📲', fyi: '📌',
 };
+
+// Replace whole-word matches from EMOJI_MAP on send (case-insensitive)
+const EMOJI_SEND_REGEX = new RegExp(
+  '\\b(' + Object.keys(EMOJI_MAP).filter(k => /^[a-z']+$/i.test(k)).join('|') + ')\\b',
+  'gi'
+);
+function applyEmojiSubstitution(text: string): string {
+  return text.replace(EMOJI_SEND_REGEX, (match) => EMOJI_MAP[match.toLowerCase()] || match);
+}
 
 interface Message {
   id: number;
@@ -1889,7 +1902,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
       return;
     }
 
-    const content = messageText.trim();
+    const content = applyEmojiSubstitution(messageText.trim());
     const replyToId = replyingTo?.id;
     // Snapshot replyingTo before clearing it — needed for optimistic updates
     const replyingToSnapshot = replyingTo;

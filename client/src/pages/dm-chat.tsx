@@ -235,7 +235,7 @@ export default function DMChat() {
       })()}
       currentUserId={user.id}
       otherUserUsername={otherUser.username}
-      otherUserProfileImage={otherUser.profileImage}
+      otherUserProfileImage={avatarUrl}
     />
   );
 

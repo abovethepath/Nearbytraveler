@@ -90,7 +90,7 @@ export const US_CITIES_BY_STATE: Record<string, string[]> = {
   "North Dakota": ["Fargo", "Bismarck", "Grand Forks", "Minot", "West Fargo"],
   "Ohio": ["Columbus", "Cleveland", "Cincinnati", "Toledo", "Akron", "Dayton", "Parma", "Canton", "Youngstown"],
   "Oklahoma": ["Oklahoma City", "Tulsa", "Norman", "Broken Arrow", "Lawton", "Edmond"],
-  "Oregon": ["Portland", "Eugene", "Salem", "Gresham", "Hillsboro", "Bend", "Beaverton"],
+  "Oregon": ["Portland", "Eugene", "Salem", "Gresham", "Hillsboro", "Bend", "Beaverton", "Astoria"],
   "Pennsylvania": ["Philadelphia", "Pittsburgh", "Allentown", "Erie", "Reading", "Scranton", "Bethlehem"],
   "Rhode Island": ["Providence", "Warwick", "Cranston", "Pawtucket"],
   "South Carolina": ["Columbia", "Charleston", "North Charleston", "Mount Pleasant", "Rock Hill"],

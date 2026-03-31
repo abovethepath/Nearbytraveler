@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Shield, Check, ThumbsUp } from "lucide-react";
+import { Shield, ThumbsUp } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import {
@@ -98,7 +98,6 @@ export function VouchButton({ currentUserId, targetUserId, targetUsername, hideW
         className={`${isGhost ? "bg-[#e6f9f0] dark:bg-green-600 text-green-700 dark:text-white border border-green-200 dark:border-0" : "bg-green-600 text-white border-0"} px-6 py-2 rounded-lg shadow-md opacity-70 cursor-not-allowed ${className}`}
         data-testid="button-vouched"
       >
-        <Check className="w-4 h-4 mr-2" />
         Vouched
       </Button>
     );

@@ -623,7 +623,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                         <div className="flex items-start justify-between gap-3">
                           <div className="min-w-0">
                             <div className="flex flex-col sm:flex-row sm:items-center gap-0 sm:gap-2 sm:flex-wrap">
-                              <h1 className="text-xl sm:text-3xl font-extrabold text-white break-all leading-tight crisp-hero-text" style={{ color: '#ffffff' }}>
+                              <h1 className="text-xl sm:text-3xl font-extrabold text-white truncate leading-tight crisp-hero-text max-w-full" style={{ color: '#ffffff' }}>
                                 {((user as any)?.firstName || "").split(" ")[0] || user?.username}
                                 {!isOwnProfile && (() => {
                                   const deg = connectionStatus?.status === 'accepted' ? 1 : (connectionDegreeData as any)?.degree;
@@ -632,7 +632,7 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                                   return <sup className="text-sm text-white/60 font-normal ml-0.5 cursor-pointer hover:text-white/90 transition-colors" onClick={(e) => { e.stopPropagation(); openTab('contacts'); setTimeout(() => { document.getElementById('connections-in-common-section')?.scrollIntoView({ behavior: 'smooth' }); }, 150); }}>{label}</sup>;
                                 })()}
                               </h1>
-                              <div className="text-sm font-medium text-white/75 break-all">@{user?.username}</div>
+                              <div className="text-sm font-medium text-white/75 truncate max-w-full">@{user?.username}</div>
                               <SupportBadge tier={(user as any)?.supportTier} />
                   {(user as any)?.isFoundingMember && (
                     <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-400/30">🌟 Founding Member</span>

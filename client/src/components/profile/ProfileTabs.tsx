@@ -861,9 +861,9 @@ export function ProfileTabs(props: ProfilePageProps) {
                             navigator.clipboard?.writeText(url);
                           }
                         }}
-                        className="text-xs text-gray-400 hover:text-gray-200 flex items-center gap-1 transition-colors"
+                        className="text-[10px] text-gray-400 hover:text-gray-200 flex items-center gap-0.5 transition-colors shrink-0"
                       >
-                        <Share2 className="w-3.5 h-3.5" />
+                        <Share2 className="w-3 h-3" />
                         Share
                       </button>
                       <ReportUserButton
@@ -874,7 +874,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                         size="sm"
                         showIcon={true}
                         showText={true}
-                        className="text-xs p-0 h-auto font-normal text-red-500 hover:text-red-400"
+                        className="text-[10px] p-0 h-auto font-normal text-red-500 hover:text-red-400 shrink-0"
                       />
                     </div>
                   )}

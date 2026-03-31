@@ -6630,14 +6630,14 @@ It works like a real app — no app store needed!`;
 
 <p>We built this to connect travelers and locals through shared interests. You can find people near you, see what's happening in any city, and meet up in real life. Think of it as the social layer for travel that should have existed years ago.</p>
 
-<p><strong><a href="${signupUrl}" style="color:#f97316;">Join here — it's free →</a></strong></p>
+<p>Join here: <a href="${signupUrl}">${signupUrl}</a></p>
 
 <p>Since you were on the waitlist early, you'll automatically get a Founding Member badge on your profile. You'll also be able to invite friends and earn Aura Points for every signup.</p>
 
 <p>Would love to have you in the community.</p>
 
 <p>— Aaron<br>
-<span style="color:#888;font-size:14px;">Founder, <a href="https://nearbytraveler.org" style="color:#f97316;">NearbyTraveler.org</a></span></p>
+<span style="color:#888;font-size:14px;">Founder, <a href="https://nearbytraveler.org">NearbyTraveler.org</a></span></p>
 </body></html>`;
 
       const textContent = `Hey ${firstName},
@@ -6646,7 +6646,7 @@ It's Aaron from Nearby Traveler. You signed up for our waitlist a while back —
 
 We built this to connect travelers and locals through shared interests. You can find people near you, see what's happening in any city, and meet up in real life.
 
-Join here — it's free: ${signupUrl}
+Join here: ${signupUrl}
 
 Since you were on the waitlist early, you'll automatically get a Founding Member badge on your profile. You'll also be able to invite friends and earn Aura Points for every signup.
 
@@ -6711,8 +6711,8 @@ Founder, NearbyTraveler.org`;
 
           await db.update(waitlistLeads).set({ invitedAt: new Date(), contacted: true }).where(eq(waitlistLeads.id, lead.id));
 
-          // Rate limit: 100ms between emails
-          await new Promise(r => setTimeout(r, 100));
+          // Rate limit: 3s between emails to avoid promo tab categorization
+          await new Promise(r => setTimeout(r, 3000));
         } catch { failed++; }
       }
 
