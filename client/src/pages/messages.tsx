@@ -742,16 +742,12 @@ export default function Messages() {
     mutationFn: async (senderId: number) => {
       return apiRequest('POST', `/api/messages/${userId}/mark-read`, { senderId });
     },
-    onMutate: async (senderId: number) => {
-      // Optimistically reduce unread count by the number of unread messages from this sender
+    onMutate: async () => {
+      // Cancel any in-flight unread-count refetch so our optimistic value isn't overwritten.
+      // The actual badge update happens in the useEffect below (before mutate is called),
+      // so onMutate only needs to preserve the previous value for rollback.
       await queryClient.cancelQueries({ queryKey: ['/api/messages', userId, 'unread-count'] });
       const prev = queryClient.getQueryData<{ unreadCount: number }>(['/api/messages', userId, 'unread-count']);
-      const allMsgs = queryClient.getQueryData<any[]>(['/api/messages', userId]) || [];
-      const unreadFromSender = allMsgs.filter((m: any) =>
-        Number(m.senderId) === senderId && Number(m.receiverId) === userId && !m.isRead
-      ).length;
-      const newCount = Math.max(0, (prev?.unreadCount || 0) - unreadFromSender);
-      queryClient.setQueryData(['/api/messages', userId, 'unread-count'], { unreadCount: newCount });
       return { prev };
     },
     onSuccess: () => {
@@ -827,13 +823,14 @@ export default function Messages() {
   // Mark messages as read when conversation is selected OR new messages arrive while open
   useEffect(() => {
     if (selectedConversation && userId) {
-      // Check if there are any unread messages from this sender
-      const hasUnread = (messages as any[]).some((m: any) =>
+      const allMsgs = (messages as any[]);
+      // Count unread from this sender BEFORE any optimistic update so the badge math is correct
+      const unreadFromSender = allMsgs.filter((m: any) =>
         Number(m.senderId) === selectedConversation && Number(m.receiverId) === userId && !m.isRead
-      );
-      if (!hasUnread) return; // Nothing to mark — skip to avoid unnecessary API calls
+      ).length;
+      if (unreadFromSender === 0) return; // Nothing to mark — skip
 
-      // Optimistically mark messages as read locally so the orange dot disappears instantly
+      // 1. Optimistically mark messages as read locally so the orange dot disappears instantly
       queryClient.setQueryData(['/api/messages', userId], (old: any) => {
         if (!Array.isArray(old)) return old;
         return old.map((m: any) =>
@@ -842,7 +839,17 @@ export default function Messages() {
             : m
         );
       });
-      // Then confirm with server
+
+      // 2. Optimistically reduce the bottom-nav badge by exactly the number we just read
+      //    Do this BEFORE calling mutate so onMutate doesn't race with an already-updated cache
+      const prevCount = queryClient.getQueryData<{ unreadCount: number }>(['/api/messages', userId, 'unread-count']);
+      if (prevCount !== undefined) {
+        queryClient.setQueryData(['/api/messages', userId, 'unread-count'], {
+          unreadCount: Math.max(0, (prevCount.unreadCount || 0) - unreadFromSender),
+        });
+      }
+
+      // 3. Confirm with server
       markAsReadMutation.mutate(selectedConversation);
     }
   }, [selectedConversation, userId, messages]);
