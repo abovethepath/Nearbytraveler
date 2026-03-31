@@ -489,22 +489,22 @@ export default function CommunityDetail({ communityId }: { communityId: number }
                   <Zap className="w-4 h-4 text-orange-500" />
                   <h3 className="font-bold text-sm">Community Pulse</h3>
                 </div>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                  <div className="text-center py-1.5 px-1 rounded-lg bg-gray-50 dark:bg-gray-800">
-                    <div className="text-base font-bold text-orange-500">{community.memberCount || members.length}</div>
-                    <div className="text-[10px] text-gray-500 dark:text-gray-400">Members</div>
+                <div className="grid grid-cols-4 gap-2">
+                  <div className="text-center py-2 px-1 rounded-lg bg-gray-50 dark:bg-gray-800">
+                    <div className="text-lg font-bold text-orange-500 leading-tight">{community.memberCount || members.length}</div>
+                    <div className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5">Members</div>
                   </div>
-                  <div className="text-center py-1.5 px-1 rounded-lg bg-gray-50 dark:bg-gray-800">
-                    <div className="text-base font-bold text-blue-500">{memberStats.countries || 1}</div>
-                    <div className="text-[10px] text-gray-500 dark:text-gray-400">Countries</div>
+                  <div className="text-center py-2 px-1 rounded-lg bg-gray-50 dark:bg-gray-800">
+                    <div className="text-lg font-bold text-blue-500 leading-tight">{memberStats.countries || 1}</div>
+                    <div className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5">Countries</div>
                   </div>
-                  <div className="text-center py-1.5 px-1 rounded-lg bg-gray-50 dark:bg-gray-800">
-                    <div className="text-base font-bold text-emerald-500">{memberStats.cities || 1}</div>
-                    <div className="text-[10px] text-gray-500 dark:text-gray-400">Cities</div>
+                  <div className="text-center py-2 px-1 rounded-lg bg-gray-50 dark:bg-gray-800">
+                    <div className="text-lg font-bold text-emerald-500 leading-tight">{memberStats.cities || 1}</div>
+                    <div className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5">Cities</div>
                   </div>
-                  <div className="text-center py-1.5 px-1 rounded-lg bg-gray-50 dark:bg-gray-800">
-                    <div className="text-base font-bold text-purple-500">{memberStats.nearbyCount}</div>
-                    <div className="text-[10px] text-gray-500 dark:text-gray-400 truncate">
+                  <div className="text-center py-2 px-1 rounded-lg bg-gray-50 dark:bg-gray-800">
+                    <div className="text-lg font-bold text-purple-500 leading-tight">{memberStats.nearbyCount}</div>
+                    <div className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5 truncate">
                       {memberStats.userCity ? `Near you` : "Nearby"}
                     </div>
                   </div>
