@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { apiRequest, getApiBaseUrl } from "@/lib/queryClient";
 import { useCommunityJoinPrompt, CommunityJoinPrompt } from "@/components/CommunityJoinPrompt";
 import { hasCommunityMapping } from "@/lib/interestCommunityMap";
@@ -360,7 +360,84 @@ export function ProfileTabs(props: ProfilePageProps) {
   // Mobile web: About should always be visible directly below the hero (requested ordering),
   // even if tab panels are lazily mounted.
   const forceMobileWebAboutPanel = (isMobileWeb || isNativeIOSApp()) && !isOwnProfile;
-  
+
+  // Generic auto-save hook for pill/chip toggle sections
+  function useAutoSave(
+    data: any,
+    editing: boolean,
+    saveFn: (d: any) => Promise<any>,
+  ): 'idle' | 'saving' | 'saved' | 'error' {
+    const [status, setStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+    const initRef = useRef(false);
+    const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const dataRef = useRef(data);
+    dataRef.current = data;
+
+    useEffect(() => {
+      if (!editing) { initRef.current = false; return; }
+      if (!initRef.current) { initRef.current = true; return; }
+      if (timerRef.current) clearTimeout(timerRef.current);
+      timerRef.current = setTimeout(() => {
+        setStatus('saving');
+        saveFn(dataRef.current)
+          .then(() => { setStatus('saved'); setTimeout(() => setStatus('idle'), 2000); })
+          .catch(() => { setStatus('error'); });
+      }, 500);
+      return () => { if (timerRef.current) clearTimeout(timerRef.current); };
+    }, [data, editing]);
+
+    useEffect(() => { if (!editing) setStatus('idle'); }, [editing]);
+    return status;
+  }
+
+  // Auto-save: countries
+  const countrySaveStatus = useAutoSave(
+    tempCountries, editingCountries,
+    (c) => updateCountries.mutateAsync(c),
+  );
+
+  // Auto-save: languages
+  const langSaveStatus = useAutoSave(
+    tempLanguages, editingLanguages,
+    (l) => updateLanguages.mutateAsync(l),
+  );
+
+  // Auto-save: interests + activities (combined section)
+  const interestsSaveDataKey = JSON.stringify({
+    i: editFormData?.interests,
+    a: editFormData?.activities,
+    s: editFormData?.subInterests,
+    p: editFormData?.privateInterests,
+  });
+  const interestsSaveFn = useCallback(async () => {
+    const allInterests = [...MOST_POPULAR_INTERESTS, ...ADDITIONAL_INTERESTS];
+    const predefinedInterests = (editFormData?.interests || []).filter((int: string) => allInterests.includes(int));
+    const customInterests = (editFormData?.interests || []).filter((int: string) => !allInterests.includes(int));
+    const predefinedActivities = (editFormData?.activities || []).filter((act: string) => ALL_ACTIVITIES.includes(act));
+    const customActivities = (editFormData?.activities || []).filter((act: string) => !ALL_ACTIVITIES.includes(act));
+    const saveData = {
+      interests: predefinedInterests,
+      customInterests: customInterests.join(', '),
+      activities: predefinedActivities,
+      customActivities: customActivities.join(', '),
+      subInterests: editFormData?.subInterests || [],
+      privateInterests: editFormData?.privateInterests || [],
+    };
+    const apiBase = getApiBaseUrl();
+    const response = await fetch(`${apiBase}/api/users/${user?.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(saveData),
+    });
+    if (!response.ok) throw new Error('Failed to save');
+    queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/profile-bundle`] });
+  }, [editFormData, user?.id, effectiveUserId, queryClient, getApiBaseUrl]);
+  const interestsSaveStatus = useAutoSave(
+    interestsSaveDataKey, isEditingPublicInterests,
+    interestsSaveFn,
+  );
+
   const getTabBadge = (count: number) => {
     if (count === 0) return null;
     return (
@@ -1063,7 +1140,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                   );
                 })()}
 
-                {/* Basic Info â€” grid so lines never run together */}
+                {/* Basic Info â€" grid so lines never run together */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2 text-sm">
                   <div className="flex items-start gap-2">
                     <span className="font-medium text-gray-500 dark:text-gray-400 shrink-0">From:</span>
@@ -1095,7 +1172,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                       <Button 
                         size="sm" 
                         onClick={() => {
-                          console.log('ðŸ”¥ CREATE OFFER clicked, navigating to business dashboard');
+                          console.log('ðŸ"¥ CREATE OFFER clicked, navigating to business dashboard');
                           setLocation('/business-dashboard');
                         }}
                         className="bg-gradient-to-r from-blue-500 to-orange-500 text-white border-0 hover:from-blue-600 hover:to-orange-600"
@@ -1364,56 +1441,18 @@ export function ProfileTabs(props: ProfilePageProps) {
                 {isOwnProfile && isEditingPublicInterests ? (
                   <div className="p-4 sm:p-6 rounded-lg border bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 space-y-6">
 
-                    {/* TOP SAVE/CANCEL BUTTONS */}
-                    <div className="flex gap-2 pb-4 border-b border-gray-200 dark:border-gray-600 sticky top-0 z-10 bg-white dark:bg-gray-800 -mt-2 pt-2">
-                      <Button 
-                        onClick={async () => {
-                          try {
-                            const allInterests = [...MOST_POPULAR_INTERESTS, ...ADDITIONAL_INTERESTS];
-                            const predefinedInterests = editFormData.interests.filter(int => allInterests.includes(int));
-                            const customInterests = editFormData.interests.filter(int => !allInterests.includes(int));
-                            const predefinedActivities = editFormData.activities.filter(act => ALL_ACTIVITIES.includes(act));
-                            const customActivities = editFormData.activities.filter(act => !ALL_ACTIVITIES.includes(act));
-                            const saveData = {
-                              interests: predefinedInterests,
-                              customInterests: customInterests.join(', '),
-                              activities: predefinedActivities,
-                              customActivities: customActivities.join(', '),
-                              subInterests: editFormData.subInterests || [],
-                              privateInterests: editFormData.privateInterests || []
-                            };
-                            const apiBase = getApiBaseUrl();
-                            const response = await fetch(`${apiBase}/api/users/${user.id}`, {
-                              method: 'PUT',
-                              headers: { 'Content-Type': 'application/json' },
-                              credentials: 'include',
-                              body: JSON.stringify(saveData)
-                            });
-                            if (!response.ok) throw new Error('Failed to save');
-                            queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/profile-bundle`] });
-                            setIsEditingPublicInterests(false);
-                            communityPrompt.checkInterests(editFormData.interests);
-                            setTimeout(() => {
-                              const section = document.getElementById('interests-activities-section');
-                              if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                            }, 100);
-                          } catch (error) {
-                            console.error('Failed to update:', error);
-                          }
-                        }}
-                        className="bg-blue-600 hover:bg-blue-700 text-white"
-                        size="sm"
-                      >
-                        Save All
-                      </Button>
+                    {/* TOP DONE BUTTON + AUTO-SAVE STATUS */}
+                    <div className="flex items-center gap-3 pb-4 border-b border-gray-200 dark:border-gray-600 sticky top-0 z-10 bg-white dark:bg-gray-800 -mt-2 pt-2">
                       <Button
                         variant="outline"
-                        onClick={() => setIsEditingPublicInterests(false)}
-                        className="border-orange-500 text-orange-600 hover:bg-orange-50"
+                        onClick={() => { setIsEditingPublicInterests(false); communityPrompt.checkInterests(editFormData.interests); }}
                         size="sm"
                       >
-                        Cancel
+                        Done
                       </Button>
+                      {interestsSaveStatus === 'saving' && <span className="text-xs text-gray-400">Saving...</span>}
+                      {interestsSaveStatus === 'saved' && <span className="text-xs text-green-600 dark:text-green-400 animate-pulse">Saved ✓</span>}
+                      {interestsSaveStatus === 'error' && <span className="text-xs text-red-500">Couldn't save, try again</span>}
                     </div>
                     
                     {/* TOP CHOICES / INTERESTS SECTION */}
@@ -1640,7 +1679,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                                   href="/match-in-city" 
                                   className="text-xs text-blue-600 dark:text-blue-400 underline hover:text-blue-800 dark:hover:text-blue-200"
                                 >
-                                  Go to City Plans page to manage city activities â†’
+                                  Go to City Plans page to manage city activities â†'
                                 </a>
                               </div>
                             )}
@@ -1752,64 +1791,18 @@ export function ProfileTabs(props: ProfilePageProps) {
                       </div>
                     )}
 
-                    {/* SAVE/CANCEL BUTTONS */}
-                    <div className="flex gap-2 pt-4 border-t border-gray-200 dark:border-gray-600">
-                      <Button 
-                        onClick={async () => {
-                          try {
-                            const allInterests = [...MOST_POPULAR_INTERESTS, ...ADDITIONAL_INTERESTS];
-                            const allActivities = ALL_ACTIVITIES;
-                            
-                            const predefinedInterests = editFormData.interests.filter(int => allInterests.includes(int));
-                            const customInterests = editFormData.interests.filter(int => !allInterests.includes(int));
-                            
-                            const predefinedActivities = editFormData.activities.filter(act => allActivities.includes(act));
-                            const customActivities = editFormData.activities.filter(act => !allActivities.includes(act));
-                            
-                            const saveData = {
-                              interests: predefinedInterests,
-                              customInterests: customInterests.join(', '),
-                              activities: predefinedActivities,
-                              customActivities: customActivities.join(', '),
-                              subInterests: editFormData.subInterests || [],
-                              privateInterests: editFormData.privateInterests || []
-                            };
-                            
-                            const apiBase = getApiBaseUrl();
-                            const response = await fetch(`${apiBase}/api/users/${user.id}`, {
-                              method: 'PUT',
-                              headers: { 'Content-Type': 'application/json' },
-                              credentials: 'include',
-                              body: JSON.stringify(saveData)
-                            });
-                            if (!response.ok) throw new Error('Failed to save');
-                            
-                            queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/profile-bundle`] });
-                            setIsEditingPublicInterests(false);
-                            communityPrompt.checkInterests(editFormData.interests);
-                            setTimeout(() => {
-                              const section = document.getElementById('interests-activities-section');
-                              if (section) {
-                                section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                              }
-                            }, 100);
-                          } catch (error) {
-                            console.error('Failed to update:', error);
-                          }
-                        }}
-                        className="bg-blue-600 hover:bg-blue-700 text-white"
-                        size="sm"
-                      >
-                        Save All
-                      </Button>
+                    {/* BOTTOM DONE BUTTON + AUTO-SAVE STATUS */}
+                    <div className="flex items-center gap-3 pt-4 border-t border-gray-200 dark:border-gray-600">
                       <Button
                         variant="outline"
-                        onClick={() => setIsEditingPublicInterests(false)}
-                        className="border-orange-500 text-orange-600 hover:bg-orange-50"
+                        onClick={() => { setIsEditingPublicInterests(false); communityPrompt.checkInterests(editFormData.interests); }}
                         size="sm"
                       >
-                        Cancel
+                        Done
                       </Button>
+                      {interestsSaveStatus === 'saving' && <span className="text-xs text-gray-400">Saving...</span>}
+                      {interestsSaveStatus === 'saved' && <span className="text-xs text-green-600 dark:text-green-400 animate-pulse">Saved ✓</span>}
+                      {interestsSaveStatus === 'error' && <span className="text-xs text-red-500">Couldn't save, try again</span>}
                     </div>
 
                   </div>
@@ -2075,7 +2068,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                     <Button
                       type="button"
                       onClick={() => {
-                        console.log('ðŸ”§ BUSINESS EDIT - Starting:', { 
+                        console.log('ðŸ"§ BUSINESS EDIT - Starting:', { 
                           user,
                           hasCustomInterests: !!user?.customInterests,
                           hasCustomActivities: !!user?.customActivities,
@@ -2094,7 +2087,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                         // Add custom fields from database to the arrays for display
                         if (user?.customInterests) {
                           const customInterests = user.customInterests.split(',').map(s => s.trim()).filter(s => s);
-                          console.log('ðŸ”§ Processing custom interests:', customInterests);
+                          console.log('ðŸ"§ Processing custom interests:', customInterests);
                           customInterests.forEach(item => {
                             if (!userInterests.includes(item)) {
                               userInterests.push(item);
@@ -2103,7 +2096,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                         }
                         if (user?.customActivities) {
                           const customActivities = user.customActivities.split(',').map(s => s.trim()).filter(s => s);
-                          console.log('ðŸ”§ Processing custom activities:', customActivities);
+                          console.log('ðŸ"§ Processing custom activities:', customActivities);
                           customActivities.forEach(item => {
                             if (!userActivities.includes(item)) {
                               userActivities.push(item);
@@ -2111,7 +2104,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                           });
                         }
                         
-                        console.log('ðŸ”§ BUSINESS EDIT - Final arrays:', { 
+                        console.log('ðŸ"§ BUSINESS EDIT - Final arrays:', { 
                           finalInterests: userInterests,
                           finalActivities: userActivities
                         });
@@ -2204,91 +2197,20 @@ export function ProfileTabs(props: ProfilePageProps) {
                   <div className="bg-orange-50 dark:bg-orange-900/20 p-4 rounded-lg border border-orange-200 dark:border-orange-600">
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Edit Business Preferences</h3>
-                      <div className="flex gap-2">
-                        <Button 
-                          onClick={async () => {
-                            try {
-                              console.log('ðŸ”§ BUSINESS SAVING DATA:', editFormData);
-                              
-                              // Separate predefined vs custom entries for proper database storage
-                              const predefinedInterests = [...MOST_POPULAR_INTERESTS, ...ADDITIONAL_INTERESTS].filter(opt => editFormData.interests.includes(opt));
-                              const predefinedActivities = safeGetAllActivities().filter(opt => (editFormData.activities || []).includes(opt));
-                              
-                              const allPredefinedInterests = [...getHometownInterests(), ...getTravelInterests(), ...getProfileInterests()];
-                              const customInterests = editFormData.interests.filter(int => !allPredefinedInterests.includes(int));
-                              const customActivities = (editFormData.activities || []).filter(act => !safeGetAllActivities().includes(act));
-                              
-                              const saveData = {
-                                interests: predefinedInterests,
-                                activities: predefinedActivities,
-                                customInterests: customInterests.join(', '),
-                                customActivities: customActivities.join(', ')
-                              };
-                              
-                              console.log('ðŸ”§ BUSINESS SAVE - Separated data:', saveData);
-                              
-                              const apiBase = getApiBaseUrl();
-                              const response = await fetch(`${apiBase}/api/users/${effectiveUserId}`, {
-                                method: 'PUT',
-                                headers: {
-                                  'Content-Type': 'application/json',
-                                  // CRITICAL FIX: Remove massive x-user-data header causing 431 error
-                                  'x-user-id': effectiveUserId?.toString() || '',
-                                  'x-user-type': user?.userType || 'business'
-                                },
-                                body: JSON.stringify(saveData)
-                              });
-                              
-                              if (!response.ok) {
-                                const errorText = await response.text();
-                                throw new Error(`Failed to save: ${errorText}`);
-                              }
-                              
-                              // Refresh data
-                              queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
-                              // Close editing modes
-                              setIsEditingPublicInterests(false);
-                              setActiveEditSection(null);
-                              
-                              // Clear custom inputs
-                              setCustomInterestInput('');
-                              setCustomActivityInput('');
-                              
-                              toast({
-                                title: "Success!",
-                                description: "Business preferences saved successfully.",
-                              });
-                            } catch (error: any) {
-                              console.error('Failed to update business preferences:', error);
-                              toast({
-                                title: "Error",
-                                description: error.message || "Failed to save business preferences. Please try again.",
-                                variant: "destructive",
-                              });
-                            }
-                          }}
-                          disabled={false}
-                          className="bg-blue-600 hover:bg-blue-700 text-white"
+                      <div className="flex items-center gap-3">
+                        <Button
+                          variant="outline"
+                          onClick={() => { setIsEditingPublicInterests(false); setActiveEditSection(null); }}
+                          size="sm"
                         >
-                          Save Business Changes
+                          Done
                         </Button>
-                        <Button 
-                          variant="outline" 
-                          onClick={() => {
-                            // Cancel edits and close editing modes
-                            setIsEditingPublicInterests(false);
-                            setActiveEditSection(null);
-                            setEditFormData({
-                              interests: user?.interests || [],
-                              activities: user?.activities || []
-                            });
-                          }}
-                        >
-                          Cancel
-                        </Button>
+                        {interestsSaveStatus === 'saving' && <span className="text-xs text-gray-400">Saving...</span>}
+                        {interestsSaveStatus === 'saved' && <span className="text-xs text-green-600 dark:text-green-400">Saved</span>}
+                        {interestsSaveStatus === 'error' && <span className="text-xs text-red-500">Couldn't save, try again</span>}
                       </div>
                     </div>
-                    
+
                     {/* Reuse the same editing interface structure from non-business users */}
                     <div className="space-y-6">
                       {/* Business Interests Section */}
@@ -2300,7 +2222,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                         <div className="flex flex-wrap gap-2 p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
                           {ALL_INTERESTS.map((interest, index) => {
                             const isSelected = editFormData.interests.includes(interest);
-                            console.log(`ðŸ” Interest "${interest}" is ${isSelected ? 'SELECTED' : 'not selected'} in:`, editFormData.interests);
+                            console.log(`ðŸ" Interest "${interest}" is ${isSelected ? 'SELECTED' : 'not selected'} in:`, editFormData.interests);
                             return (
                               <button
                                 key={`business-interest-${interest}-${index}`}
@@ -2498,87 +2420,20 @@ export function ProfileTabs(props: ProfilePageProps) {
                   </div>
                 )}
 
-                {/* Bottom Save Button for Business Preferences */}
+                {/* Bottom Done + auto-save status for Business Preferences */}
                 {isOwnProfile && (editingInterests && editingActivities) && (
                   <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border-t border-gray-200 dark:border-gray-600">
-                    <div className="flex justify-center">
-                      <Button 
-                        onClick={async () => {
-                          try {
-                            console.log('ðŸ”§ BUSINESS SAVING DATA (Bottom Button):', editFormData);
-                            
-                            // Separate predefined vs custom entries for proper database storage
-                            const predefinedInterests = [...MOST_POPULAR_INTERESTS, ...ADDITIONAL_INTERESTS].filter(opt => editFormData.interests.includes(opt));
-                            const predefinedActivities = safeGetAllActivities().filter(opt => (editFormData.activities || []).includes(opt));
-                            
-                            const customInterests = editFormData.interests.filter(int => !MOST_POPULAR_INTERESTS.includes(int) && !ADDITIONAL_INTERESTS.includes(int));
-                            const customActivities = (editFormData.activities || []).filter(act => !safeGetAllActivities().includes(act));
-                            
-                            const saveData = {
-                              interests: predefinedInterests,
-                              activities: predefinedActivities,
-                              customInterests: customInterests.join(', '),
-                              customActivities: customActivities.join(', ')
-                            };
-                            
-                            console.log('ðŸ”§ BUSINESS SAVE - Final payload:', JSON.stringify(saveData, null, 2));
-                            
-                            const apiBase = getApiBaseUrl();
-                            const response = await fetch(`${apiBase}/api/users/${effectiveUserId}`, {
-                              method: 'PUT',
-                              headers: {
-                                'Content-Type': 'application/json',
-                                // CRITICAL FIX: Remove massive x-user-data header causing 431 error
-                                'x-user-id': effectiveUserId?.toString() || '',
-                                'x-user-type': user?.userType || 'business'
-                              },
-                              body: JSON.stringify(saveData)
-                            });
-                            
-                            console.log('ðŸ”§ BUSINESS SAVE - Response status:', response.status);
-                            
-                            if (!response.ok) {
-                              const errorText = await response.text();
-                              console.error('ðŸ”´ BUSINESS SAVE - Error response:', errorText);
-                              throw new Error(`Failed to save: ${response.status} ${errorText}`);
-                            }
-                            
-                            const responseData = await response.json();
-                            console.log('ðŸ”§ BUSINESS SAVE - Response data:', responseData);
-                            
-                            if (!response.ok) {
-                              throw new Error(`Failed to save: ${response.status} ${response.statusText}`);
-                            }
-                            
-                            // Update cache and UI
-                            queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
-                            
-                            // Close editing modes
-                            setIsEditingPublicInterests(false);
-                            setActiveEditSection(null);
-                            
-                            // Clear custom inputs
-                            setCustomInterestInput('');
-                            setCustomActivityInput('');
-                            
-                            toast({
-                              title: "Success!",
-                              description: "Business preferences saved successfully.",
-                            });
-                          } catch (error: any) {
-                            console.error('Failed to update business preferences:', error);
-                            toast({
-                              title: "Error",
-                              description: error.message || "Failed to save business preferences. Please try again.",
-                              variant: "destructive",
-                            });
-                          }
-                        }}
-                        className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg font-semibold"
-                        size="lg"
+                    <div className="flex items-center justify-center gap-3">
+                      <Button
+                        variant="outline"
+                        onClick={() => { setIsEditingPublicInterests(false); setActiveEditSection(null); }}
+                        size="sm"
                       >
-                        ðŸ’¾ Save Business Changes
+                        Done
                       </Button>
+                      {interestsSaveStatus === 'saving' && <span className="text-xs text-gray-400">Saving...</span>}
+                      {interestsSaveStatus === 'saved' && <span className="text-xs text-green-600 dark:text-green-400 animate-pulse">Saved ✓</span>}
+                      {interestsSaveStatus === 'error' && <span className="text-xs text-red-500">Couldn't save, try again</span>}
                     </div>
                   </div>
                 )}
@@ -2851,25 +2706,23 @@ export function ProfileTabs(props: ProfilePageProps) {
                           </Button>
                         </div>
 
-                        <div className="flex gap-2">
-                          <Button
-                            onClick={() => {
-                              updateCountries.mutate(tempCountries);
-                            }}
-                            disabled={updateCountries.isPending}
-                            className="bg-blue-600 hover:bg-blue-700 text-white"
-                          >
-                            {updateCountries.isPending ? "Saving..." : "Save Countries"}
-                          </Button>
+                        <div className="flex items-center gap-3">
                           <Button
                             variant="outline"
-                            onClick={() => {
-                              setActiveEditSection(null);
-                              setTempCountries(user?.countriesVisited || []);
-                            }}
+                            size="sm"
+                            onClick={() => setActiveEditSection(null)}
                           >
-                            Cancel
+                            Done
                           </Button>
+                          {countrySaveStatus === 'saving' && (
+                            <span className="text-xs text-gray-400">Saving...</span>
+                          )}
+                          {countrySaveStatus === 'saved' && (
+                            <span className="text-xs text-green-600 dark:text-green-400 animate-pulse">Saved ✓</span>
+                          )}
+                          {countrySaveStatus === 'error' && (
+                            <span className="text-xs text-red-500">Couldn't save, try again</span>
+                          )}
                         </div>
                       </div>
                     ) : (
@@ -3039,7 +2892,7 @@ export function ProfileTabs(props: ProfilePageProps) {
                   profileUserId={user?.id} 
                   showCreateForm={showCreateDeal}
                   onCloseCreateForm={() => {
-                    console.log('ðŸ”¥ CLOSING create deal form');
+                    console.log('ðŸ"¥ CLOSING create deal form');
                     setShowCreateDeal(false);
                   }}
                 />
@@ -4019,13 +3872,13 @@ export function ProfileTabs(props: ProfilePageProps) {
                       </div>
                     )}
                     
-                    <div className="flex gap-2">
-                      <Button size="sm" onClick={handleSaveLanguages} disabled={updateLanguages.isPending} className="bg-blue-600 hover:bg-blue-700">
-                        {updateLanguages.isPending ? "Saving..." : "Save"}
+                    <div className="flex items-center gap-3">
+                      <Button variant="outline" size="sm" onClick={() => setActiveEditSection(null)}>
+                        Done
                       </Button>
-                      <Button size="sm" variant="outline" onClick={handleCancelLanguages}>
-                        Cancel
-                      </Button>
+                      {langSaveStatus === 'saving' && <span className="text-xs text-gray-400">Saving...</span>}
+                      {langSaveStatus === 'saved' && <span className="text-xs text-green-600 dark:text-green-400 animate-pulse">Saved ✓</span>}
+                      {langSaveStatus === 'error' && <span className="text-xs text-red-500">Couldn't save, try again</span>}
                     </div>
                   </div>
                 ) : (
@@ -4553,13 +4406,23 @@ export function ProfileTabs(props: ProfilePageProps) {
                         </div>
                       </div>
 
-                      <div className="flex gap-2">
-                        <Button size="sm" onClick={handleSaveCountries} disabled={updateCountries.isPending}>
-                          {updateCountries.isPending ? "Saving..." : "Save"}
+                      <div className="flex items-center gap-3">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setActiveEditSection(null)}
+                        >
+                          Done
                         </Button>
-                        <Button size="sm" variant="outline" onClick={handleCancelCountries}>
-                          Cancel
-                        </Button>
+                        {countrySaveStatus === 'saving' && (
+                          <span className="text-xs text-gray-400">Saving...</span>
+                        )}
+                        {countrySaveStatus === 'saved' && (
+                          <span className="text-xs text-green-600 dark:text-green-400 animate-pulse">Saved ✓</span>
+                        )}
+                        {countrySaveStatus === 'error' && (
+                          <span className="text-xs text-red-500">Couldn't save, try again</span>
+                        )}
                       </div>
                     </div>
                   ) : (

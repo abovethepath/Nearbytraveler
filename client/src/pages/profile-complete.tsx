@@ -3176,18 +3176,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       invalidateUserCache();
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
       refetchUser();
-      toast({
-        title: "Languages updated",
-        description: "Your languages have been successfully updated.",
-      });
-      setActiveEditSection(null);
-    },
-    onError: () => {
-      toast({
-        title: "Update failed",
-        description: "Failed to update languages. Please try again.",
-        variant: "destructive",
-      });
     },
   });
 
@@ -3202,18 +3190,6 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       invalidateUserCache();
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
       refetchUser();
-      toast({
-        title: "Countries updated",
-        description: "Your countries visited have been successfully updated.",
-      });
-      setActiveEditSection(null);
-    },
-    onError: () => {
-      toast({
-        title: "Update failed",
-        description: "Failed to update countries. Please try again.",
-        variant: "destructive",
-      });
     },
   });
 
