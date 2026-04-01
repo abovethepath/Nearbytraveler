@@ -552,6 +552,30 @@ export default function SignupTraveling() {
                   Where Are You Traveling?
                 </h3>
 
+                <label className="flex items-center gap-3 cursor-pointer select-none py-2 px-1">
+                  <input
+                    type="checkbox"
+                    checked={skippedTravel}
+                    onChange={(e) => {
+                      const checked = e.target.checked;
+                      setSkippedTravel(checked);
+                      if (checked) {
+                        setFormData(prev => ({
+                          ...prev,
+                          destinationCity: "",
+                          destinationState: "",
+                          destinationCountry: "",
+                          travelStartDate: "",
+                          travelReturnDate: "",
+                          alreadyHere: false,
+                        }));
+                      }
+                    }}
+                    className="w-5 h-5 rounded border-gray-300 dark:border-gray-600 text-orange-600 focus:ring-orange-500"
+                  />
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-200">I'm not currently traveling</span>
+                </label>
+
                 {!skippedTravel && <div className="bg-orange-50 dark:bg-orange-900/30 rounded-xl p-4 border-2 border-orange-200 dark:border-orange-700 overflow-hidden">
                   <Label className="text-gray-700 dark:text-gray-200 font-semibold mb-2 block">Current Destination *</Label>
                   <SmartLocationInput
@@ -631,40 +655,6 @@ export default function SignupTraveling() {
                   </div>
                 </div>}
               </div>
-
-              {!skippedTravel && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSkippedTravel(true);
-                    setFormData(prev => ({
-                      ...prev,
-                      destinationCity: "",
-                      destinationState: "",
-                      destinationCountry: "",
-                      travelStartDate: "",
-                      travelReturnDate: "",
-                      alreadyHere: false,
-                    }));
-                    document.getElementById("step-4-interests")?.scrollIntoView({ behavior: "smooth", block: "start" });
-                  }}
-                  className="w-full text-center py-3 text-sm font-medium text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 transition-colors"
-                >
-                  Not traveling right now but plan to soon? Skip this step →
-                </button>
-              )}
-              {skippedTravel && (
-                <div className="rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-4 text-center">
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Travel details skipped — you can add them later from your profile.</p>
-                  <button
-                    type="button"
-                    onClick={() => setSkippedTravel(false)}
-                    className="mt-1 text-sm font-medium text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 transition-colors"
-                  >
-                    Actually, I want to fill this in →
-                  </button>
-                </div>
-              )}
 
               {/* Top Choices */}
               <div id="step-4-interests" className="space-y-4">
