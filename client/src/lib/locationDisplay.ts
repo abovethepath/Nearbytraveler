@@ -33,12 +33,20 @@ function isUsOrCanada(country: string | null | undefined): boolean {
  * - USA or Canada → "City, StateAbbr" (e.g. "Austin, TX" / "Toronto, ON")
  * - All others    → "City, Country"   (e.g. "Paris, France")
  */
+// Expand bare 2-letter state abbreviations used as city names to their full "City, ST" form
+const BARE_ABBREV_TO_CITY: Record<string, string> = {
+  'dc': 'Washington, DC',
+};
+
 export function formatCityDisplay(
   city: string | null | undefined,
   state: string | null | undefined,
   country: string | null | undefined,
 ): string {
   if (!city) return 'Unknown';
+  // Expand bare abbreviations like "DC" → "Washington, DC"
+  const expanded = BARE_ABBREV_TO_CITY[city.trim().toLowerCase()];
+  if (expanded) return expanded;
   if (isUsOrCanada(country)) {
     const abbrev = state ? abbreviateState(state) : '';
     return abbrev && abbrev.toLowerCase() !== city.toLowerCase()

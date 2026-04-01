@@ -102,6 +102,18 @@ html, body { overflow-x: hidden; }
     margin-top: 10px !important;
   }
 }
+/* Force user card bio visible in both modes */
+[data-role="user-card-bio"],
+[data-role="user-card-bio"] span {
+  color: #6b7280 !important;
+  -webkit-text-fill-color: #6b7280 !important;
+}
+.dark [data-role="user-card-bio"],
+.dark [data-role="user-card-bio"] span {
+  color: #D1D5DB !important;
+  -webkit-text-fill-color: #D1D5DB !important;
+}
+
 /* Force user card colors in dark mode */
 .dark [data-role="user-card-username"] {
   color: #FF6B35 !important;
