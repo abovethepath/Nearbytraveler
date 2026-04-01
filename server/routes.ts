@@ -1201,7 +1201,29 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
   <!-- Event specific meta -->
   <meta property="event:start_date" content="${event.eventDate || ''}" />
   <meta property="event:location" content="${event.city || ''}" />
-  
+
+  <!-- JSON-LD Event schema for Google rich results -->
+  <script type="application/ld+json">
+  ${JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Event",
+    "name": event.title,
+    "startDate": event.eventDate ? new Date(event.eventDate).toISOString() : undefined,
+    "location": {
+      "@type": "Place",
+      "name": event.venueName || event.city || 'TBA',
+      "address": [event.city, event.country].filter(Boolean).join(', ') || undefined
+    },
+    "description": event.description || undefined,
+    "url": fullUrl,
+    "organizer": {
+      "@type": "Person",
+      "name": organizerName
+    },
+    "image": imageUrl
+  })}
+  </script>
+
   <!-- Redirect to actual page for browsers -->
   <meta http-equiv="refresh" content="0;url=${fullUrl}" />
 </head>
