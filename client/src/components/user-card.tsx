@@ -173,8 +173,13 @@ export default function UserCard({
 
   const travelCityFinal = getTravelCity();
   const hometownLine = (() => {
-    const city = (user.hometownCity || "").trim();
+    let city = (user.hometownCity || "").trim();
     if (!city) return "Unknown";
+    // Inline fix: never show bare "DC" — expand to full city name
+    const cityLower = city.toLowerCase().replace(/[.,]/g, '').trim();
+    if (cityLower === 'dc' || cityLower === 'washington dc' || cityLower === 'washington d.c.' || cityLower === 'washington d.c') {
+      return "Washington, DC";
+    }
     const abbrevCity = abbreviateCity(city);
     const formatted = formatCityDisplay(abbrevCity, user.hometownState, user.hometownCountry);
     return formatted === "Unknown" ? abbrevCity : formatted;
@@ -231,6 +236,12 @@ export default function UserCard({
   const thingsInCommon = computeCommonStats(effectiveCompatibilityData, effectiveConnectionDegree).totalCommon;
   const contactsInCommon = effectiveConnectionDegree?.mutualCount ?? 0;
   const bioText = truncateBioToSentences(user.bio, 2);
+  if (!bioText && user.bio) {
+    console.log('[UserCard] bioText empty despite user.bio existing:', { username: user.username, bio: user.bio, bioText });
+  }
+  if (!user.bio) {
+    console.log('[UserCard] user.bio is missing:', { username: user.username, id: user.id, bio: user.bio });
+  }
 
   return (
     <button 
