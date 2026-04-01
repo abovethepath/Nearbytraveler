@@ -8047,8 +8047,75 @@ export class DatabaseStorage implements IStorage {
   // Duplicate getUsersByLocationAndType method removed - using original version above
 
   // Re-enabled chatroom creation for new cities - creates 2 chatrooms per city
+  /** Merge duplicate metro chatrooms (e.g. "Welcome to New York" into "Welcome to New York Metro"). Idempotent. */
+  private async mergeMetroDuplicateChatrooms(): Promise<void> {
+    try {
+      // For each metro area, find all "Welcome to X" chatrooms where X is a city in that metro
+      const metroAreas = Object.keys(require('../shared/metro-areas').METRO_AREAS || {});
+      for (const metroName of metroAreas) {
+        const metroCities = getMetroCities(metroName);
+        if (!metroCities.length) continue;
+
+        // Find the canonical chatroom ("Welcome to {MetroName}")
+        const [canonical] = await db
+          .select()
+          .from(citychatrooms)
+          .where(eq(citychatrooms.name, `Welcome to ${metroName}`))
+          .limit(1);
+        if (!canonical) continue;
+
+        // Find non-canonical duplicates (e.g. "Welcome to New York" when metro is "New York Metro")
+        const variantNames = metroCities
+          .filter(c => c !== metroName)
+          .map(c => `Welcome to ${c}`);
+        if (!variantNames.length) continue;
+
+        const duplicates = await db
+          .select()
+          .from(citychatrooms)
+          .where(inArray(citychatrooms.name, variantNames));
+
+        for (const dup of duplicates) {
+          console.log(`🔄 MERGE CHATROOM: "${dup.name}" (id=${dup.id}) → "${canonical.name}" (id=${canonical.id})`);
+
+          // Move members that don't already exist in canonical
+          const dupMembers = await db.select().from(chatroomMembers).where(eq(chatroomMembers.chatroomId, dup.id));
+          for (const member of dupMembers) {
+            const [existing] = await db
+              .select()
+              .from(chatroomMembers)
+              .where(and(
+                eq(chatroomMembers.chatroomId, canonical.id),
+                eq(chatroomMembers.userId, member.userId)
+              ))
+              .limit(1);
+            if (!existing) {
+              await db.insert(chatroomMembers).values({
+                chatroomId: canonical.id,
+                userId: member.userId,
+                role: member.role === 'owner' ? 'member' : member.role,
+                isActive: member.isActive,
+                joinedAt: member.joinedAt || new Date(),
+              });
+            }
+          }
+
+          // Delete duplicate's messages, members, then the chatroom itself
+          await db.delete(chatroomMessages).where(eq(chatroomMessages.chatroomId, dup.id));
+          await db.delete(chatroomMembers).where(eq(chatroomMembers.chatroomId, dup.id));
+          await db.delete(citychatrooms).where(eq(citychatrooms.id, dup.id));
+          console.log(`✅ MERGE CHATROOM: Deleted duplicate "${dup.name}" (id=${dup.id})`);
+        }
+      }
+    } catch (error) {
+      console.error('Error merging metro duplicate chatrooms:', error);
+    }
+  }
+
   async ensureMeetLocalsChatrooms(city?: string, state?: string | null, country?: string): Promise<void> {
     try {
+      // Merge any existing metro duplicates before creating new chatrooms
+      await this.mergeMetroDuplicateChatrooms();
       console.log('✅ CHATROOM CREATION ENABLED: Creating chatrooms for new cities as needed');
       let cities;
       
@@ -8094,14 +8161,19 @@ export class DatabaseStorage implements IStorage {
         ];
 
         for (const chatroomType of chatroomTypes) {
-          // Check if chatroom already exists
+          // Check if chatroom already exists — also check metro variant names to prevent duplicates
+          // (e.g. "Welcome to New York" vs "Welcome to New York Metro")
+          const metroCities = getMetroCities(chatroomCity);
+          const cityVariants = metroCities.length > 0
+            ? [chatroomCity, ...metroCities]
+            : [chatroomCity];
+          const welcomeNames = cityVariants.map(c => `Welcome to ${c}`);
           const existingChatroom = await db
             .select()
             .from(citychatrooms)
-            .where(and(
-              eq(citychatrooms.city, chatroomCity),
-              eq(citychatrooms.name, chatroomType.name)
-            ))
+            .where(
+              inArray(citychatrooms.name, welcomeNames)
+            )
             .limit(1);
 
           if (existingChatroom.length === 0) {

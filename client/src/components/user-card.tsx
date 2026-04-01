@@ -342,9 +342,7 @@ export default function UserCard({
               >
                 {handle}
               </div>
-              {isFoundingMember && (
-                <div className="text-center mt-0.5"><span className="text-[9px] font-bold text-amber-400">🌟 Founding Member</span></div>
-              )}
+              {/* Founding Member badge hidden on cards — everyone has it, shown on profile hero only */}
               <div
                 className="mt-0.5 flex items-center justify-center gap-1 min-w-0 !w-full text-[11.5px]"
                 data-role="user-card-location"

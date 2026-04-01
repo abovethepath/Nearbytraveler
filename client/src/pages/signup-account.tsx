@@ -176,7 +176,8 @@ export default function SignupAccount() {
     const missingBusiness = userType === 'business' && !formData.contactName?.trim();
     const missingNameFields = userType !== 'business' && (!formData.firstName?.trim() || !formData.lastName?.trim());
     const missingBusinessName = userType === 'business' && !formData.name?.trim();
-    if (missingNameFields || missingBusinessName || !formData.username || !formData.email || !formData.phoneNumber || !formData.password || missingBusiness) {
+    const missingBusinessPhone = userType === 'business' && !formData.phoneNumber;
+    if (missingNameFields || missingBusinessName || !formData.username || !formData.email || !formData.password || missingBusiness || missingBusinessPhone) {
       const errorMsg = userType === 'business' ? "Please fill in Business Name, Name of Contact, Username, Contact Phone, Contact Email, and Password." : "Please fill in your first name, last name, and all other required fields.";
       setCurrentError(errorMsg);
       toast({
@@ -207,18 +208,6 @@ export default function SignupAccount() {
       toast({
         title: "Username not available",
         description: errorMsg,
-        variant: "destructive",
-      });
-      setIsLoading(false);
-      return;
-    }
-
-    // Phone uniqueness check (block signup if already in use)
-    if (await checkPhoneInUse(formData.phoneNumber)) {
-      setCurrentError(PHONE_IN_USE_MESSAGE);
-      toast({
-        title: "Phone number already in use",
-        description: PHONE_IN_USE_MESSAGE,
         variant: "destructive",
       });
       setIsLoading(false);
@@ -285,11 +274,10 @@ export default function SignupAccount() {
     formData.username.trim() !== "" &&
     formData.username.length >= 6 &&
     formData.email.trim() !== "" &&
-    formData.phoneNumber.trim() !== "" &&
     formData.password.trim() !== "" &&
     formData.password.length >= 8 &&
     usernameAvailable === true &&
-    !phoneInUse;
+    (userType !== 'business' || formData.phoneNumber.trim() !== "");
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4">
@@ -455,37 +443,23 @@ export default function SignupAccount() {
                 )}
               </div>
 
-              <div>
-                <Label htmlFor="phoneNumber" className="text-base font-medium text-gray-900 dark:text-white">
-                  {userType === 'business' ? "Contact's Phone Number *" : 'Phone Number *'}
-                </Label>
-                <Input
-                  id="phoneNumber"
-                  type="tel"
-                  value={formData.phoneNumber}
-                  onChange={(e) => handlePhoneChange(e.target.value)}
-                  onBlur={async () => {
-                    const exists = await checkPhoneInUse(formData.phoneNumber);
-                    if (exists) {
-                      setCurrentError(PHONE_IN_USE_MESSAGE);
-                    }
-                  }}
-                  placeholder="+1 (555) 123-4567"
-                  className="text-base py-3 border-gray-400 dark:border-gray-600"
-                  required
-                />
-                {phoneChecking && (
-                  <p className="text-sm text-blue-600 mt-1">Checking phone number...</p>
-                )}
-                {!phoneChecking && phoneInUse && (
-                  <p className="text-sm text-red-600 mt-1">
-                    {PHONE_IN_USE_MESSAGE}{" "}
-                    <a href="/auth" className="underline font-semibold">
-                      Sign In
-                    </a>
-                  </p>
-                )}
-              </div>
+              {/* Phone number: hidden for regular users, shown for business accounts */}
+              {userType === 'business' && (
+                <div>
+                  <Label htmlFor="phoneNumber" className="text-base font-medium text-gray-900 dark:text-white">
+                    Contact's Phone Number *
+                  </Label>
+                  <Input
+                    id="phoneNumber"
+                    type="tel"
+                    value={formData.phoneNumber}
+                    onChange={(e) => handlePhoneChange(e.target.value)}
+                    placeholder="+1 (555) 123-4567"
+                    className="text-base py-3 border-gray-400 dark:border-gray-600"
+                    required
+                  />
+                </div>
+              )}
 
               <div>
                 <Label htmlFor="password" className="text-base font-medium text-gray-900 dark:text-white">

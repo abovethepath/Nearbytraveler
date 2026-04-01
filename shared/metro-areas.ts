@@ -51,7 +51,7 @@ export const METRO_AREAS = {
   ],
   
   "New York Metro": [
-    'New York', 'Manhattan', 'Brooklyn', 'Queens', 'Bronx', 'Staten Island',
+    'New York', 'New York City', 'NYC', 'Manhattan', 'Brooklyn', 'Queens', 'Bronx', 'Staten Island',
     'Jersey City', 'Newark', 'Hoboken', 'Weehawken', 'Union City', 'North Bergen',
     'West New York', 'Secaucus', 'Bayonne', 'Kearny', 'Harrison', 'East Orange',
     'Orange', 'Irvington', 'Maplewood', 'South Orange', 'Millburn', 'Summit',
