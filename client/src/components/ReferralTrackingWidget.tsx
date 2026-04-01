@@ -148,18 +148,18 @@ export function ReferralTrackingWidget({ profileUserId }: { profileUserId: numbe
           </div>
           <div className="flex-1 text-center py-1 rounded bg-orange-50 dark:bg-orange-900/20 border border-orange-200/40 dark:border-orange-800/20">
             <p className="text-xs font-bold text-orange-600 dark:text-orange-400">{stats.totalAuraFromReferrals ?? 0}</p>
-            <p className="text-[8px] text-gray-500 dark:text-gray-400 leading-tight">Aura</p>
+            <p className="text-[8px] text-gray-500 dark:text-gray-400 leading-tight"><span className="sm:hidden">Aura</span><span className="hidden sm:inline">Aura Points</span></p>
           </div>
           <div className="flex-1 text-center py-1 rounded bg-orange-50 dark:bg-orange-900/20 border border-orange-200/40 dark:border-orange-800/20">
             {isConnector ? (
               <>
                 <p className="text-xs font-bold text-orange-600 dark:text-orange-400">{stats.totalConnectorPointsFromReferrals ?? 0}</p>
-                <p className="text-[8px] text-gray-500 dark:text-gray-400 leading-tight">Connector Pts</p>
+                <p className="text-[8px] text-gray-500 dark:text-gray-400 leading-tight"><span className="sm:hidden">Connector Pts</span><span className="hidden sm:inline">Connector Points</span></p>
               </>
             ) : (
               <>
                 <p className="text-xs font-bold text-gray-300 dark:text-gray-600">🔒</p>
-                <p className="text-[8px] text-gray-400 dark:text-gray-500 leading-tight">Connector Pts</p>
+                <p className="text-[8px] text-gray-400 dark:text-gray-500 leading-tight"><span className="sm:hidden">Connector Pts</span><span className="hidden sm:inline">Connector Points</span></p>
               </>
             )}
           </div>

@@ -47,15 +47,14 @@ export default function ConnectorInfo() {
           </p>
         </div>
 
-        {user?.connectorPoints != null && (
-          <div className="rounded-2xl border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/40 p-5 mb-6 flex items-center justify-between">
+        <div className="rounded-2xl border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/40 p-5 mb-6 flex items-center justify-between">
             <div>
-              <div className="text-sm font-medium text-blue-700 dark:text-blue-300">Your Connector Points</div>
-              <div className="text-3xl font-extrabold text-blue-600 dark:text-blue-400">{user.connectorPoints || 0}</div>
+              <div className="text-sm font-medium text-blue-700 dark:text-blue-300">Example: Connector Points</div>
+              <div className="text-3xl font-extrabold text-blue-600 dark:text-blue-400">xxxxx</div>
+              <div className="text-xs text-blue-500 dark:text-blue-400 mt-1">Your real points will show up on your profile</div>
             </div>
             <Award className="w-10 h-10 text-blue-400 dark:text-blue-500" />
           </div>
-        )}
 
         <div className="space-y-6">
           <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6">
