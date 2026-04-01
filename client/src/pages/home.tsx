@@ -647,12 +647,25 @@ export default function Home() {
         case 'recent':
           // Most recently active (last seen) first
           return new Date(b.lastSeenAt || b.createdAt || 0).getTime() - new Date(a.lastSeenAt || a.createdAt || 0).getTime();
-        case 'active':
-          // Most active users first — aura is awarded for all platform actions
-          // (messages, meetups, events, trips, photos, connections) making it the
-          // best available proxy for cumulative activity. Break ties by last seen.
+        case 'active': {
+          // Most active users first — aura is awarded for real platform actions.
+          // Deprioritize likely-incomplete or bot accounts to the bottom.
+          const isLikelyBot = (u: any): boolean => {
+            // No photo AND no bio AND no interests = incomplete/bot
+            if (!u.profileImage && !u.bio && (!u.interests || u.interests.length === 0)) return true;
+            // Created < 24h ago with only default aura (signup only, no real activity)
+            if (u.createdAt) {
+              const ageMs = Date.now() - new Date(u.createdAt).getTime();
+              if (ageMs < 24 * 60 * 60 * 1000 && (u.aura || 0) <= 1) return true;
+            }
+            return false;
+          };
+          const aBot = isLikelyBot(a) ? 1 : 0;
+          const bBot = isLikelyBot(b) ? 1 : 0;
+          if (aBot !== bBot) return aBot - bBot; // bots sort to bottom
           if ((b.aura || 0) !== (a.aura || 0)) return (b.aura || 0) - (a.aura || 0);
           return new Date(b.lastSeenAt || b.createdAt || 0).getTime() - new Date(a.lastSeenAt || a.createdAt || 0).getTime();
+        }
         case 'compatibility': {
           // Sort by actual shared things in common with the current user
           const aCompat = buildFastCompatibilityData(a);
