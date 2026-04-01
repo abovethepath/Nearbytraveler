@@ -56,6 +56,7 @@ export default function SignupTraveling() {
     customLanguages: "",
   });
 
+  const [skippedTravel, setSkippedTravel] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [debugError, setDebugError] = useState<string | null>(null);
   const [debugStatus, setDebugStatus] = useState<string>("Ready");
@@ -233,10 +234,10 @@ export default function SignupTraveling() {
       if (!registrationData.hometownCity || !registrationData.hometownCountry) {
         errors.push("Hometown city and country are required.");
       }
-      if (!registrationData.destinationCity || !registrationData.destinationCountry) {
+      if (!skippedTravel && (!registrationData.destinationCity || !registrationData.destinationCountry)) {
         errors.push("Travel destination city and country are required.");
       }
-      if (!registrationData.travelReturnDate) {
+      if (!skippedTravel && !registrationData.travelReturnDate) {
         errors.push("Travel return date is required.");
       } else {
         // CRITICAL: Validate return date is today or in the future
@@ -551,7 +552,7 @@ export default function SignupTraveling() {
                   Where Are You Traveling?
                 </h3>
 
-                <div className="bg-orange-50 dark:bg-orange-900/30 rounded-xl p-4 border-2 border-orange-200 dark:border-orange-700 overflow-hidden">
+                {!skippedTravel && <div className="bg-orange-50 dark:bg-orange-900/30 rounded-xl p-4 border-2 border-orange-200 dark:border-orange-700 overflow-hidden">
                   <Label className="text-gray-700 dark:text-gray-200 font-semibold mb-2 block">Current Destination *</Label>
                   <SmartLocationInput
                     country={formData.destinationCountry}
@@ -628,11 +629,45 @@ export default function SignupTraveling() {
                       />
                     </div>
                   </div>
-                </div>
+                </div>}
               </div>
 
+              {!skippedTravel && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSkippedTravel(true);
+                    setFormData(prev => ({
+                      ...prev,
+                      destinationCity: "",
+                      destinationState: "",
+                      destinationCountry: "",
+                      travelStartDate: "",
+                      travelReturnDate: "",
+                      alreadyHere: false,
+                    }));
+                    document.getElementById("step-4-interests")?.scrollIntoView({ behavior: "smooth", block: "start" });
+                  }}
+                  className="w-full text-center py-3 text-sm font-medium text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 transition-colors"
+                >
+                  Not traveling right now but plan to soon? Skip this step →
+                </button>
+              )}
+              {skippedTravel && (
+                <div className="rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-4 text-center">
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Travel details skipped — you can add them later from your profile.</p>
+                  <button
+                    type="button"
+                    onClick={() => setSkippedTravel(false)}
+                    className="mt-1 text-sm font-medium text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 transition-colors"
+                  >
+                    Actually, I want to fill this in →
+                  </button>
+                </div>
+              )}
+
               {/* Top Choices */}
-              <div className="space-y-4">
+              <div id="step-4-interests" className="space-y-4">
                 <h3 className="text-xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
                   <span className="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center text-blue-600 dark:text-blue-300 text-sm font-bold">4</span>
                   Your Interests
@@ -696,7 +731,7 @@ export default function SignupTraveling() {
                   className={`w-full py-6 text-lg font-bold rounded-xl shadow-lg transition-all ${
                     getTotalInterestsCount() >= 7
                       ? 'bg-gradient-to-r from-orange-500 to-blue-600 hover:from-orange-600 hover:to-blue-700 text-white hover:shadow-xl hover:scale-[1.02]'
-                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 cursor-not-allowed'
                   }`}
                   data-testid="button-complete-signup"
                 >

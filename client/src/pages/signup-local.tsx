@@ -521,7 +521,7 @@ export default function SignupLocal() {
                   className={`w-full py-6 text-lg font-bold rounded-xl shadow-lg transition-all ${
                     getTotalInterestsCount() >= 7
                       ? 'bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white hover:shadow-xl hover:scale-[1.02]'
-                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 cursor-not-allowed'
                   }`}
                   data-testid="button-complete-signup"
                 >

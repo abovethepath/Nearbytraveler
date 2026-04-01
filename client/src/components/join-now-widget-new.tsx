@@ -15,6 +15,12 @@ export default function JoinNowWidgetNew({ darkBackground }: JoinNowWidgetNewPro
 
   const handleUserTypeClick = (type: string) => {
     setUserType(type);
+    // On mobile, auto-advance immediately without requiring a separate Continue tap
+    if (window.innerWidth < 640) {
+      sessionStorage.setItem('selectedUserType', type);
+      sessionStorage.removeItem('isNewToTown');
+      setLocation('/signup/account');
+    }
   };
 
   const handleContinue = () => {
@@ -139,7 +145,7 @@ export default function JoinNowWidgetNew({ darkBackground }: JoinNowWidgetNewPro
           disabled={!userType}
           data-testid="button-continue"
           className={[
-            "w-full py-6 text-lg font-semibold rounded-xl transition-all duration-200",
+            "hidden sm:flex w-full py-6 text-lg font-semibold rounded-xl transition-all duration-200",
             userType
               ? "bg-black hover:bg-gray-900 text-white shadow-lg hover:shadow-xl"
               : "bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed",
