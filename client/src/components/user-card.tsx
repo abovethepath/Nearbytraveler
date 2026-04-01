@@ -395,7 +395,7 @@ export default function UserCard({
                 }}
               >
                 <span
-                  style={{ color: pickTextColor("#1f2937", "#e5e7eb"), textAlign: "center" }}
+                  style={{ color: pickTextColor("#1f2937", "#e5e7eb"), WebkitTextFillColor: pickTextColor("#1f2937", "#e5e7eb"), textAlign: "center" }}
                 >
                   {bioText || '\u00A0'}
                 </span>
@@ -447,6 +447,7 @@ export default function UserCard({
                 title={user.bio || undefined}
                 style={{
                   color: pickTextColor("#9ca3af", "#D1D5DB"),
+                  WebkitTextFillColor: pickTextColor("#9ca3af", "#D1D5DB"),
                   fontSize: 12.5,
                   lineHeight: 1.5,
                   minHeight: '3.75rem',
@@ -545,7 +546,7 @@ export default function UserCard({
                 }}
               >
                 <span
-                  style={{ color: pickTextColor("#1f2937", "#e5e7eb"), textAlign: "center" }}
+                  style={{ color: pickTextColor("#1f2937", "#e5e7eb"), WebkitTextFillColor: pickTextColor("#1f2937", "#e5e7eb"), textAlign: "center" }}
                 >
                   {bioText || '\u00A0'}
                 </span>
@@ -596,6 +597,7 @@ export default function UserCard({
                 title={user.bio || undefined}
                 style={{
                   color: pickTextColor("#9ca3af", "#D1D5DB"),
+                  WebkitTextFillColor: pickTextColor("#9ca3af", "#D1D5DB"),
                   fontSize: 12.5,
                   lineHeight: 1.5,
                   minHeight: '3.75rem',
