@@ -648,6 +648,9 @@ function Router() {
     // Public event detail pages (if intended public)
     if (normalizedPath.startsWith("/events/") && normalizedPath.split("/")[2]) return true;
 
+    // Public city pages (SEO)
+    if (normalizedPath.startsWith("/city/") && normalizedPath.split("/")[2]) return true;
+
     // Invite / join flows
     if (normalizedPath.startsWith("/invite/")) return true;
     if (normalizedPath.startsWith("/join-trip/")) return true;
