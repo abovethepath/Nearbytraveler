@@ -12470,21 +12470,22 @@ Questions? Just reply to this message. Welcome aboard!
       const degrees: { [targetId: number]: { degree: number; mutualCount: number } } = {};
       
       // OPTIMIZED: Fetch all connections for all target users in a single query to avoid N+1
+      const pgTargetIds = sql.raw(`ARRAY[${safeTargetIds.join(',')}]::int[]`);
       const allTargetConnections = await db.execute(sql`
         SELECT
           requester_id,
           receiver_id,
           CASE
-            WHEN requester_id = ANY(${safeTargetIds}) THEN requester_id
+            WHEN requester_id = ANY(${pgTargetIds}) THEN requester_id
             ELSE receiver_id
           END as target_user_id,
           CASE
-            WHEN requester_id = ANY(${safeTargetIds}) THEN receiver_id
+            WHEN requester_id = ANY(${pgTargetIds}) THEN receiver_id
             ELSE requester_id
           END as connected_user_id
         FROM connections
         WHERE status = 'accepted'
-        AND (requester_id = ANY(${safeTargetIds}) OR receiver_id = ANY(${safeTargetIds}))
+        AND (requester_id = ANY(${pgTargetIds}) OR receiver_id = ANY(${pgTargetIds}))
       `);
 
       const targetConnectionsMap: { [targetId: number]: Set<number> } = {};
