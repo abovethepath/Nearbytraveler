@@ -662,13 +662,22 @@ export default function Home() {
           return bShared - aShared;
         }
         case 'closest_nearby': {
-          // Sort by location proximity — same city > same state > same country
+          // Sort by location proximity — travelers visiting this city treated as local
           const currentUser = user || JSON.parse(localStorage.getItem('travelconnect_user') || '{}');
           const currentCity = currentUser?.hometownCity?.toLowerCase() || '';
           const currentState = currentUser?.hometownState?.toLowerCase() || '';
           const currentCountry = currentUser?.hometownCountry?.toLowerCase() || '';
+          const currentMetro = currentCity ? getMetroAreaName(currentCity).toLowerCase() : '';
           const getProximityScore = (u: any) => {
+            // If user is actively traveling to this city/metro, treat as local
+            if (u.isCurrentlyTraveling && u.destinationCity) {
+              const destLower = u.destinationCity.toLowerCase();
+              const destMetro = getMetroAreaName(u.destinationCity).toLowerCase();
+              if (destLower === currentCity || (currentMetro && destMetro === currentMetro)) return 100;
+            }
             if ((u.hometownCity?.toLowerCase() || '') === currentCity && currentCity) return 100;
+            // Also check if hometown is in the same metro area
+            if (currentMetro && u.hometownCity && getMetroAreaName(u.hometownCity).toLowerCase() === currentMetro) return 100;
             if ((u.hometownState?.toLowerCase() || '') === currentState && currentState) return 50;
             if ((u.hometownCountry?.toLowerCase() || '') === currentCountry && currentCountry) return 25;
             return 0;
