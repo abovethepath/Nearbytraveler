@@ -175,12 +175,14 @@ export default function UserCard({
   const hometownLine = (() => {
     let city = (user.hometownCity || "").trim();
     if (!city) return "Unknown";
-    // Inline fix: never show bare "DC" — expand to full city name
+    // Inline fix: never show bare abbreviations — expand to full city name
     const cityLower = city.toLowerCase().replace(/[.,]/g, '').trim();
-    if (cityLower === 'dc' || cityLower === 'washington dc' || cityLower === 'washington d.c.' || cityLower === 'washington d.c') {
+    if (cityLower === 'dc' || cityLower === 'washington dc' || cityLower === 'washington dc' || cityLower === 'washington dc') {
       return "Washington, DC";
     }
     const abbrevCity = abbreviateCity(city);
+    // Catch abbreviations that collapse city to a bare code (SF, DC, etc.)
+    if (abbrevCity === 'SF') return "San Francisco, CA";
     const formatted = formatCityDisplay(abbrevCity, user.hometownState, user.hometownCountry);
     return formatted === "Unknown" ? abbrevCity : formatted;
   })();
