@@ -971,6 +971,93 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
 
   // OG image is now a static asset at /og-image.png (faster + more reliable for crawlers).
 
+  // Dynamic sitemap.xml for SEO
+  app.get("/sitemap.xml", async (_req, res) => {
+    try {
+      const BASE = "https://nearbytraveler.org";
+
+      // Static pages
+      const staticPages = [
+        { loc: "/", priority: "1.0", changefreq: "daily" },
+        { loc: "/about", priority: "0.8", changefreq: "monthly" },
+        { loc: "/join", priority: "0.9", changefreq: "monthly" },
+        { loc: "/events-landing", priority: "0.8", changefreq: "monthly" },
+        { loc: "/locals-landing", priority: "0.8", changefreq: "monthly" },
+        { loc: "/travelers-landing", priority: "0.8", changefreq: "monthly" },
+        { loc: "/ambassador", priority: "0.7", changefreq: "monthly" },
+        { loc: "/couchsurfing", priority: "0.7", changefreq: "monthly" },
+        { loc: "/business-landing", priority: "0.7", changefreq: "monthly" },
+      ];
+
+      // City pages from city_pages table
+      const cityRows = await db
+        .select({ city: cityPages.city, updatedAt: cityPages.createdAt })
+        .from(cityPages)
+        .where(and(isNotNull(cityPages.city), ne(cityPages.city, "")));
+
+      // Public events
+      const eventRows = await db
+        .select({ id: events.id, updatedAt: events.createdAt })
+        .from(events)
+        .where(eq(events.isPublished, true))
+        .orderBy(desc(events.createdAt))
+        .limit(5000);
+
+      // Public user profiles
+      const userRows = await db
+        .select({ username: users.username, updatedAt: users.createdAt })
+        .from(users)
+        .where(and(isNotNull(users.username), ne(users.username, "")))
+        .orderBy(desc(users.createdAt))
+        .limit(10000);
+
+      const toDate = (d: any) => {
+        if (!d) return new Date().toISOString().split("T")[0];
+        return new Date(d).toISOString().split("T")[0];
+      };
+
+      let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+      xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+
+      // Static pages
+      for (const p of staticPages) {
+        xml += `  <url><loc>${BASE}${p.loc}</loc><changefreq>${p.changefreq}</changefreq><priority>${p.priority}</priority></url>\n`;
+      }
+
+      // City pages
+      const seenCities = new Set<string>();
+      for (const row of cityRows) {
+        const city = (row as any).city;
+        if (!city || seenCities.has(city)) continue;
+        seenCities.add(city);
+        xml += `  <url><loc>${BASE}/city/${encodeURIComponent(city)}</loc><lastmod>${toDate((row as any).updatedAt)}</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>\n`;
+      }
+
+      // Events
+      for (const row of eventRows) {
+        xml += `  <url><loc>${BASE}/events/${(row as any).id}</loc><lastmod>${toDate((row as any).updatedAt)}</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>\n`;
+      }
+
+      // Profiles
+      for (const row of userRows) {
+        const username = (row as any).username;
+        if (!username) continue;
+        xml += `  <url><loc>${BASE}/profile/${encodeURIComponent(username)}</loc><lastmod>${toDate((row as any).updatedAt)}</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>\n`;
+      }
+
+      xml += `</urlset>`;
+
+      res.set("Content-Type", "application/xml");
+      res.set("Cache-Control", "public, max-age=3600"); // cache 1 hour
+      res.send(xml);
+    } catch (error) {
+      console.error("Sitemap generation error:", error);
+      res.status(500).set("Content-Type", "application/xml").send(
+        `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"></urlset>`
+      );
+    }
+  });
+
   // Dynamic Open Graph meta tags for homepage (for social media sharing)
   app.get("/", (req, res, next) => {
     const userAgent = req.headers['user-agent'] || '';
@@ -2253,32 +2340,28 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         }]);
       }
 
-      // Import LA Metro cities for consolidation
-      const { METRO_AREAS } = await import('../shared/constants');
-      const laMetroCities = METRO_AREAS['Los Angeles'].cities;
-      
-      // Build consolidated city map
+      // Build consolidated city map — fold metro suburbs into their metro area
+      const { getMetroAreaName: getMetro } = await import('../shared/metro-areas');
       const consolidatedCityMap = new Map<string, Array<{city: string, state: string, country: string}>>();
-      
-      // Each city_pages entry is shown as its own card — no metro consolidation for the grid.
-      // Dedup by city name (in case city_pages has duplicate rows for the same city).
-      const seenCities = new Set<string>();
+
       for (const row of citiesWithLocation.rows) {
         const cityData = row as any;
         const cityName = cityData.city_name;
         const state = cityData.state || '';
         const country = cityData.country || 'United States';
 
-        if (!seenCities.has(cityName)) {
-          seenCities.add(cityName);
-          consolidatedCityMap.set(cityName, [{city: cityName, state, country}]);
-        }
-      }
+        // Consolidate metro suburbs into their metro area entry
+        const metroName = getMetro(cityName);
+        const key = metroName; // e.g. "El Segundo" → "Los Angeles Metro"
 
-      // Hide "Los Angeles" when "Los Angeles Metro" is also present
-      if (seenCities.has('Los Angeles Metro') && seenCities.has('Los Angeles')) {
-        consolidatedCityMap.delete('Los Angeles');
-        seenCities.delete('Los Angeles');
+        if (!consolidatedCityMap.has(key)) {
+          consolidatedCityMap.set(key, []);
+        }
+        // Avoid duplicate city entries within the same metro bucket
+        const bucket = consolidatedCityMap.get(key)!;
+        if (!bucket.some(c => c.city === cityName)) {
+          bucket.push({ city: cityName, state, country });
+        }
       }
 
       // PERFORMANCE FIX: Get ALL stats in ONE batch query using CASE expressions
