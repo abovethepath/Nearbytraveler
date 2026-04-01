@@ -69,11 +69,11 @@ You are a friendly and helpful assistant for Nearby Traveler, a social networkin
 - Use Advanced Search to filter by interests, age, dates
 - People with matching interests appear at the top
 
-**8. Ambassador Program**
+**8. Connector Program**
 - Rewards active community members
 - Earn points by being engaged: events, meetups, connections, chatroom activity
 - Point values for specific activities are being finalized
-- Check your Ambassador status on your profile
+- Check your Connector status on your profile
 
 **9. Connections & Messaging**
 - Connect with travelers and locals you want to meet
@@ -156,7 +156,7 @@ export async function getHelpResponse(
     if (error.status === 429 || error.message?.includes('429') || error.message?.includes('quota')) {
       return { 
         success: true, 
-        response: "I'm taking a quick break right now! In the meantime, here are some tips:\n\n• **Voice Meetups**: Tap the mic icon on your profile to create quick meetups by speaking\n• **City Chatrooms**: Chat with locals and travelers in real-time\n• **Travel Plans**: Add your upcoming trips to connect with others\n• **Ambassador Program**: Earn points for being active!\n\nTry again in a few minutes and I'll be happy to help! 😊"
+        response: "I'm taking a quick break right now! In the meantime, here are some tips:\n\n• **Voice Meetups**: Tap the mic icon on your profile to create quick meetups by speaking\n• **City Chatrooms**: Chat with locals and travelers in real-time\n• **Travel Plans**: Add your upcoming trips to connect with others\n• **Connector Program**: Earn points for being active!\n\nTry again in a few minutes and I'll be happy to help! 😊"
       };
     }
     

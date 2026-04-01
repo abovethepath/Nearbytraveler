@@ -3800,7 +3800,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   type AdminUser = {
     id: number; username: string; name: string; firstName: string | null; lastName: string | null;
     userType: string; email: string;
-    lastLogin: string | null; createdAt: string; ambassadorStatus: string | null;
+    lastLogin: string | null; createdAt: string; connectorStatus: string | null;
     isAdmin: boolean | null; profileImage: string | null; adminNotes: string | null;
     referralCount: number | null; hometownCity: string | null; hometownState: string | null;
   };
@@ -3810,12 +3810,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     enabled: isNearbytrav,
   });
 
-  const [adminTab, setAdminTab] = useState<'all' | 'ambassadors' | 'cold'>('all');
+  const [adminTab, setAdminTab] = useState<'all' | 'connectors' | 'cold'>('all');
   const [adminSearch, setAdminSearch] = useState('');
   const [expandedUserId, setExpandedUserId] = useState<number | null>(null);
   const [noteDrafts, setNoteDrafts] = useState<Record<number, string>>({});
   const [savingNote, setSavingNote] = useState<number | null>(null);
-  const [togglingAmbassador, setTogglingAmbassador] = useState<number | null>(null);
+  const [togglingConnector, setTogglingConnector] = useState<number | null>(null);
   const [localUserData, setLocalUserData] = useState<Record<number, Partial<AdminUser>>>({});
 
   const COLD_DAYS = 14;
@@ -4022,7 +4022,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center gap-2 text-base font-semibold text-gray-900 dark:text-white">
               <Award className="w-4 h-4 text-orange-500" />
-              Ambassador Referral Board
+              Connector Referral Board
             </CardTitle>
             <p className="text-xs text-gray-500 dark:text-gray-400">{lb?.totalReferrers || 0} users have referred friends</p>
             <div className="flex gap-1 mt-2">
@@ -4094,12 +4094,12 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
     const isNewThisWeek = (ts: string) => (now - new Date(ts).getTime()) < 7 * 86400000;
 
     const all = adminUsers ?? [];
-    const ambassadors = all.filter(u => u.ambassadorStatus === 'active');
+    const connectors = all.filter(u => u.connectorStatus === 'active');
     const coldUsers = all.filter(u => isCold(u));
     const newToday = all.filter(u => isNewToday(u.createdAt)).length;
     const newThisWeek = all.filter(u => isNewThisWeek(u.createdAt)).length;
 
-    const tabFiltered = adminTab === 'ambassadors' ? ambassadors
+    const tabFiltered = adminTab === 'connectors' ? connectors
       : adminTab === 'cold' ? coldUsers
       : all;
 
@@ -4136,17 +4136,17 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       }
     };
 
-    const toggleAmbassador = async (u: AdminUser) => {
+    const toggleConnector = async (u: AdminUser) => {
       const merged = getUser(u);
-      const newStatus = merged.ambassadorStatus === 'active' ? 'inactive' : 'active';
-      setTogglingAmbassador(u.id);
+      const newStatus = merged.connectorStatus === 'active' ? 'inactive' : 'active';
+      setTogglingConnector(u.id);
       try {
-        await apiRequest('PATCH', `/api/admin/users/${u.id}/ambassador`, { status: newStatus });
-        setLocalUserData(prev => ({ ...prev, [u.id]: { ...prev[u.id], ambassadorStatus: newStatus } }));
+        await apiRequest('PATCH', `/api/admin/users/${u.id}/connector`, { status: newStatus });
+        setLocalUserData(prev => ({ ...prev, [u.id]: { ...prev[u.id], connectorStatus: newStatus } }));
       } catch (e) {
-        console.error('Failed to toggle ambassador', e);
+        console.error('Failed to toggle connector', e);
       } finally {
-        setTogglingAmbassador(null);
+        setTogglingConnector(null);
       }
     };
 
@@ -4164,7 +4164,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                 { label: 'Total', value: all.length, color: 'text-gray-900 dark:text-white' },
                 { label: 'Today', value: newToday, color: 'text-green-600 dark:text-green-400' },
                 { label: 'This Week', value: newThisWeek, color: 'text-blue-600 dark:text-blue-400' },
-                { label: 'Ambassadors', value: ambassadors.length, color: 'text-yellow-600 dark:text-yellow-400' },
+                { label: 'Connectors', value: connectors.length, color: 'text-yellow-600 dark:text-yellow-400' },
                 { label: 'Going Cold', value: coldUsers.length, color: 'text-red-600 dark:text-red-400' },
               ].map(stat => (
                 <div key={stat.label} className="bg-gray-50 dark:bg-gray-800 rounded-lg py-2 px-1">
@@ -4190,7 +4190,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
           <div className="flex border-b border-gray-100 dark:border-gray-800">
             {([
               ['all', 'All', all.length],
-              ['ambassadors', 'Ambassadors', ambassadors.length],
+              ['connectors', 'Connectors', connectors.length],
               ['cold', `Cold (${COLD_DAYS}d+)`, coldUsers.length],
             ] as [string, string, number][]).map(([key, label, count]) => (
               <button
@@ -4242,8 +4242,8 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             ) : u.name && u.name !== u.username && (
                               <span className="text-xs text-gray-500 dark:text-gray-400">· {u.name}</span>
                             )}
-                            {u.ambassadorStatus === 'active' && (
-                              <Badge className="text-[10px] py-0 px-1.5 h-4 bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 border-0">Ambassador</Badge>
+                            {u.connectorStatus === 'active' && (
+                              <Badge className="text-[10px] py-0 px-1.5 h-4 bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 border-0">Connector</Badge>
                             )}
                             {u.isAdmin && (
                               <Badge className="text-[10px] py-0 px-1.5 h-4 bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200 border-0">Admin</Badge>
@@ -4309,20 +4309,20 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
                             </button>
                           </div>
 
-                          {/* Ambassador toggle */}
+                          {/* Connector toggle */}
                           <div className="flex items-center gap-2">
                             <button
                               className={`text-xs px-3 py-1 rounded-md font-medium border transition-colors disabled:opacity-50 ${
-                                u.ambassadorStatus === 'active'
+                                u.connectorStatus === 'active'
                                   ? 'bg-yellow-50 dark:bg-yellow-900/30 border-yellow-300 dark:border-yellow-700 text-yellow-800 dark:text-yellow-300 hover:bg-yellow-100 dark:hover:bg-yellow-900/50'
                                   : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
                               }`}
-                              disabled={togglingAmbassador === u.id}
-                              onClick={(e) => { e.stopPropagation(); toggleAmbassador(rawU); }}
+                              disabled={togglingConnector === u.id}
+                              onClick={(e) => { e.stopPropagation(); toggleConnector(rawU); }}
                             >
-                              {togglingAmbassador === u.id ? 'Updating…'
-                                : u.ambassadorStatus === 'active' ? '★ Remove Ambassador'
-                                : '☆ Make Ambassador'}
+                              {togglingConnector === u.id ? 'Updating…'
+                                : u.connectorStatus === 'active' ? '★ Remove Connector'
+                                : '☆ Make Connector'}
                             </button>
                           </div>
                         </div>

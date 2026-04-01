@@ -140,8 +140,8 @@ Discover local events, concerts, tours, and activities happening around you. Nev
 ✈️ MATCH IN CITY
 Planning a trip? See who else will be in your destination at the same time. Perfect for finding travel buddies.
 
-🤝 AMBASSADOR PROGRAM
-Passionate about connecting travelers? Become an ambassador and help build the community.
+🤝 CONNECTOR PROGRAM
+Passionate about connecting travelers? Become a connector and help build the community.
 
 Whether you're a solo traveler seeking company, a local wanting to meet visitors, or just looking for authentic experiences - Nearby Traveler brings people together.
 

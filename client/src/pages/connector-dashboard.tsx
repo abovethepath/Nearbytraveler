@@ -34,15 +34,15 @@ function statusBadge(status: string | null | undefined) {
   return <Badge variant="outline">{status}</Badge>;
 }
 
-export default function AmbassadorDashboard() {
+export default function ConnectorDashboard() {
   const { user } = useContext(AuthContext);
   const [, setLocation] = useLocation();
   const { toast } = useToast();
 
   const [showProgramDetails, setShowProgramDetails] = useState(false);
-  const points = user?.ambassadorPoints ?? 0;
-  const periodPoints = (user as any)?.ambassadorPointsInPeriod ?? 0;
-  const status = (user as any)?.ambassadorStatus as string | null | undefined;
+  const points = user?.connectorPoints ?? 0;
+  const periodPoints = (user as any)?.connectorPointsInPeriod ?? 0;
+  const status = (user as any)?.connectorStatus as string | null | undefined;
   const referralCode = (user as any)?.referralCode as string | null | undefined;
   const referralLink = referralCode
     ? `${SITE_URL}/join?ref=${referralCode}`
@@ -59,8 +59,8 @@ export default function AmbassadorDashboard() {
   };
 
   const applyEmail = user
-    ? `mailto:ambassadors@nearbytraveler.org?subject=Ambassador Program Application - ${user.username}&body=Hi Aaron,%0D%0A%0D%0AI would like to apply to become a Nearby Traveler Ambassador.%0D%0A%0D%0AUsername: ${user.username}%0D%0AName: ${(user as any).name || "N/A"}%0D%0AEmail: ${user.email}%0D%0A%0D%0AWhy I want to be an Ambassador:%0D%0A%0D%0A%0D%0AHow I plan to help grow the community:%0D%0A%0D%0A`
-    : "mailto:ambassadors@nearbytraveler.org";
+    ? `mailto:connectors@nearbytraveler.org?subject=Connector Program Application - ${user.username}&body=Hi Aaron,%0D%0A%0D%0AI would like to apply to become a Nearby Traveler Connector.%0D%0A%0D%0AUsername: ${user.username}%0D%0AName: ${(user as any).name || "N/A"}%0D%0AEmail: ${user.email}%0D%0A%0D%0AWhy I want to be a Connector:%0D%0A%0D%0A%0D%0AHow I plan to help grow the community:%0D%0A%0D%0A`
+    : "mailto:connectors@nearbytraveler.org";
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-24">
@@ -74,7 +74,7 @@ export default function AmbassadorDashboard() {
             <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-gray-400" />
           </button>
           <div>
-            <h1 className="text-lg font-bold text-gray-900 dark:text-white">Ambassador Program</h1>
+            <h1 className="text-lg font-bold text-gray-900 dark:text-white">Connector Program</h1>
             <p className="text-xs text-gray-500 dark:text-gray-400">Earn points. Share in ownership.</p>
           </div>
         </div>
@@ -170,7 +170,7 @@ export default function AmbassadorDashboard() {
               <Star className="w-8 h-8 mx-auto text-orange-500" />
               <p className="font-semibold text-gray-900 dark:text-white">You're not enrolled yet</p>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Apply to join the Ambassador Program and start earning points for helping grow the community.
+                Apply to join the Connector Program and start earning points for helping grow the community.
               </p>
               <a href={applyEmail}>
                 <Button className="w-full gap-2 bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white border-0">
@@ -203,7 +203,7 @@ export default function AmbassadorDashboard() {
         {/* Ownership snapshot */}
         <Card className="bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-800">
           <CardContent className="p-4 space-y-1">
-            <p className="font-semibold text-gray-900 dark:text-white text-sm">4% Ambassador Ownership Pool</p>
+            <p className="font-semibold text-gray-900 dark:text-white text-sm">4% Connector Ownership Pool</p>
             <p className="text-xs text-gray-600 dark:text-gray-400">
               Your share = your points ÷ total community points × 4% pool — value only upon a liquidity event (acquisition or IPO).
             </p>
@@ -270,7 +270,7 @@ export default function AmbassadorDashboard() {
                 </p>
                 <p className="text-sm text-gray-300 mb-3">
                   If there is ever a future <strong>liquidity event</strong> (acquisition or IPO) and the program terms are met,
-                  we calculate your share of the <strong className="text-orange-400">4% Ambassador Ownership Pool</strong> based on your portion of total points.
+                  we calculate your share of the <strong className="text-orange-400">4% Connector Ownership Pool</strong> based on your portion of total points.
                 </p>
                 <div className="bg-gray-900 rounded-lg p-3 text-xs text-gray-400">
                   <strong>Example:</strong> If you earn 1,000 points and the community earns 100,000 points total,
@@ -280,17 +280,17 @@ export default function AmbassadorDashboard() {
 
               {/* LA Bonus */}
               <div className="bg-blue-900/30 rounded-xl p-5 border border-blue-800">
-                <h3 className="text-lg font-bold mb-2">LA Ambassadors: Extra 1% Local Pool</h3>
+                <h3 className="text-lg font-bold mb-2">LA Connectors: Extra 1% Local Pool</h3>
                 <p className="text-sm text-gray-300">
-                  Los Angeles city ambassadors share an <strong>additional 1% ownership pool</strong> on top of the global 4%.
-                  LA ambassadors can earn from both pools.
+                  Los Angeles city connectors share an <strong>additional 1% ownership pool</strong> on top of the global 4%.
+                  LA connectors can earn from both pools.
                 </p>
               </div>
 
               {/* Ways to Earn */}
               <div>
                 <h3 className="text-xl font-bold text-orange-400 mb-3">Ways to Earn Points</h3>
-                <p className="text-xs text-gray-400 mb-3">If an event has multiple Ambassadors, event-based points are split evenly.</p>
+                <p className="text-xs text-gray-400 mb-3">If an event has multiple Connectors, event-based points are split evenly.</p>
                 <div className="grid sm:grid-cols-2 gap-2">
                   {POINT_ACTIONS.map((item, i) => (
                     <div key={i} className="flex items-center justify-between bg-gray-800 rounded-lg px-4 py-3">
@@ -310,8 +310,8 @@ export default function AmbassadorDashboard() {
                   <li>• Some actions may have limits (to prevent gaming)</li>
                   <li>• <strong>Activity requirement:</strong> Must earn at least 200 points every 6 months</li>
                   <li>• Inactive for 6 months → points frozen (not deleted)</li>
-                  <li>• Inactive for 12 months → ambassador status revoked, can reapply later</li>
-                  <li>• Admins can manually reactivate or revoke any ambassador</li>
+                  <li>• Inactive for 12 months → connector status revoked, can reapply later</li>
+                  <li>• Admins can manually reactivate or revoke any connector</li>
                 </ul>
               </div>
 
@@ -323,7 +323,7 @@ export default function AmbassadorDashboard() {
                     { q: "Is this paid work?", a: "No. This is not a job and points are not income." },
                     { q: "Can points be converted to cash?", a: "No. Points are for tracking contribution. They may never be worth anything." },
                     { q: "When could points matter?", a: "Only if there's a future exit (like an acquisition or IPO), and only under the official terms." },
-                    { q: "How do I stay active as an Ambassador?", a: "Earn at least 200 points every 6 months. If inactive for 6 months, points are frozen. After 12 months inactive, status is revoked — you can reapply and start fresh." },
+                    { q: "How do I stay active as a Connector?", a: "Earn at least 200 points every 6 months. If inactive for 6 months, points are frozen. After 12 months inactive, status is revoked — you can reapply and start fresh." },
                   ].map((faq, i) => (
                     <div key={i} className="bg-gray-800 rounded-lg p-4">
                       <p className="font-semibold text-sm mb-1">{faq.q}</p>
@@ -343,7 +343,7 @@ export default function AmbassadorDashboard() {
                   <li>• We may change, pause, or end the program to prevent fraud or keep it fair</li>
                 </ul>
                 <p className="text-xs text-gray-500 mt-3 pt-3 border-t border-red-800/30">
-                  The Ambassador Ownership Pool is offered only under the program's official terms and eligibility rules.
+                  The Connector Ownership Pool is offered only under the program's official terms and eligibility rules.
                   Points don't guarantee equity and may be adjusted for fraud prevention, verification, and quality standards.
                 </p>
               </div>
@@ -351,7 +351,7 @@ export default function AmbassadorDashboard() {
               {/* Contact */}
               <div className="text-center py-4">
                 <p className="text-sm text-gray-400">
-                  Questions? Email <a href="mailto:ambassadors@nearbytraveler.org" className="text-orange-400 underline">ambassadors@nearbytraveler.org</a>
+                  Questions? Email <a href="mailto:connectors@nearbytraveler.org" className="text-orange-400 underline">connectors@nearbytraveler.org</a>
                 </p>
               </div>
             </div>

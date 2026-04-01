@@ -53,7 +53,7 @@ const PROFILE_BIO_EXCLUDED_SUB_INTERESTS: string[] = [
   "Pickleball", "Yoga",
 ];
 
-function AmbassadorTabPanel({ userId, username, enrolledAt, isOwnProfile, profileImage }: {
+function ConnectorTabPanel({ userId, username, enrolledAt, isOwnProfile, profileImage }: {
   userId: number;
   username: string;
   enrolledAt?: string | Date | null;
@@ -65,16 +65,16 @@ function AmbassadorTabPanel({ userId, username, enrolledAt, isOwnProfile, profil
   const [copied, setCopied] = React.useState(false);
 
   const { data: info, isLoading, refetch } = useTanstackQuery<{
-    ambassadorStatus: string;
-    ambassadorEnrolledAt: string | null;
-    ambassadorBio: string | null;
+    connectorStatus: string;
+    connectorEnrolledAt: string | null;
+    connectorBio: string | null;
     createdAt: string | null;
     referralCount: number;
     meetupsHosted: number;
     eventsAttended: number;
     hangoutsJoined: number;
   }>({
-    queryKey: [`/api/users/${userId}/ambassador-info`],
+    queryKey: [`/api/users/${userId}/connector-info`],
     enabled: userId > 0,
     staleTime: 60 * 1000,
   });
@@ -88,7 +88,7 @@ function AmbassadorTabPanel({ userId, username, enrolledAt, isOwnProfile, profil
   const referralCode = qrData?.referralCode || '';
   const referralUrl = referralCode ? `${SITE_URL}/qr-signup?code=${referralCode}` : SITE_URL;
 
-  const sinceDate = info?.ambassadorEnrolledAt || info?.createdAt || enrolledAt;
+  const sinceDate = info?.connectorEnrolledAt || info?.createdAt || enrolledAt;
   const sinceDateFormatted = sinceDate
     ? new Date(sinceDate as string).toLocaleDateString(undefined, { year: 'numeric', month: 'long' })
     : null;
@@ -104,7 +104,7 @@ function AmbassadorTabPanel({ userId, username, enrolledAt, isOwnProfile, profil
 
   const handleSaveBio = async () => {
     try {
-      const res = await apiRequest('PUT', `/api/users/${userId}/ambassador-bio`, { bio: bioText });
+      const res = await apiRequest('PUT', `/api/users/${userId}/connector-bio`, { bio: bioText });
       if (res.ok) {
         refetch();
         setIsEditingBio(false);
@@ -113,7 +113,7 @@ function AmbassadorTabPanel({ userId, username, enrolledAt, isOwnProfile, profil
   };
 
   const startEditBio = () => {
-    setBioText(info?.ambassadorBio || '');
+    setBioText(info?.connectorBio || '');
     setIsEditingBio(true);
   };
 
@@ -125,9 +125,9 @@ function AmbassadorTabPanel({ userId, username, enrolledAt, isOwnProfile, profil
   ];
 
   return (
-    <div role="tabpanel" id="panel-ambassador" aria-labelledby="tab-ambassador" className="space-y-5 mt-4" data-testid="ambassador-content">
+    <div role="tabpanel" id="panel-connector" aria-labelledby="tab-connector" className="space-y-5 mt-4" data-testid="connector-content">
 
-      {/* ── SECTION 1: Ambassador Header ── */}
+      {/* ── SECTION 1: Connector Header ── */}
       <div className="rounded-2xl overflow-hidden shadow-lg border border-amber-300 dark:border-amber-600">
         {/* Gold gradient bar */}
         <div className="bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 px-6 pt-7 pb-5 flex flex-col items-center text-center gap-3">
@@ -142,11 +142,11 @@ function AmbassadorTabPanel({ userId, username, enrolledAt, isOwnProfile, profil
           <div>
             <div className="flex items-center justify-center gap-2">
               <span className="text-2xl">⭐</span>
-              <h2 className="text-xl font-extrabold text-amber-900 tracking-tight">NearbyTraveler Ambassador</h2>
+              <h2 className="text-xl font-extrabold text-amber-900 tracking-tight">NearbyTraveler Connector</h2>
             </div>
             <p className="text-amber-800 font-semibold mt-0.5">@{username}</p>
             {sinceDateFormatted && (
-              <p className="text-amber-700 text-sm mt-1 font-medium">Ambassador since {sinceDateFormatted}</p>
+              <p className="text-amber-700 text-sm mt-1 font-medium">Connector since {sinceDateFormatted}</p>
             )}
           </div>
         </div>
@@ -173,7 +173,7 @@ function AmbassadorTabPanel({ userId, username, enrolledAt, isOwnProfile, profil
         </div>
       </div>
 
-      {/* ── SECTION 3: Ambassador Bio ── */}
+      {/* ── SECTION 3: Connector Bio ── */}
       <div className="rounded-2xl border border-amber-200 dark:border-amber-700 bg-amber-50 dark:bg-amber-950/30 p-5 shadow-sm">
         <div className="flex items-center justify-between mb-3">
           <h3 className="font-bold text-amber-900 dark:text-amber-200 text-sm uppercase tracking-wider">In Their Own Words</h3>
@@ -195,7 +195,7 @@ function AmbassadorTabPanel({ userId, username, enrolledAt, isOwnProfile, profil
               maxLength={500}
               rows={4}
               className="bg-white dark:bg-gray-800 border-amber-300 dark:border-amber-600 resize-none text-sm"
-              placeholder="Write something about your ambassador journey..."
+              placeholder="Write something about your connector journey..."
             />
             <div className="flex items-center gap-2 justify-end">
               <span className="text-xs text-gray-400">{bioText.length}/500</span>
@@ -215,7 +215,7 @@ function AmbassadorTabPanel({ userId, username, enrolledAt, isOwnProfile, profil
           </div>
         ) : (
           <p className="text-sm text-amber-800 dark:text-amber-200 leading-relaxed italic">
-            "{info?.ambassadorBio || 'No bio yet.'}"
+            "{info?.connectorBio || 'No bio yet.'}"
           </p>
         )}
       </div>
@@ -797,21 +797,21 @@ export function ProfileTabs(props: ProfilePageProps) {
                 </button>
               )}
 
-              {/* Ambassador Tab - Only visible for active ambassadors */}
-              {user?.ambassadorStatus === 'active' && user?.userType !== 'business' && (
+              {/* Connector Tab - Only visible for active connectors */}
+              {user?.connectorStatus === 'active' && user?.userType !== 'business' && (
                 <button
                   role="tab"
-                  aria-selected={activeTab === 'ambassador'}
-                  aria-controls="panel-ambassador"
-                  onClick={() => openTab('ambassador')}
+                  aria-selected={activeTab === 'connector'}
+                  aria-controls="panel-connector"
+                  onClick={() => openTab('connector')}
                   className={`text-sm sm:text-base font-semibold px-3 py-2 rounded-lg transition-all ${
-                    activeTab === 'ambassador'
+                    activeTab === 'connector'
                       ? 'bg-amber-500 text-white border border-amber-500 shadow-md'
                       : 'bg-white border border-amber-300 text-amber-700 hover:bg-amber-50 hover:border-amber-400 dark:bg-gray-700 dark:border-amber-600 dark:text-amber-300 dark:hover:bg-gray-600'
                   }`}
-                  data-testid="tab-ambassador"
+                  data-testid="tab-connector"
                 >
-                  ⭐ Ambassador
+                  ⭐ Connector
                 </button>
               )}
             </div>
@@ -2858,9 +2858,9 @@ export function ProfileTabs(props: ProfilePageProps) {
               </div>
             )}
 
-            {/* Ambassador Tab Panel */}
-            {activeTab === 'ambassador' && loadedTabs.has('ambassador') && user?.ambassadorStatus === 'active' && (
-              <AmbassadorTabPanel userId={effectiveUserId || 0} username={user?.username || ''} enrolledAt={user?.ambassadorEnrolledAt} isOwnProfile={isOwnProfile} profileImage={user?.profileImage} />
+            {/* Connector Tab Panel */}
+            {activeTab === 'connector' && loadedTabs.has('connector') && user?.connectorStatus === 'active' && (
+              <ConnectorTabPanel userId={effectiveUserId || 0} username={user?.username || ''} enrolledAt={user?.connectorEnrolledAt} isOwnProfile={isOwnProfile} profileImage={user?.profileImage} />
             )}
 
             {/* Event Organizer Hub - for ALL users who want to organize events */}
@@ -3180,20 +3180,20 @@ export function ProfileTabs(props: ProfilePageProps) {
                     </HoverCard>
                   )}
                   {(() => {
-                    const isAmb = (user as any)?.ambassadorStatus === 'active';
+                    const isConn = (user as any)?.connectorStatus === 'active';
                     return isOwnProfile ? (
                       <button
                         type="button"
                         className="flex items-center justify-between cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg p-2 -m-2 transition-colors w-full text-left"
-                        onClick={() => setLocation(isAmb ? '/dashboard/ambassador' : '/ambassador-info')}
+                        onClick={() => setLocation(isConn ? '/dashboard/connector' : '/connector-info')}
                       >
-                        <span className={`flex items-center gap-2 ${isAmb ? 'text-gray-600 dark:text-gray-300' : 'text-gray-400 dark:text-gray-500'}`}>
-                          <Award className={`w-4 h-4 ${isAmb ? 'text-orange-500' : 'text-gray-400'}`} />
-                          Ambassador Points
+                        <span className={`flex items-center gap-2 ${isConn ? 'text-gray-600 dark:text-gray-300' : 'text-gray-400 dark:text-gray-500'}`}>
+                          <Award className={`w-4 h-4 ${isConn ? 'text-orange-500' : 'text-gray-400'}`} />
+                          Connector Points
                         </span>
                         <div className="flex items-center gap-2">
-                          {isAmb ? (
-                            <span className="font-semibold text-orange-600 dark:text-orange-400">{user?.ambassadorPoints || 0}</span>
+                          {isConn ? (
+                            <span className="font-semibold text-orange-600 dark:text-orange-400">{user?.connectorPoints || 0}</span>
                           ) : (
                             <span className="text-xs text-gray-400 dark:text-gray-500">🔒 Unlock</span>
                           )}
@@ -3202,12 +3202,12 @@ export function ProfileTabs(props: ProfilePageProps) {
                       </button>
                     ) : (
                       <div className="flex items-center justify-between">
-                        <span className={`flex items-center gap-2 ${isAmb ? 'text-gray-600 dark:text-gray-300' : 'text-gray-400 dark:text-gray-500'}`}>
-                          <Award className={`w-4 h-4 ${isAmb ? 'text-orange-500' : 'text-gray-400'}`} />
-                          Ambassador Points
+                        <span className={`flex items-center gap-2 ${isConn ? 'text-gray-600 dark:text-gray-300' : 'text-gray-400 dark:text-gray-500'}`}>
+                          <Award className={`w-4 h-4 ${isConn ? 'text-orange-500' : 'text-gray-400'}`} />
+                          Connector Points
                         </span>
-                        {isAmb ? (
-                          <span className="font-semibold text-orange-600 dark:text-orange-400">{user?.ambassadorPoints || 0}</span>
+                        {isConn ? (
+                          <span className="font-semibold text-orange-600 dark:text-orange-400">{user?.connectorPoints || 0}</span>
                         ) : (
                           <span className="text-xs text-gray-400 dark:text-gray-500">🔒</span>
                         )}
@@ -3217,9 +3217,9 @@ export function ProfileTabs(props: ProfilePageProps) {
                   <button
                     type="button"
                     className="text-sm text-blue-500 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:underline text-left transition-colors"
-                    onClick={() => setLocation('/ambassador-info')}
+                    onClick={() => setLocation('/connector-info')}
                   >
-                    Learn about the Ambassador Program →
+                    Learn about the Connector Program →
                   </button>
                   {/* Chatrooms + Invite Friends: only in sidebar on iOS; on desktop they live in the profile hero card */}
                   {isOwnProfile && isNativeIOSApp() && (

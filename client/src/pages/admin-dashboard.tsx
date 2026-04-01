@@ -42,7 +42,7 @@ interface User {
   lastSeenAt?: string;
   isActive: boolean;
   isAdmin?: boolean;
-  ambassadorStatus?: string;
+  connectorStatus?: string;
   adminNotes?: string;
   referralCount?: number;
   profileImage?: string;

@@ -31,7 +31,7 @@ const MENU_ITEMS = [
   { icon: MessageCircle, label: "Messages", path: "/messages" },
   { icon: Users, label: "Connect", path: "/connect" },
   { icon: User, label: "Profile", path: "/profile" },
-  { icon: Star, label: "Ambassador Program", path: "/dashboard/ambassador" },
+  { icon: Star, label: "Connector Program", path: "/dashboard/connector" },
 ];
 
 const BUSINESS_MENU_ITEMS = [

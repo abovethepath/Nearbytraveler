@@ -12,7 +12,7 @@ interface ReferralStats {
   inviteUrl: string | null;
   totalReferrals: number;
   totalAuraFromReferrals: number;
-  totalAmbassadorPointsFromReferrals: number;
+  totalConnectorPointsFromReferrals: number;
   referredUsers: {
     id: number;
     username: string;
@@ -105,7 +105,7 @@ export function ReferralTrackingWidget({ profileUserId }: { profileUserId: numbe
     }
   };
 
-  const isAmbassador = (user as any)?.ambassadorStatus === 'active';
+  const isConnector = (user as any)?.connectorStatus === 'active';
 
   return (
     <div className="rounded-xl border border-orange-200/50 dark:border-orange-800/30 bg-white dark:bg-gray-900 overflow-hidden">
@@ -120,8 +120,8 @@ export function ReferralTrackingWidget({ profileUserId }: { profileUserId: numbe
           <p className="font-medium text-gray-700 dark:text-gray-300">Share your link — when friends sign up you earn:</p>
           <p>✦ <span className="font-semibold text-orange-600 dark:text-orange-400">5 Aura Points</span> per signup</p>
           <p>✦ <span className="font-semibold text-orange-600 dark:text-orange-400">15 more Aura Points</span> when they complete their profile</p>
-          <p>🔒 <span className={`font-semibold ${isAmbassador ? "text-orange-600 dark:text-orange-400" : "text-gray-400 dark:text-gray-500"}`}>50 Ambassador Points</span> per signup</p>
-          <p>🔒 <span className={`font-semibold ${isAmbassador ? "text-orange-600 dark:text-orange-400" : "text-gray-400 dark:text-gray-500"}`}>25 more Ambassador Points</span> when they complete their profile</p>
+          <p>🔒 <span className={`font-semibold ${isConnector ? "text-orange-600 dark:text-orange-400" : "text-gray-400 dark:text-gray-500"}`}>50 Connector Points</span> per signup</p>
+          <p>🔒 <span className={`font-semibold ${isConnector ? "text-orange-600 dark:text-orange-400" : "text-gray-400 dark:text-gray-500"}`}>25 more Connector Points</span> when they complete their profile</p>
         </div>
 
         {/* Copy link */}
@@ -151,15 +151,15 @@ export function ReferralTrackingWidget({ profileUserId }: { profileUserId: numbe
             <p className="text-[8px] text-gray-500 dark:text-gray-400 leading-tight">Aura</p>
           </div>
           <div className="flex-1 text-center py-1 rounded bg-orange-50 dark:bg-orange-900/20 border border-orange-200/40 dark:border-orange-800/20">
-            {isAmbassador ? (
+            {isConnector ? (
               <>
-                <p className="text-xs font-bold text-orange-600 dark:text-orange-400">{stats.totalAmbassadorPointsFromReferrals ?? 0}</p>
-                <p className="text-[8px] text-gray-500 dark:text-gray-400 leading-tight">Amb. Pts</p>
+                <p className="text-xs font-bold text-orange-600 dark:text-orange-400">{stats.totalConnectorPointsFromReferrals ?? 0}</p>
+                <p className="text-[8px] text-gray-500 dark:text-gray-400 leading-tight">Connector Pts</p>
               </>
             ) : (
               <>
                 <p className="text-xs font-bold text-gray-300 dark:text-gray-600">🔒</p>
-                <p className="text-[8px] text-gray-400 dark:text-gray-500 leading-tight">Amb. Pts</p>
+                <p className="text-[8px] text-gray-400 dark:text-gray-500 leading-tight">Connector Pts</p>
               </>
             )}
           </div>

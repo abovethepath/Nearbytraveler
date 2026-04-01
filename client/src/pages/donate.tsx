@@ -226,7 +226,7 @@ export default function Donate() {
                 <Button
                   onClick={() => handleSubscribe(tier.productId)}
                   disabled={isCurrent || isLoading || !!loadingProduct}
-                  className="w-full bg-black hover:bg-gray-800 text-white dark:bg-white dark:hover:bg-gray-100 dark:text-black font-semibold"
+                  className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold"
                   style={{ transition: "none" }}
                 >
                   {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : isCurrent ? "✓ Current Plan" : `Support ${tier.amount}/mo`}

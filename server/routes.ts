@@ -984,7 +984,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         { loc: "/events-landing", priority: "0.8", changefreq: "monthly" },
         { loc: "/locals-landing", priority: "0.8", changefreq: "monthly" },
         { loc: "/travelers-landing", priority: "0.8", changefreq: "monthly" },
-        { loc: "/ambassador", priority: "0.7", changefreq: "monthly" },
+        { loc: "/connector", priority: "0.7", changefreq: "monthly" },
         { loc: "/couchsurfing", priority: "0.7", changefreq: "monthly" },
         { loc: "/business-landing", priority: "0.7", changefreq: "monthly" },
       ];
@@ -4916,7 +4916,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           subscriptionStatus: users.subscriptionStatus,
           lastLogin: users.lastLogin,
           createdAt: users.createdAt,
-          ambassadorStatus: users.ambassadorStatus,
+          connectorStatus: users.connectorStatus,
           isAdmin: users.isAdmin,
           profileImage: users.profileImage,
           adminNotes: users.adminNotes,
@@ -4950,8 +4950,8 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
     }
   });
 
-  // Admin: Toggle ambassador status for a user (only nearbytrav, user ID 2)
-  app.patch("/api/admin/users/:id/ambassador", async (req, res) => {
+  // Admin: Toggle connector status for a user (only nearbytrav, user ID 2)
+  app.patch("/api/admin/users/:id/connector", async (req, res) => {
     try {
       const sessionUser = (req as any).session?.user;
       if (!sessionUser || sessionUser.id !== 2) {
@@ -4961,13 +4961,13 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       if (!targetId) return res.status(400).json({ message: "Invalid user ID" });
       const { status } = req.body || {}; // 'active' | 'inactive' | null
       const updated = await storage.updateUser(targetId, {
-        ambassadorStatus: status ?? null,
-        ambassadorStatusSetByAdmin: true,
-        ...(status === 'active' ? { ambassadorEnrolledAt: new Date() } : {}),
+        connectorStatus: status ?? null,
+        connectorStatusSetByAdmin: true,
+        ...(status === 'active' ? { connectorEnrolledAt: new Date() } : {}),
       });
-      return res.json({ ok: true, ambassadorStatus: updated?.ambassadorStatus ?? null });
+      return res.json({ ok: true, connectorStatus: updated?.connectorStatus ?? null });
     } catch (error: any) {
-      console.error("Admin ambassador endpoint error:", error);
+      console.error("Admin connector endpoint error:", error);
       return res.status(500).json({ message: "Server error" });
     }
   });
@@ -6387,7 +6387,7 @@ Questions? Just reply here — I read every message.
                 username: users.username,
                 referralCount: users.referralCount,
                 aura: users.aura,
-                ambassadorPoints: users.ambassadorPoints
+                connectorPoints: users.connectorPoints
               })
               .from(users)
               .where(eq(users.referralCode, referralCode))
@@ -6400,7 +6400,7 @@ Questions? Just reply here — I read every message.
                   username: users.username,
                   referralCount: users.referralCount,
                   aura: users.aura,
-                  ambassadorPoints: users.ambassadorPoints
+                  connectorPoints: users.connectorPoints
                 })
                 .from(users)
                 .where(eq(users.username, referralCode))
@@ -6441,21 +6441,21 @@ Questions? Just reply here — I read every message.
               } catch { /* non-fatal */ }
 
               try {
-                const { addAmbassadorPoints } = await import("./services/ambassadorStatus");
-                await addAmbassadorPoints(referrer.id, 50);
-              } catch (e) { console.error('Ambassador points award error:', e); }
+                const { addConnectorPoints } = await import("./services/connectorStatus");
+                await addConnectorPoints(referrer.id, 50);
+              } catch (e) { console.error('Connector points award error:', e); }
 
-              // Track ambassador referral chain for 5% bonus
+              // Track connector referral chain for 5% bonus
               try {
-                const [refStatus] = await db.select({ ambassadorStatus: users.ambassadorStatus }).from(users).where(eq(users.id, referrer.id)).limit(1);
-                if (refStatus?.ambassadorStatus === 'active' || refStatus?.ambassadorStatus === 'inactive') {
+                const [refStatus] = await db.select({ connectorStatus: users.connectorStatus }).from(users).where(eq(users.id, referrer.id)).limit(1);
+                if (refStatus?.connectorStatus === 'active' || refStatus?.connectorStatus === 'inactive') {
                   await db.execute(sql`
-                    INSERT INTO ambassador_referral_chains (referrer_id, referred_id)
+                    INSERT INTO connector_referral_chains (referrer_id, referred_id)
                     VALUES (${referrer.id}, ${user.id})
                     ON CONFLICT DO NOTHING
                   `);
                 }
-              } catch (e) { console.error('Ambassador chain tracking error:', e); }
+              } catch (e) { console.error('Connector chain tracking error:', e); }
 
               // Expo push for referral joined
               try {
@@ -6483,7 +6483,7 @@ Questions? Just reply here — I read every message.
                 console.warn('Referral push notification failed:', pushErr);
               }
 
-              console.log(`✅ BACKGROUND: Referral connection created: ${referrer.username} → ${user.username} (+10 aura, +50 ambassador points)`);
+              console.log(`✅ BACKGROUND: Referral connection created: ${referrer.username} → ${user.username} (+10 aura, +50 connector points)`);
             }
           } catch (error) {
             console.error('❌ BACKGROUND: Error processing referral:', error);
@@ -8344,11 +8344,11 @@ Questions? Just reply to this message. Welcome aboard!
           if (completedUser?.referredBy) {
             await awardAuraPoints(completedUser.referredBy, 15, 'referred user completed profile');
             console.log(`✨ AURA: Awarded 15 bonus points to referrer ${completedUser.referredBy} because user ${userId} completed profile`);
-            // Award 25 ambassador points for bio completion
+            // Award 25 connector points for bio completion
             try {
-              const { addAmbassadorPoints } = await import("./services/ambassadorStatus");
-              await addAmbassadorPoints(completedUser.referredBy, 25);
-              console.log(`🏅 AMBASSADOR: Awarded 25 points to referrer ${completedUser.referredBy} for referred user ${userId} bio completion`);
+              const { addConnectorPoints } = await import("./services/connectorStatus");
+              await addConnectorPoints(completedUser.referredBy, 25);
+              console.log(`🏅 CONNECTOR: Awarded 25 points to referrer ${completedUser.referredBy} for referred user ${userId} bio completion`);
             } catch { /* non-fatal */ }
             // Track referral event for history (only once per referred user)
             try {
@@ -9645,16 +9645,16 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
-  // GET /api/users/:userId/ambassador-info - Returns full ambassador stats
-  app.get("/api/users/:userId/ambassador-info", async (req, res) => {
+  // GET /api/users/:userId/connector-info - Returns full connector stats
+  app.get("/api/users/:userId/connector-info", async (req, res) => {
     try {
       const userId = parseInt(req.params.userId || '0');
       if (isNaN(userId) || userId <= 0) return res.status(400).json({ error: "Invalid user ID" });
       const [userData] = await db.select({
-        ambassadorStatus: users.ambassadorStatus,
-        ambassadorEnrolledAt: users.ambassadorEnrolledAt,
-        ambassadorBio: (users as any).ambassadorBio,
-        ambassadorReferralCountOverride: (users as any).ambassadorReferralCountOverride,
+        connectorStatus: users.connectorStatus,
+        connectorEnrolledAt: users.connectorEnrolledAt,
+        connectorBio: (users as any).connectorBio,
+        connectorReferralCountOverride: (users as any).connectorReferralCountOverride,
         createdAt: users.createdAt,
       }).from(users).where(eq(users.id, userId));
       if (!userData) return res.status(404).json({ error: "User not found" });
@@ -9663,11 +9663,11 @@ Questions? Just reply to this message. Welcome aboard!
       const [eventsRow] = await db.select({ count: sql<number>`count(*)` }).from(eventParticipants).where(eq(eventParticipants.userId, userId));
       const [hangoutsRow] = await db.select({ count: sql<number>`count(*)` }).from(availableNowRequests).where(sql`${availableNowRequests.toUserId} = ${userId} AND ${availableNowRequests.status} = 'accepted'`);
       const dbReferralCount = Number(refRow?.count ?? 0);
-      const referralCount = userData.ambassadorReferralCountOverride != null ? userData.ambassadorReferralCountOverride : dbReferralCount;
+      const referralCount = userData.connectorReferralCountOverride != null ? userData.connectorReferralCountOverride : dbReferralCount;
       return res.json({
-        ambassadorStatus: userData.ambassadorStatus,
-        ambassadorEnrolledAt: userData.ambassadorEnrolledAt,
-        ambassadorBio: userData.ambassadorBio,
+        connectorStatus: userData.connectorStatus,
+        connectorEnrolledAt: userData.connectorEnrolledAt,
+        connectorBio: userData.connectorBio,
         createdAt: userData.createdAt,
         referralCount,
         meetupsHosted: Number(meetupsRow?.count ?? 0),
@@ -9675,26 +9675,26 @@ Questions? Just reply to this message. Welcome aboard!
         hangoutsJoined: Number(hangoutsRow?.count ?? 0),
       });
     } catch (error: any) {
-      console.error("Ambassador info error:", error);
-      return res.status(500).json({ error: "Failed to fetch ambassador info" });
+      console.error("Connector info error:", error);
+      return res.status(500).json({ error: "Failed to fetch connector info" });
     }
   });
 
-  // PUT /api/users/:userId/ambassador-bio - Update ambassador bio (own profile only)
-  app.put("/api/users/:userId/ambassador-bio", async (req: any, res) => {
+  // PUT /api/users/:userId/connector-bio - Update connector bio (own profile only)
+  app.put("/api/users/:userId/connector-bio", async (req: any, res) => {
     try {
       const userId = parseInt(req.params.userId || '0');
       if (isNaN(userId) || userId <= 0) return res.status(400).json({ error: "Invalid user ID" });
       const sessionUserId = req.headers['x-user-id'] ? parseInt(String(req.headers['x-user-id'])) : null;
-      if (!sessionUserId || sessionUserId !== userId) return res.status(403).json({ error: "You can only edit your own ambassador bio" });
+      if (!sessionUserId || sessionUserId !== userId) return res.status(403).json({ error: "You can only edit your own connector bio" });
       const { bio } = req.body;
       if (typeof bio !== 'string') return res.status(400).json({ error: "Bio must be a string" });
       if (bio.length > 500) return res.status(400).json({ error: "Bio must be 500 characters or less" });
-      await db.execute(sql`UPDATE users SET ambassador_bio = ${bio} WHERE id = ${userId}`);
+      await db.execute(sql`UPDATE users SET connector_bio = ${bio} WHERE id = ${userId}`);
       return res.json({ success: true });
     } catch (error: any) {
-      console.error("Ambassador bio update error:", error);
-      return res.status(500).json({ error: "Failed to update ambassador bio" });
+      console.error("Connector bio update error:", error);
+      return res.status(500).json({ error: "Failed to update connector bio" });
     }
   });
 
@@ -9810,9 +9810,9 @@ Questions? Just reply to this message. Welcome aboard!
         }
       })();
 
-      // Ambassador points: +10 for writing/receiving a reference (max 1 per pair ever)
+      // Connector points: +10 for writing/receiving a reference (max 1 per pair ever)
       try {
-        const { addAmbassadorPoints } = await import("./services/ambassadorStatus");
+        const { addConnectorPoints } = await import("./services/connectorStatus");
         const writerId = Number(reviewerId);
         const recipientId = Number(revieweeId);
 
@@ -9826,22 +9826,22 @@ Questions? Just reply to this message. Welcome aboard!
         // Only award if this is the FIRST reference between this pair (count === 1 means just created)
         if (existingPairRefs.length <= 1) {
           // For the writer
-          const [writer] = await db.select({ ambassadorStatus: users.ambassadorStatus }).from(users).where(eq(users.id, writerId)).limit(1);
-          if (writer?.ambassadorStatus === 'active' || writer?.ambassadorStatus === 'inactive') {
-            await addAmbassadorPoints(writerId, 10);
-            console.log(`✅ AMBASSADOR: +10 pts to user ${writerId} for writing a reference`);
+          const [writer] = await db.select({ connectorStatus: users.connectorStatus }).from(users).where(eq(users.id, writerId)).limit(1);
+          if (writer?.connectorStatus === 'active' || writer?.connectorStatus === 'inactive') {
+            await addConnectorPoints(writerId, 10);
+            console.log(`✅ CONNECTOR: +10 pts to user ${writerId} for writing a reference`);
           }
 
           // For the recipient
-          const [recipient] = await db.select({ ambassadorStatus: users.ambassadorStatus }).from(users).where(eq(users.id, recipientId)).limit(1);
-          if (recipient?.ambassadorStatus === 'active' || recipient?.ambassadorStatus === 'inactive') {
-            await addAmbassadorPoints(recipientId, 10);
-            console.log(`✅ AMBASSADOR: +10 pts to user ${recipientId} for receiving a reference`);
+          const [recipient] = await db.select({ connectorStatus: users.connectorStatus }).from(users).where(eq(users.id, recipientId)).limit(1);
+          if (recipient?.connectorStatus === 'active' || recipient?.connectorStatus === 'inactive') {
+            await addConnectorPoints(recipientId, 10);
+            console.log(`✅ CONNECTOR: +10 pts to user ${recipientId} for receiving a reference`);
           }
         } else {
-          console.log(`ℹ️ AMBASSADOR: Skipping reference points for pair ${writerId}→${recipientId} (already awarded previously)`);
+          console.log(`ℹ️ CONNECTOR: Skipping reference points for pair ${writerId}→${recipientId} (already awarded previously)`);
         }
-      } catch (e) { console.error('Ambassador reference points error:', e); }
+      } catch (e) { console.error('Connector reference points error:', e); }
 
       return res.json(newReference);
     } catch (error: any) {
@@ -13031,11 +13031,11 @@ Questions? Just reply to this message. Welcome aboard!
             }
           });
 
-          // Ambassador points: +50 for every 25 connections milestone
+          // Connector points: +50 for every 25 connections milestone
           try {
             for (const checkUserId of [requesterId, receiverId]) {
-              const [checkUser] = await db.select({ ambassadorStatus: users.ambassadorStatus }).from(users).where(eq(users.id, checkUserId)).limit(1);
-              if (checkUser?.ambassadorStatus === 'active' || checkUser?.ambassadorStatus === 'inactive') {
+              const [checkUser] = await db.select({ connectorStatus: users.connectorStatus }).from(users).where(eq(users.id, checkUserId)).limit(1);
+              if (checkUser?.connectorStatus === 'active' || checkUser?.connectorStatus === 'inactive') {
                 const connCount = await db.select({ count: sql<number>`count(*)` }).from(connections)
                   .where(and(
                     or(eq(connections.requesterId, checkUserId), eq(connections.receiverId, checkUserId)),
@@ -13043,13 +13043,13 @@ Questions? Just reply to this message. Welcome aboard!
                   ));
                 const totalConns = connCount[0]?.count || 0;
                 if (totalConns > 0 && totalConns % 25 === 0) {
-                  const { addAmbassadorPoints } = await import("./services/ambassadorStatus");
-                  await addAmbassadorPoints(checkUserId, 50);
-                  console.log(`✅ AMBASSADOR: +50 pts to user ${checkUserId} for reaching ${totalConns} connections milestone`);
+                  const { addConnectorPoints } = await import("./services/connectorStatus");
+                  await addConnectorPoints(checkUserId, 50);
+                  console.log(`✅ CONNECTOR: +50 pts to user ${checkUserId} for reaching ${totalConns} connections milestone`);
                 }
               }
             }
-          } catch (e) { console.error('Ambassador connections milestone error:', e); }
+          } catch (e) { console.error('Connector connections milestone error:', e); }
 
         } catch (e) {
           console.error("❌ CONNECTION ACCEPTED NOTIFICATION: Failed:", e);
@@ -16086,23 +16086,23 @@ Questions? Just reply to this message. Welcome aboard!
       // Award 1 aura point for creating an event
       await awardAuraPoints(newEvent.organizerId, 1, 'creating an event');
 
-      // Save co-ambassador records if provided
-      if (Array.isArray(body.coAmbassadors) && body.coAmbassadors.length > 0) {
+      // Save co-connector records if provided
+      if (Array.isArray(body.coConnectors) && body.coConnectors.length > 0) {
         try {
-          for (const coUsername of body.coAmbassadors.slice(0, 3)) {
+          for (const coUsername of body.coConnectors.slice(0, 3)) {
             const uname = String(coUsername).toLowerCase().trim();
             if (!uname) continue;
-            const [coUser] = await db.select({ id: users.id, ambassadorStatus: users.ambassadorStatus })
+            const [coUser] = await db.select({ id: users.id, connectorStatus: users.connectorStatus })
               .from(users).where(eq(users.username, uname)).limit(1);
-            if (coUser && coUser.id !== newEvent.organizerId && (coUser.ambassadorStatus === 'active' || coUser.ambassadorStatus === 'inactive')) {
+            if (coUser && coUser.id !== newEvent.organizerId && (coUser.connectorStatus === 'active' || coUser.connectorStatus === 'inactive')) {
               await db.execute(sql`
                 INSERT INTO event_cohost_splits (event_id, organizer_id, cohost_id, status)
                 VALUES (${newEvent.id}, ${newEvent.organizerId}, ${coUser.id}, 'confirmed')
               `);
-              console.log(`✅ CO-AMBASSADOR: Added @${uname} (${coUser.id}) to event ${newEvent.id}`);
+              console.log(`✅ CO-CONNECTOR: Added @${uname} (${coUser.id}) to event ${newEvent.id}`);
             }
           }
-        } catch (e) { console.error('Co-ambassador save error:', e); }
+        } catch (e) { console.error('Co-connector save error:', e); }
       }
 
       // Log event creation to activity feed (used by city live feed)
@@ -16156,15 +16156,15 @@ Questions? Just reply to this message. Welcome aboard!
         });
       }
 
-      // Ambassador program: award points for creating an event (ambassadors only)
+      // Connector program: award points for creating an event (connectors only)
       try {
-        const organizerStatus = organizer?.[0]?.ambassadorStatus as string | null | undefined;
+        const organizerStatus = organizer?.[0]?.connectorStatus as string | null | undefined;
         if (organizerStatus === "active" || organizerStatus === "inactive") {
-          const { addAmbassadorPoints } = await import("./services/ambassadorStatus");
-          await addAmbassadorPoints(newEvent.organizerId, 5);
+          const { addConnectorPoints } = await import("./services/connectorStatus");
+          await addConnectorPoints(newEvent.organizerId, 5);
         }
-      } catch (ambassadorPointsError: any) {
-        console.error(`⚠️ AMBASSADOR POINTS: Failed to award create-event points for event ${newEvent.id}:`, ambassadorPointsError);
+      } catch (connectorPointsError: any) {
+        console.error(`⚠️ CONNECTOR POINTS: Failed to award create-event points for event ${newEvent.id}:`, connectorPointsError);
       }
       
       // AUTO-CREATE CHATROOM for the event (like Quick Meets) and add creator as first member
@@ -18943,11 +18943,11 @@ Questions? Just reply to this message. Welcome aboard!
       const result = await storage.joinQuickMeetup(meetupId, parseInt(userId as string || '0'));
       if (process.env.NODE_ENV === 'development') console.log(`✅ USER ${userId} SUCCESSFULLY JOINED QUICK MEET ${meetupId}`);
 
-      // Ambassador points: +10 for completing a Quick Meet (organizer gets points, max 1/day, 3/week)
+      // Connector points: +10 for completing a Quick Meet (organizer gets points, max 1/day, 3/week)
       try {
         const organizerId = meetup.organizerId;
-        const [org] = await db.select({ ambassadorStatus: users.ambassadorStatus }).from(users).where(eq(users.id, organizerId)).limit(1);
-        if (org?.ambassadorStatus === 'active' || org?.ambassadorStatus === 'inactive') {
+        const [org] = await db.select({ connectorStatus: users.connectorStatus }).from(users).where(eq(users.id, organizerId)).limit(1);
+        if (org?.connectorStatus === 'active' || org?.connectorStatus === 'inactive') {
           const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0);
           const todayKey = `amb_qm_${organizerId}_${todayStart.toISOString().slice(0,10)}`;
           const weekStart = new Date(); weekStart.setDate(weekStart.getDate() - weekStart.getDay()); weekStart.setHours(0, 0, 0, 0);
@@ -18956,14 +18956,14 @@ Questions? Just reply to this message. Welcome aboard!
           const dailyCount = tracker.get(todayKey) || 0;
           const weeklyCount = tracker.get(weekKey) || 0;
           if (dailyCount < 1 && weeklyCount < 3) {
-            const { addAmbassadorPoints } = await import("./services/ambassadorStatus");
-            await addAmbassadorPoints(organizerId, 10);
+            const { addConnectorPoints } = await import("./services/connectorStatus");
+            await addConnectorPoints(organizerId, 10);
             tracker.set(todayKey, dailyCount + 1);
             tracker.set(weekKey, weeklyCount + 1);
-            console.log(`✅ AMBASSADOR: +10 pts to user ${organizerId} for Quick Meet join (day: ${dailyCount+1}/1, week: ${weeklyCount+1}/3)`);
+            console.log(`✅ CONNECTOR: +10 pts to user ${organizerId} for Quick Meet join (day: ${dailyCount+1}/1, week: ${weeklyCount+1}/3)`);
           }
         }
-      } catch (e) { console.error('Ambassador quick-meet points error:', e); }
+      } catch (e) { console.error('Connector quick-meet points error:', e); }
 
       // NOTIFY the organizer that someone joined their meetup
       setImmediate(async () => {
@@ -21872,7 +21872,7 @@ Questions? Just reply to this message. Welcome aboard!
 
           const [senderRows, replyRows] = await Promise.all([
             senderIds.length > 0
-              ? db.select({ id: users.id, username: users.username, name: users.name, profileImage: users.profileImage, ambassadorStatus: users.ambassadorStatus })
+              ? db.select({ id: users.id, username: users.username, name: users.name, profileImage: users.profileImage, connectorStatus: users.connectorStatus })
                   .from(users).where(inArray(users.id, senderIds))
               : [],
             replyIds.length > 0
@@ -21941,7 +21941,7 @@ Questions? Just reply to this message. Welcome aboard!
                 username: true,
                 name: true,
                 profileImage: true,
-                ambassadorStatus: true,
+                connectorStatus: true,
               }
             });
             
@@ -21999,7 +21999,7 @@ Questions? Just reply to this message. Welcome aboard!
           // Batch fetch all senders in one query
           const meetupSenderIds = [...new Set(meetupMessages.map(m => m.userId))];
           const meetupSenders = meetupSenderIds.length > 0
-            ? await db.select({ id: users.id, username: users.username, name: users.name, profileImage: users.profileImage, ambassadorStatus: users.ambassadorStatus })
+            ? await db.select({ id: users.id, username: users.username, name: users.name, profileImage: users.profileImage, connectorStatus: users.connectorStatus })
                 .from(users).where(inArray(users.id, meetupSenderIds))
             : [];
           const meetupSenderMap = new Map(meetupSenders.map(s => [s.id, s]));
@@ -22400,7 +22400,7 @@ Questions? Just reply to this message. Welcome aboard!
         });
       } catch {}
 
-      // Ambassador points: award 15 pts when chatroom reaches 5 members (one-time per chatroom creator)
+      // Connector points: award 15 pts when chatroom reaches 5 members (one-time per chatroom creator)
       try {
         const memberCountResult = await db.select({ count: sql<number>`count(*)` })
           .from(chatroomMembers)
@@ -22410,15 +22410,15 @@ Questions? Just reply to this message. Welcome aboard!
           // Find chatroom creator
           const [chatroom_row] = await db.select({ createdById: citychatrooms.createdById }).from(citychatrooms).where(eq(citychatrooms.id, roomId)).limit(1);
           if (chatroom_row?.createdById) {
-            const [creator] = await db.select({ ambassadorStatus: users.ambassadorStatus }).from(users).where(eq(users.id, chatroom_row.createdById)).limit(1);
-            if (creator?.ambassadorStatus === 'active' || creator?.ambassadorStatus === 'inactive') {
-              const { addAmbassadorPoints } = await import("./services/ambassadorStatus");
-              await addAmbassadorPoints(chatroom_row.createdById, 15);
-              console.log(`✅ AMBASSADOR: +15 pts to user ${chatroom_row.createdById} for chatroom reaching 5 members`);
+            const [creator] = await db.select({ connectorStatus: users.connectorStatus }).from(users).where(eq(users.id, chatroom_row.createdById)).limit(1);
+            if (creator?.connectorStatus === 'active' || creator?.connectorStatus === 'inactive') {
+              const { addConnectorPoints } = await import("./services/connectorStatus");
+              await addConnectorPoints(chatroom_row.createdById, 15);
+              console.log(`✅ CONNECTOR: +15 pts to user ${chatroom_row.createdById} for chatroom reaching 5 members`);
             }
           }
         }
-      } catch (e) { console.error('Ambassador chatroom points error:', e); }
+      } catch (e) { console.error('Connector chatroom points error:', e); }
 
       if (process.env.NODE_ENV === 'development') console.log(`🏠 CHATROOM JOIN: User ${userId} successfully joined chatroom ${roomId}`);
       res.json({ success: true, message: "Successfully joined chatroom!", newMember: true });
@@ -25828,7 +25828,7 @@ Questions? Just reply to this message. Welcome aboard!
         createdAt: users.createdAt,
         lastSeenAt: users.lastSeenAt,
         lastLogin: users.lastLogin,
-        ambassadorStatus: users.ambassadorStatus,
+        connectorStatus: users.connectorStatus,
         adminNotes: users.adminNotes,
         referralCount: users.referralCount,
         isAdmin: users.isAdmin,
@@ -26033,7 +26033,7 @@ Questions? Just reply to this message. Welcome aboard!
           COALESCE((SELECT COUNT(*) FROM referral_events re WHERE re.referrer_id = u.id AND re.event_type = 'signup' AND re.created_at > NOW() - INTERVAL '7 days'), 0)::int AS "referralsThisWeek",
           COALESCE((SELECT COUNT(*) FROM referral_events re WHERE re.referrer_id = u.id AND re.event_type = 'signup' AND re.created_at > NOW() - INTERVAL '30 days'), 0)::int AS "referralsThisMonth",
           COALESCE((SELECT SUM(re.points) FROM referral_events re WHERE re.referrer_id = u.id), 0)::int AS "totalAuraEarned",
-          COALESCE(u.ambassador_points, 0)::int AS "totalAmbassadorPoints",
+          COALESCE(u.connector_points, 0)::int AS "totalConnectorPoints",
           (SELECT MAX(re.created_at) FROM referral_events re WHERE re.referrer_id = u.id) AS "lastReferralAt"
         FROM users u
         WHERE u.referral_count > 0
@@ -26093,8 +26093,8 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
-  // PATCH /api/admin/ambassadors/:userId/status - Admin override: reactivate or revoke ambassador (ignores activity)
-  app.patch("/api/admin/ambassadors/:userId/status", async (req: any, res) => {
+  // PATCH /api/admin/connectors/:userId/status - Admin override: reactivate or revoke connector (ignores activity)
+  app.patch("/api/admin/connectors/:userId/status", async (req: any, res) => {
     try {
       const adminId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
       const [adminUser] = await db.select({ isAdmin: users.isAdmin }).from(users).where(eq(users.id, adminId));
@@ -26107,38 +26107,38 @@ Questions? Just reply to this message. Welcome aboard!
       const validStatus = status === "active" || status === "inactive" || status === "revoked" || status === null;
       if (!validStatus) return res.status(400).json({ error: "status must be 'active', 'inactive', 'revoked', or null" });
 
-      const { setAmbassadorStatusByAdmin } = await import("./services/ambassadorStatus");
-      await setAmbassadorStatusByAdmin(targetUserId, status, setByAdmin);
+      const { setConnectorStatusByAdmin } = await import("./services/connectorStatus");
+      await setConnectorStatusByAdmin(targetUserId, status, setByAdmin);
 
       res.json({ success: true, userId: targetUserId, status, setByAdmin });
     } catch (error: any) {
-      console.error("Admin ambassador status update error:", error);
-      res.status(500).json({ error: "Failed to update ambassador status" });
+      console.error("Admin connector status update error:", error);
+      res.status(500).json({ error: "Failed to update connector status" });
     }
   });
 
-  // Set co-ambassador usernames for an event (up to 3, points split evenly)
-  app.put("/api/events/:eventId/coambassadors", async (req: any, res) => {
+  // Set co-connector usernames for an event (up to 3, points split evenly)
+  app.put("/api/events/:eventId/coconnectors", async (req: any, res) => {
     try {
       const eventId = parseInt(req.params.eventId);
       const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
       if (!userId) return res.status(401).json({ error: "Not authenticated" });
 
       const { usernames } = req.body as { usernames: string[] };
-      if (!Array.isArray(usernames) || usernames.length > 3) return res.status(400).json({ error: "Max 3 co-ambassadors" });
+      if (!Array.isArray(usernames) || usernames.length > 3) return res.status(400).json({ error: "Max 3 co-connectors" });
 
       // Verify user is the event organizer
       const [event] = await db.select({ organizerId: events.organizerId }).from(events).where(eq(events.id, eventId)).limit(1);
-      if (!event || event.organizerId !== userId) return res.status(403).json({ error: "Only the event organizer can set co-ambassadors" });
+      if (!event || event.organizerId !== userId) return res.status(403).json({ error: "Only the event organizer can set co-connectors" });
 
       // Resolve usernames to IDs
       const resolvedIds: number[] = [];
       for (const uname of usernames.filter(u => u.trim())) {
-        const [u] = await db.select({ id: users.id, ambassadorStatus: users.ambassadorStatus })
+        const [u] = await db.select({ id: users.id, connectorStatus: users.connectorStatus })
           .from(users).where(eq(users.username, uname.toLowerCase().trim())).limit(1);
         if (!u) return res.status(404).json({ error: `User @${uname} not found` });
-        if (u.ambassadorStatus !== 'active' && u.ambassadorStatus !== 'inactive') {
-          return res.status(400).json({ error: `@${uname} is not an active ambassador` });
+        if (u.connectorStatus !== 'active' && u.connectorStatus !== 'inactive') {
+          return res.status(400).json({ error: `@${uname} is not an active connector` });
         }
         if (u.id === userId) continue; // skip self
         resolvedIds.push(u.id);
@@ -26153,15 +26153,15 @@ Questions? Just reply to this message. Welcome aboard!
         `);
       }
 
-      res.json({ success: true, coambassadorIds: resolvedIds });
+      res.json({ success: true, coconnectorIds: resolvedIds });
     } catch (error: any) {
-      console.error("Error setting co-ambassadors:", error);
-      res.status(500).json({ error: "Failed to set co-ambassadors" });
+      console.error("Error setting co-connectors:", error);
+      res.status(500).json({ error: "Failed to set co-connectors" });
     }
   });
 
-  // POST /api/admin/events/:eventId/ambassador-award - Award event-based ambassador points and split evenly among organizers
-  app.post("/api/admin/events/:eventId/ambassador-award", async (req: any, res) => {
+  // POST /api/admin/events/:eventId/connector-award - Award event-based connector points and split evenly among organizers
+  app.post("/api/admin/events/:eventId/connector-award", async (req: any, res) => {
     try {
       const adminId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string);
       const [adminUser] = await db.select({ isAdmin: users.isAdmin }).from(users).where(eq(users.id, adminId));
@@ -26189,32 +26189,32 @@ Questions? Just reply to this message. Welcome aboard!
         return res.status(404).json({ error: "No organizers found for this event" });
       }
 
-      // Only award points to enrolled ambassadors
+      // Only award points to enrolled connectors
       const enrolled = await db
-        .select({ id: users.id, ambassadorStatus: users.ambassadorStatus })
+        .select({ id: users.id, connectorStatus: users.connectorStatus })
         .from(users)
         .where(inArray(users.id, uniqueUserIds));
 
       const eligibleIds = enrolled
-        .filter(u => u.ambassadorStatus === "active" || u.ambassadorStatus === "inactive")
+        .filter(u => u.connectorStatus === "active" || u.connectorStatus === "inactive")
         .map(u => u.id);
 
-      // Gather all ambassadors: organizer + any co-ambassadors from event_cohost_splits
+      // Gather all connectors: organizer + any co-connectors from event_cohost_splits
       const cohostResult = await db.execute(sql`
         SELECT cohost_id FROM event_cohost_splits WHERE event_id = ${eventId} AND points_awarded = false
       `);
       const cohostIds = (cohostResult.rows as any[]).map(r => r.cohost_id).filter(Boolean);
 
-      // Combine organizer eligible IDs with co-ambassador IDs (also check ambassador status)
-      const allAmbassadorIds = [...new Set([...eligibleIds, ...cohostIds])];
+      // Combine organizer eligible IDs with co-connector IDs (also check connector status)
+      const allConnectorIds = [...new Set([...eligibleIds, ...cohostIds])];
 
-      // Filter to only enrolled ambassadors
-      const allEnrolled = allAmbassadorIds.length > 0 ? await db
-        .select({ id: users.id, ambassadorStatus: users.ambassadorStatus })
+      // Filter to only enrolled connectors
+      const allEnrolled = allConnectorIds.length > 0 ? await db
+        .select({ id: users.id, connectorStatus: users.connectorStatus })
         .from(users)
-        .where(inArray(users.id, allAmbassadorIds)) : [];
+        .where(inArray(users.id, allConnectorIds)) : [];
       const finalEligible = allEnrolled
-        .filter(u => u.ambassadorStatus === "active" || u.ambassadorStatus === "inactive")
+        .filter(u => u.connectorStatus === "active" || u.connectorStatus === "inactive")
         .map(u => u.id);
 
       if (finalEligible.length === 0) {
@@ -26224,18 +26224,18 @@ Questions? Just reply to this message. Welcome aboard!
           pointsConfigured: points,
           awarded: [],
           totalAwarded: 0,
-          message: "No enrolled ambassadors found."
+          message: "No enrolled connectors found."
         });
       }
 
       // Split points evenly: 2 = 10 each, 3 = 7 each, 4 = 5 each
       const pointsEach = Math.floor(points / finalEligible.length);
-      const { addAmbassadorPoints } = await import("./services/ambassadorStatus");
+      const { addConnectorPoints } = await import("./services/connectorStatus");
       const awarded: { userId: number; points: number }[] = [];
 
       if (pointsEach > 0) {
         for (const uid of finalEligible) {
-          await addAmbassadorPoints(uid, pointsEach);
+          await addConnectorPoints(uid, pointsEach);
           awarded.push({ userId: uid, points: pointsEach });
         }
       }
@@ -26253,8 +26253,8 @@ Questions? Just reply to this message. Welcome aboard!
         totalAwarded: awarded.reduce((s, a) => s + a.points, 0),
       });
     } catch (error: any) {
-      console.error("Admin event ambassador award error:", error);
-      return res.status(500).json({ error: "Failed to award ambassador points for event" });
+      console.error("Admin event connector award error:", error);
+      return res.status(500).json({ error: "Failed to award connector points for event" });
     }
   });
 
@@ -26976,12 +26976,12 @@ Questions? Just reply to this message. Welcome aboard!
         }
       } catch {}
 
-      // Ambassador points: +5 for completing an Available Now (host is userId, max 1/day, 3/week)
+      // Connector points: +5 for completing an Available Now (host is userId, max 1/day, 3/week)
       if (status === "accepted") {
         try {
           const hostId = Number(userId);
-          const [host] = await db.select({ ambassadorStatus: users.ambassadorStatus }).from(users).where(eq(users.id, hostId)).limit(1);
-          if (host?.ambassadorStatus === 'active' || host?.ambassadorStatus === 'inactive') {
+          const [host] = await db.select({ connectorStatus: users.connectorStatus }).from(users).where(eq(users.id, hostId)).limit(1);
+          if (host?.connectorStatus === 'active' || host?.connectorStatus === 'inactive') {
             // Check daily limit (max 1 per day)
             const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0);
             const todayKey = `amb_avail_${hostId}_${todayStart.toISOString().slice(0,10)}`;
@@ -26992,14 +26992,14 @@ Questions? Just reply to this message. Welcome aboard!
             const dailyCount = tracker.get(todayKey) || 0;
             const weeklyCount = tracker.get(weekKey) || 0;
             if (dailyCount < 1 && weeklyCount < 3) {
-              const { addAmbassadorPoints } = await import("./services/ambassadorStatus");
-              await addAmbassadorPoints(hostId, 5);
+              const { addConnectorPoints } = await import("./services/connectorStatus");
+              await addConnectorPoints(hostId, 5);
               tracker.set(todayKey, dailyCount + 1);
               tracker.set(weekKey, weeklyCount + 1);
-              console.log(`✅ AMBASSADOR: +5 pts to user ${hostId} for Available Now accepted (day: ${dailyCount+1}/1, week: ${weeklyCount+1}/3)`);
+              console.log(`✅ CONNECTOR: +5 pts to user ${hostId} for Available Now accepted (day: ${dailyCount+1}/1, week: ${weeklyCount+1}/3)`);
             }
           }
-        } catch (e) { console.error('Ambassador available-now points error:', e); }
+        } catch (e) { console.error('Connector available-now points error:', e); }
       }
 
       let groupChatroomId: number | null = null;
@@ -30599,7 +30599,7 @@ Questions? Just reply to this message. Welcome aboard!
         inviteUrl: userData?.referralCode ? `https://nearbytraveler.org?ref=${userData.referralCode}` : null,
         totalReferrals: refCount?.count || 0,
         totalAuraFromReferrals: totalAura,
-        totalAmbassadorPointsFromReferrals: signupCount * 50,
+        totalConnectorPointsFromReferrals: signupCount * 50,
         referredUsers: Array.from(referredUserMap.values()),
         events,
       });

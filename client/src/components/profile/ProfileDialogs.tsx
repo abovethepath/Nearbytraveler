@@ -2387,7 +2387,7 @@ export function ProfileDialogs(props: ProfilePageProps) {
               { icon: Users, label: "Connect", path: "/connect" },
               { icon: MessageCircle, label: "Chat Rooms", path: "/chatrooms" },
               { icon: MessageCircle, label: "Messages", path: "/messages" },
-              { icon: Award, label: "Ambassador Program", path: "/dashboard/ambassador" },
+              { icon: Award, label: "Connector Program", path: "/dashboard/connector" },
               { icon: Settings, label: "Settings", path: "/settings" },
             ])
           ].map((item, idx, arr) => (

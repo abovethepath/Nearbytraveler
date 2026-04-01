@@ -175,10 +175,10 @@ import CommunityGuidelines from "@/pages/community-guidelines";
 import ProfilePageResponsive from "@/pages/ProfilePageResponsive";
 import EventsListResponsive from "@/pages/EventsListResponsive";
 import About from "@/pages/about";
-import AmbassadorProgram from "@/pages/ambassador-program";
-import AmbassadorLanding from "@/pages/ambassador";
-import AmbassadorDashboard from "@/pages/ambassador-dashboard";
-import AmbassadorInfo from "@/pages/ambassador-info";
+import ConnectorProgram from "@/pages/connector-program";
+import ConnectorLanding from "@/pages/connector";
+import ConnectorDashboard from "@/pages/connector-dashboard";
+import ConnectorInfo from "@/pages/connector-info";
 import GettingStarted from "@/pages/getting-started";
 
 
@@ -495,7 +495,7 @@ function Router() {
 
   const landingPageRoutes = [
     '/', '/landing', '/landing-new', '/auth', '/auth/signup', '/join', '/signup', '/signup/local', '/signup/traveler', '/signup/business', '/signup/account', '/signup/traveling',
-    '/events-landing', '/business-landing', '/locals-landing', '/travelers-landing', /* '/networking-landing', */ '/couchsurfing', '/cs', '/b', '/privacy', '/terms', '/cookies', '/about', '/ambassador', '/ambassador-program', '/getting-started',
+    '/events-landing', '/business-landing', '/locals-landing', '/travelers-landing', /* '/networking-landing', */ '/couchsurfing', '/cs', '/b', '/privacy', '/terms', '/cookies', '/about', '/connector', '/connector-program', '/getting-started',
     '/forgot-password', '/reset-password', '/welcome', '/welcome-business', '/finishing-setup', '/quick-login', '/preview-landing', '/preview-first-landing',
     '/travel-quiz', '/TravelIntentQuiz', '/business-card', '/qr-code', '/landing-simple', '/signin', '/launching-soon', '/waitlist'
   ];
@@ -618,8 +618,8 @@ function Router() {
       "/terms",
       "/cookies",
       "/about",
-      "/ambassador",
-      "/ambassador-program",
+      "/connector",
+      "/connector-program",
       "/getting-started",
       "/welcome",
       "/welcome-business",
@@ -1060,8 +1060,8 @@ function Router() {
       '/business-landing',
       '/cs',
       '/couchsurfing',
-      '/ambassador',
-      '/ambassador-program',
+      '/connector',
+      '/connector-program',
     ]);
 
     if (isNativeIOSApp() && (nativeBlockedMarketingRoutes.has(location) || location.startsWith('/landing'))) {
@@ -1120,50 +1120,35 @@ function Router() {
             console.warn('⚠️ Server logout request failed:', serverError);
           }
 
-          // Clear all authentication data
-          authStorage.clearUser();
-          console.log('✅ Cleared authStorage');
-
-          // Clear ALL possible auth keys - expanded list
-          localStorage.removeItem('auth_token');
-          localStorage.removeItem('travelconnect_user');
-          localStorage.removeItem('user');
-          localStorage.removeItem('authToken');
-          localStorage.removeItem('currentUser');
-          localStorage.removeItem('user_logged_out');
-          localStorage.removeItem('authUser');
-          localStorage.removeItem('userData');
-          localStorage.removeItem('userSession');
-          // Clear any welcome flags
-          Object.keys(localStorage).forEach(key => {
-            if (key.startsWith('welcomed_')) {
-              localStorage.removeItem(key);
-            }
-          });
-          console.log('✅ Cleared all localStorage keys');
-
-          // Clear session storage completely
+          // Clear ALL client-side auth data — localStorage, sessionStorage, cookies, caches
+          localStorage.clear();
           sessionStorage.clear();
-          console.log('✅ Cleared sessionStorage');
+          console.log('✅ Cleared all storage');
 
           // Clear React Query cache
           queryClient.clear();
+          invalidateUserCache();
           console.log('✅ Cleared React Query cache');
+
+          // Clear cookies (session cookie is httpOnly so this is belt-and-suspenders)
+          document.cookie.split(';').forEach(c => {
+            const name = c.split('=')[0].trim();
+            document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
+          });
 
           // Update state
           setUser(null);
           console.log('✅ Set user to null');
 
-          console.log('🔄 Forcing complete refresh to clear all cached data');
-
-          // Force complete page refresh to clear all cached authentication
-          // Only use href assignment - reload() after href causes race condition
-          window.location.href = redirectTo;
+          // Force complete page refresh — replace() prevents back button returning to auth'd page
+          window.location.replace(redirectTo);
 
         } catch (error) {
           console.error('❌ Error during logout:', error);
-          // Fallback - force complete refresh anyway
-          window.location.href = redirectTo;
+          // Fallback - clear storage and force refresh
+          localStorage.clear();
+          sessionStorage.clear();
+          window.location.replace(redirectTo);
         }
       },
       login: (userData: User, token?: string) => {
@@ -1546,11 +1531,11 @@ function Router() {
       if (location === '/about') {
         return <About />;
       }
-      if (location === '/ambassador') {
-        return <AmbassadorLanding />;
+      if (location === '/connector') {
+        return <ConnectorLanding />;
       }
-      if (location === '/ambassador-program') {
-        return <AmbassadorProgram />;
+      if (location === '/connector-program') {
+        return <ConnectorProgram />;
       }
       if (location === '/getting-started') {
         return <GettingStarted />;
@@ -1629,7 +1614,8 @@ function Router() {
       }
 
       // Check if this is a valid landing page route (including our public pages)
-      if (landingPageRoutes.includes(location)) {
+      // Dynamic public routes (already handled above with return) are also valid
+      if (landingPageRoutes.includes(location) || location.startsWith('/city/')) {
         // This handles all the routes we explicitly want to be public
         console.log('✅ PUBLIC PAGE ACCESS - Valid landing page route:', location);
         // Let it continue to the specific route handlers below (they're already in the landing page section)
@@ -1977,10 +1963,10 @@ function Router() {
         return <FinishingSetup />;
       case '/getting-started':
         return <GettingStarted />;
-      case '/ambassador':
-        return <AmbassadorLanding />;
-      case '/ambassador-program':
-        return <AmbassadorProgram />;
+      case '/connector':
+        return <ConnectorLanding />;
+      case '/connector-program':
+        return <ConnectorProgram />;
       case '/quick-login':
         return <QuickLogin />;
 
@@ -1996,10 +1982,10 @@ function Router() {
         return <Donate />;
       case '/support-success':
         return <SupportSuccess />;
-      case '/dashboard/ambassador':
-        return <AmbassadorDashboard />;
-      case '/ambassador-info':
-        return <AmbassadorInfo />;
+      case '/dashboard/connector':
+        return <ConnectorDashboard />;
+      case '/connector-info':
+        return <ConnectorInfo />;
       case '/':
       case '/home':
         console.log('🏠 MOBILE: Rendering Home page for authenticated user');

@@ -52,18 +52,18 @@ If you prefer to run SQL yourself (e.g. in Render Postgres “Connect” or `psq
    - File: `migrations/0000_square_puma.sql`
    - Run its contents against your database.
 
-2. Then run the ambassador columns (if not already present):
-   - File: `migrations/0001_ambassador_status.sql`
+2. Then run the connector columns (if not already present):
+   - File: `migrations/0001_connector_status.sql`
    - Contents:
 
 ```sql
--- Ambassador program: status, activity window, and admin override
-ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "ambassador_status" text;
-ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "ambassador_enrolled_at" timestamp;
-ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "ambassador_last_earned_at" timestamp;
-ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "ambassador_period_start_at" timestamp;
-ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "ambassador_points_in_period" integer DEFAULT 0;
-ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "ambassador_status_set_by_admin" boolean DEFAULT false;
+-- Connector program: status, activity window, and admin override
+ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "connector_status" text;
+ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "connector_enrolled_at" timestamp;
+ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "connector_last_earned_at" timestamp;
+ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "connector_period_start_at" timestamp;
+ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "connector_points_in_period" integer DEFAULT 0;
+ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "connector_status_set_by_admin" boolean DEFAULT false;
 ```
 
 ---

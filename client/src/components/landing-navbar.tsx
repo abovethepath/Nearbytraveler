@@ -35,11 +35,8 @@ export default function LandingNavbar() {
               <Link href="/business-landing" className="border-transparent text-gray-500 dark:text-gray-200 hover:border-gray-300 hover:text-gray-700 dark:hover:text-white inline-flex items-center px-2 xl:px-3 pt-1 border-b-2 text-sm font-medium whitespace-nowrap transition-colors duration-200 flex-shrink-0">
                 Business
               </Link>
-              <Link href="/cs" className="border-transparent text-gray-500 dark:text-gray-200 hover:border-gray-300 hover:text-gray-700 dark:hover:text-white inline-flex items-center px-2 xl:px-3 pt-1 border-b-2 text-sm font-medium whitespace-nowrap transition-colors duration-200 flex-shrink-0">
-                Couchsurfer
-              </Link>
-              <Link href="/ambassador" className="border-transparent text-gray-500 dark:text-gray-200 hover:border-gray-300 hover:text-gray-700 dark:hover:text-white inline-flex items-center px-2 xl:px-3 pt-1 border-b-2 text-sm font-medium whitespace-nowrap transition-colors duration-200 flex-shrink-0">
-                Ambassador
+              <Link href="/connector" className="border-transparent text-gray-500 dark:text-gray-200 hover:border-gray-300 hover:text-gray-700 dark:hover:text-white inline-flex items-center px-2 xl:px-3 pt-1 border-b-2 text-sm font-medium whitespace-nowrap transition-colors duration-200 flex-shrink-0">
+                Connector
               </Link>
             </div>
           </div>
@@ -105,8 +102,7 @@ export default function LandingNavbar() {
               { href: "/travelers-landing", label: "For Travelers" },
               { href: "/events-landing", label: "For Events" },
               { href: "/business-landing", label: "For Businesses" },
-              { href: "/cs", label: "Couchsurfer" },
-              { href: "/ambassador", label: "Ambassador" },
+              { href: "/connector", label: "Connector" },
             ].map((item) => (
               <Link 
                 key={item.href}

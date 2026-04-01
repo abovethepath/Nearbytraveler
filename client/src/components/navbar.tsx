@@ -741,7 +741,7 @@ function Navbar() {
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         onClick={() => {
-                          setLocation("/dashboard/ambassador");
+                          setLocation("/dashboard/connector");
                           setTimeout(
                             () =>
                               window.scrollTo({ top: 0, behavior: "smooth" }),
@@ -750,7 +750,7 @@ function Navbar() {
                         }}
                       >
                         <Star className="mr-2 h-4 w-4 text-orange-500" />
-                        <span>Ambassador Program</span>
+                        <span>Connector Program</span>
                       </DropdownMenuItem>
                     </>
                   )}

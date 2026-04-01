@@ -157,15 +157,15 @@ export const users = pgTable("users", {
   // AI Generation fields
   isAIGenerated: boolean("is_ai_generated").default(false),
   aura: integer("aura").default(1), // Travel karma points from signup
-  ambassadorPoints: integer("ambassador_points").default(0), // Ambassador program points
-  ambassadorStatus: text("ambassador_status"), // 'active' | 'inactive' | 'revoked'; null = not enrolled
-  ambassadorEnrolledAt: timestamp("ambassador_enrolled_at"), // When they became an ambassador
-  ambassadorLastEarnedAt: timestamp("ambassador_last_earned_at"), // Last time they earned any point
-  ambassadorPeriodStartAt: timestamp("ambassador_period_start_at"), // Start of current 6-month activity window
-  ambassadorPointsInPeriod: integer("ambassador_points_in_period").default(0), // Points earned in current 6-month window
-  ambassadorStatusSetByAdmin: boolean("ambassador_status_set_by_admin").default(false), // When true, auto-activity logic does not override status
-  ambassadorBio: text("ambassador_bio"), // Ambassador's personal bio shown on their profile
-  ambassadorReferralCountOverride: integer("ambassador_referral_count_override"), // Admin-set override for referral display count
+  connectorPoints: integer("connector_points").default(0), // Connector program points
+  connectorStatus: text("connector_status"), // 'active' | 'inactive' | 'revoked'; null = not enrolled
+  connectorEnrolledAt: timestamp("connector_enrolled_at"), // When they became a connector
+  connectorLastEarnedAt: timestamp("connector_last_earned_at"), // Last time they earned any point
+  connectorPeriodStartAt: timestamp("connector_period_start_at"), // Start of current 6-month activity window
+  connectorPointsInPeriod: integer("connector_points_in_period").default(0), // Points earned in current 6-month window
+  connectorStatusSetByAdmin: boolean("connector_status_set_by_admin").default(false), // When true, auto-activity logic does not override status
+  connectorBio: text("connector_bio"), // Connector's personal bio shown on their profile
+  connectorReferralCountOverride: integer("connector_referral_count_override"), // Admin-set override for referral display count
   
   // Enhanced Status & Presence System
   onlineStatus: text("online_status").default("offline"), // 'online', 'away', 'busy', 'invisible', 'offline'
@@ -1677,7 +1677,7 @@ export const userReputation = pgTable("user_reputation", {
   meetAgainRate: real("meet_again_rate").default(0), // Percentage of "would meet again"
   referralsMade: integer("referrals_made").default(0),
   successfulReferrals: integer("successful_referrals").default(0),
-  reputationLevel: text("reputation_level").default("newcomer"), // 'newcomer', 'trusted', 'expert', 'ambassador'
+  reputationLevel: text("reputation_level").default("newcomer"), // 'newcomer', 'trusted', 'expert', 'connector'
   badges: text("badges").array(), // Achievement badges like 'super_host', 'great_guide', 'connector'
   lastUpdated: timestamp("last_updated").defaultNow(),
   createdAt: timestamp("created_at").defaultNow(),

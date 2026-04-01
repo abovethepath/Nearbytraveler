@@ -37,7 +37,7 @@ interface SimpleAvatarProps {
     avatarColor?: string | null;
     avatarGradient?: string | null;
     isCurrentlyTraveling?: boolean;
-    ambassadorStatus?: string | null;
+    connectorStatus?: string | null;
   } | null;
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
   className?: string;
@@ -146,9 +146,9 @@ export function SimpleAvatar({ user, size = 'md', className = '', clickable = tr
     ? avatarData.imageUrl 
     : (usePlaceholderPhoto ? avatarData.placeholderUrl : null);
 
-  // Determine status border: ambassador = skip (caller handles), traveling = orange, home = white
-  const isAmbassador = !!(user as any)?.ambassadorStatus && (user as any).ambassadorStatus !== 'none';
-  const statusBorderStyle: React.CSSProperties | undefined = isAmbassador
+  // Determine status border: connector = skip (caller handles), traveling = orange, home = white
+  const isConnector = !!(user as any)?.connectorStatus && (user as any).connectorStatus !== 'none';
+  const statusBorderStyle: React.CSSProperties | undefined = isConnector
     ? undefined
     : (user as any)?.isCurrentlyTraveling
       ? { border: '2px solid rgba(255, 107, 53, 0.9)' }

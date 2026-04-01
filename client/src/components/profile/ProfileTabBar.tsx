@@ -255,17 +255,17 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
           </button>
         )}
 
-        {(user as any)?.ambassadorStatus === 'active' && user?.userType !== "business" && (
+        {(user as any)?.connectorStatus === 'active' && user?.userType !== "business" && (
           <button
             role="tab"
-            aria-selected={activeTab === "ambassador"}
-            aria-controls="panel-ambassador"
-            onClick={() => handleTabClick("ambassador")}
-            className={`${btn(activeTab === "ambassador")} inline-flex items-center gap-1`}
-            data-testid="tab-ambassador"
-            style={activeTab === "ambassador" ? undefined : heroTextStyle}
+            aria-selected={activeTab === "connector"}
+            aria-controls="panel-connector"
+            onClick={() => handleTabClick("connector")}
+            className={`${btn(activeTab === "connector")} inline-flex items-center gap-1`}
+            data-testid="tab-connector"
+            style={activeTab === "connector" ? undefined : heroTextStyle}
           >
-            ⭐ Ambassador
+            ⭐ Connector
           </button>
         )}
 

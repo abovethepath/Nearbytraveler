@@ -6,7 +6,7 @@ import Footer from "@/components/footer";
 import { AuthContext } from "@/App";
 import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
 
-export default function AmbassadorProgram() {
+export default function ConnectorProgram() {
   const { user } = useContext(AuthContext);
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -34,7 +34,7 @@ export default function AmbassadorProgram() {
       <section className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-orange-500 text-white px-4 py-2 rounded-full text-sm font-medium mb-6">
-            Ambassador Program
+            Connector Program
           </div>
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
             Help Build Nearby Traveler.<br />
@@ -43,8 +43,8 @@ export default function AmbassadorProgram() {
             </span>
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed mb-8">
-            Ambassadors are members who grow the community—by inviting friends, bringing in local businesses, and creating real events. 
-            A total <span className="font-bold text-orange-600">4% Ambassador Ownership Pool</span> is reserved for Ambassadors.
+            Connectors are members who grow the community—by inviting friends, bringing in local businesses, and creating real events.
+            A total <span className="font-bold text-orange-600">4% Connector Ownership Pool</span> is reserved for Connectors.
           </p>
         </div>
       </section>
@@ -97,16 +97,16 @@ export default function AmbassadorProgram() {
               </p>
               <div className="space-y-2 text-gray-700 dark:text-gray-300">
                 <p>
-                  If there is ever a future <span className="font-semibold">liquidity event</span> (an “exit” like an acquisition or IPO) and the program terms are met,
-                  we calculate your share of the <span className="font-semibold">4% Ambassador Ownership Pool</span> based on your portion of total points.
+                  If there is ever a future <span className="font-semibold">liquidity event</span> (an "exit" like an acquisition or IPO) and the program terms are met,
+                  we calculate your share of the <span className="font-semibold">4% Connector Ownership Pool</span> based on your portion of total points.
                 </p>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  In simple terms: <span className="font-semibold">your points ÷ total points</span> = your share of the Ambassador pool (as defined by the official terms).
+                  In simple terms: <span className="font-semibold">your points ÷ total points</span> = your share of the Connector pool (as defined by the official terms).
                 </p>
               </div>
               <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm p-4 mt-4">
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  <span className="font-semibold">Example:</span> If you earn 1,000 points and the community earns 100,000 points total, 
+                  <span className="font-semibold">Example:</span> If you earn 1,000 points and the community earns 100,000 points total,
                   you earned 1% of the points → you receive 1% of the 4% pool (i.e., 0.04% equity), subject to the program terms.
                 </p>
               </div>
@@ -118,10 +118,10 @@ export default function AmbassadorProgram() {
       <section className="py-10 px-4 sm:px-6 lg:px-8 bg-blue-50/50 dark:bg-blue-950/20">
         <div className="max-w-4xl mx-auto">
           <div className="rounded-xl border-2 border-blue-200 dark:border-blue-800 bg-white dark:bg-gray-800 p-6 shadow-sm">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-3">LA Ambassadors: Extra 1% Local Pool</h2>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-3">LA Connectors: Extra 1% Local Pool</h2>
             <p className="text-gray-700 dark:text-gray-300">
-              Los Angeles city ambassadors share an <strong>additional 1% ownership pool</strong> on top of the global 4%. 
-              LA ambassadors can earn from both pools—the global 4% and the LA-specific 1%.
+              Los Angeles city connectors share an <strong>additional 1% ownership pool</strong> on top of the global 4%.
+              LA connectors can earn from both pools—the global 4% and the LA-specific 1%.
             </p>
           </div>
         </div>
@@ -131,7 +131,7 @@ export default function AmbassadorProgram() {
         <div className="max-w-4xl mx-auto">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-8 text-center">Ways to Earn Points</h2>
           <p className="text-sm text-gray-600 dark:text-gray-300 text-center -mt-6 mb-8">
-            If an event has multiple Ambassadors (organizer + co-organizers), event-based points are split evenly among them.
+            If an event has multiple Connectors (organizer + co-organizers), event-based points are split evenly among them.
           </p>
           <div className="grid sm:grid-cols-2 gap-4">
             {pointActions.map((item, index) => (
@@ -174,7 +174,7 @@ export default function AmbassadorProgram() {
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-amber-600">•</span>
-                  Ambassadors must maintain minimum activity to remain in the program and keep accumulating points toward equity
+                  Connectors must maintain minimum activity to remain in the program and keep accumulating points toward equity
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-amber-600 font-semibold">•</span>
@@ -183,12 +183,12 @@ export default function AmbassadorProgram() {
                 <ul className="list-disc list-inside ml-4 space-y-1 text-gray-700 dark:text-gray-300">
                   <li>Must earn at least 200 points every 6 months to stay active</li>
                   <li>If inactive for 6 months, status changes to &quot;Inactive&quot;—points are frozen but not deleted</li>
-                  <li>If inactive for 12 months, ambassador status is revoked and points stop counting toward equity</li>
-                  <li>Ambassador can reapply after 12 months and start fresh</li>
+                  <li>If inactive for 12 months, connector status is revoked and points stop counting toward equity</li>
+                  <li>Connector can reapply after 12 months and start fresh</li>
                 </ul>
                 <li className="flex items-start gap-2 mt-2">
                   <span className="text-amber-600">•</span>
-                  <span><strong>Admin override:</strong> Admins can manually reactivate or revoke any ambassador regardless of activity score</span>
+                  <span><strong>Admin override:</strong> Admins can manually reactivate or revoke any connector regardless of activity score</span>
                 </li>
               </ul>
             </CardContent>
@@ -220,8 +220,8 @@ export default function AmbassadorProgram() {
             </Card>
             <Card className="bg-gray-50 dark:bg-gray-900">
               <CardContent className="p-6">
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">How do I stay active as an Ambassador?</h3>
-                <p className="text-gray-600 dark:text-gray-400">You must earn at least <strong>200 points every 6 months</strong> to stay active. If you don’t meet that minimum, your status changes to Inactive—your points are frozen but not deleted. If you’re inactive for 12 months (no points earned), your ambassador status is revoked and your points no longer count toward equity. You can reapply after 12 months and start fresh.</p>
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">How do I stay active as a Connector?</h3>
+                <p className="text-gray-600 dark:text-gray-400">You must earn at least <strong>200 points every 6 months</strong> to stay active. If you don't meet that minimum, your status changes to Inactive—your points are frozen but not deleted. If you're inactive for 12 months (no points earned), your connector status is revoked and your points no longer count toward equity. You can reapply after 12 months and start fresh.</p>
               </CardContent>
             </Card>
           </div>
@@ -254,8 +254,8 @@ export default function AmbassadorProgram() {
                 </li>
               </ul>
               <p className="text-sm text-gray-500 dark:text-gray-400 pt-4 border-t border-red-200 dark:border-red-800">
-                The Ambassador Ownership Pool is offered only under the program's official terms and eligibility rules. 
-                Points don't guarantee equity and may be adjusted for fraud prevention, verification, and quality standards. 
+                The Connector Ownership Pool is offered only under the program's official terms and eligibility rules.
+                Points don't guarantee equity and may be adjusted for fraud prevention, verification, and quality standards.
                 Equity details (timing, form, vesting, and eligibility) are defined in the program documents.
               </p>
             </CardContent>
@@ -265,21 +265,21 @@ export default function AmbassadorProgram() {
 
       <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-blue-600 to-orange-500">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl font-bold text-white mb-4">Ready to Become an Ambassador?</h2>
+          <h2 className="text-3xl font-bold text-white mb-4">Ready to Become a Connector?</h2>
           <p className="text-blue-100 mb-4 max-w-2xl mx-auto">
-            {user 
-              ? "Apply now to join our Ambassador Program and start earning points for helping grow the community."
+            {user
+              ? "Apply now to join our Connector Program and start earning points for helping grow the community."
               : "Start earning points by inviting friends, referring local businesses, and hosting community events."
             }
           </p>
           <p className="text-white/90 mb-8">
-            Questions? Email us at <a href="mailto:ambassadors@nearbytraveler.org" className="underline font-medium">ambassadors@nearbytraveler.org</a>
+            Questions? Email us at <a href="mailto:connectors@nearbytraveler.org" className="underline font-medium">connectors@nearbytraveler.org</a>
           </p>
           <div className="flex justify-center">
             {user ? (
-              <a href={`mailto:ambassadors@nearbytraveler.org?subject=Ambassador Program Application - ${user.username}&body=Hi Aaron,%0D%0A%0D%0AI would like to apply to become a Nearby Traveler Ambassador.%0D%0A%0D%0AUsername: ${user.username}%0D%0AName: ${user.name || 'N/A'}%0D%0AEmail: ${user.email}%0D%0A%0D%0AWhy I want to be an Ambassador:%0D%0A%0D%0A%0D%0AHow I plan to help grow the community:%0D%0A%0D%0A`}>
+              <a href={`mailto:connectors@nearbytraveler.org?subject=Connector Program Application - ${user.username}&body=Hi Aaron,%0D%0A%0D%0AI would like to apply to become a Nearby Traveler Connector.%0D%0A%0D%0AUsername: ${user.username}%0D%0AName: ${user.name || 'N/A'}%0D%0AEmail: ${user.email}%0D%0A%0D%0AWhy I want to be a Connector:%0D%0A%0D%0A%0D%0AHow I plan to help grow the community:%0D%0A%0D%0A`}>
                 <Button size="lg" className="bg-gradient-to-r from-blue-500 to-orange-500 hover:from-blue-600 hover:to-orange-600 text-white border-0 font-semibold shadow-lg hover:shadow-xl transition-all">
-                  Apply to Become an Ambassador
+                  Apply to Become a Connector
                 </Button>
               </a>
             ) : (

@@ -31,16 +31,16 @@ function statusTone(status: any) {
   return "bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700";
 }
 
-export default function AmbassadorDashboardPage() {
+export default function ConnectorDashboardPage() {
   const { toast } = useToast();
   const { user } = useAuth();
   const [, setLocation] = useLocation();
 
-  const ambassadorStatus = (user as any)?.ambassadorStatus ?? null;
-  const ambassadorPoints = Number((user as any)?.ambassadorPoints || 0) || 0;
-  const pointsInPeriod = Number((user as any)?.ambassadorPointsInPeriod || 0) || 0;
-  const periodStartAt = (user as any)?.ambassadorPeriodStartAt ?? null;
-  const lastEarnedAt = (user as any)?.ambassadorLastEarnedAt ?? null;
+  const connectorStatus = (user as any)?.connectorStatus ?? null;
+  const connectorPoints = Number((user as any)?.connectorPoints || 0) || 0;
+  const pointsInPeriod = Number((user as any)?.connectorPointsInPeriod || 0) || 0;
+  const periodStartAt = (user as any)?.connectorPeriodStartAt ?? null;
+  const lastEarnedAt = (user as any)?.connectorLastEarnedAt ?? null;
 
   const { data: qrData } = useQuery<{ referralCode?: string; signupUrl?: string }>({
     queryKey: ["/api/user/qr-code"],
@@ -55,7 +55,7 @@ export default function AmbassadorDashboardPage() {
 
   const openPublicLanding = React.useCallback(() => {
     // Use `public=1` to avoid redirecting back to this dashboard when logged in.
-    window.open("/ambassador?public=1", "_blank", "noopener,noreferrer");
+    window.open("/connector?public=1", "_blank", "noopener,noreferrer");
   }, []);
 
   const copy = async (text: string) => {
@@ -63,7 +63,7 @@ export default function AmbassadorDashboardPage() {
       await navigator.clipboard.writeText(text);
       toast({ title: "Copied", description: "Referral link copied to clipboard." });
     } catch {
-      toast({ title: "Copy failed", description: "Couldn’t copy. Please copy manually.", variant: "destructive" });
+      toast({ title: "Copy failed", description: "Couldn't copy. Please copy manually.", variant: "destructive" });
     }
   };
 
@@ -71,14 +71,14 @@ export default function AmbassadorDashboardPage() {
     return (
       <div className="w-full">
         <div className="max-w-5xl mx-auto px-4 py-8 space-y-4">
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Ambassador</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Connector</h1>
           <p className="text-sm text-gray-600 dark:text-gray-300">
-            Please log in to view your Ambassador dashboard.
+            Please log in to view your Connector dashboard.
           </p>
           <div className="flex flex-wrap gap-2">
             <Button onClick={() => setLocation("/auth")}>Log in</Button>
             <Button variant="outline" onClick={openPublicLanding}>
-              View public Ambassador page
+              View public Connector page
               <ExternalLink className="h-4 w-4 ml-2" />
             </Button>
           </div>
@@ -96,7 +96,7 @@ export default function AmbassadorDashboardPage() {
             Back
           </Button>
           <div className="min-w-0">
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white truncate">Ambassador</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white truncate">Connector</h1>
             <p className="text-sm text-gray-600 dark:text-gray-300">
               Your status, points, referral link, and perks.
             </p>
@@ -123,11 +123,11 @@ export default function AmbassadorDashboardPage() {
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex flex-wrap items-center gap-2">
-              <span className={`inline-flex items-center rounded-full border px-3 py-1 text-sm font-semibold ${statusTone(ambassadorStatus)}`}>
-                {statusLabel(ambassadorStatus)}
+              <span className={`inline-flex items-center rounded-full border px-3 py-1 text-sm font-semibold ${statusTone(connectorStatus)}`}>
+                {statusLabel(connectorStatus)}
               </span>
               <span className="text-sm text-gray-600 dark:text-gray-300">
-                {ambassadorStatus
+                {connectorStatus
                   ? "Keep earning points to stay active."
                   : "Earn points through referrals, events, and community growth."}
               </span>
@@ -135,8 +135,8 @@ export default function AmbassadorDashboardPage() {
 
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
               <div className="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4">
-                <div className="text-xs text-gray-500 dark:text-gray-400">Total Ambassador Points</div>
-                <div className="mt-1 text-2xl font-extrabold text-gray-900 dark:text-white">{ambassadorPoints}</div>
+                <div className="text-xs text-gray-500 dark:text-gray-400">Total Connector Points</div>
+                <div className="mt-1 text-2xl font-extrabold text-gray-900 dark:text-white">{connectorPoints}</div>
               </div>
               <div className="rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4">
                 <div className="text-xs text-gray-500 dark:text-gray-400">Points in Current Window</div>
@@ -163,7 +163,7 @@ export default function AmbassadorDashboardPage() {
           </CardHeader>
           <CardContent className="space-y-3">
             <p className="text-sm text-gray-600 dark:text-gray-300">
-              Share this link to invite new users. When they sign up, you’ll be connected.
+              Share this link to invite new users. When they sign up, you'll be connected.
             </p>
             <div className="flex flex-col sm:flex-row gap-2">
               <input
@@ -194,7 +194,7 @@ export default function AmbassadorDashboardPage() {
           <CardContent className="space-y-3 text-sm text-gray-700 dark:text-gray-200">
             <div className="flex items-start gap-2">
               <Star className="h-4 w-4 mt-0.5 text-orange-500" />
-              <p>Ambassador Points track high-impact actions (referrals, events, business growth).</p>
+              <p>Connector Points track high-impact actions (referrals, events, business growth).</p>
             </div>
             <div className="flex items-start gap-2">
               <Star className="h-4 w-4 mt-0.5 text-orange-500" />
@@ -206,7 +206,7 @@ export default function AmbassadorDashboardPage() {
             </div>
             <div className="pt-2">
               <Button variant="outline" onClick={openPublicLanding} className="w-full sm:w-auto">
-                View Ambassador landing page
+                View Connector landing page
                 <ExternalLink className="h-4 w-4 ml-2" />
               </Button>
             </div>
@@ -216,4 +216,3 @@ export default function AmbassadorDashboardPage() {
     </div>
   );
 }
-

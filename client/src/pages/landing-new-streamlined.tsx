@@ -492,7 +492,7 @@ export default function LandingStreamlined() {
         <section className="py-4 sm:py-6 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900 border-t border-b border-gray-200 dark:border-gray-700">
           <div className="max-w-6xl mx-auto">
             <p className="text-xs sm:text-sm text-center text-gray-600 dark:text-gray-400 leading-relaxed">
-              400+ travelers hosted by our founder | 5 community ambassadors in Los Angeles | Inspired by global travel communities like Couchsurfing & Meetup
+              400+ travelers hosted by our founder | 5 community connectors in Los Angeles | Inspired by global travel communities like Couchsurfing & Meetup
             </p>
           </div>
         </section>

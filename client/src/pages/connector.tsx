@@ -42,7 +42,7 @@ function useScrollReveal() {
   }, []);
 }
 
-export default function AmbassadorLanding() {
+export default function ConnectorLanding() {
   const [, setLocation] = useLocation();
   const { user } = useAuth();
   useScrollReveal();
@@ -79,12 +79,12 @@ export default function AmbassadorLanding() {
       a: "200 points every 6 months. Fall below that and your status becomes Inactive — points frozen but not deleted. Inactive for 12 months and status is fully revoked.",
     },
     {
-      q: "What's the LA ambassador bonus?",
-      a: "Los Angeles ambassadors participate in an additional 1% local ownership pool on top of the global 4%. LA ambassadors can earn from both pools based on their points in each.",
+      q: "What's the LA connector bonus?",
+      a: "Los Angeles connectors participate in an additional 1% local ownership pool on top of the global 4%. LA connectors can earn from both pools based on their points in each.",
     },
     {
-      q: "Can I lose my ambassador status?",
-      a: "Yes — inactivity, misconduct, or fraud can result in revocation. Admins can manually reactivate or revoke any ambassador regardless of activity score.",
+      q: "Can I lose my connector status?",
+      a: "Yes — inactivity, misconduct, or fraud can result in revocation. Admins can manually reactivate or revoke any connector regardless of activity score.",
     },
   ];
 
@@ -99,17 +99,17 @@ export default function AmbassadorLanding() {
             <div className="rounded-2xl border border-blue-200/60 dark:border-blue-700/40 bg-white/80 dark:bg-gray-900/60 backdrop-blur p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <div className="min-w-0">
                 <div className="text-sm font-semibold text-gray-900 dark:text-white">
-                  You’re logged in.
+                  You're logged in.
                 </div>
                 <div className="text-sm text-gray-600 dark:text-gray-300">
-                  View your Ambassador status, points, referral link, and perks inside the app.
+                  View your Connector status, points, referral link, and perks inside the app.
                 </div>
               </div>
               <Button
-                onClick={() => setLocation("/dashboard/ambassador")}
+                onClick={() => setLocation("/dashboard/connector")}
                 className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white font-bold"
               >
-                Go to Ambassador dashboard
+                Go to Connector dashboard
               </Button>
             </div>
           </div>
@@ -124,7 +124,7 @@ export default function AmbassadorLanding() {
             className="opacity-0 translate-y-4 transition-all duration-700 ease-out"
           >
             <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-orange-500 text-white px-4 py-2 rounded-full text-sm font-medium mb-6">
-              Ambassador Program
+              Connector Program
             </div>
 
             <h1 className="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white leading-tight mb-4">
@@ -134,12 +134,12 @@ export default function AmbassadorLanding() {
               Earn Points. Earn a Piece of What We Build Together.
             </p>
             <p className="text-base md:text-lg text-gray-600 dark:text-gray-300 max-w-3xl leading-relaxed">
-              Ambassadors are the people who grow NearbyTraveler from the ground up — inviting friends, bringing in local businesses, hosting real events in their city. A 4% ownership pool is reserved for the community. No salary. No promises. Just a real stake in something being built.
+              Connectors are the people who grow NearbyTraveler from the ground up — inviting friends, bringing in local businesses, hosting real events in their city. A 4% ownership pool is reserved for the community. No salary. No promises. Just a real stake in something being built.
             </p>
 
             <div className="mt-6 rounded-xl border border-orange-200 dark:border-orange-900 bg-orange-50/70 dark:bg-orange-950/20 p-4">
               <p className="text-sm md:text-base font-semibold text-orange-900 dark:text-orange-200">
-                Interested in becoming an Ambassador? Apply below and our team will review your profile.
+                Interested in becoming a Connector? Apply below and our team will review your profile.
               </p>
             </div>
 
@@ -168,7 +168,7 @@ export default function AmbassadorLanding() {
               </Card>
               <Card className="border-gray-200 dark:border-gray-700">
                 <CardContent className="p-4">
-                  <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">LA Ambassador Bonus</div>
+                  <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">LA Connector Bonus</div>
                   <div className="text-lg font-bold text-gray-900 dark:text-white">+1%</div>
                 </CardContent>
               </Card>
@@ -201,7 +201,7 @@ export default function AmbassadorLanding() {
               {[
                 { n: "01", title: "Do Helpful Actions", body: "Invite friends, refer local businesses, host events in your city." },
                 { n: "02", title: "Earn Points", body: "Points stack over time based on impact. Every verified action adds to your total." },
-                { n: "03", title: "Calculate Your Share", body: "Your share = your total points ÷ all ambassador points combined." },
+                { n: "03", title: "Calculate Your Share", body: "Your share = your total points ÷ all connector points combined." },
                 { n: "04", title: "Exit Only", body: "Points have value only upon a qualifying exit — acquisition or IPO. No exit, no value." },
               ].map((s) => (
                 <Card key={s.n} className="border-gray-200 dark:border-gray-700">
@@ -240,7 +240,7 @@ export default function AmbassadorLanding() {
                     4%
                   </div>
                   <div className="mt-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
-                    Global Ambassador Ownership Pool
+                    Global Connector Ownership Pool
                   </div>
 
                   <div className="mt-6 rounded-xl border border-orange-200 dark:border-orange-900 bg-orange-50/70 dark:bg-orange-950/20 p-4">
@@ -248,7 +248,7 @@ export default function AmbassadorLanding() {
                       +1% LA Local Pool
                     </div>
                     <div className="text-sm text-orange-800 dark:text-orange-200">
-                      Los Angeles city ambassadors share an additional 1% ownership pool on top of the global 4%. LA ambassadors earn from both pools simultaneously.
+                      Los Angeles city connectors share an additional 1% ownership pool on top of the global 4%. LA connectors earn from both pools simultaneously.
                     </div>
                   </div>
                 </CardContent>
@@ -261,7 +261,7 @@ export default function AmbassadorLanding() {
                   </CardHeader>
                   <CardContent className="text-sm text-gray-600 dark:text-gray-300 space-y-3">
                     <p>
-                      There are no periodic distributions. If there is ever a qualifying liquidity event (an exit like an acquisition or IPO) and the official terms are met, your ownership share is based on your proportion of total ambassador points.
+                      There are no periodic distributions. If there is ever a qualifying liquidity event (an exit like an acquisition or IPO) and the official terms are met, your ownership share is based on your proportion of total connector points.
                     </p>
                     <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-3 font-mono text-xs">
                       <div>Your Share = Your Points ÷ Total Points</div>
@@ -375,7 +375,7 @@ export default function AmbassadorLanding() {
               Open to anyone who shows up
             </h2>
             <p className="text-gray-600 dark:text-gray-300 mb-8">
-              No application. No invite. No waitlist. The ambassador program is open to every NearbyTraveler user — you just have to earn your way in.
+              No application. No invite. No waitlist. The connector program is open to every NearbyTraveler user — you just have to earn your way in.
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
@@ -386,11 +386,11 @@ export default function AmbassadorLanding() {
                 },
                 {
                   title: "Step 2 — Apply to the Program",
-                  body: "When you feel ready, apply to become an Ambassador. Our team reviews every application to ensure quality and commitment. No automatic enrollment — we hand-pick our Ambassadors.",
+                  body: "When you feel ready, apply to become a Connector. Our team reviews every application to ensure quality and commitment. No automatic enrollment — we hand-pick our Connectors.",
                 },
                 {
-                  title: "Step 3 — Start Earning Ambassador Points",
-                  body: "From that moment on, your ambassador actions (referrals, events, business partners) earn you points toward the ownership pool. Aura and ambassador points are tracked separately.",
+                  title: "Step 3 — Start Earning Connector Points",
+                  body: "From that moment on, your connector actions (referrals, events, business partners) earn you points toward the ownership pool. Aura and connector points are tracked separately.",
                 },
               ].map((s) => (
                 <Card key={s.title} className="border-gray-200 dark:border-gray-700">
@@ -416,10 +416,10 @@ export default function AmbassadorLanding() {
               </Card>
               <Card className="border-gray-200 dark:border-gray-700">
                 <CardHeader>
-                  <CardTitle className="text-base">Ambassador Points — Your Equity Tracker</CardTitle>
+                  <CardTitle className="text-base">Connector Points — Your Equity Tracker</CardTitle>
                 </CardHeader>
                 <CardContent className="text-sm text-gray-600 dark:text-gray-300">
-                  Ambassador points are earned through high-impact actions — referrals, bringing in paying businesses, and hosting verified events. These are the points that determine your share of the ownership pool at exit.
+                  Connector points are earned through high-impact actions — referrals, bringing in paying businesses, and hosting verified events. These are the points that determine your share of the ownership pool at exit.
                 </CardContent>
               </Card>
             </div>
@@ -441,7 +441,7 @@ export default function AmbassadorLanding() {
               {[
                 {
                   title: "This Is Not a Job",
-                  body: "Participation is voluntary. Points are not wages, income, or a salary. Ambassadors are independent community participants — not employees, contractors, or agents of NearbyTraveler.",
+                  body: "Participation is voluntary. Points are not wages, income, or a salary. Connectors are independent community participants — not employees, contractors, or agents of NearbyTraveler.",
                 },
                 {
                   title: "Points Are Not Cash",
@@ -511,10 +511,10 @@ export default function AmbassadorLanding() {
                   <li>Points may have no value now or ever.</li>
                   <li>Any potential payout or value is only upon a liquidity event (acquisition or IPO) and only if the official program terms are met.</li>
                   <li>NearbyTraveler may change, pause, or end the program at any time to prevent fraud or maintain fairness.</li>
-                  <li>The Ambassador Ownership Pool is offered only under the program's official terms and eligibility rules.</li>
+                  <li>The Connector Ownership Pool is offered only under the program's official terms and eligibility rules.</li>
                   <li>Points don't guarantee equity and may be adjusted for fraud prevention, verification, and quality standards.</li>
                   <li>Equity details — timing, form, vesting, and eligibility — are defined in the official program documents.</li>
-                  <li>This is not a securities offering. Ambassadors are independent participants, not investors.</li>
+                  <li>This is not a securities offering. Connectors are independent participants, not investors.</li>
                 </ul>
               </CardContent>
             </Card>
@@ -545,7 +545,7 @@ export default function AmbassadorLanding() {
                     Open the App
                   </Button>
                   <div className="text-sm text-white/90 flex items-center gap-2">
-                    Questions? ambassadors@nearbytraveler.org
+                    Questions? connectors@nearbytraveler.org
                   </div>
                 </div>
               </CardContent>
@@ -558,4 +558,3 @@ export default function AmbassadorLanding() {
     </div>
   );
 }
-

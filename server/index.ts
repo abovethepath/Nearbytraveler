@@ -912,14 +912,14 @@ app.use((req, res, next) => {
     await db.execute(
       sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS contact_role TEXT`,
     );
-    // Ambassador program: status, activity window, admin override
+    // Connector program: status, activity window, admin override
     await db.execute(sql`ALTER TABLE available_now_requests ADD COLUMN IF NOT EXISTS chatroom_id INTEGER`);
-    await db.execute(sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS ambassador_status TEXT`);
-    await db.execute(sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS ambassador_enrolled_at TIMESTAMP`);
-    await db.execute(sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS ambassador_last_earned_at TIMESTAMP`);
-    await db.execute(sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS ambassador_period_start_at TIMESTAMP`);
-    await db.execute(sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS ambassador_points_in_period INTEGER DEFAULT 0`);
-    await db.execute(sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS ambassador_status_set_by_admin BOOLEAN DEFAULT false`);
+    await db.execute(sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS connector_status TEXT`);
+    await db.execute(sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS connector_enrolled_at TIMESTAMP`);
+    await db.execute(sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS connector_last_earned_at TIMESTAMP`);
+    await db.execute(sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS connector_period_start_at TIMESTAMP`);
+    await db.execute(sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS connector_points_in_period INTEGER DEFAULT 0`);
+    await db.execute(sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS connector_status_set_by_admin BOOLEAN DEFAULT false`);
     // Notification preferences column
     await db.execute(sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS notification_preferences TEXT DEFAULT '{"messages":true,"meet_requests":true,"connections":true,"events":true,"vouches":true}'`);
     // Stealth mode: hidden_from_users table for "hide from this person" feature
@@ -934,9 +934,9 @@ app.use((req, res, next) => {
     `);
     // Backfill firstName from name for existing users who never set it
     await db.execute(sql`UPDATE users SET first_name = split_part(name, ' ', 1) WHERE first_name IS NULL AND name IS NOT NULL AND name != ''`);
-    // Ambassador referral chain table for 5% override bonus
+    // Connector referral chain table for 5% override bonus
     await db.execute(sql`
-      CREATE TABLE IF NOT EXISTS ambassador_referral_chains (
+      CREATE TABLE IF NOT EXISTS connector_referral_chains (
         id SERIAL PRIMARY KEY,
         referrer_id INTEGER NOT NULL REFERENCES users(id),
         referred_id INTEGER NOT NULL REFERENCES users(id),
@@ -944,7 +944,7 @@ app.use((req, res, next) => {
         UNIQUE(referrer_id, referred_id)
       )
     `);
-    // Event co-ambassador table (up to 3 co-ambassadors per event, points split evenly)
+    // Event co-connector table (up to 3 co-connectors per event, points split evenly)
     await db.execute(sql`
       CREATE TABLE IF NOT EXISTS event_cohost_splits (
         id SERIAL PRIMARY KEY,
@@ -1132,8 +1132,8 @@ app.use((req, res, next) => {
             "/terms",
             "/cookies",
             "/about",
-            "/ambassador",
-            "/ambassador-program",
+            "/connector",
+            "/connector-program",
             "/getting-started",
             "/welcome",
             "/welcome-business",
@@ -1277,18 +1277,18 @@ app.use((req, res, next) => {
           }
         }, TRAVEL_STATUS_CHECK_INTERVAL);
 
-        // Ambassador status: run on the 1st of every month at midnight (server local time).
-        // Skips users with ambassadorStatusSetByAdmin = true.
+        // Connector status: run on the 1st of every month at midnight (server local time).
+        // Skips users with connectorStatusSetByAdmin = true.
         cron.schedule("0 0 1 * *", async () => {
-          console.log("🔄 [cron] Running monthly ambassador status check...");
+          console.log("🔄 [cron] Running monthly connector status check...");
           try {
-            const { recomputeAllAmbassadorStatuses } = await import("./services/ambassadorStatus");
-            const result = await recomputeAllAmbassadorStatuses();
+            const { recomputeAllConnectorStatuses } = await import("./services/connectorStatus");
+            const result = await recomputeAllConnectorStatuses();
             console.log(
-              `✅ [cron] Ambassador status check complete: ${result.checked} ambassadors checked, ${result.statusChanges} status change(s) made.`
+              `✅ [cron] Connector status check complete: ${result.checked} connectors checked, ${result.statusChanges} status change(s) made.`
             );
           } catch (error) {
-            console.error("⚠️ [cron] Ambassador status check failed:", error);
+            console.error("⚠️ [cron] Connector status check failed:", error);
           }
         });
 
@@ -1367,7 +1367,7 @@ app.use((req, res, next) => {
         setTimeout(runExpiredChatCleanup, 5 * 60 * 1000);
         setInterval(runExpiredChatCleanup, 6 * 60 * 60 * 1000);
 
-        console.log("✅ Server started (travel status hourly, ambassador status monthly on 1st at midnight, event reminders every 30 min, expired chat cleanup every 6h)");
+        console.log("✅ Server started (travel status hourly, connector status monthly on 1st at midnight, event reminders every 30 min, expired chat cleanup every 6h)");
       } catch (error) {
         console.error("❌ Failed to initialize server services:", error);
         console.error(

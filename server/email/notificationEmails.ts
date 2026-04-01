@@ -107,7 +107,7 @@ export async function sendWelcomeEmail(userId: number): Promise<EmailResult> {
                 <ul style="font-size: 14px; color: #555555; line-height: 1.8; margin: 0 0 15px; padding-left: 20px;">
                   <li><strong>5 Aura Points</strong> when a friend signs up</li>
                   <li><strong>15 more Aura Points</strong> when they complete their profile</li>
-                  <li><strong>50 Ambassador Points</strong> per signup (Ambassadors)</li>
+                  <li><strong>50 Connector Points</strong> per signup (Connectors)</li>
                 </ul>
                 <p style="font-size: 13px; color: #888888; margin: 0 0 12px;">Your invite link:</p>
                 <div style="background-color: #f3f4f6; border-radius: 6px; padding: 10px 14px; font-family: monospace; font-size: 13px; color: #374151; word-break: break-all;">

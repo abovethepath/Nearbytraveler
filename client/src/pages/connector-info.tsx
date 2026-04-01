@@ -5,7 +5,7 @@ import { AuthContext } from "@/App";
 import { ArrowLeft, Award, Sparkles, Shield, HelpCircle, AlertTriangle, Star, Users, Calendar, Building2, Target } from "lucide-react";
 import { useLocation } from "wouter";
 
-export default function AmbassadorInfo() {
+export default function ConnectorInfo() {
   const { user } = useContext(AuthContext);
   const [, setLocation] = useLocation();
 
@@ -37,21 +37,21 @@ export default function AmbassadorInfo() {
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-orange-500 text-white px-4 py-1.5 rounded-full text-sm font-semibold mb-4">
             <Award className="w-4 h-4" />
-            Ambassador Program
+            Connector Program
           </div>
           <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white mb-3">
             Help Build Nearby Traveler.
           </h1>
           <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-            Earn points by growing the community. A total <span className="font-bold text-orange-600 dark:text-orange-400">4% Ambassador Ownership Pool</span> is reserved for Ambassadors.
+            Earn points by growing the community. A total <span className="font-bold text-orange-600 dark:text-orange-400">4% Connector Ownership Pool</span> is reserved for Connectors.
           </p>
         </div>
 
-        {user?.ambassadorPoints != null && (
+        {user?.connectorPoints != null && (
           <div className="rounded-2xl border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/40 p-5 mb-6 flex items-center justify-between">
             <div>
-              <div className="text-sm font-medium text-blue-700 dark:text-blue-300">Your Ambassador Points</div>
-              <div className="text-3xl font-extrabold text-blue-600 dark:text-blue-400">{user.ambassadorPoints || 0}</div>
+              <div className="text-sm font-medium text-blue-700 dark:text-blue-300">Your Connector Points</div>
+              <div className="text-3xl font-extrabold text-blue-600 dark:text-blue-400">{user.connectorPoints || 0}</div>
             </div>
             <Award className="w-10 h-10 text-blue-400 dark:text-blue-500" />
           </div>
@@ -85,7 +85,7 @@ export default function AmbassadorInfo() {
             </p>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
               If there is ever a future <span className="font-semibold text-gray-900 dark:text-white">liquidity event</span> (an "exit" like an acquisition or IPO),
-              we calculate your share of the <span className="font-semibold text-orange-600 dark:text-orange-400">4% Ambassador Ownership Pool</span> based on your portion of total points.
+              we calculate your share of the <span className="font-semibold text-orange-600 dark:text-orange-400">4% Connector Ownership Pool</span> based on your portion of total points.
             </p>
             <div className="rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-4">
               <p className="text-xs text-gray-600 dark:text-gray-400">
@@ -96,17 +96,17 @@ export default function AmbassadorInfo() {
           </div>
 
           <div className="rounded-2xl border-2 border-blue-200 dark:border-blue-800 bg-blue-50/50 dark:bg-blue-950/30 p-5">
-            <h2 className="text-base font-bold text-gray-900 dark:text-white mb-2">LA Ambassadors: Extra 1% Local Pool</h2>
+            <h2 className="text-base font-bold text-gray-900 dark:text-white mb-2">LA Connectors: Extra 1% Local Pool</h2>
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              Los Angeles city ambassadors share an <strong className="text-gray-900 dark:text-white">additional 1% ownership pool</strong> on top of the global 4%.
-              LA ambassadors can earn from both pools.
+              Los Angeles city connectors share an <strong className="text-gray-900 dark:text-white">additional 1% ownership pool</strong> on top of the global 4%.
+              LA connectors can earn from both pools.
             </p>
           </div>
 
           <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-6">
             <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Ways to Earn Points</h2>
             <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">
-              If an event has multiple Ambassadors (organizer + co-organizers), event-based points are split evenly among them.
+              If an event has multiple Connectors (organizer + co-organizers), event-based points are split evenly among them.
             </p>
             <div className="grid sm:grid-cols-2 gap-3">
               {pointActions.map((item, i) => (
@@ -133,14 +133,14 @@ export default function AmbassadorInfo() {
               <li className="flex items-start gap-2"><span className="text-amber-600">•</span>Points may require verification (e.g., event hosted, business activated)</li>
               <li className="flex items-start gap-2"><span className="text-amber-600">•</span>We remove points for fake accounts, spam invites, or low-quality events</li>
               <li className="flex items-start gap-2"><span className="text-amber-600">•</span>Some actions may have limits (to prevent gaming)</li>
-              <li className="flex items-start gap-2"><span className="text-amber-600">•</span>Ambassadors must maintain minimum activity to remain in the program</li>
+              <li className="flex items-start gap-2"><span className="text-amber-600">•</span>Connectors must maintain minimum activity to remain in the program</li>
             </ul>
             <div className="mt-3 rounded-xl bg-white dark:bg-gray-900 border border-amber-200 dark:border-amber-700 p-3">
               <p className="text-xs font-semibold text-gray-900 dark:text-white mb-1">Activity requirement:</p>
               <ul className="text-xs text-gray-600 dark:text-gray-400 space-y-1 list-disc list-inside">
                 <li>Must earn at least 200 points every 6 months to stay active</li>
                 <li>Inactive for 6 months → status changes to "Inactive" (points frozen, not deleted)</li>
-                <li>Inactive for 12 months → ambassador status revoked, points stop counting</li>
+                <li>Inactive for 12 months → connector status revoked, points stop counting</li>
                 <li>Can reapply after 12 months and start fresh</li>
               </ul>
             </div>
@@ -156,7 +156,7 @@ export default function AmbassadorInfo() {
                 { q: "Is this paid work?", a: "No. This is not a job and points are not income." },
                 { q: "Can points be converted to cash?", a: "No. Points are for tracking contribution. They may never be worth anything." },
                 { q: "When could points matter?", a: "Only if there's a future exit (like an acquisition or IPO), and only under the official terms." },
-                { q: "How do I stay active?", a: "Earn at least 200 points every 6 months. If inactive for 6 months, your status becomes Inactive (points frozen). If inactive for 12 months, ambassador status is revoked." },
+                { q: "How do I stay active?", a: "Earn at least 200 points every 6 months. If inactive for 6 months, your status becomes Inactive (points frozen). If inactive for 12 months, connector status is revoked." },
               ].map(({ q, a }) => (
                 <div key={q} className="border-b border-gray-100 dark:border-gray-800 pb-3 last:border-0 last:pb-0">
                   <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-1">{q}</h3>
@@ -178,20 +178,20 @@ export default function AmbassadorInfo() {
               <li className="flex items-start gap-2"><span className="text-red-500">•</span>We may change, pause, or end the program to prevent fraud or keep it fair</li>
             </ul>
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-3 pt-3 border-t border-red-200 dark:border-red-800">
-              The Ambassador Ownership Pool is offered only under the program's official terms and eligibility rules.
+              The Connector Ownership Pool is offered only under the program's official terms and eligibility rules.
               Points don't guarantee equity and may be adjusted for fraud prevention, verification, and quality standards.
             </p>
           </div>
 
           <div className="rounded-2xl bg-gradient-to-r from-blue-600 to-orange-500 p-6 text-center">
-            <h2 className="text-xl font-bold text-white mb-2">Ready to Become an Ambassador?</h2>
+            <h2 className="text-xl font-bold text-white mb-2">Ready to Become a Connector?</h2>
             <p className="text-blue-100 text-sm mb-4">
-              Questions? Email <a href="mailto:ambassadors@nearbytraveler.org" className="underline font-medium text-white">ambassadors@nearbytraveler.org</a>
+              Questions? Email <a href="mailto:connectors@nearbytraveler.org" className="underline font-medium text-white">connectors@nearbytraveler.org</a>
             </p>
             {user && (
-              <a href={`mailto:ambassadors@nearbytraveler.org?subject=Ambassador Program Application - ${user.username}&body=Hi Aaron,%0D%0A%0D%0AI would like to apply to become a Nearby Traveler Ambassador.%0D%0A%0D%0AUsername: ${user.username}%0D%0AName: ${user.name || 'N/A'}%0D%0AEmail: ${user.email}%0D%0A%0D%0AWhy I want to be an Ambassador:%0D%0A%0D%0A%0D%0AHow I plan to help grow the community:%0D%0A%0D%0A`}>
+              <a href={`mailto:connectors@nearbytraveler.org?subject=Connector Program Application - ${user.username}&body=Hi Aaron,%0D%0A%0D%0AI would like to apply to become a Nearby Traveler Connector.%0D%0A%0D%0AUsername: ${user.username}%0D%0AName: ${user.name || 'N/A'}%0D%0AEmail: ${user.email}%0D%0A%0D%0AWhy I want to be a Connector:%0D%0A%0D%0A%0D%0AHow I plan to help grow the community:%0D%0A%0D%0A`}>
                 <Button size="lg" className="bg-white dark:bg-gray-800 text-blue-600 hover:bg-blue-50 dark:hover:bg-gray-700 font-semibold shadow-lg">
-                  Apply to Become an Ambassador
+                  Apply to Become a Connector
                 </Button>
               </a>
             )}
