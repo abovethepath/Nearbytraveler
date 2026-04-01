@@ -18,6 +18,7 @@ import { EmbeddedChatWidget } from "@/components/EmbeddedChatWidget";
 
 
 import { datesOverlap, formatDateForDisplay, getCurrentTravelDestination } from "@/lib/dateUtils";
+import { computeCommonStats } from "@/lib/whatYouHaveInCommonStats";
 import { getMetroContext, getMetroAreaName } from "@shared/metro-areas";
 import { format } from "date-fns";
 import { getVersionedCityImage } from "@/lib/imageVersioning";
@@ -667,12 +668,12 @@ export default function Home() {
           return new Date(b.lastSeenAt || b.createdAt || 0).getTime() - new Date(a.lastSeenAt || a.createdAt || 0).getTime();
         }
         case 'compatibility': {
-          // Sort by actual shared things in common with the current user
-          const aCompat = buildFastCompatibilityData(a);
-          const bCompat = buildFastCompatibilityData(b);
-          const aShared = aCompat.sharedInterests.length + aCompat.sharedActivities.length + aCompat.sharedCountries.length + aCompat.sharedLanguages.length;
-          const bShared = bCompat.sharedInterests.length + bCompat.sharedActivities.length + bCompat.sharedCountries.length + bCompat.sharedLanguages.length;
-          return bShared - aShared;
+          // Sort by "things in common" — must use the same computeCommonStats
+          // calculation the card displays so sort order matches visible counts.
+          const aTotal = computeCommonStats(buildFastCompatibilityData(a), connectionDegreesData?.degrees?.[a.id]).totalCommon;
+          const bTotal = computeCommonStats(buildFastCompatibilityData(b), connectionDegreesData?.degrees?.[b.id]).totalCommon;
+          if (bTotal !== aTotal) return bTotal - aTotal;
+          return new Date(b.lastSeenAt || b.createdAt || 0).getTime() - new Date(a.lastSeenAt || a.createdAt || 0).getTime();
         }
         case 'closest_nearby': {
           // Sort by location proximity — travelers visiting this city treated as local
