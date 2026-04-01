@@ -1327,6 +1327,56 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
     }
   });
 
+  // Dynamic Open Graph meta tags for city pages (for social media sharing / SEO)
+  app.get("/city/:cityName", (req, res, next) => {
+    const userAgent = req.headers['user-agent'] || '';
+    const isCrawler = /facebookexternalhit|Facebot|Twitterbot|WhatsApp|LinkedInBot|Slackbot|TelegramBot|Discordbot|PinterestBot|RedditBot|Googlebot|bingbot|Baiduspider|YandexBot/i.test(userAgent);
+    if (!isCrawler) return next();
+
+    try {
+      const cityName = decodeURIComponent(req.params.cityName);
+      const fullUrl = `https://nearbytraveler.org/city/${encodeURIComponent(cityName)}`;
+      const titleStr = `Meet travelers & locals in ${cityName} — Nearby Traveler`;
+      const descStr = `Connect with travelers and locals in ${cityName} through shared interests, events and meetups on Nearby Traveler.`;
+      const imageUrl = 'https://nearbytraveler.org/og-image.png';
+
+      const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>${titleStr}</title>
+  <meta name="description" content="${descStr}" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="${fullUrl}" />
+  <meta property="og:title" content="${titleStr}" />
+  <meta property="og:description" content="${descStr}" />
+  <meta property="og:image" content="${imageUrl}" />
+  <meta property="og:site_name" content="Nearby Traveler" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="${titleStr}" />
+  <meta name="twitter:description" content="${descStr}" />
+  <meta name="twitter:image" content="${imageUrl}" />
+  <meta http-equiv="refresh" content="0;url=${fullUrl}" />
+</head>
+<body>
+  <h1>${cityName.replace(/</g, '&lt;')}</h1>
+  <p>${descStr}</p>
+  <a href="${fullUrl}">View ${cityName.replace(/</g, '&lt;')} on Nearby Traveler</a>
+</body>
+</html>`;
+
+      res.set({
+        'Content-Type': 'text/html; charset=utf-8',
+        'Cache-Control': 'public, max-age=3600',
+        'Vary': 'User-Agent'
+      });
+      res.send(html);
+    } catch (error) {
+      console.error('OG meta tag error for city:', error);
+      next();
+    }
+  });
+
   app.post("/api/auth/refresh", async (req, res) => {
     try {
       const sess = (req as any).session;

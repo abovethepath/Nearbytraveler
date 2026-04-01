@@ -183,6 +183,7 @@ import GettingStarted from "@/pages/getting-started";
 
 
 import CityPage from "@/pages/city";
+import CityPublic from "@/pages/city-public";
 import UsersPage from "@/pages/users";
 import AdminDashboard from "@/pages/admin-dashboard";
 import AdminReferrals from "@/pages/admin-referrals";
@@ -1429,6 +1430,14 @@ function Router() {
       if (location.startsWith('/events/') && location.split('/')[2]) {
         const eventId = location.split('/')[2];
         return <EventDetails eventId={eventId} />;
+      }
+
+      // Allow access to city pages without authentication for SEO
+      if (location.startsWith('/city/') && location.split('/')[2]) {
+        const cityName = decodeURIComponent(location.split('/')[2]);
+        if (cityName.trim()) {
+          return <CityPublic cityName={cityName} />;
+        }
       }
 
       if (location === '/welcome') {
