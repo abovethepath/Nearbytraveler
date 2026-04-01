@@ -111,6 +111,23 @@ function computePublicName(displayNamePreference: string, username: string, full
   }
 }
 
+/**
+ * Strip Connector badge/title from a user object when the user has opted to
+ * hide their Connector status and the viewer is someone else.
+ * Mutates the object in place for performance (large result sets).
+ */
+function stripConnectorIfHidden(user: any, viewerId?: number | null): void {
+  if (!user) return;
+  // Keep connector data visible to the user themselves
+  if (viewerId && Number(user.id) === Number(viewerId)) return;
+  // If connector_visible / connectorVisible is explicitly false, hide connector display fields
+  const visible = user.connectorVisible ?? user.connector_visible;
+  if (visible === false) {
+    user.connectorStatus = null;
+    user.connector_status = null;
+  }
+}
+
 // City coordinates helper function - FIXED coordinate lookup
 const getCityCoordinates = (city: string): [number, number] => {
   // Ensure city is a string and handle edge cases
@@ -4222,7 +4239,10 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           availableNow: isAvail
         };
       }));
-      
+
+      // Hide Connector status for users who opted out
+      enrichedUsers.forEach(u => stripConnectorIfHidden(u, currentUserId));
+
       return res.json(enrichedUsers);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Failed to search users by location:", error);
@@ -7570,6 +7590,12 @@ Questions? Just reply to this message. Welcome aboard!
         (userWithoutPassword as any).profileImageStripped = true;
       }
 
+      // Hide Connector status from public profile when user opted out
+      const headerUserId = req.headers['x-user-id'] ? parseInt(req.headers['x-user-id'] as string) : null;
+      const sessionUserId = (req as any).session?.user?.id ?? (req as any).user?.id ?? null;
+      const viewerId = headerUserId || sessionUserId;
+      stripConnectorIfHidden(userWithoutPassword, viewerId);
+
       return res.json(userWithoutPassword);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error fetching user:", error);
@@ -7966,6 +7992,9 @@ Questions? Just reply to this message. Welcome aboard!
         }
         return copy;
       });
+
+      // Hide Connector status from public profile when user opted out
+      stripConnectorIfHidden(userOut, viewerId);
 
       const bundleResponse = {
         user: userOut,
@@ -8599,6 +8628,12 @@ Questions? Just reply to this message. Welcome aboard!
             }
           }
         }
+      }
+
+      // Map connectorVisible to snake_case
+      if (updates.connectorVisible !== undefined) {
+        mappedUpdates.connector_visible = updates.connectorVisible;
+        delete mappedUpdates.connectorVisible;
       }
 
       // Compress images before saving

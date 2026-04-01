@@ -39,6 +39,7 @@ export interface User {
   country?: string;
   secretActivities?: string;
   connectorStatus?: string;
+  connectorVisible?: boolean;
 }
 
 interface UserCardProps {

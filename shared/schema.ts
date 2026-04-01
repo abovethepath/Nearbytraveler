@@ -166,6 +166,7 @@ export const users = pgTable("users", {
   connectorStatusSetByAdmin: boolean("connector_status_set_by_admin").default(false), // When true, auto-activity logic does not override status
   connectorBio: text("connector_bio"), // Connector's personal bio shown on their profile
   connectorReferralCountOverride: integer("connector_referral_count_override"), // Admin-set override for referral display count
+  connectorVisible: boolean("connector_visible").default(true), // When false, hide Connector badge/title from public profile
   
   // Enhanced Status & Presence System
   onlineStatus: text("online_status").default("offline"), // 'online', 'away', 'busy', 'invisible', 'offline'

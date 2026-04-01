@@ -16,7 +16,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Settings, Shield, Users, Bell, Eye, MapPin, MessageSquare, Camera, Mail, Loader2, X, User, Sun, Moon, Monitor, Smartphone, FileText, Trash2 } from "lucide-react";
+import { Settings, Shield, Users, Bell, Eye, MapPin, MessageSquare, Camera, Mail, Loader2, X, User, Sun, Moon, Monitor, Smartphone, FileText, Trash2, Star } from "lucide-react";
 import { Link } from "wouter";
 import { useTheme } from "@/components/theme-provider";
 import { useAuth } from "@/App";
@@ -371,6 +371,41 @@ export default function SettingsPage() {
                       Allow others to send you connection requests
                     </p>
                   </div>
+
+                  {/* Connector Visibility — only shown to active Connectors */}
+                  {(user as any)?.connectorStatus === 'active' && (
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <Label className="text-base font-medium flex items-center gap-2">
+                          <Star className="h-4 w-4 text-amber-500" />
+                          Show Connector status on my profile
+                        </Label>
+                        <Switch
+                          checked={(user as any)?.connectorVisible !== false}
+                          onCheckedChange={async (value) => {
+                            try {
+                              const res = await apiRequest("PATCH", `/api/users/${user.id}`, { connectorVisible: value });
+                              if (res.ok) {
+                                queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+                                queryClient.invalidateQueries({ queryKey: [`/api/users/${user.id}`] });
+                                toast({
+                                  title: "Settings Updated",
+                                  description: value
+                                    ? "Your Connector status is now visible on your profile."
+                                    : "Your Connector status is now hidden from your profile.",
+                                });
+                              }
+                            } catch {
+                              toast({ title: "Error", description: "Failed to update setting", variant: "destructive" });
+                            }
+                          }}
+                        />
+                      </div>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        When off, your Connector badge and title are hidden from your public profile and user cards. You still earn points normally.
+                      </p>
+                    </div>
+                  )}
 
                   {/* Support Us */}
                   <div className="space-y-3 pt-4 border-t border-gray-200 dark:border-gray-700">
