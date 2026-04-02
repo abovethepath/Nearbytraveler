@@ -34,6 +34,7 @@ import { ConditionalVouchCard } from "@/components/ConditionalVouchCard";
 import BusinessEventsWidget from "@/components/business-events-widget";
 import SubInterestSelector from "@/components/SubInterestSelector";
 import { QuickMeetupWidget } from "@/components/QuickMeetupWidget";
+import { AvailableNowWidget } from "@/components/AvailableNowWidget";
 import { QuickDealsWidget } from "@/components/QuickDealsWidget";
 import { MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS, ALL_ACTIVITIES, ALL_INTERESTS, PRIVATE_INTERESTS_BY_CATEGORY } from "@shared/base-options";
 import { ReportUserButton } from "@/components/report-user-button";
@@ -820,22 +821,15 @@ export function ProfileTabs(props: ProfilePageProps) {
             {isOwnProfile && user?.userType !== 'business' && (
               <Button
                 onClick={() => {
-                  // Simply scroll to the QuickMeetupWidget and trigger the create form
-                  const widget = document.querySelector('[data-testid="quick-meet-widget"]');
-                  if (widget) {
-                    widget.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                  }
-                  // Trigger the create form without rapid state changes
-                  setTriggerQuickMeetup(true);
-                  // Reset after scrolling completes
-                  setTimeout(() => setTriggerQuickMeetup(false), 500);
+                  const widget = document.querySelector('[data-testid="available-now-profile-widget"]');
+                  if (widget) widget.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }}
                 className="bg-[#FF6B35] hover:bg-[#F97316] border-0
                            px-4 sm:px-6 py-2 sm:py-2 text-sm font-bold rounded-lg
                            w-full sm:w-auto flex items-center justify-center transition-all duration-200 text-white"
                 data-testid="button-lets-meet-now"
               >
-                Let's Meet Now
+                ⚡ Available Now
               </Button>
             )}
           </div>
@@ -2871,16 +2865,10 @@ export function ProfileTabs(props: ProfilePageProps) {
 
           {/* Right Sidebar - Mobile Responsive */}
           <div className="w-full lg:col-span-1 space-y-2 lg:space-y-4">
-            {/* Quick Meetup Widget - Only show for own profile (travelers/locals only, NOT business) */}
+            {/* Available Now Widget - Same component as home page, with two-option picker */}
             {isOwnProfile && user && user.userType !== 'business' && (
-              <div className="mt-6" data-testid="quick-meet-widget">
-                <QuickMeetupWidget 
-                  city={((user as any)?.isCurrentlyTraveling && ((user as any)?.destinationCity || (user as any)?.destination_city))
-                    ? ((user as any)?.destinationCity || (user as any)?.destination_city)
-                    : (user?.hometownCity ?? '')} 
-                  profileUserId={user?.id}
-                  triggerCreate={triggerQuickMeetup}
-                />
+              <div className="mt-6" data-testid="available-now-profile-widget">
+                <AvailableNowWidget currentUser={currentUser || user} />
               </div>
             )}
 

@@ -272,10 +272,8 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
         {!isDesktopWeb && isOwnProfile && user?.userType !== "business" && (
           <Button
             onClick={() => {
-              const widget = document.querySelector('[data-testid="quick-meet-widget"]');
+              const widget = document.querySelector('[data-testid="available-now-profile-widget"]');
               if (widget) widget.scrollIntoView({ behavior: "smooth", block: "center" });
-              setTriggerQuickMeetup?.(true);
-              setTimeout(() => setTriggerQuickMeetup?.(false), 500);
             }}
             variant={isDesktopWeb ? "ghost" : "default"}
             className={
@@ -290,7 +288,7 @@ export function ProfileTabBar(props: ProfileTabBarProps) {
               className={isDesktopWeb ? "w-4 h-4 mr-2" : "w-4 h-4 mr-2"}
               style={!isDesktopWeb && isHero ? { color: "white" } : undefined}
             />
-            <span style={!isDesktopWeb && isHero ? { color: "white" } : undefined}>Let's Meet Now</span>
+            <span style={!isDesktopWeb && isHero ? { color: "white" } : undefined}>⚡ Available Now</span>
           </Button>
         )}
       </div>

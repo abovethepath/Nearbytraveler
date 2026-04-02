@@ -6,8 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Camera, MessageSquare, MessageCircle, Share2, Users, UserPlus, Building2, Calendar, Plane, MoreVertical, Copy, Mail, Moon, Sun, Palette, Heart, Smartphone, X } from "lucide-react";
-import { createPortal } from "react-dom";
+import { Camera, MessageSquare, MessageCircle, Share2, Users, UserPlus, Building2, Calendar, Plane, MoreVertical, Copy, Mail, Moon, Sun, Palette, Heart, Smartphone } from "lucide-react";
 
 import { SimpleAvatar } from "@/components/simple-avatar";
 import ConnectButton from "@/components/ConnectButton";
@@ -137,8 +136,6 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
   const [shareWithFriendsOpen, setShareWithFriendsOpen] = React.useState(false);
   const [seeAllCommonOpen, setSeeAllCommonOpen] = React.useState(false);
   const [qrInstallOpen, setQrInstallOpen] = React.useState(false);
-
-  const [showAvailablePicker, setShowAvailablePicker] = React.useState(false);
 
   // Track profile visits for inline QR promo (desktop, own profile, first 5 visits)
   // Track profile visits for inline "Get App" pill (desktop, own profile, first 20 visits)
@@ -485,7 +482,10 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
                   type="button"
                   size="sm"
                   className="h-9 px-3 text-sm font-bold bg-[#FF6B35] hover:bg-[#F97316] text-white border-0 shadow-md"
-                  onClick={() => setShowAvailablePicker(true)}
+                  onClick={() => {
+                    const widget = document.querySelector('[data-testid="available-now-profile-widget"]');
+                    if (widget) widget.scrollIntoView({ behavior: "smooth", block: "center" });
+                  }}
                   data-testid="button-lets-meet-now-hero-mobile"
                 >
                   ⚡ Available Now
@@ -1522,56 +1522,6 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">Uploading...</p>
           </div>
         </div>
-      )}
-      {/* Available Now two-option picker — matches home page behavior */}
-      {showAvailablePicker && createPortal(
-        <div
-          className="fixed inset-0 flex items-end sm:items-center justify-center"
-          style={{ zIndex: 999999 }}
-          onClick={() => setShowAvailablePicker(false)}
-        >
-          <div className="absolute inset-0 bg-black/60" />
-          <div
-            className="relative w-full max-w-sm mx-4 mb-4 sm:mb-0 bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-5 border border-gray-200 dark:border-gray-700 space-y-3"
-            style={{ zIndex: 1000000 }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-between mb-1">
-              <h3 className="text-base font-bold text-gray-900 dark:text-white">⚡ Available Now</h3>
-              <button
-                type="button"
-                onClick={() => setShowAvailablePicker(false)}
-                className="rounded-full w-7 h-7 flex items-center justify-center bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-            <button
-              type="button"
-              onClick={() => {
-                setShowAvailablePicker(false);
-                setLocation("/?availableNow=free");
-              }}
-              className="w-full py-3 px-4 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-gray-900 font-semibold text-sm text-left border border-emerald-200 cursor-pointer active:scale-[0.98] transition-all dark:bg-emerald-900/30 dark:hover:bg-emerald-900/50 dark:text-white dark:border-emerald-700"
-            >
-              🏠 I'm Free — Open to Plans
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setShowAvailablePicker(false);
-                const widget = document.querySelector('[data-testid="quick-meet-widget"]');
-                if (widget) widget.scrollIntoView({ behavior: "smooth", block: "center" });
-                setTriggerQuickMeetup?.(true);
-                setTimeout(() => setTriggerQuickMeetup?.(false), 500);
-              }}
-              className="w-full py-3 px-4 rounded-xl bg-blue-50 hover:bg-blue-100 text-gray-900 font-semibold text-sm text-left border border-blue-200 cursor-pointer active:scale-[0.98] transition-all dark:bg-blue-900/30 dark:hover:bg-blue-900/50 dark:text-white dark:border-blue-700"
-            >
-              📍 I'm Out — Come Join Me
-            </button>
-          </div>
-        </div>,
-        document.body
       )}
     </div>
   );
