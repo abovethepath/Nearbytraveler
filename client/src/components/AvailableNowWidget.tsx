@@ -82,6 +82,18 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
   const [showPicker, setShowPicker] = useState(false);
   const [showSetup, setShowSetup] = useState(false);
   const [showImOut, setShowImOut] = useState(false);
+
+  // Auto-open "I'm Free" setup when navigated from profile page with ?availableNow=free
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('availableNow') === 'free') {
+      setShowSetup(true);
+      // Clean up the URL param
+      params.delete('availableNow');
+      const clean = params.toString();
+      window.history.replaceState({}, '', window.location.pathname + (clean ? `?${clean}` : ''));
+    }
+  }, []);
   const [dismissedChats, setDismissedChats] = useState<Set<number>>(() => {
     try {
       const stored = localStorage.getItem('nt_dismissed_meetup_chats');

@@ -26729,15 +26729,35 @@ Questions? Just reply to this message. Welcome aboard!
 
       // Create or join the meetup chatroom directly
       const { createOrJoinMeetupChatroom } = await import("./meetupChatroomUtils");
+      const [joiner] = await db.select({ username: users.username }).from(users).where(eq(users.id, Number(userId))).limit(1);
+      const joinerName = joiner?.username || "Someone";
+      const activityLabels: Record<string, string> = {
+        coffee: "Coffee", food: "Food", drinks: "Drinks", explore: "Explore",
+        music: "Music", fitness: "Fitness", hike: "Hike", bike: "Bike",
+        beach: "Beach", sightseeing: "Sightseeing"
+      };
+      const sessionActivities = Array.isArray(hostSession.activities) ? hostSession.activities : [];
+      const primaryActivity = sessionActivities.length > 0 ? sessionActivities[0] : null;
+      const activityLabel = primaryActivity ? (activityLabels[primaryActivity] || primaryActivity) : null;
+      const chatroomName = activityLabel
+        ? `${activityLabel} with @${joinerName}`
+        : `Hangout with @${joinerName}`;
+      const activitiesStr = sessionActivities.map((a: string) => activityLabels[a] || a).join(', ') || 'Meetup';
+      const descParts = [`Group chat for everyone meeting up with @${joinerName}`];
+      if (hostSession.customNote) descParts.push(hostSession.customNote);
+      if (activitiesStr !== 'Meetup') descParts.push(activitiesStr);
+
       const result = await createOrJoinMeetupChatroom({
         availableNowId: hostSession.id,
         hostUserId: Number(toUserId),
         joinerUserId: Number(userId),
-        city: hostSession.city,
+        chatroomName,
+        description: descParts.join(' — '),
+        city: hostSession.city || 'Unknown',
         state: hostSession.state || undefined,
-        country: hostSession.country,
-        activityType: Array.isArray(hostSession.activities) ? hostSession.activities.join(',') : '',
-        customNote: hostSession.customNote || undefined,
+        country: hostSession.country || 'USA',
+        activityType: sessionActivities.join(',') || primaryActivity,
+        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
       });
 
       res.json({ ok: true, chatroomId: result.chatroomId });
