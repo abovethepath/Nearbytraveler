@@ -70,21 +70,27 @@ export default function AvailableNowStrip({ currentUserId: propUserId, userCity,
     try {
       if (isOpenJoin) {
         // Open join — skip request, join chatroom directly
-        const res = await fetch(`${getApiBaseUrl()}/api/available-now/open-join`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'x-user-id': String(currentUserId) },
-          credentials: 'include',
-          body: JSON.stringify({ toUserId }),
-        });
-        if (res.ok) {
-          const data = await res.json();
-          if (data.chatroomId) {
-            setLocation(`/meetup-chatroom-chat/${data.chatroomId}?title=Meetup Chat`);
-            return;
+        try {
+          const res = await fetch(`${getApiBaseUrl()}/api/available-now/open-join`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'x-user-id': String(currentUserId) },
+            credentials: 'include',
+            body: JSON.stringify({ toUserId }),
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.chatroomId) {
+              setSendingTo(null);
+              setLocation(`/meetup-chatroom-chat/${data.chatroomId}?title=Meetup Chat`);
+              return;
+            }
           }
+          // If open-join returned 403 (requires approval), fall through to regular request
+        } catch {
+          // Open-join network error — fall through to regular request
         }
       }
-      // Regular request flow
+      // Regular request flow (also fallback if open-join fails)
       const res = await fetch(`${getApiBaseUrl()}/api/available-now/request`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-user-id': String(currentUserId) },
