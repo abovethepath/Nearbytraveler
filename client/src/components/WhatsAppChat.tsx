@@ -2592,8 +2592,8 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
       {/* Desktop Members Sidebar — matches approved DM left-panel design */}
       {(chatType === 'chatroom' || chatType === 'meetup' || chatType === 'event') && (
         <aside
-          className="hidden md:flex flex-col w-[280px] lg:w-[300px] xl:w-[320px] shrink-0 overflow-hidden h-full border-l-[3px] border-r-[3px] border-[#e0e0e0] dark:border-[#2d2d2d]"
-          style={{ backgroundColor: '#0d1117' }}
+          className="hidden md:flex flex-col w-[280px] lg:w-[300px] xl:w-[320px] shrink-0 overflow-hidden h-full"
+          style={{ backgroundColor: '#0d1117', borderLeft: '3px solid #2d2d2d', borderRight: '3px solid #2d2d2d' }}
         >
           {/* Back button */}
           <div className="px-6 pt-5 pb-2">
@@ -2761,7 +2761,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
       )}
       
       {/* Main Chat Area */}
-      <div className="flex-1 min-w-0 overflow-hidden h-full md:border-r-[3px] md:border-[#e0e0e0] md:dark:border-[#2d2d2d]">
+      <div className="flex-1 min-w-0 overflow-hidden h-full md:border-r-[3px]" style={{ borderColor: '#2d2d2d' }}>
       <div className="flex flex-col h-full">
       {/* ═══ MOBILE HEADER: back | overlapping avatars | name+dot / subtitle | members+⋮ ═══ */}
       {isMobileWeb && (

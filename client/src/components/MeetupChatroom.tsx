@@ -188,7 +188,7 @@ export function MeetupChatroom({ meetupId, meetupTitle, isOpen, onClose, current
         ) : (
           <>
             {/* Messages Area */}
-            <ScrollArea className="flex-1 p-4 border rounded-lg bg-gray-50 dark:bg-gray-900">
+            <ScrollArea className="flex-1 p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-900">
               <div className="space-y-4">
                 {messages.length === 0 ? (
                   <div className="text-center text-gray-500 py-8">
@@ -206,7 +206,7 @@ export function MeetupChatroom({ meetupId, meetupTitle, isOpen, onClose, current
                         className={`max-w-[70%] p-3 rounded-lg ${
                           msg.userId === currentUser?.id
                             ? 'bg-blue-500 text-white'
-                            : 'bg-white dark:bg-gray-800 border'
+                            : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700'
                         }`}
                       >
                         <div className="flex items-center gap-2 mb-1">
