@@ -120,15 +120,23 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
   const handleBack = chatType === 'dm'
     ? () => navigate('/messages')
     : (onBack || (() => navigate('/messages')));
-  const isMobileWeb =
-    !isNativeIOSApp() &&
-    typeof window !== "undefined" &&
-    !!window.matchMedia &&
-    window.matchMedia("(max-width: 767px)").matches;
-  const isMobile =
-    typeof window !== "undefined" &&
-    !!window.matchMedia &&
-    window.matchMedia("(max-width: 767px)").matches;
+  // Use matchMedia for CSS-consistent breakpoint detection.
+  // Chrome can report a narrower viewport than Edge due to scrollbar width differences,
+  // so also check documentElement.clientWidth as a fallback to match CSS media queries exactly.
+  const isMobileWeb = (() => {
+    if (isNativeIOSApp()) return false;
+    if (typeof window === "undefined") return false;
+    const mqMobile = window.matchMedia?.("(max-width: 767.98px)").matches;
+    const clientW = document.documentElement.clientWidth;
+    // If matchMedia says mobile but clientWidth says desktop (scrollbar discrepancy), trust clientWidth
+    return mqMobile && clientW < 768;
+  })();
+  const isMobile = (() => {
+    if (typeof window === "undefined") return false;
+    const mqMobile = window.matchMedia?.("(max-width: 767.98px)").matches;
+    const clientW = document.documentElement.clientWidth;
+    return mqMobile && clientW < 768;
+  })();
   
   const [messages, setMessages] = useState<Message[]>([]);
   const [messageText, setMessageText] = useState("");
