@@ -93,6 +93,7 @@ export default function PlanTrip() {
 
   // Prevent race condition: first submit can fire before auth/userId is hydrated.
   const [isWaitingForAuth, setIsWaitingForAuth] = useState(false);
+  const [dateError, setDateError] = useState("");
   const authUserIdRef = useRef<number | null>(null);
   useEffect(() => {
     authUserIdRef.current = (auth?.user?.id ? Number(auth.user.id) : null) || null;
@@ -766,6 +767,9 @@ export default function PlanTrip() {
       return;
     }
 
+    // Block submission if inline date error is showing
+    if (dateError) return;
+
     // Validate dates - Allow all future trips for regular trip planning
     if (tripPlan.startDate && tripPlan.endDate) {
       const startDate = new Date(tripPlan.startDate);
@@ -962,7 +966,12 @@ export default function PlanTrip() {
                     value={tripPlan.startDate}
                     min="1925-01-01"
                     max="9999-12-31"
-                    onChange={(e) => setTripPlan(prev => ({ ...prev, startDate: e.target.value }))}
+                    onChange={(e) => {
+                      setTripPlan(prev => ({ ...prev, startDate: e.target.value }));
+                      if (dateError && tripPlan.endDate && e.target.value && new Date(e.target.value) <= new Date(tripPlan.endDate)) {
+                        setDateError("");
+                      }
+                    }}
                     placeholder="20__-__-__"
                     className="bg-white dark:bg-gray-800 text-black dark:text-white border-gray-300 dark:border-gray-600 calendar-white-icon text-sm sm:text-base h-9 sm:h-10 md:h-11"
                   />
@@ -975,10 +984,21 @@ export default function PlanTrip() {
                     value={tripPlan.endDate}
                     min="1925-01-01"
                     max="9999-12-31"
-                    onChange={(e) => setTripPlan(prev => ({ ...prev, endDate: e.target.value }))}
+                    onChange={(e) => {
+                      const newEnd = e.target.value;
+                      setTripPlan(prev => ({ ...prev, endDate: newEnd }));
+                      if (tripPlan.startDate && newEnd && new Date(newEnd) < new Date(tripPlan.startDate)) {
+                        setDateError("End date must be after your arrival date");
+                      } else {
+                        setDateError("");
+                      }
+                    }}
                     placeholder="20__-__-__"
-                    className="bg-white dark:bg-gray-800 text-black dark:text-white border-gray-300 dark:border-gray-600 dark:[&::-webkit-calendar-picker-indicator]:filter dark:[&::-webkit-calendar-picker-indicator]:invert text-sm sm:text-base h-9 sm:h-10 md:h-11"
+                    className={`bg-white dark:bg-gray-800 text-black dark:text-white border-gray-300 dark:border-gray-600 dark:[&::-webkit-calendar-picker-indicator]:filter dark:[&::-webkit-calendar-picker-indicator]:invert text-sm sm:text-base h-9 sm:h-10 md:h-11 ${dateError ? 'border-red-500 dark:border-red-500' : ''}`}
                   />
+                  {dateError && (
+                    <p className="text-red-500 text-xs mt-1">{dateError}</p>
+                  )}
                 </div>
               </div>
 

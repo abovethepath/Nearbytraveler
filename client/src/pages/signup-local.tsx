@@ -20,33 +20,45 @@ export default function SignupLocal() {
   const { toast } = useToast();
   const { setUser, startAuthenticating } = useContext(AuthContext);
 
-  const [formData, setFormData] = useState({
-    // Basic info (from account signup)
-    name: "",
-    username: "",
-    email: "",
-    password: "",
-    phoneNumber: "",
+  const [formData, setFormData] = useState(() => {
+    const defaults = {
+      // Basic info (from account signup)
+      name: "",
+      username: "",
+      email: "",
+      password: "",
+      phoneNumber: "",
 
-    // Page 2 - Personal info  
-    dateOfBirth: "",
-    hometownCity: "",
-    hometownState: "",
-    hometownCountry: "",
-    isNewToTown: false,
+      // Page 2 - Personal info
+      dateOfBirth: "",
+      hometownCity: "",
+      hometownState: "",
+      hometownCountry: "",
+      isNewToTown: false,
 
-    // Preferences
-    interests: [] as string[],
-    activities: [] as string[],
-    events: [] as string[],
-    languages: ["English"] as string[],
-    
-    // Custom entries
-    customInterests: "",
-    customActivities: "",
-    customEvents: "",
-    customLanguages: "",
+      // Preferences
+      interests: [] as string[],
+      activities: [] as string[],
+      events: [] as string[],
+      languages: ["English"] as string[],
+
+      // Custom entries
+      customInterests: "",
+      customActivities: "",
+      customEvents: "",
+      customLanguages: "",
+    };
+    try {
+      const saved = sessionStorage.getItem('localFormData');
+      if (saved) return { ...defaults, ...JSON.parse(saved) };
+    } catch (_) {}
+    return defaults;
   });
+
+  // Persist form data to sessionStorage on every change
+  useEffect(() => {
+    sessionStorage.setItem('localFormData', JSON.stringify(formData));
+  }, [formData]);
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -264,6 +276,8 @@ export default function SignupLocal() {
             variant: "default",
           });
           
+          sessionStorage.removeItem('localFormData');
+          sessionStorage.removeItem('accountData');
           localStorage.setItem('just_registered', 'true');
           if ((window as any).ReactNativeWebView && data.user) {
             const sid = (data as any).sessionId || document.cookie.split(';').find(c => c.trim().startsWith('nt.sid='))?.split('=')[1]?.trim();

@@ -25735,12 +25735,25 @@ Questions? Just reply to this message. Welcome aboard!
             and(eq(notifications.userId, Number(vouchedUserId)), eq(notifications.fromUserId, Number(voucherUserId)), eq(notifications.type, 'vouch_received'))
           );
           if (existing.length === 0) {
+            // Count how many active vouches the recipient already has (including this new one)
+            const [vouchCountResult] = await db
+              .select({ count: count() })
+              .from(vouches)
+              .where(and(
+                eq(vouches.vouchedUserId, Number(vouchedUserId)),
+                eq(vouches.isActive, true)
+              ));
+            const totalVouches = vouchCountResult?.count || 1;
+            const vouchMsg = totalVouches <= 1
+              ? `@${voucherName} just vouched for you! You can now click on others' profiles and vouch for them too. 🎉`
+              : `@${voucherName} just vouched for you! You now have ${totalVouches} vouches.`;
+
             await db.insert(notifications).values({
               userId: Number(vouchedUserId),
               fromUserId: Number(voucherUserId),
               type: 'vouch_received',
-              title: `@${voucherName} just vouched for you! Now you can vouch for others too.`,
-              message: `@${voucherName} just vouched for you! Now you can vouch for others too.`,
+              title: vouchMsg,
+              message: vouchMsg,
               isRead: false,
               data: JSON.stringify({ voucherUserId: Number(voucherUserId), vouchedUserId: Number(vouchedUserId), profilePath: `/profile/${vouchedUserId}?tab=vouches` }),
             });

@@ -44,6 +44,13 @@ function formatDateForDisplay(dateString: string | Date | null | undefined, time
   return 'Date TBD';
 }
 
+// Safety: ensure dates display in chronological order even if DB has them swapped
+function getOrderedDates(startDate: string | Date, endDate: string | Date): [typeof startDate, typeof endDate] {
+  const s = new Date(startDate);
+  const e = new Date(endDate);
+  return s > e ? [endDate, startDate] : [startDate, endDate];
+}
+
 export default function TravelPlansWidget({ userId, isOwnProfile = false }: TravelPlansWidgetProps) {
   const [, setLocation] = useLocation();
   const [selectedTravelPlan, setSelectedTravelPlan] = useState<TripPlan | null>(null);
@@ -158,7 +165,7 @@ export default function TravelPlansWidget({ userId, isOwnProfile = false }: Trav
                       {plan.destinationCity || plan.destination}
                     </h5>
                     <p className="text-gray-600 dark:text-gray-300 mt-1">
-                      {formatDateForDisplay(plan.startDate, "PLAYA DEL REY")} - {formatDateForDisplay(plan.endDate, "PLAYA DEL REY")}
+                      {(() => { const [s, e] = getOrderedDates(plan.startDate, plan.endDate); return `${formatDateForDisplay(s, "PLAYA DEL REY")} - ${formatDateForDisplay(e, "PLAYA DEL REY")}`; })()}
                     </p>
                     {!!plan.hostelName && (isOwnProfile || plan.hostelVisibility === "public") && (
                       <button
@@ -250,7 +257,7 @@ export default function TravelPlansWidget({ userId, isOwnProfile = false }: Trav
                       {plan.destinationCity || plan.destination}
                     </h5>
                     <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
-                      {formatDateForDisplay(plan.startDate, "PLAYA DEL REY")} - {formatDateForDisplay(plan.endDate, "PLAYA DEL REY")}
+                      {(() => { const [s, e] = getOrderedDates(plan.startDate, plan.endDate); return `${formatDateForDisplay(s, "PLAYA DEL REY")} - ${formatDateForDisplay(e, "PLAYA DEL REY")}`; })()}
                     </p>
                     {!!plan.hostelName && (isOwnProfile || plan.hostelVisibility === "public") && (
                       <button
@@ -350,7 +357,7 @@ export default function TravelPlansWidget({ userId, isOwnProfile = false }: Trav
                       {plan.destinationCity || plan.destination}
                     </h5>
                     <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                      {formatDateForDisplay(plan.startDate, "PLAYA DEL REY")} - {formatDateForDisplay(plan.endDate, "PLAYA DEL REY")}
+                      {(() => { const [s, e] = getOrderedDates(plan.startDate, plan.endDate); return `${formatDateForDisplay(s, "PLAYA DEL REY")} - ${formatDateForDisplay(e, "PLAYA DEL REY")}`; })()}
                     </p>
                     <Badge variant="secondary" className="mt-2 bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-400">
                       Completed

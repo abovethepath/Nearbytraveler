@@ -50,21 +50,30 @@ export default function SignupAccount() {
     }
     setUserType(effectiveUserType);
 
-    // If we were bounced back here due to an email error, restore the email and show the error
+    // Restore previously entered account data when navigating back
+    const storedAccount = sessionStorage.getItem('accountData');
+    if (storedAccount) {
+      try {
+        const acc = JSON.parse(storedAccount);
+        setFormData(prev => ({
+          ...prev,
+          firstName: acc.firstName || (acc.name ? acc.name.split(' ')[0] : '') || '',
+          lastName: acc.lastName || (acc.name ? acc.name.split(' ').slice(1).join(' ') : '') || '',
+          name: effectiveUserType === 'business' ? (acc.name || '') : prev.name,
+          contactName: acc.contactName || '',
+          username: acc.username || '',
+          email: acc.email || '',
+          phoneNumber: acc.phoneNumber || '',
+          password: acc.password || '',
+        }));
+      } catch (_) {}
+    }
+
+    // If we were bounced back here due to an email error, show the error
     const pendingEmailError = sessionStorage.getItem('emailError');
     if (pendingEmailError) {
       sessionStorage.removeItem('emailError');
       setEmailError(pendingEmailError);
-      // Restore the email that was already entered
-      const storedAccount = sessionStorage.getItem('accountData');
-      if (storedAccount) {
-        try {
-          const acc = JSON.parse(storedAccount);
-          if (acc.email) {
-            setFormData(prev => ({ ...prev, email: acc.email }));
-          }
-        } catch (_) {}
-      }
       // Scroll to email field
       setTimeout(() => {
         document.getElementById('email')?.scrollIntoView({ behavior: 'smooth', block: 'center' });

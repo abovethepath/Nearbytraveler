@@ -20,43 +20,64 @@ export default function SignupTraveling() {
   const { toast } = useToast();
   const { setUser, startAuthenticating } = useAuth();
 
-  const [formData, setFormData] = useState({
-    // Basic info (from account signup)
-    name: "",
-    username: "",
-    email: "",
-    password: "",
-    phoneNumber: "",
+  const [formData, setFormData] = useState(() => {
+    const defaults = {
+      // Basic info (from account signup)
+      name: "",
+      username: "",
+      email: "",
+      password: "",
+      phoneNumber: "",
 
-    // Page 2 - Personal info  
-    dateOfBirth: "",
-    hometownCity: "",
-    hometownState: "",
-    hometownCountry: "",
-    isNewToTown: false,
+      // Page 2 - Personal info
+      dateOfBirth: "",
+      hometownCity: "",
+      hometownState: "",
+      hometownCountry: "",
+      isNewToTown: false,
 
-    // TRAVELING SPECIFIC FIELDS
-    destinationCity: "",
-    destinationState: "",
-    destinationCountry: "",
-    travelReturnDate: "",
-    travelStartDate: "",
-    alreadyHere: false,
+      // TRAVELING SPECIFIC FIELDS
+      destinationCity: "",
+      destinationState: "",
+      destinationCountry: "",
+      travelReturnDate: "",
+      travelStartDate: "",
+      alreadyHere: false,
 
-    // Preferences
-    interests: [] as string[],
-    activities: [] as string[],
-    events: [] as string[],
-    languages: ["English"] as string[],
-    
-    // Custom entries
-    customInterests: "",
-    customActivities: "",
-    customEvents: "",
-    customLanguages: "",
+      // Preferences
+      interests: [] as string[],
+      activities: [] as string[],
+      events: [] as string[],
+      languages: ["English"] as string[],
+
+      // Custom entries
+      customInterests: "",
+      customActivities: "",
+      customEvents: "",
+      customLanguages: "",
+    };
+    try {
+      const saved = sessionStorage.getItem('travelingFormData');
+      if (saved) return { ...defaults, ...JSON.parse(saved) };
+    } catch (_) {}
+    return defaults;
   });
 
-  const [skippedTravel, setSkippedTravel] = useState(false);
+  // Persist form data to sessionStorage on every change
+  useEffect(() => {
+    sessionStorage.setItem('travelingFormData', JSON.stringify(formData));
+  }, [formData]);
+
+  const [skippedTravel, setSkippedTravel] = useState(() => {
+    try {
+      return sessionStorage.getItem('skippedTravel') === 'true';
+    } catch (_) { return false; }
+  });
+
+  // Persist skippedTravel state
+  useEffect(() => {
+    sessionStorage.setItem('skippedTravel', String(skippedTravel));
+  }, [skippedTravel]);
   const [isLoading, setIsLoading] = useState(false);
   const [debugError, setDebugError] = useState<string | null>(null);
   const [debugStatus, setDebugStatus] = useState<string>("Ready");
@@ -340,6 +361,9 @@ export default function SignupTraveling() {
             variant: "default",
           });
           
+          sessionStorage.removeItem('travelingFormData');
+          sessionStorage.removeItem('skippedTravel');
+          sessionStorage.removeItem('accountData');
           localStorage.setItem('just_registered', 'true');
           if ((window as any).ReactNativeWebView && data.user) {
             const sid = (data as any).sessionId || document.cookie.split(';').find(c => c.trim().startsWith('nt.sid='))?.split('=')[1]?.trim();
