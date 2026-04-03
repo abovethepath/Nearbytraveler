@@ -919,6 +919,9 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
             chatroom_message: { title: '💬 New message', msg: notif.message || 'New message in a chat!', url: notif.data ? (tryParseJson(notif.data)?.chatUrl || '/messages') : '/messages', cat: 'messages' },
             traveler_arriving: { title: '✈️ Traveler arriving', msg: notif.message || 'A traveler is visiting your city!', url: notif.data ? (tryParseJson(notif.data)?.profileUrl || '/discover') : '/discover', cat: 'events' },
             chatroom_added: { title: '💬 Added to a group chat', msg: notif.message || 'You were added to a chat!', url: notif.data ? (tryParseJson(notif.data)?.chatUrl || '/messages') : '/messages', cat: 'messages' },
+            new_member_nearby: { title: '👋 New member nearby', msg: notif.message || 'Someone new joined near you!', url: notif.data ? (tryParseJson(notif.data)?.profileUrl || '/discover') : '/discover', cat: 'events' },
+            traveler_incoming: { title: '✈️ Traveler incoming', msg: notif.message || 'A traveler is heading your way!', url: notif.data ? (tryParseJson(notif.data)?.profileUrl || '/discover') : '/discover', cat: 'events' },
+            travel_overlap: { title: '🌍 Travel buddy match', msg: notif.message || 'Someone is visiting the same place!', url: notif.data ? (tryParseJson(notif.data)?.profileUrl || '/discover') : '/discover', cat: 'events' },
           };
           const pushDef = TYPE_PUSH[notif.type];
           if (!pushDef) return; // Don't push for all types
@@ -4298,7 +4301,6 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         .where(
           and(
             gte(users.createdAt, cutoff),
-            ne(users.userType, 'business'),
             isNotNull(users.username),
             ne(users.username, ''),
           )
@@ -6613,6 +6615,67 @@ It works like a real app — no app store needed!`;
           console.log(`✅ BACKGROUND: Awarded ${signupAuraPoints} aura point(s) to ${user.username}`);
         } catch (error) {
           console.error('❌ BACKGROUND: Error awarding aura points:', error);
+        }
+
+        // 9. Notify nearby users about new member
+        try {
+          if (user.username && user.hometownCity) {
+            const metro = getMetroAreaName(user.hometownCity);
+            // Find users in the same metro area (by hometownCity matching the metro)
+            const allUsers = await db
+              .select({ id: users.id, username: users.username, hometownCity: users.hometownCity })
+              .from(users)
+              .where(and(
+                ne(users.id, user.id),
+                isNotNull(users.hometownCity)
+              ));
+
+            const sameMetroUsers = allUsers.filter(u => u.hometownCity && getMetroAreaName(u.hometownCity) === metro);
+
+            // Exclude users already connected to the new user
+            const connectedUserIds = new Set<number>();
+            if (sameMetroUsers.length > 0) {
+              const existingConns = await db
+                .select({ requesterId: connections.requesterId, receiverId: connections.receiverId })
+                .from(connections)
+                .where(or(
+                  eq(connections.requesterId, user.id),
+                  eq(connections.receiverId, user.id)
+                ));
+              for (const c of existingConns) {
+                connectedUserIds.add(c.requesterId === user.id ? c.receiverId : c.requesterId);
+              }
+            }
+
+            const recipients = sameMetroUsers
+              .filter(u => !connectedUserIds.has(u.id))
+              .slice(0, 50);
+
+            const notifMsg = `👋 @${user.username} just joined Nearby Traveler from ${user.hometownCity}! Say hello and help them get started.`;
+            for (const recipient of recipients) {
+              // Deduplicate: skip if we already sent this exact notification recently
+              const [existing] = await db.select({ id: notifications.id }).from(notifications).where(
+                and(
+                  eq(notifications.userId, recipient.id),
+                  eq(notifications.fromUserId, user.id),
+                  eq(notifications.type, 'new_member_nearby')
+                )
+              );
+              if (!existing) {
+                await storage.createNotification({
+                  userId: recipient.id,
+                  fromUserId: user.id,
+                  type: 'new_member_nearby',
+                  title: notifMsg,
+                  message: notifMsg,
+                  data: JSON.stringify({ newUserId: user.id, profileUrl: `/profile/${user.username}` }),
+                });
+              }
+            }
+            console.log(`✅ BACKGROUND: Notified ${recipients.length} nearby users about new member @${user.username}`);
+          }
+        } catch (error) {
+          console.error('❌ BACKGROUND: Error sending new member nearby notifications:', error);
         }
 
         console.log(`✅ BACKGROUND TASKS COMPLETE for ${user.username}`);
@@ -10855,6 +10918,124 @@ Questions? Just reply to this message. Welcome aboard!
         console.error('⚠️ ARRIVALS: Failed to notify locals:', notifyErr);
         // Non-fatal — don't fail the trip creation
       }
+
+      // --- Trigger 2: Notify metro-area users about incoming traveler ---
+      // --- Trigger 3: Notify users with overlapping travel plans ---
+      ;(async () => {
+        try {
+          const destCity = newTravelPlan.destinationCity;
+          if (!destCity) return;
+          const metro = getMetroAreaName(destCity);
+
+          const [traveler] = await db.select({ username: users.username }).from(users).where(eq(users.id, travelPlanData.userId));
+          if (!traveler?.username) return;
+
+          const startDate = newTravelPlan.startDate ? new Date(newTravelPlan.startDate) : null;
+          const endDate = newTravelPlan.endDate ? new Date(newTravelPlan.endDate) : null;
+          const fmtDate = (d: Date) => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+          // Get connections to exclude
+          const existingConns = await db
+            .select({ requesterId: connections.requesterId, receiverId: connections.receiverId })
+            .from(connections)
+            .where(or(
+              eq(connections.requesterId, travelPlanData.userId),
+              eq(connections.receiverId, travelPlanData.userId)
+            ));
+          const connectedIds = new Set<number>();
+          for (const c of existingConns) {
+            connectedIds.add(c.requesterId === travelPlanData.userId ? c.receiverId : c.requesterId);
+          }
+
+          // Trigger 2: Notify locals in the destination metro area
+          if (startDate && endDate) {
+            const allLocals = await db
+              .select({ id: users.id, hometownCity: users.hometownCity })
+              .from(users)
+              .where(and(
+                ne(users.id, travelPlanData.userId),
+                isNotNull(users.hometownCity)
+              ));
+            const metroLocals = allLocals
+              .filter(u => u.hometownCity && getMetroAreaName(u.hometownCity) === metro && !connectedIds.has(u.id))
+              .slice(0, 50);
+
+            const travelMsg = `✈️ @${traveler.username} is traveling to ${destCity} from ${fmtDate(startDate)} to ${fmtDate(endDate)}! Say hello before they arrive.`;
+            for (const local of metroLocals) {
+              const [dup] = await db.select({ id: notifications.id }).from(notifications).where(
+                and(
+                  eq(notifications.userId, local.id),
+                  eq(notifications.fromUserId, travelPlanData.userId),
+                  eq(notifications.type, 'traveler_incoming'),
+                  gte(notifications.createdAt, new Date(Date.now() - 24 * 60 * 60 * 1000))
+                )
+              );
+              if (!dup) {
+                await storage.createNotification({
+                  userId: local.id,
+                  fromUserId: travelPlanData.userId,
+                  type: 'traveler_incoming',
+                  title: travelMsg,
+                  message: travelMsg,
+                  data: JSON.stringify({ travelerId: travelPlanData.userId, profileUrl: `/profile/${traveler.username}`, city: destCity }),
+                });
+              }
+            }
+            console.log(`✈️ NEARBY: Notified ${metroLocals.length} metro locals about @${traveler.username} traveling to ${destCity}`);
+          }
+
+          // Trigger 3: Notify users with overlapping travel plans to the same destination
+          if (startDate && endDate) {
+            const overlapping = await db
+              .select({
+                id: travelPlans.id,
+                userId: travelPlans.userId,
+                destinationCity: travelPlans.destinationCity,
+                startDate: travelPlans.startDate,
+                endDate: travelPlans.endDate,
+              })
+              .from(travelPlans)
+              .where(and(
+                ne(travelPlans.userId, travelPlanData.userId),
+                isNotNull(travelPlans.destinationCity),
+                isNotNull(travelPlans.startDate),
+                isNotNull(travelPlans.endDate),
+                // Date overlap: their start < our end AND their end > our start
+                lt(travelPlans.startDate, endDate),
+                gt(travelPlans.endDate, startDate)
+              ));
+
+            const sameMetroOverlaps = overlapping
+              .filter(p => p.destinationCity && getMetroAreaName(p.destinationCity) === metro && !connectedIds.has(p.userId))
+              .slice(0, 50);
+
+            const overlapMsg = `🌍 @${traveler.username} is also going to ${destCity} around the same time as you! ${fmtDate(startDate)} - ${fmtDate(endDate)}. Say hello!`;
+            for (const plan of sameMetroOverlaps) {
+              const [dup] = await db.select({ id: notifications.id }).from(notifications).where(
+                and(
+                  eq(notifications.userId, plan.userId),
+                  eq(notifications.fromUserId, travelPlanData.userId),
+                  eq(notifications.type, 'travel_overlap'),
+                  gte(notifications.createdAt, new Date(Date.now() - 24 * 60 * 60 * 1000))
+                )
+              );
+              if (!dup) {
+                await storage.createNotification({
+                  userId: plan.userId,
+                  fromUserId: travelPlanData.userId,
+                  type: 'travel_overlap',
+                  title: overlapMsg,
+                  message: overlapMsg,
+                  data: JSON.stringify({ travelerId: travelPlanData.userId, profileUrl: `/profile/${traveler.username}`, city: destCity }),
+                });
+              }
+            }
+            console.log(`🌍 OVERLAP: Notified ${sameMetroOverlaps.length} users with overlapping trips to ${destCity}`);
+          }
+        } catch (err) {
+          console.error('⚠️ NEARBY/OVERLAP: Failed to send travel notifications:', err);
+        }
+      })();
 
       return res.status(201).json(newTravelPlan);
     } catch (error: any) {

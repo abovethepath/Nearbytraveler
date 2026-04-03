@@ -168,6 +168,8 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
   const [swipingMessageId, setSwipingMessageId] = useState<number | null>(null);
   const [swipeOffset, setSwipeOffset] = useState(0);
   const [isSendingPhoto, setIsSendingPhoto] = useState(false);
+  const [pastedImagePreview, setPastedImagePreview] = useState<string | null>(null);
+  const pastedFileRef = useRef<File | null>(null);
   const [viewportHeight, setViewportHeight] = useState<number | null>(null);
   const [isEditingName, setIsEditingName] = useState(false);
   const [editNameValue, setEditNameValue] = useState(title);
@@ -2298,6 +2300,35 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
     }
   };
 
+  const handlePaste = (e: React.ClipboardEvent) => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].type.startsWith('image/')) {
+        e.preventDefault();
+        const file = items[i].getAsFile();
+        if (!file) return;
+        pastedFileRef.current = file;
+        const reader = new FileReader();
+        reader.onload = () => setPastedImagePreview(reader.result as string);
+        reader.readAsDataURL(file);
+        return;
+      }
+    }
+  };
+
+  const confirmPastedImage = async () => {
+    if (!pastedFileRef.current) return;
+    setPastedImagePreview(null);
+    await onPickPhoto(pastedFileRef.current);
+    pastedFileRef.current = null;
+  };
+
+  const cancelPastedImage = () => {
+    setPastedImagePreview(null);
+    pastedFileRef.current = null;
+  };
+
   const handleTyping = (text: string) => {
     setMessageText(text);
 
@@ -3807,6 +3838,15 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
           </div>
         ) : (
         <div className={`chat-input-area px-3 py-1.5 bg-gray-800 border-t border-gray-700 flex-shrink-0 ${isNativeIOSApp() ? 'pb-[calc(env(safe-area-inset-bottom,0px)+1rem)]' : isMobileWeb ? 'pb-[calc(env(safe-area-inset-bottom,0px)+0.5rem)]' : 'pb-3'}`}>
+          {/* Paste image preview */}
+          {pastedImagePreview && (
+            <div className="flex items-center gap-3 p-2 mb-1 bg-gray-700 rounded-lg">
+              <img src={pastedImagePreview} alt="Pasted" className="w-16 h-16 object-cover rounded" />
+              <span className="text-sm text-gray-300 flex-1">Send this image?</span>
+              <button onClick={cancelPastedImage} className="px-3 py-1 text-sm text-gray-400 hover:text-white">Cancel</button>
+              <button onClick={confirmPastedImage} disabled={isSendingPhoto} className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50">Send</button>
+            </div>
+          )}
           <div className="w-full">
           {/* Connection status - only show briefly if not connected AND no messages loaded */}
           {!messagesLoaded && !isWsConnected && !loadError && (
@@ -3890,6 +3930,7 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
               autoCorrect="on"
               autoCapitalize="sentences"
               spellCheck={true}
+              onPaste={handlePaste}
             />
             {editingMessageId ? (
               <Button

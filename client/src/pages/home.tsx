@@ -89,7 +89,11 @@ export default function Home() {
   const [showDestinationModal, setShowDestinationModal] = useState(false);
   const [showConnectModal, setShowConnectModal] = useState(false);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
-  const [sidebarCityView, setSidebarCityView] = useState<'home' | 'trip'>('home');
+  const [sidebarCityView, setSidebarCityView] = useState<'home' | 'trip' | 'neighbor_metro'>(() => {
+    const saved = sessionStorage.getItem('nt-metro-toggle');
+    return (saved === 'neighbor_metro' ? 'neighbor_metro' : 'home') as 'home' | 'trip' | 'neighbor_metro';
+  });
+  const [browseMetro, setBrowseMetro] = useState<string | null>(() => sessionStorage.getItem('nt-browse-metro'));
   const [activeLocationFilter, setActiveLocationFilter] = useState<string>("");
   const [connectModalMode, setConnectModalMode] = useState<'current' | 'hometown'>('current');
   const [connectTargetUser, setConnectTargetUser] = useState<any>(null);
@@ -359,13 +363,22 @@ export default function Home() {
         if (b.displayLocation?.toLowerCase().includes(currentLocation.toLowerCase())) scoreB += 1000;
       }
       
-      // Priority 2: Hometown location (medium priority) 
+      // Priority 2: Browse metro toggle (high priority when active)
+      if (browseMetro) {
+        const browseMetroName = getMetroAreaName(browseMetro);
+        if (a.hometownCity && getMetroAreaName(a.hometownCity) === browseMetroName) scoreA += 800;
+        if (b.hometownCity && getMetroAreaName(b.hometownCity) === browseMetroName) scoreB += 800;
+        if (a.destinationCity && getMetroAreaName(a.destinationCity) === browseMetroName) scoreA += 700;
+        if (b.destinationCity && getMetroAreaName(b.destinationCity) === browseMetroName) scoreB += 700;
+      }
+
+      // Priority 3: Hometown location (medium priority)
       if (hometown) {
         if (a.hometownCity?.toLowerCase().includes(hometown.toLowerCase())) scoreA += 500;
         if (b.hometownCity?.toLowerCase().includes(hometown.toLowerCase())) scoreB += 500;
       }
       
-      // Priority 3: Shared interests
+      // Priority 4: Shared interests
       const parseArray = (data: any) => Array.isArray(data) ? data : [];
       const userInterests = parseArray(effectiveUser?.interests);
       
@@ -910,10 +923,16 @@ export default function Home() {
       });
     }
 
+    // Add neighbor metro city when browse toggle is active
+    if (browseMetro && !locations.some(loc => loc.city.toLowerCase().includes(browseMetro.toLowerCase()))) {
+      locations.push({ city: browseMetro, type: 'neighbor_metro' });
+      console.log('🔄 USER DISCOVERY: Browse metro', browseMetro);
+    }
+
     console.log('Discovery - All locations:', locations);
 
     return { allCities: locations };
-  }, [currentUserId, effectiveUser?.hometownCity, effectiveUser?.hometownState, effectiveUser?.hometownCountry, effectiveUser?.isCurrentlyTraveling, effectiveUser?.travelDestination, travelPlans]);
+  }, [currentUserId, effectiveUser?.hometownCity, effectiveUser?.hometownState, effectiveUser?.hometownCountry, effectiveUser?.isCurrentlyTraveling, effectiveUser?.travelDestination, travelPlans, browseMetro]);
 
   // Fetch events from ALL locations (hometown + all travel destinations)
   const { data: allEvents = [], isLoading: eventsLoading } = useQuery<Event[]>({
@@ -2257,7 +2276,7 @@ export default function Home() {
               <AvailableNowWidget currentUser={effectiveUser} />
             )}
 
-            {/* City toggle + widgets — hometown by default, toggle to trip destination */}
+            {/* City toggle + widgets — hometown by default, toggle to trip destination or neighboring metro */}
             {(() => {
               const htCity = effectiveUser?.hometownCity || effectiveUser?.city || effectiveUser?.location?.split(',')[0]?.trim() || '';
               if (!htCity) return null;
@@ -2265,16 +2284,30 @@ export default function Home() {
                 ? String(effectiveUser.travelDestination).split(',')[0]?.trim()
                 : null;
               const hasTripCity = destCity && destCity.toLowerCase() !== htCity.toLowerCase();
-              const activeCity = sidebarCityView === 'trip' && hasTripCity ? destCity : htCity;
+
+              // OC ↔ LA metro toggle: show for users in either metro
+              const userMetro = getMetroAreaName(htCity);
+              const NEIGHBOR_PAIRS: Record<string, { name: string; city: string }> = {
+                'Los Angeles Metro': { name: 'Orange County Metro', city: 'Irvine' },
+                'Orange County Metro': { name: 'Los Angeles Metro', city: 'Los Angeles' },
+              };
+              const neighbor = NEIGHBOR_PAIRS[userMetro] || null;
+
+              let activeCity = htCity;
+              if (sidebarCityView === 'trip' && hasTripCity) {
+                activeCity = destCity!;
+              } else if (sidebarCityView === 'neighbor_metro' && neighbor) {
+                activeCity = browseMetro || neighbor.city;
+              }
 
               return (
                 <>
-                  {/* Toggle — only shown when user has a trip to a different city */}
+                  {/* Trip toggle — only shown when user has a trip to a different city */}
                   {hasTripCity && (
                     <div className="flex items-center gap-1 p-1 rounded-lg bg-gray-100 dark:bg-gray-800 text-xs font-medium">
                       <button
                         type="button"
-                        onClick={() => setSidebarCityView('home')}
+                        onClick={() => { setSidebarCityView('home'); setBrowseMetro(null); }}
                         className={`flex-1 px-3 py-1.5 rounded-md transition-colors ${
                           sidebarCityView === 'home'
                             ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
@@ -2285,7 +2318,7 @@ export default function Home() {
                       </button>
                       <button
                         type="button"
-                        onClick={() => setSidebarCityView('trip')}
+                        onClick={() => { setSidebarCityView('trip'); setBrowseMetro(null); }}
                         className={`flex-1 px-3 py-1.5 rounded-md transition-colors ${
                           sidebarCityView === 'trip'
                             ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
@@ -2293,6 +2326,35 @@ export default function Home() {
                         }`}
                       >
                         ✈️ {getMetroAreaName(destCity!)}
+                      </button>
+                    </div>
+                  )}
+
+                  {/* OC ↔ LA metro browse toggle */}
+                  {neighbor && (
+                    <div className="flex items-center gap-1 p-1 rounded-lg bg-gray-100 dark:bg-gray-800 text-xs font-medium">
+                      <button
+                        type="button"
+                        onClick={() => { setSidebarCityView('home'); setBrowseMetro(null); sessionStorage.removeItem('nt-metro-toggle'); sessionStorage.removeItem('nt-browse-metro'); }}
+                        className={`flex-1 px-3 py-1.5 rounded-md transition-colors ${
+                          sidebarCityView !== 'neighbor_metro'
+                            ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
+                            : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                        }`}
+                      >
+                        {userMetro.replace(' Metro', '')}
+                      </button>
+                      <span className="text-gray-400 text-[10px]">↔</span>
+                      <button
+                        type="button"
+                        onClick={() => { setSidebarCityView('neighbor_metro'); setBrowseMetro(neighbor.city); sessionStorage.setItem('nt-metro-toggle', 'neighbor_metro'); sessionStorage.setItem('nt-browse-metro', neighbor.city); }}
+                        className={`flex-1 px-3 py-1.5 rounded-md transition-colors ${
+                          sidebarCityView === 'neighbor_metro'
+                            ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
+                            : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                        }`}
+                      >
+                        {neighbor.name.replace(' Metro', '')}
                       </button>
                     </div>
                   )}

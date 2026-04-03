@@ -611,6 +611,8 @@ export default function NotificationBell({ userId }: NotificationBellProps) {
                           setLocation(`/profile/${notifData.savedUserId}`);
                         } else if (notification.type === 'traveler_arriving' && notifData.travelerUsername) {
                           setLocation(`/profile/${notifData.travelerUsername}`);
+                        } else if (notifData.profileUrl) {
+                          setLocation(notifData.profileUrl);
                         }
                       }}
                     >

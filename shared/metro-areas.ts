@@ -88,6 +88,16 @@ export const METRO_AREAS = {
     'Discovery Bay', 'Byron', 'Knightsen', 'Bethel Island'
   ],
 
+  "Orange County Metro": [
+    'Irvine', 'Anaheim', 'Santa Ana', 'Huntington Beach', 'Newport Beach',
+    'Laguna Beach', 'Costa Mesa', 'Fullerton', 'Orange', 'Garden Grove',
+    'Tustin', 'Buena Park', 'Yorba Linda', 'Placentia', 'Brea',
+    'La Habra', 'Cypress', 'Seal Beach', 'Los Alamitos', 'Lake Forest',
+    'Mission Viejo', 'Aliso Viejo', 'Rancho Santa Margarita', 'San Clemente',
+    'Dana Point', 'Laguna Niguel', 'Laguna Hills', 'Fountain Valley',
+    'Westminster', 'Stanton', 'La Palma',
+  ],
+
   "Chicago Metro": [
     'Chicago', 'Aurora', 'Naperville', 'Elgin', 'Cicero', 'Schaumburg',
     'Evanston', 'Des Plaines', 'Berwyn', 'Oak Lawn', 'Mount Prospect',
@@ -175,6 +185,7 @@ export function areInSameMetro(city1: string, city2: string): boolean {
 /** Metro area name → main city for display and API (event pool, empty state) */
 const METRO_TO_MAIN_CITY: Record<string, string> = {
   'Los Angeles Metro': 'Los Angeles',
+  'Orange County Metro': 'Irvine',
   'New York Metro': 'New York',
   'Chicago Metro': 'Chicago',
   'San Francisco Bay Area': 'San Francisco',

@@ -19,7 +19,7 @@ import { useToast } from "@/hooks/use-toast";
 import { SubscriptionStatus } from "@/components/SubscriptionStatus";
 import { SmartLocationInput } from "@/components/SmartLocationInput";
 import { AuthContext } from "@/App";
-import { authStorage } from "@/lib/auth";
+// authStorage removed — using AuthContext for session-based auth
 import { isNativeIOSApp } from "@/lib/nativeApp";
 import InstantDealCreator from "@/components/InstantDealCreator";
 import { QuickDealsWidget } from "@/components/QuickDealsWidget";
@@ -280,41 +280,41 @@ export default function BusinessDashboard() {
     }
   };
 
-  // Get current business user - direct from storage for reliability
-  const storageUser = authStorage.getUser();
+  // Get current business user from AuthContext (session-based)
+  const { user: authUser } = useContext(AuthContext);
 
   // Debug logging
-  console.log('BusinessDashboard - storageUser:', storageUser, 'userType:', storageUser?.userType);
+  console.log('BusinessDashboard - authUser:', authUser, 'userType:', authUser?.userType);
 
   // Fetch fresh user data to get updated location fields
   const { data: freshUserData, refetch: refetchUser } = useQuery({
-    queryKey: ['/api/users', storageUser?.id],
+    queryKey: ['/api/users', authUser?.id],
     queryFn: async () => {
-      if (!storageUser?.id) return null;
-      const response = await fetch(`${getApiBaseUrl()}/api/users/${storageUser.id}`, {
+      if (!authUser?.id) return null;
+      const response = await fetch(`${getApiBaseUrl()}/api/users/${authUser.id}`, {
         headers: {
-          'x-user-id': storageUser.id.toString(),
-          'x-user-type': storageUser.userType || 'business'
+          'x-user-id': authUser.id.toString(),
+          'x-user-type': authUser.userType || 'business'
         }
       });
       const data = await response.json();
       console.log("BusinessDashboard - Fresh user data API response:", data);
       return data;
     },
-    enabled: !!storageUser?.id,
+    enabled: !!authUser?.id,
     staleTime: 30000, // Cache for 30 seconds
     gcTime: 60000, // Keep in cache for 1 minute
     refetchOnMount: false,
     refetchOnWindowFocus: false
   });
 
-  // Use fresh data if available, fallback to storage user
-  const currentUser = freshUserData || storageUser;
+  // Use fresh data if available, fallback to auth context user
+  const currentUser = freshUserData || authUser;
 
   // Fetch business offers
   const { data: offers = [], isLoading, refetch: refetchOffers } = useQuery<BusinessOffer[]>({
-    queryKey: [`/api/business-deals/business/${storageUser?.id}`],
-    enabled: !!storageUser?.id && storageUser?.userType === 'business',
+    queryKey: [`/api/business-deals/business/${authUser?.id}`],
+    enabled: !!authUser?.id && authUser?.userType === 'business',
     staleTime: 30000, // Cache for 30 seconds
     gcTime: 60000, // Keep in cache for 1 minute
     refetchOnMount: false,
@@ -324,8 +324,8 @@ export default function BusinessDashboard() {
 
   // Fetch past offers - filter client-side for expired offers
   const { data: allOffers = [], isLoading: isPastOffersLoading } = useQuery<BusinessOffer[]>({
-    queryKey: [`/api/business-deals/business/${storageUser?.id}`],
-    enabled: !!storageUser?.id && storageUser?.userType === 'business',
+    queryKey: [`/api/business-deals/business/${authUser?.id}`],
+    enabled: !!authUser?.id && authUser?.userType === 'business',
     staleTime: 30000, // Cache for 30 seconds
     gcTime: 60000, // Keep in cache for 1 minute
     refetchOnMount: false
@@ -363,7 +363,7 @@ export default function BusinessDashboard() {
     monthlyBusinessDealsRemaining: number;
   }>({
     queryKey: ['/api/business-deals/analytics'],
-    enabled: !!storageUser?.id && storageUser?.userType === 'business',
+    enabled: !!authUser?.id && authUser?.userType === 'business',
     staleTime: 30000, // Cache for 30 seconds
     gcTime: 60000, // Keep in cache for 1 minute
     refetchOnMount: false,
@@ -373,7 +373,7 @@ export default function BusinessDashboard() {
   // Fetch subscription status for usage limits
   const { data: subscriptionStatus } = useQuery({
     queryKey: ['/api/business/subscription-status'],
-    enabled: !!storageUser?.id && storageUser?.userType === 'business',
+    enabled: !!authUser?.id && authUser?.userType === 'business',
     retry: 1,
     staleTime: 60000, // Cache for 1 minute (subscription status doesn't change often)
     gcTime: 120000, // Keep in cache for 2 minutes
@@ -382,14 +382,14 @@ export default function BusinessDashboard() {
 
   // Fetch business events
   const { data: businessEvents = [], isLoading: isEventsLoading } = useQuery({
-    queryKey: ['/api/events/organizer', storageUser?.id],
+    queryKey: ['/api/events/organizer', authUser?.id],
     queryFn: async () => {
-      if (!storageUser?.id) return [];
-      const response = await fetch(`${getApiBaseUrl()}/api/events/organizer/${storageUser.id}`);
+      if (!authUser?.id) return [];
+      const response = await fetch(`${getApiBaseUrl()}/api/events/organizer/${authUser.id}`);
       if (!response.ok) throw new Error('Failed to fetch events');
       return response.json();
     },
-    enabled: !!storageUser?.id && storageUser?.userType === 'business',
+    enabled: !!authUser?.id && authUser?.userType === 'business',
     staleTime: 30000, // Cache for 30 seconds
     gcTime: 60000, // Keep in cache for 1 minute
     refetchOnMount: false
@@ -397,13 +397,13 @@ export default function BusinessDashboard() {
 
   // Fetch Quick Deals history
   const { data: quickDealsHistory = [], isLoading: isQuickDealsHistoryLoading } = useQuery({
-    queryKey: [`/api/quick-deals/history/${storageUser?.id}`],
+    queryKey: [`/api/quick-deals/history/${authUser?.id}`],
     queryFn: async () => {
-      if (!storageUser?.id) return [];
-      const response = await fetch(`${getApiBaseUrl()}/api/quick-deals/history/${storageUser.id}`, {
+      if (!authUser?.id) return [];
+      const response = await fetch(`${getApiBaseUrl()}/api/quick-deals/history/${authUser.id}`, {
         headers: {
-          'x-user-id': storageUser.id.toString(),
-          'x-user-type': storageUser.userType || 'business'
+          'x-user-id': authUser.id.toString(),
+          'x-user-type': authUser.userType || 'business'
         }
       });
       if (!response.ok) {
@@ -412,7 +412,7 @@ export default function BusinessDashboard() {
       }
       return response.json();
     },
-    enabled: !!storageUser?.id && storageUser?.userType === 'business',
+    enabled: !!authUser?.id && authUser?.userType === 'business',
     staleTime: 30000,
     refetchOnMount: true
   });
@@ -456,7 +456,7 @@ export default function BusinessDashboard() {
       return apiRequest('POST', '/api/business-deals', processedData);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/business-deals/business/${storageUser?.id}`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/business-deals/business/${authUser?.id}`] });
       queryClient.invalidateQueries({ queryKey: ['/api/business-deals/analytics'] });
       queryClient.invalidateQueries({ queryKey: ['/api/users', currentUser?.id] }); // Refresh user data for deal limits
       setIsCreateDialogOpen(false);
@@ -506,7 +506,7 @@ export default function BusinessDashboard() {
       return apiRequest('PUT', `/api/business-deals/${id}`, processedData);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/business-deals/business/${storageUser?.id}`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/business-deals/business/${authUser?.id}`] });
       queryClient.invalidateQueries({ queryKey: ['/api/business-deals/analytics'] });
       setEditingOffer(null);
       setIsDialogOpen(false);
@@ -529,7 +529,7 @@ export default function BusinessDashboard() {
   const deleteOfferMutation = useMutation({
     mutationFn: (id: number) => apiRequest('DELETE', `/api/business-deals/${id}`),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/business-deals/business/${storageUser?.id}`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/business-deals/business/${authUser?.id}`] });
       queryClient.invalidateQueries({ queryKey: ['/api/business-deals/analytics'] });
       toast({
         title: "Success",
@@ -720,7 +720,15 @@ export default function BusinessDashboard() {
   const currentOffers = offers.filter(offer => new Date(offer.validUntil) >= new Date());
 
   console.log('BusinessDashboard - final check - currentUser:', currentUser, 'userType:', currentUser?.userType);
-  if (!currentUser || currentUser.userType !== 'business') {
+  // Show loading while auth is resolving (authUser starts null before session loads)
+  if (!currentUser) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900">
+        <div className="text-gray-500 dark:text-gray-400 text-sm">Loading dashboard...</div>
+      </div>
+    );
+  }
+  if (currentUser.userType !== 'business') {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900">
         <Card className="max-w-md w-full mx-4">
@@ -2345,20 +2353,20 @@ export default function BusinessDashboard() {
       </Dialog>
 
       {/* Quick Deal Creator Modal */}
-      {showQuickDealCreator && storageUser && (
+      {showQuickDealCreator && authUser && (
         <InstantDealCreator
-          businessId={storageUser.id}
-          businessName={storageUser.businessName || storageUser.username}
+          businessId={authUser.id}
+          businessName={authUser.businessName || authUser.username}
           businessLocation={{
-            city: storageUser.hometownCity || storageUser.city || 'Los Angeles',
-            state: storageUser.hometownState || storageUser.state || 'California',
-            country: storageUser.hometownCountry || storageUser.country || 'United States'
+            city: authUser.hometownCity || authUser.city || 'Los Angeles',
+            state: authUser.hometownState || authUser.state || 'California',
+            country: authUser.hometownCountry || authUser.country || 'United States'
           }}
           onDealCreated={() => {
             setShowQuickDealCreator(false);
             // Refresh analytics and offers
             queryClient.invalidateQueries({ queryKey: ['/api/business-deals/analytics'] });
-            queryClient.invalidateQueries({ queryKey: [`/api/business-deals/business/${storageUser?.id}`] });
+            queryClient.invalidateQueries({ queryKey: [`/api/business-deals/business/${authUser?.id}`] });
           }}
         />
       )}
@@ -2378,7 +2386,7 @@ export default function BusinessDashboard() {
             <DialogTitle>Reuse Quick Deal</DialogTitle>
             <DialogDescription>Create a new quick deal from your past deal. Edit details and set new times.</DialogDescription>
           </DialogHeader>
-          {reuseDialogOpen && reuseDealData && storageUser && (
+          {reuseDialogOpen && reuseDealData && authUser && (
             <QuickDealsWidget
               showCreateForm={true}
               onCloseCreateForm={() => {
@@ -2386,7 +2394,7 @@ export default function BusinessDashboard() {
                 setReuseDealData(null);
               }}
               city={reuseDealData?.city}
-              profileUserId={storageUser.id}
+              profileUserId={authUser.id}
             />
           )}
         </DialogContent>

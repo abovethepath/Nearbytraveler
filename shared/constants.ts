@@ -16,6 +16,11 @@ export const METRO_AREAS = {
     metroName: 'Los Angeles Metro',
     cities: CANONICAL_METROS['Los Angeles Metro'] || [],
   },
+  'Orange County': {
+    mainCity: 'Irvine',
+    metroName: 'Orange County Metro',
+    cities: CANONICAL_METROS['Orange County Metro'] || [],
+  },
 } as const;
 
 export function isLAMetroCity(city: string | null | undefined): boolean {
