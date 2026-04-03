@@ -187,9 +187,10 @@ export default function SignupTraveling() {
 
       // Prepare registration data with clean field mapping
       const registrationData = {
-        // TRAVELING: Set as traveler and currently traveling
-        userType: "traveler",
-        isCurrentlyTraveling: true,
+        // If skippedTravel, register as local instead of traveler
+        userType: skippedTravel ? "local" : "traveler",
+        isCurrentlyTraveling: !skippedTravel,
+        skippedTravel,
         isNewToTown: formData.isNewToTown,
 
         // account data
@@ -204,7 +205,7 @@ export default function SignupTraveling() {
 
         // profile
         dateOfBirth: formData.dateOfBirth,
-        
+
         // hometown/location
         hometownCity: formData.hometownCity.trim(),
         hometownState: formData.hometownState?.trim() || "",
@@ -212,28 +213,32 @@ export default function SignupTraveling() {
         hometown,
         location: hometown,
 
-        // TRAVELING SPECIFIC: Destination and return date
-        destinationCity: formData.destinationCity.trim(),
-        destinationState: formData.destinationState?.trim() || "",
-        destinationCountry: formData.destinationCountry.trim(),
-        travelDestination: destination,
-        travelReturnDate: formData.travelReturnDate,
-        travelStartDate: formData.alreadyHere ? new Date().toISOString() : (formData.travelStartDate || new Date().toISOString()),
+        // TRAVELING SPECIFIC: Destination and return date (empty when skippedTravel)
+        ...(!skippedTravel && {
+          destinationCity: formData.destinationCity.trim(),
+          destinationState: formData.destinationState?.trim() || "",
+          destinationCountry: formData.destinationCountry.trim(),
+          travelDestination: destination,
+          travelReturnDate: formData.travelReturnDate,
+          travelStartDate: formData.alreadyHere ? new Date().toISOString() : (formData.travelStartDate || new Date().toISOString()),
+        }),
 
         // top choices (require at least 3)
         interests: formData.interests,
-        
+
         // custom entries
         customInterests: formData.customInterests?.trim() || "",
         customActivities: formData.customActivities?.trim() || "",
-        
+
         // languages
         languagesSpoken,
-        
+
         // Referral tracking (if user came from QR code)
         ...(referralCode && { referralCode }),
         ...(connectionNote && { connectionNote })
       };
+
+      console.log('📦 REGISTRATION PAYLOAD — skippedTravel:', skippedTravel, 'userType:', registrationData.userType);
 
       console.log('🔗 REFERRAL DEBUG - registrationData includes referralCode?', 'referralCode' in registrationData);
       console.log('🔗 REFERRAL DEBUG - registrationData.referralCode value:', registrationData.referralCode);
