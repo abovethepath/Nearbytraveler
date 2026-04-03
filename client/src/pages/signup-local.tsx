@@ -14,6 +14,7 @@ import { InterestSelector } from "@/components/InterestSelector";
 import { authStorage } from "@/lib/auth";
 import { ArrowLeft } from "lucide-react";
 import { getDateInputConstraints, validate18Plus } from "@/lib/ageUtils";
+import { forceUnlockScroll } from "@/lib/scrollLock";
 
 export default function SignupLocal() {
   const [, setLocation] = useLocation();
@@ -81,6 +82,7 @@ export default function SignupLocal() {
 
   // Load account data from sessionStorage
   useEffect(() => {
+    forceUnlockScroll();
     console.log('🏠 LOCAL SIGNUP - Loading account data');
     const storedAccountData = sessionStorage.getItem('accountData');
 
@@ -345,7 +347,7 @@ export default function SignupLocal() {
   const { min: minDate, max: maxDate } = getDateInputConstraints();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 px-4 pt-4 pb-12 overflow-x-clip">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 px-4 pt-4 pb-12">
       {/* Vibrant header banner */}
       <div className="fixed top-0 left-0 right-0 bg-gradient-to-r from-blue-600 to-orange-500 py-3 px-4 text-center z-40 shadow-lg">
         <p className="text-white font-bold text-sm sm:text-base">
@@ -354,7 +356,7 @@ export default function SignupLocal() {
       </div>
       
       <div className="max-w-2xl mx-auto pt-16">
-        <Card className="shadow-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-hidden">
+        <Card className="shadow-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-clip">
           <CardHeader className="text-center bg-gradient-to-r from-blue-600 to-orange-500 pb-8 pt-6">
             <div className="flex justify-start mb-4">
               <Button
@@ -385,7 +387,7 @@ export default function SignupLocal() {
                   Personal Information
                 </h3>
 
-                <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-3 sm:p-4 border border-gray-200 dark:border-gray-600 overflow-hidden">
+                <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-3 sm:p-4 border border-gray-200 dark:border-gray-600">
                   <Label className="text-gray-700 dark:text-gray-200 font-semibold block text-center">Date of Birth *</Label>
                   <p className="text-sm text-gray-500 dark:text-gray-400 mb-3 text-center">
                     Can be hidden from public view later
@@ -412,7 +414,7 @@ export default function SignupLocal() {
                   Where Do You Live?
                 </h3>
 
-                <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 border border-gray-200 dark:border-gray-600 overflow-hidden">
+                <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 border border-gray-200 dark:border-gray-600">
                   <Label className="text-gray-700 dark:text-gray-200 font-semibold mb-2 block">Your Hometown *</Label>
                   <SmartLocationInput
                     country={formData.hometownCountry}

@@ -8,6 +8,7 @@ import { useLocation } from "wouter";
 import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { formatIncompletePhoneNumber } from "libphonenumber-js";
 import { getApiBaseUrl } from "@/lib/queryClient";
+import { forceUnlockScroll } from "@/lib/scrollLock";
 
 export default function SignupAccount() {
   const [, setLocation] = useLocation();
@@ -38,6 +39,7 @@ export default function SignupAccount() {
   const [emailError, setEmailError] = useState<string | null>(null);
 
   useEffect(() => {
+    forceUnlockScroll();
     // Check for QR code flow first (intendedUserType), then regular flow (selectedUserType)
     const intendedUserType = sessionStorage.getItem('intendedUserType');
     const selectedUserType = sessionStorage.getItem('selectedUserType');
@@ -298,7 +300,7 @@ export default function SignupAccount() {
       </div>
       
       <div className="max-w-md mx-auto pt-16">
-        <Card className="shadow-2xl border-2 border-orange-200 dark:border-orange-800 bg-white dark:bg-gray-900 overflow-hidden">
+        <Card className="shadow-2xl border-2 border-orange-200 dark:border-orange-800 bg-white dark:bg-gray-900 overflow-clip">
           <CardHeader className="text-center bg-gradient-to-r from-orange-500 to-blue-500 dark:from-orange-600 dark:to-blue-600 pb-8 pt-6">
             <div className="flex justify-start mb-4">
               <Button

@@ -80,8 +80,8 @@ export default function GlobalHotfixes() {
   content: none !important;
 }
 
-/* Kill phantom horizontal scrollbars */
-html, body { overflow-x: hidden !important; }
+/* Kill phantom horizontal scrollbars — clip not hidden (hidden blocks Android touch scroll) */
+html, body { max-width: 100%; overflow-x: clip; }
 `.trim();
 
     const style = document.createElement("style");

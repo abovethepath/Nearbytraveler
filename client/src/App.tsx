@@ -2175,16 +2175,40 @@ function App() {
 
     // Safety: aggressively clean up stale scroll locks from Radix, modals,
     // and the chat page body lock. Runs every 500ms on mobile for fast recovery.
+    const CHAT_PATH_PREFIXES = [
+      '/chatroom/', '/dm-chat/', '/chat/', '/event-chat/',
+      '/meetup-chat/', '/quick-meetup-chat/', '/meetup-chatroom-chat/',
+      '/whatsapp-chatroom/',
+    ];
+    const isOnChatRoute = () => {
+      const p = window.location.pathname;
+      if (CHAT_PATH_PREFIXES.some(prefix => p.startsWith(prefix))) return true;
+      // /messages/:id (DM chat)
+      const parts = p.split('/');
+      if (parts[1] === 'messages' && parts[2]) return true;
+      return false;
+    };
     const cleanupScrollLock = () => {
       const hasOpenDialog = document.querySelector('[data-state="open"][role="dialog"], [data-state="open"][role="alertdialog"]');
-      const hasChatPage = document.body.classList.contains('chat-page-active');
+      const onChatRoute = isOnChatRoute();
       // Remove Radix scroll lock if no dialog is open
       if (document.body.hasAttribute('data-scroll-locked') && !hasOpenDialog) {
         document.body.removeAttribute('data-scroll-locked');
         document.body.style.removeProperty('overflow');
         document.body.style.removeProperty('padding-right');
       }
+      // Remove stale chat-page-active class when not actually on a chat route
+      if (!onChatRoute && document.body.classList.contains('chat-page-active')) {
+        document.body.classList.remove('chat-page-active', 'is-chat-page');
+        document.body.style.removeProperty('overflow');
+        document.body.style.removeProperty('position');
+        document.body.style.removeProperty('width');
+        document.body.style.removeProperty('height');
+        document.body.style.removeProperty('top');
+        document.body.style.removeProperty('left');
+      }
       // Remove stale inline overflow:hidden if no lock source is active
+      const hasChatPage = document.body.classList.contains('chat-page-active');
       if (!hasOpenDialog && !hasChatPage && !document.body.classList.contains('nt-scroll-locked')) {
         if (document.body.style.overflow === 'hidden') {
           document.body.style.removeProperty('overflow');

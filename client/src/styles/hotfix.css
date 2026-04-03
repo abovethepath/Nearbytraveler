@@ -37,8 +37,8 @@
 .map-shell { position: relative; width: 100%; min-height: 320px; border-radius: .5rem; overflow: hidden; }
 @media (min-width: 640px) { .map-shell { min-height: 400px; } }
 
-/* 5) Kill horizontal scrollbars */
-html, body { overflow-x: hidden; }
+/* 5) Kill horizontal scrollbars — use clip NOT hidden (hidden creates scroll context on Android) */
+html, body { max-width: 100%; overflow-x: clip; }
 
 /* 6) DESKTOP HERO TEXT */
 @media (min-width: 1024px) {

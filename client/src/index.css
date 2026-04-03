@@ -174,7 +174,7 @@ input:-webkit-autofill {
 /* Mobile web: prevent body bounce — only content between navbars scrolls */
 @media (max-width: 767px) {
   html, body {
-    overflow-x: hidden;
+    overflow-x: clip;
     /* overscroll-behavior:none removed from html/body — it blocks scroll
        initiation on Samsung Internet. Scoped to .main-with-bottom-nav instead. */
   }
@@ -394,7 +394,7 @@ button.user-card [data-role="user-card-text-container"] {
 /* Default to dark background so Chrome gutters never show white around max-width containers */
 html {
   background-color: #111827;
-  overflow-x: hidden !important;
+  overflow-x: clip !important;
   max-width: 100vw !important;
   /* Scrollbar: always reserve space (prevents layout shift) but make it invisible */
   overflow-y: scroll;
@@ -414,7 +414,7 @@ html.dark {
 }
 
 body {
-  overflow-x: hidden !important;
+  overflow-x: clip !important;
   max-width: 100vw !important;
   width: 100% !important;
   position: relative !important;
@@ -491,7 +491,7 @@ body.light {
 .profile-page {
   width: 100% !important;
   max-width: 100vw !important;
-  overflow-x: hidden !important;
+  overflow-x: clip !important;
   box-sizing: border-box !important;
 }
 
@@ -537,7 +537,7 @@ button.user-card:first-child > div:first-of-type {
   html, body, #root {
     width: 100% !important;
     max-width: 100vw !important;
-    overflow-x: hidden !important;
+    overflow-x: clip !important;
     position: relative !important;
   }
   
@@ -545,13 +545,13 @@ button.user-card:first-child > div:first-of-type {
   .min-h-screen {
     width: 100% !important;
     max-width: 100vw !important;
-    overflow-x: hidden !important;
+    overflow-x: clip !important;
   }
   
   /* Fix gradient sections that might overflow horizontally */
   [class*="bg-gradient"] {
     max-width: 100% !important;
-    overflow-x: hidden;
+    overflow-x: clip;
   }
   
   /* Ensure avatars don't get clipped */
@@ -602,7 +602,7 @@ button.user-card:first-child > div:first-of-type {
     width: 100% !important;
     max-width: 100vw !important;
     min-height: 100vh !important;
-    overflow-x: hidden !important;
+    overflow-x: clip !important;
   }
   
   /* Make containers responsive for tablets */
@@ -2031,7 +2031,7 @@ p, span, div, button, input, textarea, select {
   
   /* Prevent horizontal scrolling */
   body {
-    overflow-x: hidden;
+    overflow-x: clip;
     max-width: 100vw;
   }
   
