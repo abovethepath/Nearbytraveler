@@ -5694,13 +5694,22 @@ Questions? Just reply here — I read every message.
           if (process.env.NODE_ENV === 'development') console.log("  ✓ Set travel destination from currentCity:", processedData.travelDestination);
         }
 
-        // CRITICAL: Travelers must have a valid city destination - reject if missing
-        const destValid = processedData.travelDestination && String(processedData.travelDestination).trim() && String(processedData.travelDestination).toLowerCase() !== 'null';
-        if (!destValid) {
-          return res.status(400).json({
-            message: "Travel destination (city) is required when signing up as a traveler.",
-            field: "destinationCity"
-          });
+        // If user checked "I'm not currently traveling", treat as local — skip travel destination requirement
+        if (processedData.skippedTravel) {
+          processedData.isCurrentlyTraveling = false;
+          processedData.userType = 'local';
+          if (process.env.NODE_ENV === 'development') console.log("  ✓ skippedTravel=true — treating as local, no destination required");
+        }
+
+        // CRITICAL: Travelers must have a valid city destination - reject if missing (skip if skippedTravel)
+        if (!processedData.skippedTravel) {
+          const destValid = processedData.travelDestination && String(processedData.travelDestination).trim() && String(processedData.travelDestination).toLowerCase() !== 'null';
+          if (!destValid) {
+            return res.status(400).json({
+              message: "Travel destination (city) is required when signing up as a traveler.",
+              field: "destinationCity"
+            });
+          }
         }
         
         // Set travel dates - accept either travelReturnDate or travelEndDate
@@ -5901,13 +5910,15 @@ Questions? Just reply here — I read every message.
           }
         }
 
-        // CRITICAL: Travelers must have a valid city destination - reject if still missing
-        const destValidSecondary = processedData.travelDestination && String(processedData.travelDestination).trim() && String(processedData.travelDestination).toLowerCase() !== 'null';
-        if (!destValidSecondary) {
-          return res.status(400).json({
-            message: "Travel destination (city) is required when signing up as a traveler.",
-            field: "destinationCity"
-          });
+        // CRITICAL: Travelers must have a valid city destination - reject if still missing (skip if skippedTravel)
+        if (!processedData.skippedTravel) {
+          const destValidSecondary = processedData.travelDestination && String(processedData.travelDestination).trim() && String(processedData.travelDestination).toLowerCase() !== 'null';
+          if (!destValidSecondary) {
+            return res.status(400).json({
+              message: "Travel destination (city) is required when signing up as a traveler.",
+              field: "destinationCity"
+            });
+          }
         }
         
         // Map localActivities and localEvents to main fields
