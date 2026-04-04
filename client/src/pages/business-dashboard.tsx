@@ -281,7 +281,7 @@ export default function BusinessDashboard() {
   };
 
   // Get current business user from AuthContext (session-based)
-  const { user: authUser } = useContext(AuthContext);
+  const { user: authUser, authLoading } = useContext(AuthContext);
 
   // Debug logging
   console.log('BusinessDashboard - authUser:', authUser, 'userType:', authUser?.userType);
@@ -719,9 +719,9 @@ export default function BusinessDashboard() {
   // Filter current offers (active ones)
   const currentOffers = offers.filter(offer => new Date(offer.validUntil) >= new Date());
 
-  console.log('BusinessDashboard - final check - currentUser:', currentUser, 'userType:', currentUser?.userType);
+  console.log('BusinessDashboard - final check - currentUser:', currentUser, 'userType:', currentUser?.userType, 'authLoading:', authLoading);
   // Show loading while auth is resolving (authUser starts null before session loads)
-  if (!currentUser) {
+  if (!currentUser || authLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900">
         <div className="text-gray-500 dark:text-gray-400 text-sm">Loading dashboard...</div>
