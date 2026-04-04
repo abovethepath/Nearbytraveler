@@ -4,6 +4,7 @@ import { useLocation } from "wouter";
 import { getApiBaseUrl, apiRequest } from "@/lib/queryClient";
 import { Zap, UserPlus, MessageCircle, ChevronLeft, ChevronRight, ChevronRight as ArrowRight, Check, Loader2, XCircle } from "lucide-react";
 import { getMetroAreaName } from "@shared/metro-areas";
+import { useToast } from "@/hooks/use-toast";
 
 function timeLeft(expiresAt: string): string | null {
   const ms = new Date(expiresAt).getTime() - Date.now();
@@ -35,6 +36,7 @@ const SCROLL_AMOUNT = 170;
 
 export default function AvailableNowStrip({ currentUserId: propUserId, userCity, isCurrentlyTraveling, travelDestination }: AvailableNowStripProps) {
   const [, setLocation] = useLocation();
+  const { toast } = useToast();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [sendingTo, setSendingTo] = useState<number | null>(null);
   // Fallback: resolve userId from localStorage if prop is temporarily undefined during re-render
@@ -64,7 +66,7 @@ export default function AvailableNowStrip({ currentUserId: propUserId, userCity,
     return set;
   }, [sentRequestsData, localSent]);
 
-  const sendJoinRequest = async (toUserId: number, isOpenJoin?: boolean) => {
+  const sendJoinRequest = async (toUserId: number, isOpenJoin?: boolean, username?: string) => {
     if (!currentUserId || sentRequests.has(toUserId) || sendingTo) return;
     setSendingTo(toUserId);
     try {
@@ -99,6 +101,10 @@ export default function AvailableNowStrip({ currentUserId: propUserId, userCity,
       });
       if (res.ok || res.status === 409) {
         setLocalSent(prev => new Set(prev).add(toUserId));
+        toast({
+          title: "Request sent!",
+          description: username ? `We'll notify you when @${username} accepts.` : "We'll notify you when they accept.",
+        });
       }
     } catch { /* silent */ }
     setSendingTo(null);
@@ -329,7 +335,7 @@ export default function AvailableNowStrip({ currentUserId: propUserId, userCity,
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        sendJoinRequest(user.id, !!(entry as any).openJoin || !!(entry as any).open_join);
+                        sendJoinRequest(user.id, !!(entry as any).openJoin || !!(entry as any).open_join, user.username);
                       }}
                       disabled={sendingTo === user.id}
                       className="flex items-center gap-1 w-full justify-center px-2 py-1.5 rounded-full bg-green-500 hover:bg-green-600 text-white text-[11px] font-semibold transition-colors disabled:opacity-50"

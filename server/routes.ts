@@ -27035,6 +27035,32 @@ Questions? Just reply to this message. Welcome aboard!
         }
       }
 
+      // Expo push notification for meet request
+      try {
+        const { sendPushNotification: expoPush } = await import('./services/pushNotificationService');
+        const pushResult = await expoPush(
+          toUid,
+          '👋 Meet request!',
+          `@${username} wants to meet up with you!`,
+          { type: 'available_now_meet_request', fromUserId: fromUid, requestId: request.id }
+        );
+        if (!pushResult.success) {
+          // OneSignal fallback (already handled by createNotification hook, but explicit for reliability)
+          const { pushToUser: doPush } = await import('./pushNotifications');
+          await doPush({
+            db, users, eq,
+            toUserId: toUid,
+            title: '👋 Meet request!',
+            message: `@${username} wants to meet up with you!`,
+            url: '/available-now',
+            notifType: 'available_now_meet_request',
+            fromUserId: fromUid,
+          });
+        }
+      } catch (pushErr) {
+        console.warn('Meet request push notification failed:', pushErr);
+      }
+
       res.json(request);
     } catch (error: any) {
       console.error("Error sending meet request:", error);

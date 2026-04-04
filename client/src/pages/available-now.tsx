@@ -7,6 +7,7 @@ import { Zap, UserPlus, MessageCircle, ArrowLeft, MapPin, Check, Loader2 } from 
 import { Button } from "@/components/ui/button";
 import { AvailableNowWidget } from "@/components/AvailableNowWidget";
 import { getMetroAreaName } from "@shared/metro-areas";
+import { useToast } from "@/hooks/use-toast";
 
 function timeLeft(expiresAt: string): string | null {
   const ms = new Date(expiresAt).getTime() - Date.now();
@@ -29,6 +30,7 @@ function getActivityLabel(act: string): string {
 
 export default function AvailableNowPage() {
   const [, setLocation] = useLocation();
+  const { toast } = useToast();
   const authContext = useContext(AuthContext);
   const user = authContext?.user;
 
@@ -85,7 +87,7 @@ export default function AvailableNowPage() {
     return map;
   }, [myGroupChats]);
 
-  const sendJoinRequest = async (toUserId: number) => {
+  const sendJoinRequest = async (toUserId: number, username?: string) => {
     if (!user?.id || sentRequests.has(toUserId) || sendingTo) return;
     setSendingTo(toUserId);
     try {
@@ -97,6 +99,10 @@ export default function AvailableNowPage() {
       });
       if (res.ok || res.status === 409) {
         setLocalSent(prev => new Set(prev).add(toUserId));
+        toast({
+          title: "Request sent!",
+          description: username ? `We'll notify you when @${username} accepts.` : "We'll notify you when they accept.",
+        });
       }
     } catch { /* silent */ }
     setSendingTo(null);
@@ -275,7 +281,7 @@ export default function AvailableNowPage() {
                     </Button>
                   ) : (
                     <Button
-                      onClick={() => sendJoinRequest(u.id)}
+                      onClick={() => sendJoinRequest(u.id, u.username)}
                       disabled={sendingTo === u.id}
                       className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold"
                     >
