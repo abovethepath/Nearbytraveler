@@ -96,6 +96,8 @@ export const METRO_AREAS = {
     'Mission Viejo', 'Aliso Viejo', 'Rancho Santa Margarita', 'San Clemente',
     'Dana Point', 'Laguna Niguel', 'Laguna Hills', 'Fountain Valley',
     'Westminster', 'Stanton', 'La Palma',
+    'Villa Park', 'Rossmoor', 'Midway City', 'Sunset Beach', 'Surfside',
+    'Coto de Caza', 'Las Flores', 'Ladera Ranch', 'Trabuco Canyon', 'Portola Hills', 'Foothill Ranch',
   ],
 
   "Chicago Metro": [

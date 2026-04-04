@@ -214,12 +214,18 @@ export const CITIES_BY_COUNTRY: Record<string, string[]> = {
     // Top 8 priority cities - always appear first
     "Los Angeles", "Las Vegas", "Miami", "Nashville", "New Orleans", "Austin", "Chicago", "New York City",
     
-    // Los Angeles Metropolitan Area Cities (unique only - no duplicates)
+    // Los Angeles Metropolitan Area Cities & Neighborhoods
     "Beverly Hills", "Burbank", "Culver City", "El Segundo", "Malibu", "Manhattan Beach", "Playa del Rey", "Redondo Beach", "Santa Monica", "Venice", "West Hollywood", "Westwood",
-    
-    // NYC Boroughs
+    "Silver Lake", "Echo Park", "Highland Park", "Koreatown", "Leimert Park", "Crenshaw", "Marina del Rey", "Playa Vista", "Ladera Heights",
+    "Seal Beach", "Los Alamitos", "Laguna Hills", "La Palma", "Villa Park", "Rossmoor", "Midway City", "Sunset Beach", "Surfside", "Coto de Caza", "Las Flores", "Ladera Ranch", "Trabuco Canyon", "Portola Hills", "Foothill Ranch",
+
+    // NYC Boroughs & Neighborhoods
     "Manhattan", "Bronx", "Brooklyn", "Queens", "Staten Island",
-    "Aberdeen", "Abilene", "Akron", "Albany", "Albuquerque", "Alexandria", "Allentown", "Amarillo", "Anaheim", "Anchorage", "Ann Arbor", "Arlington", "Astoria", "Atlanta", "Augusta", "Aurora",
+    "Williamsburg", "DUMBO", "Park Slope", "Crown Heights", "Bushwick", "Bed-Stuy", "Greenpoint", "Fort Greene", "Prospect Heights",
+    "Astoria", "Long Island City", "Flushing", "Forest Hills", "Jackson Heights", "Sunnyside", "Woodside", "Bayside", "Far Rockaway",
+    "Harlem", "Washington Heights", "Chelsea", "Greenwich Village", "West Village", "SoHo", "Tribeca", "East Village", "Lower East Side", "Hell's Kitchen", "Upper West Side", "Upper East Side",
+    "Riverdale", "Fordham", "Mott Haven",
+    "Aberdeen", "Abilene", "Akron", "Albany", "Albuquerque", "Alexandria", "Allentown", "Amarillo", "Anaheim", "Anchorage", "Ann Arbor", "Arlington", "Atlanta", "Augusta", "Aurora",
     "Bakersfield", "Baltimore", "Baton Rouge", "Beaumont", "Bellevue", "Berkeley", "Birmingham", "Boise", "Boston", "Bridgeport", "Buffalo",
     "Cambridge", "Cape Coral", "Carrollton", "Cary", "Cedar Rapids", "Chandler", "Charleston", "Charlotte", "Chattanooga", "Chesapeake", "Cincinnati", "Clarksville", "Cleveland", "Colorado Springs", "Columbia", "Columbus", "Concord", "Coral Springs", "Corona", "Corpus Christi",
     "Dallas", "Dayton", "Denver", "Des Moines", "Detroit", "Durham",
