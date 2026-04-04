@@ -219,7 +219,7 @@ export const CITIES_BY_COUNTRY: Record<string, string[]> = {
     
     // NYC Boroughs
     "Manhattan", "Bronx", "Brooklyn", "Queens", "Staten Island",
-    "Aberdeen", "Abilene", "Akron", "Albany", "Albuquerque", "Alexandria", "Allentown", "Amarillo", "Anaheim", "Anchorage", "Ann Arbor", "Arlington", "Atlanta", "Augusta", "Aurora",
+    "Aberdeen", "Abilene", "Akron", "Albany", "Albuquerque", "Alexandria", "Allentown", "Amarillo", "Anaheim", "Anchorage", "Ann Arbor", "Arlington", "Astoria", "Atlanta", "Augusta", "Aurora",
     "Bakersfield", "Baltimore", "Baton Rouge", "Beaumont", "Bellevue", "Berkeley", "Birmingham", "Boise", "Boston", "Bridgeport", "Buffalo",
     "Cambridge", "Cape Coral", "Carrollton", "Cary", "Cedar Rapids", "Chandler", "Charleston", "Charlotte", "Chattanooga", "Chesapeake", "Cincinnati", "Clarksville", "Cleveland", "Colorado Springs", "Columbia", "Columbus", "Concord", "Coral Springs", "Corona", "Corpus Christi",
     "Dallas", "Dayton", "Denver", "Des Moines", "Detroit", "Durham",
