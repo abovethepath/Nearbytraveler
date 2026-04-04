@@ -2166,6 +2166,10 @@ function App() {
     if (isNativeIOSApp()) {
       document.body.setAttribute('data-native-ios', 'true');
     }
+    // Android detection for platform-specific scroll fixes
+    if (/android/i.test(navigator.userAgent)) {
+      document.body.setAttribute('data-android', 'true');
+    }
     // Global: capture ?ref= referral code from ANY page URL into sessionStorage
     try {
       const params = new URLSearchParams(window.location.search);

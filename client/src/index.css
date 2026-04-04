@@ -2818,3 +2818,13 @@ html.dark .landing-quote {
     padding: 0;
   }
 }
+
+/* Android-only scroll fixes — does not affect iOS or desktop */
+body[data-android="true"] {
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+body[data-android="true"] html {
+  overflow-y: auto !important;
+}
