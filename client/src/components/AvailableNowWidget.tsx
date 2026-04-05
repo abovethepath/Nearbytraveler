@@ -166,21 +166,22 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
   const { data: pendingRequests } = useQuery<MeetRequest[]>({
     queryKey: ["/api/available-now/requests"],
     enabled: !!currentUser?.id,
-    refetchInterval: 4000,
+    refetchInterval: 15000,
+    staleTime: 10000,
   });
 
   const { data: sentRequestsData } = useQuery<{ sentToUserIds: number[] }>({
     queryKey: ["/api/available-now/sent-requests"],
     enabled: !!currentUser?.id,
-    refetchInterval: 5000,
+    refetchInterval: 20000,
+    staleTime: 10000,
   });
 
   const { data: acceptedRequestsData } = useQuery<{ acceptedChatroomMap: Record<number, number> }>({
     queryKey: ["/api/available-now/accepted-requests"],
     enabled: !!currentUser?.id,
-    refetchInterval: 5000,
-    retry: 3,
-    retryDelay: 500,
+    refetchInterval: 20000,
+    staleTime: 10000,
   });
 
   const acceptedChatroomMap: Record<number, number> = acceptedRequestsData?.acceptedChatroomMap || {};

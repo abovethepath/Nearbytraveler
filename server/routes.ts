@@ -26614,6 +26614,25 @@ Questions? Just reply to this message. Welcome aboard!
       // Normalize city: strip state/country suffix (e.g. "Los Angeles, CA" → "Los Angeles")
       const normalizedCity = (city as string).split(',')[0].trim();
 
+      // Cache the base results for 10 seconds to reduce DB load from polling
+      const cacheKey = `available-now:${normalizedCity.toLowerCase()}`;
+      const cached = await cache.get(cacheKey).catch(() => null);
+      if (cached) {
+        let formatted = cached as any[];
+        // Still apply per-user block/hidden filtering on cached data
+        const currentUserId = req.user?.id || parseInt(req.headers['x-user-id'] as string) || 0;
+        if (currentUserId > 0 && currentUserId !== 2) {
+          const [hiddenFromMe, blockedByMe, blockedMe] = await Promise.all([
+            db.select({ userId: hiddenFromUsers.userId }).from(hiddenFromUsers).where(eq(hiddenFromUsers.hiddenFromId, currentUserId)),
+            db.select({ blockedId: blockedUsers.blockedId }).from(blockedUsers).where(eq(blockedUsers.blockerId, currentUserId)),
+            db.select({ blockerId: blockedUsers.blockerId }).from(blockedUsers).where(eq(blockedUsers.blockedId, currentUserId)),
+          ]);
+          const excludeIds = new Set([...hiddenFromMe.map(h => h.userId), ...blockedByMe.map(b => b.blockedId), ...blockedMe.map(b => b.blockerId)]);
+          formatted = formatted.filter(f => !excludeIds.has(f.user.id));
+        }
+        return res.json(formatted);
+      }
+
       const now = new Date();
       const metroDetection = detectMetroArea(normalizedCity);
       let cityCondition;
@@ -26658,18 +26677,24 @@ Questions? Just reply to this message. Welcome aboard!
         }
       }));
 
+      // Cache base results for 10 seconds (block filtering is applied per-user after cache hit)
+      cache.set(cacheKey, formatted, 10).catch(() => {});
+
       const currentUserId = req.user?.id || parseInt(req.headers['x-user-id'] as string) || 0;
       // Admin (nearbytrav, user ID 2) bypasses all stealth/block filters to see every user
       if (currentUserId > 0 && currentUserId !== 2) {
-        const hiddenFromMe = await db.select({ userId: hiddenFromUsers.userId })
-          .from(hiddenFromUsers)
-          .where(eq(hiddenFromUsers.hiddenFromId, currentUserId));
-        const blockedByMe = await db.select({ blockedId: blockedUsers.blockedId })
-          .from(blockedUsers)
-          .where(eq(blockedUsers.blockerId, currentUserId));
-        const blockedMe = await db.select({ blockerId: blockedUsers.blockerId })
-          .from(blockedUsers)
-          .where(eq(blockedUsers.blockedId, currentUserId));
+        // Run all 3 filter queries in parallel instead of sequentially
+        const [hiddenFromMe, blockedByMe, blockedMe] = await Promise.all([
+          db.select({ userId: hiddenFromUsers.userId })
+            .from(hiddenFromUsers)
+            .where(eq(hiddenFromUsers.hiddenFromId, currentUserId)),
+          db.select({ blockedId: blockedUsers.blockedId })
+            .from(blockedUsers)
+            .where(eq(blockedUsers.blockerId, currentUserId)),
+          db.select({ blockerId: blockedUsers.blockerId })
+            .from(blockedUsers)
+            .where(eq(blockedUsers.blockedId, currentUserId)),
+        ]);
         const excludeIds = new Set([
           ...hiddenFromMe.map(h => h.userId),
           ...blockedByMe.map(b => b.blockedId),
@@ -27578,9 +27603,8 @@ Questions? Just reply to this message. Welcome aboard!
       // Now we directly query which active meetup chatrooms the user is a member of.
       const rightNow = new Date();
 
-      // First: deactivate any chatrooms whose linked Available Now session has ended
-      // This catches sessions that expired naturally without the user cancelling
-      await db.execute(sql`
+      // Deactivate expired chatrooms in background — don't block the response
+      db.execute(sql`
         UPDATE meetup_chatrooms SET is_active = false
         WHERE is_active = true
           AND available_now_id IS NOT NULL
