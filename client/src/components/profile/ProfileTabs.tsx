@@ -4565,6 +4565,46 @@ export function ProfileTabs(props: ProfilePageProps) {
                           {(user as any)?.businessName ?? user?.businessName ?? (user as any)?.name ?? "Not set"}
                         </span>
                       </div>
+
+                      {/* Owner section — show if owner name exists and is different from contact */}
+                      {(() => {
+                        const ownerName = (user as any)?.ownerName;
+                        const contactName = (user as any)?.contactName ?? user?.contactName;
+                        const ownerIsSameAsContact = ownerName && contactName && ownerName.toLowerCase().trim() === contactName.toLowerCase().trim();
+                        const hasOwner = ownerName && !ownerIsSameAsContact;
+
+                        return hasOwner ? (
+                          <>
+                            <div className="pt-2 border-t border-purple-200 dark:border-purple-700">
+                              <p className="text-xs font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wide mb-2">Owner</p>
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm text-gray-600 dark:text-gray-400">Name:</span>
+                              <span className="text-sm font-medium text-gray-900 dark:text-white">{ownerName}</span>
+                            </div>
+                            {user?.ownerEmail && (
+                              <div className="flex items-center justify-between">
+                                <span className="text-sm text-gray-600 dark:text-gray-400">Email:</span>
+                                <a href={`mailto:${user.ownerEmail}`} className="text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 underline transition-colors">
+                                  {user.ownerEmail}
+                                </a>
+                              </div>
+                            )}
+                            {user?.ownerPhone && (
+                              <div className="flex items-center justify-between">
+                                <span className="text-sm text-gray-600 dark:text-gray-400">Phone:</span>
+                                <a href={`tel:${user.ownerPhone}`} className="text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 underline transition-colors">
+                                  {user.ownerPhone}
+                                </a>
+                              </div>
+                            )}
+                            <div className="pt-2 border-t border-purple-200 dark:border-purple-700">
+                              <p className="text-xs font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wide mb-2">Manager / Contact</p>
+                            </div>
+                          </>
+                        ) : null;
+                      })()}
+
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-gray-600 dark:text-gray-400">Contact Person&apos;s Name:</span>
                         <span className="text-sm font-medium text-gray-900 dark:text-white">
@@ -4580,8 +4620,8 @@ export function ProfileTabs(props: ProfilePageProps) {
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-gray-600 dark:text-gray-400">Contact Email:</span>
                         {user?.ownerEmail ? (
-                          <a 
-                            href={`mailto:${user.ownerEmail}`} 
+                          <a
+                            href={`mailto:${user.ownerEmail}`}
                             className="text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 underline transition-colors"
                           >
                             {user.ownerEmail}
@@ -4595,8 +4635,8 @@ export function ProfileTabs(props: ProfilePageProps) {
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-gray-600 dark:text-gray-400">Contact Phone Number:</span>
                         {user?.ownerPhone ? (
-                          <a 
-                            href={`tel:${user.ownerPhone}`} 
+                          <a
+                            href={`tel:${user.ownerPhone}`}
                             className="text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 underline transition-colors"
                           >
                             {user.ownerPhone}

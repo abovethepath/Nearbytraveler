@@ -6232,7 +6232,8 @@ export class DatabaseStorage implements IStorage {
           specialty: users.specialty,
           priceRange: users.priceRange,
           tags: users.tags,
-          isAiGenerated: users.isAIGenerated
+          isAiGenerated: users.isAIGenerated,
+          createdAt: users.createdAt,
         })
         .from(users)
         .where(and(

@@ -111,7 +111,16 @@ export default function BusinessesGrid({ currentLocation, travelPlans = [] }: Bu
     );
   }
 
-  const visible = businesses.slice(0, displayLimit);
+  const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
+  const isNewBusiness = (b: any) => b.createdAt && (Date.now() - new Date(b.createdAt).getTime()) < THIRTY_DAYS_MS;
+
+  // Sort: new businesses first, then the rest
+  const sorted = [...businesses].sort((a, b) => {
+    const aNew = isNewBusiness(a) ? 1 : 0;
+    const bNew = isNewBusiness(b) ? 1 : 0;
+    return bNew - aNew;
+  });
+  const visible = sorted.slice(0, displayLimit);
 
   return (
     <>
@@ -148,9 +157,16 @@ export default function BusinessesGrid({ currentLocation, travelPlans = [] }: Bu
               )}
 
               <div className="p-4 sm:p-5 flex flex-col flex-1 min-h-0">
-                <h3 className="font-bold text-gray-900 dark:text-white text-lg sm:text-xl leading-tight break-words">
-                  {title}
-                </h3>
+                <div className="flex items-center gap-2">
+                  <h3 className="font-bold text-gray-900 dark:text-white text-lg sm:text-xl leading-tight break-words">
+                    {title}
+                  </h3>
+                  {isNewBusiness(b) && (
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 whitespace-nowrap">
+                      New
+                    </span>
+                  )}
+                </div>
                 {category && (
                   <p className="text-sm text-orange-600 dark:text-orange-400 font-medium mt-1">{category}</p>
                 )}
