@@ -35,7 +35,7 @@ Visit Website: {{website_url}}
 Help Center: {{help_url}}
 Privacy Policy: {{privacy_url}}
 
-© 2025 The NearbyTraveler.com. All rights reserved.
+© 2025 Nearby Traveler. All rights reserved.
 You're receiving this email because you signed up for Nearby Traveler.
 
 Unsubscribe: {{unsubscribe_url}}
