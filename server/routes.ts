@@ -5854,6 +5854,11 @@ Questions? Just reply here — I read every message.
           processedData.hometown = `${processedData.hometownCity}, ${processedData.hometownState}, ${processedData.hometownCountry}`;
         }
 
+        // Default language to English for business accounts if not set
+        if (!processedData.languagesSpoken || (Array.isArray(processedData.languagesSpoken) && processedData.languagesSpoken.length === 0)) {
+          processedData.languagesSpoken = ['English'];
+        }
+
         if (process.env.NODE_ENV === 'development') console.log("Mapped business data:", {
           hometownCity: processedData.hometownCity,
           hometownState: processedData.hometownState,
@@ -32166,7 +32171,25 @@ Questions? Just reply to this message. Welcome aboard!
 
   // ─────────────────────────────────────────────────────────────────────────────
 
-  // Return the configured HTTP server with WebSocket support  
+  // One-time migration: set English as default language for business accounts with none set
+  setImmediate(async () => {
+    try {
+      const result = await db.update(users)
+        .set({ languagesSpoken: ['English'] })
+        .where(and(
+          eq(users.userType, 'business'),
+          or(
+            isNull(users.languagesSpoken),
+            sql`array_length(${users.languagesSpoken}, 1) IS NULL`
+          )
+        ));
+      console.log('✅ MIGRATION: Set English as default language for business accounts with no language');
+    } catch (e) {
+      console.warn('⚠️ MIGRATION: Business language default migration skipped:', (e as any)?.message);
+    }
+  });
+
+  // Return the configured HTTP server with WebSocket support
   return httpServer;
 }
 
