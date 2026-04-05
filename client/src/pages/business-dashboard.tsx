@@ -227,6 +227,7 @@ export default function BusinessDashboard() {
   const [reuseDealData, setReuseDealData] = useState<any>(null);
   const [startingToday, setStartingToday] = useState(true);
   const [showQuickDealCreator, setShowQuickDealCreator] = useState(false);
+  const [welcomeDismissed, setWelcomeDismissed] = useState(() => localStorage.getItem('business_welcome_dismissed') === 'true');
   
   // Check URL parameters for actions
   React.useEffect(() => {
@@ -781,6 +782,27 @@ export default function BusinessDashboard() {
             </Button>
           </div>
         </div>
+
+        {/* Welcome banner for new business users */}
+        {!welcomeDismissed && (
+          <div className="mb-6 sm:mb-8 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/60 p-4 sm:p-6">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Welcome to your Business Dashboard</h2>
+            <div className="space-y-2 text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+              <p>
+                <span className="font-semibold text-purple-600 dark:text-purple-400">Quick Deal</span> — A flash offer you post in real time. Travelers nearby see it immediately in the app. Great for slow nights, last-minute availability, or filling seats fast. You get 10 per month.
+              </p>
+              <p>
+                <span className="font-semibold text-blue-600 dark:text-blue-400">Deal</span> — A regular ongoing offer visible to all travelers browsing your city. Set it and leave it running. You can have up to 5 active at a time.
+              </p>
+            </div>
+            <button
+              onClick={() => { setWelcomeDismissed(true); localStorage.setItem('business_welcome_dismissed', 'true'); }}
+              className="mt-4 px-4 py-2 text-sm font-medium rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200 transition-colors"
+            >
+              Got it
+            </button>
+          </div>
+        )}
 
         {/* Mobile-responsive analytics cards */}
         <div className="grid grid-cols-2 lg:grid-cols-6 gap-3 sm:gap-4 lg:gap-6 mb-6 sm:mb-8 min-w-0 overflow-hidden">
