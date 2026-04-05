@@ -1007,6 +1007,8 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         { loc: "/connector", priority: "0.7", changefreq: "monthly" },
         { loc: "/couchsurfing", priority: "0.7", changefreq: "monthly" },
         { loc: "/business-landing", priority: "0.7", changefreq: "monthly" },
+        { loc: "/blog", priority: "0.7", changefreq: "weekly" },
+        { loc: "/blog/how-to-meet-people-when-traveling-alone", priority: "0.6", changefreq: "monthly" },
       ];
 
       // City pages from city_pages table

@@ -167,6 +167,8 @@ import { PitchPreview } from "@/pages/pitch-preview";
 import AdminSettings from "@/pages/admin-settings";
 import SMSTest from "@/pages/sms-test";
 import FinishingSetup from "@/pages/FinishingSetup";
+import Blog from "@/pages/blog";
+import BlogPost from "@/pages/blog-post";
 import Privacy from "@/pages/privacy";
 import Terms from "@/pages/terms";
 import Cookies from "@/pages/cookies";
@@ -364,7 +366,7 @@ function Router() {
     const p = initialPath;
     return p === '/' || p === '/auth' || p === '/signin' || p === '/join'
       || p.startsWith('/signup') || p.startsWith('/landing')
-      || p === '/about' || p === '/privacy' || p === '/terms'
+      || p === '/about' || p === '/privacy' || p === '/terms' || p.startsWith('/blog')
       || p === '/forgot-password' || p.startsWith('/reset-password')
       || p === '/events-landing' || p === '/business-landing'
       || p === '/locals-landing' || p === '/travelers-landing'
@@ -495,7 +497,7 @@ function Router() {
 
   const landingPageRoutes = [
     '/', '/landing', '/landing-new', '/auth', '/auth/signup', '/join', '/signup', '/signup/local', '/signup/traveler', '/signup/business', '/signup/account', '/signup/traveling',
-    '/events-landing', '/business-landing', '/locals-landing', '/travelers-landing', /* '/networking-landing', */ '/couchsurfing', '/cs', '/b', '/privacy', '/terms', '/cookies', '/about', '/connector', '/connector-program', '/getting-started',
+    '/events-landing', '/business-landing', '/locals-landing', '/travelers-landing', /* '/networking-landing', */ '/couchsurfing', '/cs', '/b', '/privacy', '/terms', '/cookies', '/about', '/blog', '/connector', '/connector-program', '/getting-started',
     '/forgot-password', '/reset-password', '/welcome', '/welcome-business', '/finishing-setup', '/quick-login', '/preview-landing', '/preview-first-landing',
     '/travel-quiz', '/TravelIntentQuiz', '/business-card', '/qr-code', '/landing-simple', '/signin', '/launching-soon', '/waitlist'
   ];
@@ -637,6 +639,7 @@ function Router() {
     ]);
     if (PUBLIC_MARKETING_ROUTES.has(normalizedPath)) return true;
     if (normalizedPath.startsWith("/landing")) return true;
+    if (normalizedPath.startsWith("/blog")) return true;
 
     // Signup flows
     if (normalizedPath === "/signup" || normalizedPath.startsWith("/signup/")) return true;
@@ -1531,6 +1534,13 @@ function Router() {
       if (location === '/about') {
         return <About />;
       }
+      if (location === '/blog') {
+        return <Blog />;
+      }
+      if (location.startsWith('/blog/')) {
+        const blogSlug = location.replace('/blog/', '');
+        return <BlogPost slug={blogSlug} />;
+      }
       if (location === '/connector') {
         return <ConnectorLanding />;
       }
@@ -1955,6 +1965,8 @@ function Router() {
         return <SMSTest />;
       case '/travel-blog':
         return <TravelBlog />;
+      case '/blog':
+        return <Blog />;
       case '/welcome':
         return <Welcome />;
       case '/welcome-business':
@@ -1992,6 +2004,10 @@ function Router() {
         return <Home />;
       default:
         // Handle dynamic routes first before showing NotFound
+        if (normalizedLocation.startsWith('/blog/')) {
+          const blogSlug = normalizedLocation.replace('/blog/', '');
+          return <BlogPost slug={blogSlug} />;
+        }
         // Profile routes now handled before authentication check to prevent redirect loops
         if (normalizedLocation.startsWith('/events/')) {
           const eventId = normalizedLocation.split('/')[2];
