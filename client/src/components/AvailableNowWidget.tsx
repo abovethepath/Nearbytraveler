@@ -112,6 +112,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
   const [customNote, setCustomNote] = useState("");
   const [duration, setDuration] = useState("4");
   const [openJoin, setOpenJoin] = useState(false);
+  const [alsoCrossMetro, setAlsoCrossMetro] = useState(false);
   const [showAllUsers, setShowAllUsers] = useState(false);
   const [localPendingUserIds, setLocalPendingUserIds] = useState<Set<number>>(new Set());
   const [pendingRequestId, setPendingRequestId] = useState<number | null>(null);
@@ -147,6 +148,14 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
   const userCity    = (availCity === 'trip' && hasDestination) ? destCity!    : homeCity;
   const userState   = (availCity === 'trip' && hasDestination) ? (destState || "")  : homeState;
   const userCountry = (availCity === 'trip' && hasDestination) ? (destCountry || "USA") : homeCountry;
+
+  // Cross-metro: LA ↔ OC neighbor detection
+  const userMetro = getMetroAreaName(userCity);
+  const CROSS_METRO: Record<string, { label: string; city: string; state: string }> = {
+    'Los Angeles Metro': { label: 'Also make me available in Orange County', city: 'Irvine', state: 'California' },
+    'Orange County Metro': { label: 'Also make me available in Los Angeles', city: 'Los Angeles', state: 'California' },
+  };
+  const crossMetro = CROSS_METRO[userMetro] || null;
 
   const { data: myStatus } = useQuery<MyStatus | null>({
     queryKey: ["/api/available-now/my-status"],
@@ -590,8 +599,9 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
       country: userCountry,
       durationHours: Number(duration),
       openJoin,
-      // When editing an existing session, preserve the existing meetup chatrooms.
       preserveChatrooms: !!myStatus,
+      // Cross-metro: also appear in neighbor metro's feed
+      ...(alsoCrossMetro && crossMetro ? { crossMetroCity: crossMetro.city, crossMetroState: crossMetro.state } : {}),
     });
   };
 
@@ -796,9 +806,9 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
               type="button"
               onClick={(e) => { e.stopPropagation(); clearAvailableMutation.mutate(); }}
               disabled={clearAvailableMutation.isPending}
-              className="w-full mt-3 py-2 px-4 rounded-xl text-sm font-semibold text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 dark:text-red-400 dark:bg-red-900/20 dark:hover:bg-red-900/40 dark:border-red-800 transition-colors"
+              className="w-full mt-3 min-h-[48px] py-2 px-4 rounded-xl text-sm font-semibold text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 dark:text-red-400 dark:bg-red-900/20 dark:hover:bg-red-900/40 dark:border-red-800 transition-colors"
             >
-              {clearAvailableMutation.isPending ? "Stopping..." : "No Longer Available"}
+              {clearAvailableMutation.isPending ? "Stopping..." : "Cancel Available Now"}
             </button>
             {allGroupChats.length > 0 && allGroupChats.map((chat: any) => (
               <div
@@ -1264,9 +1274,21 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
                 <span>Visible in {userCity ? getMetroAreaName(userCity) : "your city"}</span>
               </div>
             )}
+            {/* Cross-metro checkbox: LA ↔ OC */}
+            {crossMetro && (
+              <label className="flex items-center gap-2.5 py-2 px-1 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={alsoCrossMetro}
+                  onChange={(e) => setAlsoCrossMetro(e.target.checked)}
+                  className="w-4 h-4 rounded border-gray-300 text-orange-500 focus:ring-orange-500"
+                />
+                <span className="text-sm text-gray-700 dark:text-gray-300">{crossMetro.label}</span>
+              </label>
+            )}
             <button
               type="button"
-              className="w-full py-3 rounded-xl bg-white hover:bg-gray-50 text-gray-900 border border-gray-200 shadow-sm font-bold text-sm text-center cursor-pointer disabled:opacity-50 dark:border-transparent dark:bg-gradient-to-r dark:from-purple-600 dark:via-orange-500 dark:to-green-500 dark:hover:from-purple-700 dark:hover:via-orange-600 dark:hover:to-green-600 dark:text-white dark:shadow-lg dark:shadow-orange-500/30"
+              className="w-full min-h-[48px] py-3 rounded-xl bg-white hover:bg-gray-50 text-gray-900 border border-gray-200 shadow-sm font-bold text-sm text-center cursor-pointer disabled:opacity-50 dark:border-transparent dark:bg-gradient-to-r dark:from-purple-600 dark:via-orange-500 dark:to-green-500 dark:hover:from-purple-700 dark:hover:via-orange-600 dark:hover:to-green-600 dark:text-white dark:shadow-lg dark:shadow-orange-500/30"
               onClick={handleSetAvailable}
               disabled={setAvailableMutation.isPending}
             >

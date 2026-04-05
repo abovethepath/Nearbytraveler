@@ -269,13 +269,13 @@ export default function AvailableNowPage() {
                         const chatroomId = joinedChatroomMap.get(entry.id);
                         setLocation(`/meetup-chatroom-chat/${chatroomId}?title=${encodeURIComponent(entry.chatroomName || 'Meetup Chat')}`);
                       }}
-                      className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold"
+                      className="w-full min-h-[48px] bg-blue-500 hover:bg-blue-600 text-white font-semibold"
                     >
                       <MessageCircle className="w-4 h-4 mr-2" />
                       Go to Chat
                     </Button>
                   ) : sentRequests.has(u.id) ? (
-                    <Button disabled className="w-full bg-gray-600 text-white font-semibold">
+                    <Button disabled className="w-full min-h-[48px] bg-gray-600 text-white font-semibold">
                       <Check className="w-4 h-4 mr-2" />
                       Request Sent
                     </Button>
@@ -283,7 +283,7 @@ export default function AvailableNowPage() {
                     <Button
                       onClick={() => sendJoinRequest(u.id, u.username)}
                       disabled={sendingTo === u.id}
-                      className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold"
+                      className="w-full min-h-[48px] bg-green-500 hover:bg-green-600 text-white font-semibold"
                     >
                       {sendingTo === u.id ? (
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />

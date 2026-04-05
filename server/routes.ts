@@ -26804,6 +26804,23 @@ Questions? Just reply to this message. Welcome aboard!
         openJoin: !!openJoin,
       }).returning();
 
+      // Cross-metro: also create a session in the neighbor metro area
+      const { crossMetroCity, crossMetroState } = req.body;
+      if (crossMetroCity) {
+        const crossCity = (crossMetroCity as string).split(',')[0].trim();
+        await db.insert(availableNow).values({
+          userId: Number(userId),
+          isAvailable: true,
+          activities: activities || [],
+          customNote: customNote || null,
+          city: crossCity,
+          state: crossMetroState || state || null,
+          country,
+          expiresAt,
+          openJoin: !!openJoin,
+        }).catch((err: any) => console.warn('Cross-metro available-now insert failed:', err?.message));
+      }
+
       // Respond immediately so the user doesn't wait on background tasks
       res.json(entry);
 
