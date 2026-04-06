@@ -62,7 +62,65 @@ export async function sendWelcomeEmail(userId: number): Promise<EmailResult> {
       hasBrevoKey: !!process.env.BREVO_API_KEY || !!(process.env as any).SENDINBLUE_API_KEY || !!(process.env as any).SIB_API_KEY,
     });
 
-    const htmlContent = `
+    const isBusiness = user.userType === 'business';
+    const businessName = (user as any).businessName || displayName;
+    const businessCtaUrl = `https://nearbytraveler.org/business-dashboard`;
+
+    const htmlContent = isBusiness ? `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f5f5f5;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f5f5; padding: 40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+          <tr>
+            <td style="background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%); padding: 40px; text-align: center;">
+              <h1 style="color: #ffffff; margin: 0; font-size: 28px;">Welcome to Nearby Traveler</h1>
+              <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0; font-size: 16px;">Your Business is Live 🎉</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 40px;">
+              <p style="font-size: 18px; color: #333333; margin: 0 0 20px;">Hi ${businessName}!</p>
+              <p style="font-size: 16px; color: #555555; line-height: 1.6; margin: 0 0 20px;">
+                Travelers are discovering local businesses like yours on Nearby Traveler. Your profile is live — here's how to make the most of it.
+              </p>
+              <p style="font-size: 16px; color: #555555; line-height: 1.6; margin: 0 0 10px;">
+                Get started in 4 steps:
+              </p>
+              <ul style="font-size: 16px; color: #555555; line-height: 1.8; margin: 0 0 30px; padding-left: 20px;">
+                <li><strong>Complete your profile</strong> — add your description, hours, and contact info</li>
+                <li><strong>Add photos</strong> — businesses with photos get 3x more views</li>
+                <li><strong>Create a deal</strong> — post an offer travelers can see right now</li>
+                <li><strong>Respond to inquiries</strong> — travelers may message you directly</li>
+              </ul>
+              <div style="text-align: center; margin: 30px 0;">
+                <a href="${businessCtaUrl}" style="display: inline-block; background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%); color: #ffffff; text-decoration: none; padding: 14px 40px; border-radius: 8px; font-size: 16px; font-weight: 600;">Go to Your Dashboard</a>
+              </div>
+              <p style="font-size: 14px; color: #888888; margin: 30px 0 0; text-align: center;">
+                Questions? Just reply to this email — we're here to help!
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="background-color: #f8f9fa; padding: 20px; text-align: center;">
+              <p style="font-size: 12px; color: #888888; margin: 0;">
+                Nearby Traveler for Business<br>
+                <a href="${APP_URL}/settings" style="color: #3b82f6;">Manage email preferences</a>
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>` : `
 <!DOCTYPE html>
 <html>
 <head>
@@ -138,10 +196,17 @@ export async function sendWelcomeEmail(userId: number): Promise<EmailResult> {
 </body>
 </html>`;
 
+    const subject = isBusiness
+      ? `Welcome to Nearby Traveler — Your Business is Live 🎉`
+      : `You're in! Welcome to NearbyTraveler 🌍`;
+    const textContent = isBusiness
+      ? `Hi ${businessName}! Travelers are discovering local businesses like yours on Nearby Traveler. Complete your profile, add photos, create a deal, and respond to inquiries. Go to your dashboard: ${businessCtaUrl}`
+      : `Hi ${displayName}! You just joined a community of travelers and locals who believe every city is better when strangers become friends. Complete your profile, find people near you, and post what you're up to — your next adventure starts now. Explore now: ${ctaUrl}`;
+
     const result = await sendBrevoEmail({
       toEmail: user.email,
-      subject: `You're in! Welcome to NearbyTraveler 🌍`,
-      textContent: `Hi ${displayName}! You just joined a community of travelers and locals who believe every city is better when strangers become friends. Complete your profile, find people near you, and post what you're up to — your next adventure starts now. Explore now: ${ctaUrl}`,
+      subject,
+      textContent,
       htmlContent,
     });
 
