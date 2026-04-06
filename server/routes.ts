@@ -4303,6 +4303,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         .where(
           and(
             gte(users.createdAt, cutoff),
+            ne(users.userType, 'business'),
             isNotNull(users.username),
             ne(users.username, ''),
           )
