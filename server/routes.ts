@@ -995,8 +995,14 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
   app.get("/sitemap.xml", async (_req, res) => {
     try {
       const BASE = "https://nearbytraveler.org";
+      const today = new Date().toISOString().split("T")[0];
 
-      // Static pages
+      const toDate = (d: any) => {
+        if (!d) return today;
+        try { return new Date(d).toISOString().split("T")[0]; } catch { return today; }
+      };
+
+      // Static pages — always included regardless of DB state
       const staticPages = [
         { loc: "/", priority: "1.0", changefreq: "daily" },
         { loc: "/about", priority: "0.8", changefreq: "monthly" },
@@ -1009,74 +1015,83 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         { loc: "/business-landing", priority: "0.7", changefreq: "monthly" },
         { loc: "/blog", priority: "0.7", changefreq: "weekly" },
         { loc: "/blog/how-to-meet-people-when-traveling-alone", priority: "0.6", changefreq: "monthly" },
+        { loc: "/explore", priority: "0.8", changefreq: "weekly" },
+        { loc: "/discover", priority: "0.8", changefreq: "weekly" },
+        { loc: "/available-now", priority: "0.8", changefreq: "daily" },
+        { loc: "/events", priority: "0.8", changefreq: "daily" },
+        { loc: "/plan-trip", priority: "0.7", changefreq: "monthly" },
       ];
-
-      // City pages from city_pages table
-      const cityRows = await db
-        .select({ city: cityPages.city, updatedAt: cityPages.createdAt })
-        .from(cityPages)
-        .where(and(isNotNull(cityPages.city), ne(cityPages.city, "")));
-
-      // Public events
-      const eventRows = await db
-        .select({ id: events.id, updatedAt: events.createdAt })
-        .from(events)
-        .where(eq(events.isPublished, true))
-        .orderBy(desc(events.createdAt))
-        .limit(5000);
-
-      // Public user profiles
-      const userRows = await db
-        .select({ username: users.username, updatedAt: users.createdAt })
-        .from(users)
-        .where(and(isNotNull(users.username), ne(users.username, "")))
-        .orderBy(desc(users.createdAt))
-        .limit(10000);
-
-      const toDate = (d: any) => {
-        if (!d) return new Date().toISOString().split("T")[0];
-        return new Date(d).toISOString().split("T")[0];
-      };
 
       let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
       xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
 
-      // Static pages
+      // Static pages — guaranteed output
       for (const p of staticPages) {
-        xml += `  <url><loc>${BASE}${p.loc}</loc><changefreq>${p.changefreq}</changefreq><priority>${p.priority}</priority></url>\n`;
+        xml += `  <url>\n    <loc>${BASE}${p.loc}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>${p.changefreq}</changefreq>\n    <priority>${p.priority}</priority>\n  </url>\n`;
       }
 
-      // City pages
-      const seenCities = new Set<string>();
-      for (const row of cityRows) {
-        const city = (row as any).city;
-        if (!city || seenCities.has(city)) continue;
-        seenCities.add(city);
-        xml += `  <url><loc>${BASE}/city/${encodeURIComponent(city)}</loc><lastmod>${toDate((row as any).updatedAt)}</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>\n`;
-      }
+      // City pages — wrapped in try/catch so failure doesn't kill the sitemap
+      try {
+        const cityRows = await db
+          .select({ city: cityPages.city, updatedAt: cityPages.createdAt })
+          .from(cityPages)
+          .where(and(isNotNull(cityPages.city), ne(cityPages.city, "")));
+        const seenCities = new Set<string>();
+        for (const row of cityRows) {
+          const city = (row as any).city;
+          if (!city || seenCities.has(city)) continue;
+          seenCities.add(city);
+          xml += `  <url>\n    <loc>${BASE}/city/${encodeURIComponent(city)}</loc>\n    <lastmod>${toDate((row as any).updatedAt)}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>\n`;
+        }
+      } catch (e) { console.warn("Sitemap: city pages query failed:", (e as any)?.message); }
 
-      // Events
-      for (const row of eventRows) {
-        xml += `  <url><loc>${BASE}/events/${(row as any).id}</loc><lastmod>${toDate((row as any).updatedAt)}</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>\n`;
-      }
+      // Public events — wrapped in try/catch
+      try {
+        const eventRows = await db
+          .select({ id: events.id, updatedAt: events.createdAt })
+          .from(events)
+          .where(eq(events.isPublished, true))
+          .orderBy(desc(events.createdAt))
+          .limit(5000);
+        for (const row of eventRows) {
+          xml += `  <url>\n    <loc>${BASE}/events/${(row as any).id}</loc>\n    <lastmod>${toDate((row as any).updatedAt)}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.7</priority>\n  </url>\n`;
+        }
+      } catch (e) { console.warn("Sitemap: events query failed:", (e as any)?.message); }
 
-      // Profiles
-      for (const row of userRows) {
-        const username = (row as any).username;
-        if (!username) continue;
-        xml += `  <url><loc>${BASE}/profile/${encodeURIComponent(username)}</loc><lastmod>${toDate((row as any).updatedAt)}</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>\n`;
-      }
+      // Public user profiles — wrapped in try/catch
+      try {
+        const userRows = await db
+          .select({ username: users.username, updatedAt: users.createdAt })
+          .from(users)
+          .where(and(isNotNull(users.username), ne(users.username, "")))
+          .orderBy(desc(users.createdAt))
+          .limit(10000);
+        for (const row of userRows) {
+          const username = (row as any).username;
+          if (!username) continue;
+          xml += `  <url>\n    <loc>${BASE}/profile/${encodeURIComponent(username)}</loc>\n    <lastmod>${toDate((row as any).updatedAt)}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.5</priority>\n  </url>\n`;
+        }
+      } catch (e) { console.warn("Sitemap: profiles query failed:", (e as any)?.message); }
 
       xml += `</urlset>`;
 
       res.set("Content-Type", "application/xml");
-      res.set("Cache-Control", "public, max-age=3600"); // cache 1 hour
+      res.set("Cache-Control", "public, max-age=3600");
       res.send(xml);
     } catch (error) {
+      // Even on total failure, return static pages
       console.error("Sitemap generation error:", error);
-      res.status(500).set("Content-Type", "application/xml").send(
-        `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"></urlset>`
-      );
+      const today = new Date().toISOString().split("T")[0];
+      const fallback = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://nearbytraveler.org/</loc><lastmod>${today}</lastmod><changefreq>daily</changefreq><priority>1.0</priority></url>
+  <url><loc>https://nearbytraveler.org/about</loc><lastmod>${today}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://nearbytraveler.org/join</loc><lastmod>${today}</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://nearbytraveler.org/blog</loc><lastmod>${today}</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://nearbytraveler.org/explore</loc><lastmod>${today}</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://nearbytraveler.org/available-now</loc><lastmod>${today}</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
+</urlset>`;
+      res.status(200).set("Content-Type", "application/xml").send(fallback);
     }
   });
 
