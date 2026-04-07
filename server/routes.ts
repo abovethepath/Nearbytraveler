@@ -1021,6 +1021,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         { loc: "/blog/meet-locals-when-traveling", priority: "0.6", changefreq: "monthly" },
         { loc: "/blog/curing-travel-loneliness", priority: "0.6", changefreq: "monthly" },
         { loc: "/blog/arriving-in-los-angeles-guide", priority: "0.7", changefreq: "monthly" },
+        { loc: "/blog/whats-happening-los-angeles", priority: "0.7", changefreq: "weekly" },
         { loc: "/explore", priority: "0.8", changefreq: "weekly" },
         { loc: "/discover", priority: "0.8", changefreq: "weekly" },
         { loc: "/available-now", priority: "0.8", changefreq: "daily" },

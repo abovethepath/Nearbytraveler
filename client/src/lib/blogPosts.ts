@@ -103,6 +103,13 @@ Meeting locals while traveling isn't about being extroverted or lucky. It's abou
 Start at [nearbytraveler.org](https://nearbytraveler.org). See who's around. The best part of any city is the people who live there — go meet them.`,
   },
   {
+    title: "How to Find Out What's Actually Happening in Los Angeles",
+    date: "2026-04-07",
+    slug: "whats-happening-los-angeles",
+    description: "The best events in LA never make it onto tourist sites. Here's how locals actually find out what's happening in the city — and how you can too.",
+    body: "",
+  },
+  {
     title: "Arriving in Los Angeles — How to Experience It Like a Local",
     date: "2026-04-07",
     slug: "arriving-in-los-angeles-guide",
