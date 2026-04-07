@@ -103,6 +103,13 @@ Meeting locals while traveling isn't about being extroverted or lucky. It's abou
 Start at [nearbytraveler.org](https://nearbytraveler.org). See who's around. The best part of any city is the people who live there — go meet them.`,
   },
   {
+    title: "I Traveled to 10 Cities Alone — Here's What I Learned About Meeting People",
+    date: "2026-04-07",
+    slug: "lessons-from-solo-travel-meeting-people",
+    description: "After solo trips to 10 different cities, the patterns for meeting people — and avoiding loneliness — became clear. Here's everything that actually works.",
+    body: "",
+  },
+  {
     title: "Solo Travel in Los Angeles — The Real Guide",
     date: "2026-04-07",
     slug: "solo-travel-los-angeles",
