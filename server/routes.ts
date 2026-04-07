@@ -1020,6 +1020,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         { loc: "/blog/best-apps-for-solo-travelers", priority: "0.6", changefreq: "monthly" },
         { loc: "/blog/meet-locals-when-traveling", priority: "0.6", changefreq: "monthly" },
         { loc: "/blog/curing-travel-loneliness", priority: "0.6", changefreq: "monthly" },
+        { loc: "/blog/arriving-in-los-angeles-guide", priority: "0.7", changefreq: "monthly" },
         { loc: "/explore", priority: "0.8", changefreq: "weekly" },
         { loc: "/discover", priority: "0.8", changefreq: "weekly" },
         { loc: "/available-now", priority: "0.8", changefreq: "daily" },

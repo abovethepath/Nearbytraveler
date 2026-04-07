@@ -103,6 +103,13 @@ Meeting locals while traveling isn't about being extroverted or lucky. It's abou
 Start at [nearbytraveler.org](https://nearbytraveler.org). See who's around. The best part of any city is the people who live there — go meet them.`,
   },
   {
+    title: "Arriving in Los Angeles — How to Experience It Like a Local",
+    date: "2026-04-07",
+    slug: "arriving-in-los-angeles-guide",
+    description: "Just landed in LA? Skip the tourist traps. Here's how to experience Los Angeles the way locals actually live it — and how to meet them while you're at it.",
+    body: "",
+  },
+  {
     title: "Curing Travel Loneliness — How to Stop Feeling Alone When You Travel",
     date: "2026-04-07",
     slug: "curing-travel-loneliness",
