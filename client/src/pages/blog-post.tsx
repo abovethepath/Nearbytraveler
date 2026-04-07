@@ -1,6 +1,7 @@
 import { useLocation } from "wouter";
 import { getBlogPost } from "@/lib/blogPosts";
 import { ArrowLeft } from "lucide-react";
+import { SEOHelmet } from "@/components/SEOHelmet";
 
 // Simple markdown-to-HTML renderer (no external deps)
 function renderMarkdown(md: string): string {
@@ -46,6 +47,7 @@ export default function BlogPost({ slug }: { slug: string }) {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900">
       <div className="max-w-3xl mx-auto px-4 py-8 sm:py-12">
+        <SEOHelmet title={`${post.title} | Nearby Traveler`} description={post.description} path={`/blog/${post.slug}`} />
         {/* Back link */}
         <button
           onClick={() => setLocation("/blog")}

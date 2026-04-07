@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { SEOHelmet } from "@/components/SEOHelmet";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { apiRequest, getApiBaseUrl } from "@/lib/queryClient";
@@ -439,6 +440,7 @@ export default function Explore() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+      <SEOHelmet title="Explore Communities | Nearby Traveler" description="Discover traveler and local communities worldwide. Join group hangouts, find events, and connect on Nearby Traveler." path="/explore" />
       {/* Hero Section — extra top padding on mobile to clear the fixed 44px top nav */}
       <div className="bg-gradient-to-r from-blue-600 via-blue-500 to-teal-400 text-white px-4 pt-[calc(env(safe-area-inset-top,0px)+52px)] pb-4 md:pt-6 md:pb-6">
         <div className="max-w-6xl mx-auto">

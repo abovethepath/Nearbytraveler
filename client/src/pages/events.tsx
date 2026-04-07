@@ -1,5 +1,6 @@
 // Events page - v2.2 - Complete location fix
 import React, { useState } from "react";
+import { SEOHelmet } from "@/components/SEOHelmet";
 import { useAutoHideHero } from "@/hooks/useAutoHideHero";
 import { lockScroll, unlockScroll } from "@/lib/scrollLock";
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
@@ -540,6 +541,7 @@ export default function Events() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-gray-900 dark:via-blue-950 dark:to-purple-950 w-full max-w-[100vw] overflow-x-clip">
+        <SEOHelmet title="Events | Nearby Traveler" description="Find events happening near you. Meetups, activities, and experiences for travelers and locals on Nearby Traveler." path="/events" />
         <div className="container mx-auto px-4 pt-4 pb-24 max-w-2xl">
           <div className="flex items-center gap-3 mb-6">
             <div className="h-8 w-8 rounded-full bg-gray-200 dark:bg-gray-700 animate-pulse" />

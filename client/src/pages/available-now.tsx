@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import React, { useContext, useState } from "react";
+import { SEOHelmet } from "@/components/SEOHelmet";
 import { AuthContext } from "@/App";
 import { getApiBaseUrl } from "@/lib/queryClient";
 import { Zap, UserPlus, MessageCircle, ArrowLeft, MapPin, Check, Loader2 } from "lucide-react";
@@ -110,6 +111,7 @@ export default function AvailableNowPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <SEOHelmet title="Available Now | Nearby Traveler" description="See who is free right now in your city. Join travelers and locals for coffee, drinks, or exploring on Nearby Traveler." path="/available-now" />
       {/* Header */}
       <div className="sticky top-0 z-20 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-4 py-3">
         <div className="max-w-2xl mx-auto flex items-center gap-3">

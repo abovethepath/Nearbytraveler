@@ -1,4 +1,5 @@
 import React, { useState, useContext, useRef, useEffect, useMemo } from "react";
+import { SEOHelmet } from "@/components/SEOHelmet";
 import { useAutoHideHero } from "@/hooks/useAutoHideHero";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { useLocation } from "wouter";
@@ -1746,6 +1747,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 w-full max-w-full overflow-x-clip" style={{ overflowAnchor: 'none' }}>
+      <SEOHelmet title="Who's Available Now | Nearby Traveler" description="See travelers and locals available right now in your city. Join them in one tap on Nearby Traveler." path="/home" />
 
 {/* Native app: Sign Out link at top for users who land via QR code */}
 {isNativeIOSApp() && user && (

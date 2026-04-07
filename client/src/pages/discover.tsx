@@ -1,4 +1,5 @@
 import { useState, useEffect, useContext, useMemo } from "react";
+import { SEOHelmet } from "@/components/SEOHelmet";
 import { useQuery } from "@tanstack/react-query";
 import { useAutoHideHero } from "@/hooks/useAutoHideHero";
 import { Card, CardContent } from "@/components/ui/card";
@@ -157,6 +158,7 @@ export default function DiscoverPage() {
 
   const pageContent = (
     <div className="min-h-screen bg-white dark:bg-gray-900 w-full max-w-full overflow-x-clip">
+      <SEOHelmet title="Discover Cities | Nearby Traveler" description="Explore cities worldwide and see who is there right now. Connect with travelers and locals on Nearby Traveler." path="/discover" />
       {/* Mobile Tagline - Simple one-liner */}
       {isMobile && (
         <div className="px-4 py-4 text-center">

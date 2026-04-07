@@ -1,6 +1,7 @@
 import { useLocation } from "wouter";
 import { getAllBlogPosts } from "@/lib/blogPosts";
 import { ArrowLeft } from "lucide-react";
+import { SEOHelmet } from "@/components/SEOHelmet";
 
 export default function Blog() {
   const [, setLocation] = useLocation();
@@ -8,6 +9,7 @@ export default function Blog() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900">
+      <SEOHelmet title="Blog | Nearby Traveler" description="Stories, tips, and updates from the Nearby Traveler community. Solo travel advice, city guides, and how to meet people anywhere." path="/blog" />
       <div className="max-w-3xl mx-auto px-4 py-8 sm:py-12">
         {/* Header */}
         <div className="mb-8">

@@ -1,4 +1,5 @@
 import Logo from "@/components/logo";
+import { SEOHelmet } from "@/components/SEOHelmet";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Users, Globe, Heart, Shield, Zap, MapPin, ArrowLeft } from "lucide-react";
@@ -13,6 +14,7 @@ export default function About() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50">
+      <SEOHelmet title="About | Nearby Traveler" description="Nearby Traveler is the social travel app connecting travelers and locals in real time. Founded in Los Angeles by Aaron Lefkowitz." path="/about" />
       {!isNativeIOSApp() && (
         <header className="bg-white dark:bg-gray-900 shadow-sm border-b border-gray-200 dark:border-gray-700">
           <div className="max-w-full mx-auto">

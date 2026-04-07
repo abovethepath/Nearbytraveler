@@ -1,4 +1,5 @@
 import { useState, useEffect, useContext, useRef } from "react";
+import { SEOHelmet } from "@/components/SEOHelmet";
 import { AuthContext } from "@/App";
 import { useAutoHideHero } from "@/hooks/useAutoHideHero";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -794,6 +795,7 @@ export default function PlanTrip() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-gray-900 dark:via-blue-950 dark:to-purple-950 overflow-x-clip break-words w-full max-w-[100vw]">
+      <SEOHelmet title="Plan Your Trip | Nearby Traveler" description="Plan your next trip and connect with locals before you arrive. See who will be there when you visit on Nearby Traveler." path="/plan-trip" />
 
       {/* Show Hero Button — only when hero is hidden, not in native iOS app */}
       {!isNativeIOSApp() && !isHeroVisible && (

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { SEOHelmet } from "@/components/SEOHelmet";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
@@ -40,6 +41,7 @@ export default function SettingsPage() {
   if (!isAuthenticated || !user?.id) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <SEOHelmet title="Settings | Nearby Traveler" description="Manage your Nearby Traveler account settings, profile, and preferences." path="/settings" />
         <div className="max-w-3xl mx-auto px-4 py-8 space-y-6">
           <Skeleton className="h-8 w-40" />
           <Skeleton className="h-10 w-full" />

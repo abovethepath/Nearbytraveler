@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
+import { SEOHelmet } from "@/components/SEOHelmet";
 import { createPortal } from 'react-dom';
 import { abbreviateCity } from '@/lib/displayName';
 import { useQuery, useMutation } from '@tanstack/react-query';
@@ -976,6 +977,7 @@ export default function Messages() {
       data-chat-page={selectedConversation || selectedMeetupChat ? "true" : undefined}
       className={`bg-white dark:bg-gray-900 text-gray-900 dark:text-white flex flex-row overflow-hidden w-full max-w-full ${isNativeIOSApp() ? 'native-ios-messages' : 'h-[calc(100dvh-144px)] md:h-[calc(100dvh-117px)] lg:h-[calc(100dvh-117px)]'} min-h-0`}
     >
+      <SEOHelmet title="Messages | Nearby Traveler" description="Your conversations on Nearby Traveler — connecting travelers and locals worldwide." path="/messages" />
       {/* Left Sidebar - Conversations. Mobile: full screen when no selection; hidden when chat open. Desktop (lg+): always visible. Single column on mobile. */}
       <div className={`${(selectedConversation || selectedMeetupChat) ? 'hidden lg:flex' : 'flex'} w-full lg:w-80 h-full bg-[#f0f2f5] dark:bg-gray-800 flex-col border-r-0 lg:border-r-2 border-gray-300 dark:border-gray-500 min-w-0 flex-shrink-0`}>
         <div className={`border-b border-gray-200 dark:border-gray-700 ${isNativeIOSApp() ? 'px-3 py-2' : 'p-4'}`} style={{ position: 'sticky', top: 0, zIndex: 10, backgroundColor: 'inherit' }}>
