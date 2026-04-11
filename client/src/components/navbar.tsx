@@ -416,6 +416,7 @@ function Navbar() {
       { path: "/plan-trip", label: "Trip Planning", icon: "🧭" },
       { path: "/connect", label: "Connect", icon: "💝" },
       { path: "/activity", label: "Activity", icon: "🔔" },
+      { path: "/blog", label: "Blog", icon: "📝" },
     ];
   };
 
