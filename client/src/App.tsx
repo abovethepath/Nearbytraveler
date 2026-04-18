@@ -215,6 +215,7 @@ import ComingSoon from "@/pages/coming-soon";
 
 import Navbar from "@/components/navbar";
 import LandingNavbar from "@/components/landing-navbar";
+import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
 import { isNativeIOSApp } from "@/lib/nativeApp";
 // Removed conflicting MobileNav - using MobileTopNav and MobileBottomNav instead
 import { MobileBottomNav } from "@/components/MobileBottomNav";
@@ -1384,6 +1385,33 @@ function Router() {
       return <WelcomeBusiness />;
     }
 
+    // Blog pages — accessible to both authenticated and unauthenticated users (SEO)
+    if (location === '/blog') {
+      if (!isActuallyAuthenticated) {
+        return (
+          <>
+            <LandingHeader />
+            <LandingHeaderSpacer />
+            <Blog />
+          </>
+        );
+      }
+      return <Blog />;
+    }
+    if (location.startsWith('/blog/')) {
+      const blogSlug = location.replace('/blog/', '');
+      if (!isActuallyAuthenticated) {
+        return (
+          <>
+            <LandingHeader />
+            <LandingHeaderSpacer />
+            <BlogPost slug={blogSlug} />
+          </>
+        );
+      }
+      return <BlogPost slug={blogSlug} />;
+    }
+
     if (!isActuallyAuthenticated) {
       console.log('🏠 STREAMLINED LANDING - User not authenticated, showing streamlined landing page for:', location);
       console.log('🔐 DEBUG: window.location.pathname =', window.location.pathname);
@@ -1534,13 +1562,7 @@ function Router() {
       if (location === '/about') {
         return <About />;
       }
-      if (location === '/blog') {
-        return <Blog />;
-      }
-      if (location.startsWith('/blog/')) {
-        const blogSlug = location.replace('/blog/', '');
-        return <BlogPost slug={blogSlug} />;
-      }
+      // Blog routes handled above (before auth check) for SEO — both auth states covered
       if (location === '/connector') {
         return <ConnectorLanding />;
       }

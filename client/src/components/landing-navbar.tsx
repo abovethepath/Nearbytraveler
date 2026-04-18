@@ -38,6 +38,9 @@ export default function LandingNavbar() {
               <Link href="/connector" className="border-transparent text-gray-500 dark:text-gray-200 hover:border-gray-300 hover:text-gray-700 dark:hover:text-white inline-flex items-center px-2 xl:px-3 pt-1 border-b-2 text-sm font-medium whitespace-nowrap transition-colors duration-200 flex-shrink-0">
                 Connector
               </Link>
+              <Link href="/blog" className="border-transparent text-gray-500 dark:text-gray-200 hover:border-gray-300 hover:text-gray-700 dark:hover:text-white inline-flex items-center px-2 xl:px-3 pt-1 border-b-2 text-sm font-medium whitespace-nowrap transition-colors duration-200 flex-shrink-0">
+                Blog
+              </Link>
             </div>
           </div>
 
@@ -103,6 +106,7 @@ export default function LandingNavbar() {
               { href: "/events-landing", label: "For Events" },
               { href: "/business-landing", label: "For Businesses" },
               { href: "/connector", label: "Connector" },
+              { href: "/blog", label: "Blog" },
             ].map((item) => (
               <Link 
                 key={item.href}
