@@ -21,8 +21,14 @@ import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient, getApiBaseUrl } from "@/lib/queryClient";
 import { isNativeIOSApp } from "@/lib/nativeApp";
-import data from "@emoji-mart/data";
-import Picker from "@emoji-mart/react";
+
+const EMOJI_GRID = [
+  '😊','😂','❤️','🔥','👍','😍','🥺','😭','🙏','✨',
+  '😘','🥰','😎','🤣','💀','👀','🎉','💕','😅','🤔',
+  '🙄','😢','💪','🤷','👋','🤦','😱','💯','🥳','😏',
+  '🤗','😤','🫶','👏','🤝','💔','😩','🫠','🤩','😈',
+  '🫡','💜','🤭','😋','🥲','🫣','😬','🤞','💛','🖤',
+];
 
 // Emoji auto-substitution map — defined outside component to avoid recreation
 const EMOJI_MAP: Record<string, string> = {
@@ -3985,16 +3991,19 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                 <span className="text-lg leading-none">😊</span>
               </Button>
               {showEmojiPicker && (
-                <div className={`absolute z-50 ${isMobile ? 'bottom-full right-0 mb-2' : 'bottom-full right-0 mb-2'}`}>
-                  <Picker
-                    data={data}
-                    onEmojiSelect={handleEmojiSelect}
-                    theme="dark"
-                    previewPosition="none"
-                    skinTonePosition="search"
-                    maxFrequentRows={2}
-                    perLine={isMobile ? 7 : 9}
-                  />
+                <div className="absolute bottom-full right-0 mb-2 z-50 bg-gray-800 border border-gray-600 rounded-xl shadow-xl p-2 w-[280px] md:w-[320px]">
+                  <div className="grid grid-cols-7 md:grid-cols-10 gap-0.5">
+                    {EMOJI_GRID.map((em) => (
+                      <button
+                        key={em}
+                        type="button"
+                        onClick={() => handleEmojiSelect({ native: em })}
+                        className="w-9 h-9 md:w-8 md:h-8 flex items-center justify-center text-xl rounded-lg hover:bg-gray-700 active:bg-gray-600 transition-colors"
+                      >
+                        {em}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
