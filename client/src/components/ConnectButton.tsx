@@ -40,6 +40,7 @@ export default function ConnectButton({
     requesterId?: number;
     receiverId?: number;
     senderId?: number;
+    connectionId?: number;
   }>({
     queryKey: [`/api/connections/status/${currentUserId}/${targetUserId}`],
     enabled: !!currentUserId && !!targetUserId,
@@ -131,12 +132,13 @@ export default function ConnectButton({
     if (connectionStatus?.status === 'accepted') return;
     if (connectionStatus?.status === 'pending') {
       const isIncoming = connectionStatus.senderId === targetUserId || connectionStatus.requesterId === targetUserId;
-      if (isIncoming) {
+      if (isIncoming && connectionStatus.connectionId) {
         try {
-          const response = await apiRequest('POST', `/api/connections/accept/${targetUserId}`, {});
+          const response = await apiRequest('PUT', `/api/connections/${connectionStatus.connectionId}`, { status: 'accepted' });
           if (response.ok) {
             queryClient.invalidateQueries({ queryKey: [`/api/connections/status/${currentUserId}/${targetUserId}`] });
             queryClient.invalidateQueries({ queryKey: [`/api/users/${targetUserId}/profile-bundle`] });
+            queryClient.invalidateQueries({ queryKey: [`/api/connections/${currentUserId}/requests`] });
             toast({ title: "Connection Accepted", description: `You are now connected with ${targetName || targetUsername}.` });
           }
         } catch {

@@ -13141,11 +13141,13 @@ Questions? Just reply to this message. Welcome aboard!
         .limit(1);
 
       if (!connection) {
+        console.error(`❌ CONNECTION ${status?.toUpperCase() || 'UPDATE'}: Connection id=${connectionId} not found (userId=${userId})`);
         return res.status(404).json({ message: "Connection request not found" });
       }
 
       // Verify that the user is the receiver (only receiver can accept/reject)
       if (connection.receiverId !== userId) {
+        console.error(`❌ CONNECTION ${status.toUpperCase()}: Permission denied — userId=${userId} is not receiver (receiverId=${connection.receiverId}, requesterId=${connection.requesterId}, connectionId=${connectionId})`);
         return res.status(403).json({ message: "Only the receiver can accept or reject this request" });
       }
 
