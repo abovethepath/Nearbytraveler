@@ -1,6 +1,6 @@
 ---
 title: "Arriving in Los Angeles — How to Experience It Like a Local"
-date: "2026-04-07"
+date: "2026-04-14"
 slug: "arriving-in-los-angeles-guide"
 description: "Just landed in LA? Skip the tourist traps. Here's how to experience Los Angeles the way locals actually live it — and how to meet them while you're at it."
 ---

@@ -1,6 +1,6 @@
 ---
 title: "Best Apps for Solo Travelers in 2026"
-date: "2026-04-07"
+date: "2026-03-25"
 slug: "best-apps-for-solo-travelers"
 description: "The apps that actually make solo travel better in 2026 — for safety, connection, navigation, and making the most of every city you visit."
 ---

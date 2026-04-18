@@ -1,6 +1,6 @@
 ---
 title: "How to Meet People When Traveling Alone"
-date: "2026-04-07"
+date: "2026-03-03"
 slug: "how-to-meet-people-when-traveling-alone"
 description: "Solo travel is incredible. Meeting people while you're doing it doesn't have to be left to chance. Here's everything that actually works in 2026."
 ---

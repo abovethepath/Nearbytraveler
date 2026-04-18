@@ -1,6 +1,6 @@
 ---
 title: "Solo Travel in Los Angeles — The Real Guide"
-date: "2026-04-07"
+date: "2026-04-08"
 slug: "solo-travel-los-angeles"
 description: "Solo travel in LA is incredible — if you know how to do it right. Here's the real guide to visiting Los Angeles alone, including how to actually meet people while you're there."
 ---

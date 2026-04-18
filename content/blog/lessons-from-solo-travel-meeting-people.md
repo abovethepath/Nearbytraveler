@@ -1,6 +1,6 @@
 ---
 title: "I Traveled to 10 Cities Alone — Here's What I Learned About Meeting People"
-date: "2026-04-07"
+date: "2026-04-02"
 slug: "lessons-from-solo-travel-meeting-people"
 description: "After solo trips to 10 different cities, the patterns for meeting people — and avoiding loneliness — became clear. Here's everything that actually works."
 ---

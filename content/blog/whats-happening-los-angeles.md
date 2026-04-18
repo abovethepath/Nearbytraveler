@@ -1,6 +1,6 @@
 ---
 title: "How to Find Out What's Actually Happening in Los Angeles"
-date: "2026-04-07"
+date: "2026-04-16"
 slug: "whats-happening-los-angeles"
 description: "The best events in LA never make it onto tourist sites. Here's how locals actually find out what's happening in the city — and how you can too."
 ---
