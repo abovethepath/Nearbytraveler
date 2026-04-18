@@ -21,6 +21,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient, getApiBaseUrl } from "@/lib/queryClient";
 import { isNativeIOSApp } from "@/lib/nativeApp";
+import data from "@emoji-mart/data";
+import Picker from "@emoji-mart/react";
 
 // Emoji auto-substitution map — defined outside component to avoid recreation
 const EMOJI_MAP: Record<string, string> = {
@@ -150,6 +152,8 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
   const [showMembers, setShowMembers] = useState(false);
   const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
   const [emojiSuggestion, setEmojiSuggestion] = useState<{ word: string; emoji: string } | null>(null);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const emojiPickerRef = useRef<HTMLDivElement>(null);
   const [memberSearch, setMemberSearch] = useState("");
   const [muteDialogOpen, setMuteDialogOpen] = useState(false);
   const [selectedMember, setSelectedMember] = useState<ChatMember | null>(null);
@@ -271,6 +275,42 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
   const longPressActivatedAtRef = useRef<number>(0);
   const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
   const prevMessageCountRef = useRef<number>(0);
+
+  // Close emoji picker when clicking outside
+  useEffect(() => {
+    if (!showEmojiPicker) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (emojiPickerRef.current && !emojiPickerRef.current.contains(e.target as Node)) {
+        setShowEmojiPicker(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showEmojiPicker]);
+
+  const handleEmojiSelect = (emoji: any) => {
+    const native = emoji.native as string;
+    if (editingMessageId) {
+      setEditText((prev) => prev + native);
+    } else {
+      // Insert at cursor position if possible
+      const textarea = inputRef.current;
+      if (textarea) {
+        const start = textarea.selectionStart ?? messageText.length;
+        const end = textarea.selectionEnd ?? messageText.length;
+        const newText = messageText.slice(0, start) + native + messageText.slice(end);
+        setMessageText(newText);
+        // Restore cursor position after React re-render
+        requestAnimationFrame(() => {
+          textarea.selectionStart = textarea.selectionEnd = start + native.length;
+          textarea.focus();
+        });
+      } else {
+        setMessageText((prev) => prev + native);
+      }
+    }
+    setShowEmojiPicker(false);
+  };
 
   const muteKey = useMemo(() => {
     if (chatType === "dm") return `nt-muted-dm-${chatId}`;
@@ -3932,6 +3972,32 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
               spellCheck={true}
               onPaste={handlePaste}
             />
+            {/* Emoji picker button + popover */}
+            <div className="relative shrink-0" ref={emojiPickerRef}>
+              <Button
+                onClick={() => setShowEmojiPicker((v) => !v)}
+                size="icon"
+                variant="ghost"
+                className="rounded-full min-h-[44px] min-w-[44px] h-11 w-11 md:h-9 md:w-9 text-white hover:bg-gray-700 touch-target"
+                title="Emoji"
+                type="button"
+              >
+                <span className="text-lg leading-none">😊</span>
+              </Button>
+              {showEmojiPicker && (
+                <div className={`absolute z-50 ${isMobile ? 'bottom-full right-0 mb-2' : 'bottom-full right-0 mb-2'}`}>
+                  <Picker
+                    data={data}
+                    onEmojiSelect={handleEmojiSelect}
+                    theme="dark"
+                    previewPosition="none"
+                    skinTonePosition="search"
+                    maxFrequentRows={2}
+                    perLine={isMobile ? 7 : 9}
+                  />
+                </div>
+              )}
+            </div>
             {editingMessageId ? (
               <Button
                 onClick={() => handleEditMessage(editingMessageId)}
