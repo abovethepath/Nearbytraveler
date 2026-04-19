@@ -64,7 +64,7 @@ export class ChatWebSocketService {
   private readonly ACTIVE_THRESHOLD_MS = 2 * 60 * 1000; // 2 min = "actively in chatroom"
 
   // Send an already-serialised string (or object) to every open connection for a user
-  private sendToUser(userId: number, data: string): void {
+  public sendToUser(userId: number, data: string): void {
     const wsSet = this.connectedUsers.get(userId);
     if (!wsSet) return;
     wsSet.forEach(ws => {

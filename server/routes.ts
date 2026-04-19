@@ -13828,28 +13828,49 @@ Questions? Just reply to this message. Welcome aboard!
 
       if (process.env.NODE_ENV === 'development') console.log(`💬 IM MESSAGE: Message stored with ID ${newMessage[0]?.id}`);
 
-      // Real-time: push instant_message_received to receiver via WebSocket so their DM list updates immediately
+      // Real-time: broadcast to ALL WebSocket connections for both sender and receiver
+      // via chatWebSocketService (which tracks every open WS per user, unlike the
+      // single-entry connectedUsers Map that can be overwritten by WhatsAppChat connections).
       try {
-        const wsMap = app.get("wsConnectedUsers") as Map<number, { send: (data: string) => void; readyState: number }> | undefined;
-        const receiverWs = wsMap?.get(parseInt(receiverId || '0'));
-        if (receiverWs && receiverWs.readyState === 1) {
-          receiverWs.send(JSON.stringify({
-            type: 'instant_message_received',
-            payload: {
-              message: {
-                id: newMessage[0]?.id,
-                senderId: parseInt(senderId || '0'),
-                receiverId: parseInt(receiverId || '0'),
-                content: newMessage[0]?.content || '',
-                createdAt: newMessage[0]?.createdAt,
-                messageType: newMessage[0]?.messageType || 'text',
-                mediaUrl: newMessage[0]?.mediaUrl || null,
-              }
-            }
-          }));
-        }
+        const { chatWebSocketService } = await import('./services/chatWebSocketService.js');
+        const senderIdNum = parseInt(senderId || '0');
+        const receiverIdNum = parseInt(receiverId || '0');
+
+        // Fetch sender details for the message:new payload
+        const senderUser = await db.query.users.findFirst({
+          where: eq(users.id, senderIdNum),
+          columns: { id: true, username: true, name: true, profileImage: true }
+        });
+
+        // 1) message:new — so any open WhatsAppChat window updates instantly
+        const dmEvent = JSON.stringify({
+          type: 'message:new',
+          chatType: 'dm',
+          chatroomId: receiverIdNum,
+          payload: { ...newMessage[0], sender: senderUser },
+          senderId: senderIdNum,
+          timestamp: Date.now(),
+        });
+        chatWebSocketService.sendToUser(receiverIdNum, dmEvent);
+        chatWebSocketService.sendToUser(senderIdNum, dmEvent);
+
+        // 2) instant_message_received — so the DM list / nav badge updates instantly
+        const imEvent = JSON.stringify({
+          type: 'instant_message_received',
+          message: {
+            id: newMessage[0]?.id,
+            senderId: senderIdNum,
+            receiverId: receiverIdNum,
+            content: newMessage[0]?.content || '',
+            createdAt: newMessage[0]?.createdAt,
+            messageType: newMessage[0]?.messageType || 'text',
+            mediaUrl: newMessage[0]?.mediaUrl || null,
+          }
+        });
+        chatWebSocketService.sendToUser(receiverIdNum, imEvent);
+        chatWebSocketService.sendToUser(senderIdNum, imEvent);
       } catch (wsErr) {
-        if (process.env.NODE_ENV === 'development') console.warn('WS push to receiver failed:', wsErr);
+        if (process.env.NODE_ENV === 'development') console.warn('WS broadcast to users failed:', wsErr);
       }
 
       // Send notifications (background, rate-limited per user)
@@ -23544,23 +23565,19 @@ Questions? Just reply to this message. Welcome aboard!
               if (process.env.NODE_ENV === 'development') console.error(' Error storing IM in database:', error);
             }
 
-            // Check if receiver is online for instant delivery
-            const receiverWs = connectedUsers.get(receiverId);
-            if (receiverWs && receiverWs.readyState === WebSocket.OPEN) {
-              // Send instantly to online user
-              receiverWs.send(JSON.stringify({
-                type: 'instant_message_received',
-                message: {
-                  senderId: ws.userId,
-                  senderUsername: ws.username,
-                  content,
-                  timestamp: new Date().toISOString()
-                }
-              }));
-              if (process.env.NODE_ENV === 'development') console.log(` Instant message delivered to online user ${receiverId}`);
-            } else {
-              if (process.env.NODE_ENV === 'development') console.log(`📪 User ${receiverId} is offline - will receive message when they come online`);
-            }
+            // Deliver to ALL open connections for receiver (and sender echo) via chatWebSocketService
+            const imEvent = JSON.stringify({
+              type: 'instant_message_received',
+              message: {
+                senderId: ws.userId,
+                senderUsername: ws.username,
+                content,
+                timestamp: new Date().toISOString()
+              }
+            });
+            chatWebSocketService.sendToUser(receiverId, imEvent);
+            chatWebSocketService.sendToUser(ws.userId!, imEvent);
+            if (process.env.NODE_ENV === 'development') console.log(` Instant message broadcast to user ${receiverId} and sender ${ws.userId}`);
             break;
 
           case 'typing':
@@ -23614,8 +23631,7 @@ Questions? Just reply to this message. Welcome aboard!
         )
         .orderBy(asc(messages.createdAt));
 
-      const userWs = connectedUsers.get(userId);
-      if (userWs && userWs.readyState === WebSocket.OPEN && unreadMessages.length > 0) {
+      if (chatWebSocketService.isUserConnected(userId) && unreadMessages.length > 0) {
         if (process.env.NODE_ENV === 'development') console.log(`📬 Delivering ${unreadMessages.length} offline messages to user ${userId}`);
 
         for (const message of unreadMessages) {
@@ -23626,7 +23642,7 @@ Questions? Just reply to this message. Welcome aboard!
             .where(eq(users.id, message.senderId))
             .limit(1);
 
-          userWs.send(JSON.stringify({
+          chatWebSocketService.sendToUser(userId, JSON.stringify({
             type: 'instant_message_received',
             message: {
               id: message.id,

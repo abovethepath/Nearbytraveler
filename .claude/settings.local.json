@@ -11,7 +11,9 @@
       "Bash(npx esbuild:*)",
       "Bash(node -e \":*)",
       "Bash(npx vite:*)",
-      "Bash(grep -rn \"member\\\\.name\\\\|member\\\\.name\\\\||coOrg\\\\.user\\\\|participant\\\\.user\" client/src/pages/*.tsx client/src/components/*.tsx)"
+      "Bash(grep -rn \"member\\\\.name\\\\|member\\\\.name\\\\||coOrg\\\\.user\\\\|participant\\\\.user\" client/src/pages/*.tsx client/src/components/*.tsx)",
+      "Bash(npx create-video@latest:*)",
+      "Bash(xargs wc:*)"
     ]
   }
 }

@@ -193,9 +193,11 @@ class WebSocketService {
         });
         break;
 
-      case 'instant_message_received':
-        this.emit('instant_message', data.message);
+      case 'instant_message_received': {
+        const message = data.message || data.payload?.message;
+        this.emit('instant_message_received', { message, sender: data.sender });
         break;
+      }
 
       case 'notification':
         this.emit('notification', data.payload || data);
