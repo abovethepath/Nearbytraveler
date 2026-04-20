@@ -26,8 +26,11 @@ export default function LandingStreamlined() {
     } catch {}
   });
   const [currentVideo, setCurrentVideo] = useState(0);
-  const [currentTagline, setCurrentTagline] = useState(0);
-  
+
+  // NOTE: Some clips in the current rotation may read ambiguously (e.g., two people
+  // connecting in ways that could be mistaken for romantic/dating content).
+  // Aaron will re-cut specific clips and replace files at the same paths.
+  // Do not edit the video files in this task.
   // Rotating hero videos with custom durations (in milliseconds)
   const heroVideos = [
     { src: "/hero-video-1.mp4", duration: 15000 }, // 15 seconds
@@ -36,13 +39,6 @@ export default function LandingStreamlined() {
     { src: "/hero-video-5.mp4", duration: 10000 }, // 10 seconds
     { src: "/hero-video-6.mp4", duration: 8000 }   // 8 seconds
   ];
-
-  // Rotating taglines
-  const taglines = [
-    { line1: "Travel doesn't change you.", line2: "The people you meet do." },
-    { line1: "When old friends are nearby,", line2: "we notify you." }
-  ];
-
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
@@ -68,16 +64,6 @@ export default function LandingStreamlined() {
 
     return () => clearTimeout(videoTimeout);
   }, [currentVideo]);
-
-  // Rotate taglines every 10 seconds
-  useEffect(() => {
-    const taglineInterval = setInterval(() => {
-      setCurrentTagline(prev => (prev + 1) % taglines.length);
-    }, 10000);
-
-    return () => clearInterval(taglineInterval);
-  }, [taglines.length]);
-
   // On mount: clear any stuck body scroll-lock states left over from Radix UI
   // dialogs/sheets in the authenticated app, then scroll to top.
   useEffect(() => {
@@ -152,8 +138,8 @@ export default function LandingStreamlined() {
         </div>
 
         {/* HERO SECTION - Full Video Background with Rotation */}
-        <div className="relative min-h-[600px] sm:min-h-[700px] overflow-hidden bg-gradient-to-br from-gray-900 via-blue-950 to-gray-900">
-          {/* Rotating Video Backgrounds with Crossfade */}
+        <section className="relative w-full overflow-hidden bg-[#0b1020] min-h-[80vh] md:min-h-[88vh] lg:min-h-[92vh] flex items-center">
+          {/* Rotating Video Backgrounds with Crossfade — atmospheric only */}
           {heroVideos.map((video, index) => (
             <video
               key={index}
@@ -169,80 +155,85 @@ export default function LandingStreamlined() {
               Your browser does not support the video tag.
             </video>
           ))}
-          
-          {/* Dark overlay for text readability — pointer-events:none so it never blocks taps on Android */}
-          <div className="absolute top-0 left-0 w-full h-full bg-black/50 pointer-events-none"></div>
-          {/* Bottom gradient — covers video watermark area */}
-          <div className="absolute bottom-0 left-0 w-full h-1/3 bg-gradient-to-t from-black/90 via-black/40 to-transparent pointer-events-none"></div>
-          
-          {/* Content overlay — extra bottom padding pushes text up to cover watermark area */}
-          <div className="relative z-10 pt-4 pb-24 sm:pt-8 sm:pb-28">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="flex flex-col items-center justify-center text-center min-h-[480px] sm:min-h-[560px]">
-                
-                {/* Rotating Quote */}
-                <p className="landing-quote text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-orange-400 italic mb-8 sm:mb-10 leading-snug transition-opacity duration-500">
-                  {taglines[currentTagline].line1}<br />
-                  {taglines[currentTagline].line2}
-                </p>
-                
-                {/* Main Headline */}
-                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight text-white mb-6 sm:mb-8">
-                  Connect with <span className="landing-gradient-text text-transparent dark:text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-orange-400 dark:from-blue-400 dark:to-orange-400">Locals & Travelers</span> Worldwide
-                </h1>
-                
-                {/* Subheadline */}
-                <p className="text-lg sm:text-xl md:text-2xl text-white mb-10 sm:mb-12 leading-relaxed max-w-4xl">
-                  Nearby Traveler connects travelers and locals through <span className="landing-gradient-text text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-orange-400 font-semibold">shared interests, activities, and events</span>. We also let you know when you cross paths with friends in another city — making it easy to meet people, reconnect, and build friendships that last a lifetime.
-                </p>
-                
-                {/* Primary CTA Buttons */}
-                <div className="w-full max-w-lg mx-auto flex flex-col sm:flex-row gap-4">
-                  <Button
-                    size="lg"
-                    onClick={handleGetStarted}
-                    className="flex-1 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white py-5 rounded-xl text-lg font-semibold shadow-2xl transition-all duration-200"
-                    data-testid="button-hero-get-started"
-                  >
-                    Join for Free
-                  </Button>
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    onClick={() => {
-                      trackEvent('signin_cta_click', 'landing_page', 'hero_sign_in');
-                      setLocation('/auth');
-                    }}
-                    className="flex-1 border-white text-white hover:bg-white/10 py-5 rounded-xl text-lg font-semibold transition-all duration-200"
-                    data-testid="button-hero-sign-in"
-                  >
-                    Sign In
-                  </Button>
-                </div>
-                
-                <div className="mt-6">
-                  <Button
-                    onClick={() => {
-                      trackEvent('learn_more_click', 'landing_page', 'see_how_it_works');
-                      document.querySelector('#how-it-works')?.scrollIntoView({ behavior: 'smooth' });
-                    }}
-                    variant="outline"
-                    size="lg"
-                    className="border-2 border-white text-white hover:bg-white dark:bg-gray-900/20 backdrop-blur-sm px-10 py-5 rounded-xl text-xl font-medium transition-all duration-200"
-                    data-testid="button-learn-more"
-                  >
-                    See How It Works
-                  </Button>
-                </div>
-                
-                {/* Tagline */}
-                <p className="mt-8 sm:mt-10 text-base sm:text-lg md:text-xl italic text-orange-400 font-semibold">
-                  Where Local Experiences Meet Worldwide Connections
-                </p>
+
+          {/* Heavy layered overlay — typography dominates the media */}
+          <div className="absolute inset-0 z-[1] bg-gradient-to-b from-[#05070f]/75 via-[#070a14]/60 to-[#05070f]/95 pointer-events-none"></div>
+          <div className="absolute inset-0 z-[1] bg-gradient-to-r from-[#05070f]/70 via-[#05070f]/20 to-transparent pointer-events-none"></div>
+          <div className="absolute inset-0 z-[1] pointer-events-none" style={{ background: 'radial-gradient(ellipse at 18% 108%, rgba(255,107,53,0.05), transparent 55%)' }}></div>
+
+          {/* Editorial eyebrow — top-left meta */}
+          <div className="absolute top-6 left-5 md:top-8 md:left-10 z-20 hidden sm:flex items-center gap-2.5 text-[10px] font-medium tracking-[0.24em] uppercase text-white/45">
+            <span className="w-6 h-[1px] bg-white/40"></span>
+            <span>Nearby Traveler</span>
+          </div>
+
+          {/* Content */}
+          <div className="relative z-10 w-full max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-24 md:py-28">
+            <div className="max-w-4xl">
+              <h1 className="font-sans leading-[1.04] tracking-tight" style={{ textWrap: 'balance' }}>
+                <span className="block text-[2.125rem] sm:text-[2.75rem] md:text-6xl lg:text-[4.25rem] xl:text-[5rem] font-normal text-white/55">
+                  You&rsquo;re not meeting strangers.
+                </span>
+                <span className="block text-[2.375rem] sm:text-[3rem] md:text-6xl lg:text-[4.25rem] xl:text-[5rem] font-semibold text-white tracking-[-0.02em] mt-1 md:mt-1.5">
+                  You&rsquo;re finding your people.
+                </span>
+              </h1>
+
+              <p className="mt-7 md:mt-10 max-w-xl text-[0.9375rem] md:text-[1.0625rem] leading-[1.6] text-white/70 font-normal">
+                Your people aren&rsquo;t always local. Sometimes they just landed. Nearby Traveler helps you find them in your city &mdash; whether you live there or you&rsquo;re flying in for four days.
+              </p>
+
+              <div className="mt-9 md:mt-12 flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-5">
+                <button
+                  type="button"
+                  onClick={handleGetStarted}
+                  className="group inline-flex items-center justify-center gap-2 bg-white text-[#0b1020] hover:bg-white/90 px-7 py-3.5 rounded-full text-[0.9375rem] font-semibold tracking-tight transition-all duration-300 shadow-[0_1px_0_0_rgba(255,255,255,0.12)_inset,0_10px_36px_-10px_rgba(0,0,0,0.55)] hover:shadow-[0_1px_0_0_rgba(255,255,255,0.12)_inset,0_14px_42px_-12px_rgba(255,255,255,0.20)]"
+                  data-testid="button-hero-get-started"
+                >
+                  Go meet someone
+                  <span aria-hidden="true" className="inline-block transition-transform duration-300 group-hover:translate-x-0.5">&rarr;</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    trackEvent('learn_more_click', 'landing_page', 'see_how_it_works');
+                    document.querySelector('#how-it-works')?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  className="group inline-flex items-center gap-2 text-[0.9375rem] font-medium text-white/75 hover:text-white px-1.5 py-2 transition-colors duration-300"
+                  data-testid="button-learn-more"
+                >
+                  See how it works
+                  <span aria-hidden="true" className="inline-block text-white/40 group-hover:text-white/85 transition-all duration-300 group-hover:translate-x-0.5">&rarr;</span>
+                </button>
               </div>
             </div>
           </div>
-        </div>
+
+          {/* Thin bottom separator */}
+          <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent z-10"></div>
+        </section>
+
+        {/* Everyone's a traveler — editorial manifesto */}
+        <section className="animate-on-scroll relative bg-[#0b1020] py-20 md:py-28 lg:py-32 px-6 sm:px-8 lg:px-12 overflow-hidden">
+          <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.04), transparent 60%)' }}></div>
+          <div className="relative max-w-3xl mx-auto text-center">
+            <h2 className="text-[2rem] sm:text-4xl md:text-5xl lg:text-[3.5rem] font-semibold text-white leading-[1.08] tracking-[-0.015em]" style={{ textWrap: 'balance' }}>
+              Everyone&rsquo;s a traveler, depending on the day.
+            </h2>
+
+            <div className="mt-10 md:mt-14 space-y-6 text-left sm:text-center text-[1.0625rem] md:text-lg leading-[1.7] text-white/70 font-normal max-w-2xl mx-auto">
+              <p>
+                The person who just landed in LA for four days? Traveler.<br />
+                The person who&rsquo;s lived here four years but hasn&rsquo;t been to Griffith? Also a traveler. They just don&rsquo;t know it yet.
+              </p>
+              <p>
+                Nearby Traveler is built on a simple idea: the people you&rsquo;re meant to know aren&rsquo;t always where you are. But they pass through. Or you pass through where they are. The app helps you catch each other.
+              </p>
+            </div>
+          </div>
+          <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+        </section>
 
         <LandingCTA />
 
@@ -478,12 +469,9 @@ export default function LandingStreamlined() {
             <h2 className="text-3xl sm:text-4xl font-bold text-white mb-8 sm:mb-12">From the Founder</h2>
             <div className="bg-white dark:bg-gray-900/10 backdrop-blur-sm rounded-2xl p-6 sm:p-8 lg:p-10">
               <p className="text-lg sm:text-xl lg:text-2xl leading-relaxed mb-6 sm:mb-8 italic text-white">
-                "After hosting 400+ travelers from 50 countries, I learned that one connection can change everything… I built the solution I wished existed."
+                &ldquo;I hosted 400 travelers in New York over 15 years. They weren&rsquo;t strangers. They were my people &mdash; I just didn&rsquo;t know them yet. Nearby Traveler is how I help other people find theirs.&rdquo;
               </p>
-              <p className="text-lg sm:text-xl font-bold mb-6 text-white">— Aaron Lefkowitz, Founder</p>
-              <p className="text-base sm:text-lg leading-relaxed text-white/90">
-                Nearby Traveler grew out of real travel communities—from Couchsurfing bonfires to LA meetups. Our mission is to keep that spirit alive for a new generation.
-              </p>
+              <p className="text-lg sm:text-xl font-bold text-white">&mdash; Aaron Lefkowitz, Founder</p>
             </div>
           </div>
         </section>
@@ -497,57 +485,38 @@ export default function LandingStreamlined() {
           </div>
         </section>
 
-        {/* Everyone's Welcome */}
-        <section className="animate-on-scroll py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-800">
-          <div className="max-w-6xl mx-auto text-center">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-12 sm:mb-16">
-              Everyone's Welcome
-            </h2>
-            
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-6">
-              <div className="bg-white dark:bg-gray-700 rounded-xl p-4 sm:p-6 shadow-sm">
-                <h3 className="text-base sm:text-lg font-bold mb-2 text-gray-900 dark:text-white">Solo Travelers</h3>
-                <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300">Turn exploring alone into shared adventures</p>
-              </div>
-              <div className="bg-white dark:bg-gray-700 rounded-xl p-4 sm:p-6 shadow-sm">
-                <h3 className="text-base sm:text-lg font-bold mb-2 text-gray-900 dark:text-white">Locals</h3>
-                <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300">Share your city and meet the world</p>
-              </div>
-              <div className="bg-white dark:bg-gray-700 rounded-xl p-4 sm:p-6 shadow-sm">
-                <h3 className="text-base sm:text-lg font-bold mb-2 text-green-600 dark:text-white">New in Town</h3>
-                <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300">Find your tribe fast</p>
-              </div>
-              <div className="bg-white dark:bg-gray-700 rounded-xl p-4 sm:p-6 shadow-sm">
-                <h3 className="text-base sm:text-lg font-bold mb-2 text-gray-900 dark:text-white">Families</h3>
-                <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300">Connect with local families and fellow travelers</p>
-              </div>
-              <div className="bg-white dark:bg-gray-700 rounded-xl p-4 sm:p-6 shadow-sm">
-                <h3 className="text-base sm:text-lg font-bold mb-2 text-gray-900 dark:text-white">Business Travelers</h3>
-                <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300">Make work trips more than meetings</p>
-              </div>
-            </div>
-            
-            <p className="mt-12 sm:mt-16 text-lg sm:text-xl text-gray-600 dark:text-gray-300 leading-relaxed">
-              Be part of a new way to travel where weekly events and instant connections mean you're never really traveling alone.
+        {/* For anyone — editorial single line */}
+        <section className="animate-on-scroll py-20 sm:py-24 lg:py-32 px-6 sm:px-8 lg:px-12 bg-gray-50 dark:bg-gray-800">
+          <div className="max-w-4xl mx-auto text-center">
+            <p className="text-[1.75rem] sm:text-3xl md:text-4xl lg:text-[2.75rem] font-semibold text-gray-900 dark:text-white leading-[1.15] tracking-[-0.015em]" style={{ textWrap: 'balance' }}>
+              For anyone who&rsquo;s ever felt alone in a city full of people.
             </p>
           </div>
         </section>
 
-        {/* Final CTA */}
-        <section className="animate-on-scroll py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900">
+        {/* Final CTA — two-line editorial */}
+        <section className="animate-on-scroll py-20 sm:py-24 lg:py-32 px-6 sm:px-8 lg:px-12 bg-white dark:bg-gray-900">
           <div className="max-w-4xl mx-auto text-center">
-            <p className="text-xl sm:text-2xl lg:text-3xl text-gray-600 dark:text-gray-300 mb-8 sm:mb-12 leading-relaxed font-bold">
-              Be part of a new way to travel where weekly events and instant connections mean you're never really traveling alone.
-            </p>
-            
-            <Button 
-              size="lg" 
-              className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white px-8 sm:px-12 py-4 sm:py-6 rounded-full text-lg sm:text-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
-              onClick={handleGetStarted}
-              data-testid="button-final-cta"
-            >
-              Start Connecting Now
-            </Button>
+            <h2 className="font-sans leading-[1.05] tracking-tight" style={{ textWrap: 'balance' }}>
+              <span className="block text-[2.25rem] sm:text-5xl md:text-6xl lg:text-[4.25rem] font-normal text-gray-500 dark:text-white/50">
+                Go meet someone.
+              </span>
+              <span className="block text-[2.5rem] sm:text-[3.25rem] md:text-6xl lg:text-[4.25rem] font-semibold text-gray-900 dark:text-white tracking-[-0.02em] mt-1 md:mt-1.5">
+                Find your people.
+              </span>
+            </h2>
+
+            <div className="mt-10 md:mt-14 flex justify-center">
+              <button
+                type="button"
+                onClick={handleGetStarted}
+                className="group inline-flex items-center justify-center gap-2 bg-gray-900 dark:bg-white text-white dark:text-[#0b1020] hover:bg-gray-800 dark:hover:bg-white/90 px-8 py-4 rounded-full text-base font-semibold tracking-tight transition-all duration-300 shadow-[0_10px_36px_-10px_rgba(0,0,0,0.35)] hover:shadow-[0_14px_42px_-12px_rgba(0,0,0,0.45)]"
+                data-testid="button-final-cta"
+              >
+                Join for free
+                <span aria-hidden="true" className="inline-block transition-transform duration-300 group-hover:translate-x-0.5">&rarr;</span>
+              </button>
+            </div>
           </div>
         </section>
 
