@@ -2195,6 +2195,13 @@ function Router() {
         </>
       )}
 
+      {/* Nearby Helper AI chatbot — authenticated users only. Logged-out
+          visitors on public landing pages never see it. Hidden below md via
+          the wrapper's CSS. */}
+      {!isNativeIOSApp() && authValue.isAuthenticated && (
+        <div className="hidden md:contents"><HelpChatbot /></div>
+      )}
+
     </AuthContext.Provider>
   );
 }
@@ -2269,16 +2276,6 @@ function App() {
     return () => clearInterval(scrollLockInterval);
   }, []);
 
-  // Disable floating chatbot on small screens only (< 768px)
-  const [disableFloatingChatbot, setDisableFloatingChatbot] = React.useState(
-    () => typeof window !== "undefined" && window.innerWidth < 768
-  );
-  useEffect(() => {
-    const update = () => setDisableFloatingChatbot(window.innerWidth < 768);
-    window.addEventListener("resize", update);
-    return () => window.removeEventListener("resize", update);
-  }, []);
-
   // Initialize Google Analytics when app loads
   useEffect(() => {
     // Verify required environment variable is present
@@ -2298,9 +2295,6 @@ function App() {
           <NetworkStatus />
           <DarkModeSuggestionBanner />
             <Router />
-            {!isNativeIOSApp() && !disableFloatingChatbot && (
-              <div className="hidden md:contents"><HelpChatbot /></div>
-            )}
       </ThemeProvider>
     </QueryClientProvider>
   );

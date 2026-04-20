@@ -1,430 +1,334 @@
 import React, { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
+import { Helmet } from "react-helmet-async";
 import { useLocation } from "wouter";
 import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
 import Footer from "@/components/footer";
-import LandingCTA from "@/components/LandingCTA";
 import { trackEvent } from "@/lib/analytics";
 import localsHeaderImage from "../../assets/locals_1756777112458.png";
 
 export default function LocalsLanding() {
   const [, setLocation] = useLocation();
-  const [isMobile, setIsMobile] = useState(false);
-  
-  // Rotating wisdom sayings above the photo
-  const [currentWisdom, setCurrentWisdom] = useState(0);
-  const wisdomSayings = [
-    "Your City Needs Your Voice.",
-    "Share What Only Locals Know.",
-    "Share Your Hidden Gems.",
-    "Local Knowledge Is Power.",
-    "Every City Has Stories to Share.",
-    "Locals Make Travel Authentic."
-  ];
-  
-  // Mobile-friendly shorter versions
-  const wisdomSayingsMobile = [
-    "Your City Needs You.",
-    "Share Local Secrets.",
-    "Share Your Hidden Gems.",
-    "Local Knowledge Is Power.",
-    "Every City Has Secrets.",
-    "Locals Make Travel Real."
-  ];
-  
-  // Check URL for layout parameter - default to Airbnb style
-  const urlParams = new URLSearchParams(window.location.search);
-  const isAirbnbStyle = urlParams.get('layout') !== 'centered';
+  const [showFloatingCTA, setShowFloatingCTA] = useState(false);
 
+  const handleGetStarted = () => {
+    trackEvent('signup_cta_click', 'locals_landing', 'main_cta');
+    setLocation('/launching-soon');
+  };
+
+  // Show the floating CTA after the user scrolls past the hero
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 640);
+    const onScroll = () => {
+      setShowFloatingCTA(window.scrollY > window.innerHeight * 0.8);
     };
-    
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // Rotating wisdom sayings effect
-  useEffect(() => {
-    const rotateWisdom = () => {
-      setCurrentWisdom((prev) => (prev + 1) % wisdomSayings.length);
-    };
-
-    const timeout = setTimeout(rotateWisdom, 10000); // 10 seconds
-    return () => clearTimeout(timeout);
-  }, [currentWisdom, wisdomSayings.length]);
-
   return (
-    <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900">
-      
-      {/* Fixed CTA Button */}
-      <div className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-50">
-        <Button 
+    <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900 font-sans">
+      <Helmet>
+        <title>Nearby Traveler &mdash; For Locals</title>
+        <meta name="description" content="Your city has friends you haven't met yet. Nearby Traveler connects locals with each other and with travelers passing through — through what you actually have in common." />
+        <link rel="canonical" href="https://nearbytraveler.org/locals-landing" />
+        <meta property="og:title" content="Your city has friends you haven't met yet." />
+        <meta property="og:description" content="Nearby Traveler helps locals find their people — other locals and travelers, in real plans and real places." />
+        <meta property="og:url" content="https://nearbytraveler.org/locals-landing" />
+        <meta property="og:image" content="https://nearbytraveler.org/og-image.png" />
+        <meta name="twitter:title" content="Your city has friends you haven't met yet." />
+        <meta name="twitter:description" content="Nearby Traveler helps locals find their people — other locals and travelers, in real plans and real places." />
+      </Helmet>
+
+      {/* Floating CTA — scroll-gated orange pill, matches main landing */}
+      <div
+        className={`fixed right-4 sm:right-6 z-50 transition-opacity duration-300 ${showFloatingCTA ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+        style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 1rem)' }}
+        aria-hidden={!showFloatingCTA}
+      >
+        <button
+          type="button"
           onClick={() => {
             trackEvent('signup_cta_click', 'locals_landing', 'floating_join_now');
             setLocation('/launching-soon');
           }}
-          className="bg-blue-500 hover:bg-blue-600 text-white font-medium px-4 py-2 sm:px-6 sm:py-3 rounded-lg shadow-sm transition-all duration-200 text-sm sm:text-base"
+          className="inline-flex items-center justify-center gap-2 bg-orange-500 text-white hover:bg-orange-600 px-5 py-3 rounded-full text-sm font-semibold tracking-tight transition-all duration-300 shadow-[0_10px_36px_-10px_rgba(249,115,22,0.55)]"
           data-testid="button-floating-join-now"
         >
-          Join Now
-        </Button>
+          Join now
+          <span aria-hidden="true">&rarr;</span>
+        </button>
       </div>
 
       <LandingHeader />
       <LandingHeaderSpacer />
-      
+
       <div className="w-full">
-        
-        {/* HERO SECTION */}
-        <div className="pt-4 pb-8 sm:pt-8 sm:pb-12 bg-white dark:bg-gray-900">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid gap-6 md:gap-8 lg:gap-12 lg:grid-cols-2 items-center">
-              
-              {/* Left text side */}
-              <div className="order-2 lg:order-1 text-center lg:text-left">
-                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-6 sm:mb-8">
-                  <span className="landing-gradient-text text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-orange-500">Turn Your City Knowledge Into Global Friendships</span>
-                </h1>
-                <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300 mb-8 sm:mb-10 leading-relaxed max-w-2xl mx-auto lg:mx-0">
-                  Connect with curious travelers and like-minded locals while sharing what makes your city special. Build real friendships that last a lifetime.
+
+        {/* HERO SECTION — full-bleed locals image with editorial overlay */}
+        <section className="relative w-full overflow-hidden bg-[#0b1020] min-h-[80vh] md:min-h-[88vh] lg:min-h-[92vh] flex items-center">
+          {/* Full-bleed background image — atmospheric only */}
+          <img
+            src={localsHeaderImage}
+            alt=""
+            aria-hidden="true"
+            className="absolute top-0 left-0 w-full h-full object-cover pointer-events-none"
+            loading="eager"
+          />
+
+          {/* Layered overlay — dark gradients + warm amber radials + text-band wash */}
+          <div className="absolute inset-0 z-[1] bg-gradient-to-b from-[#05070f]/60 via-[#070a14]/45 to-[#05070f]/78 pointer-events-none"></div>
+          <div className="absolute inset-0 z-[1] bg-gradient-to-r from-[#05070f]/55 via-[#05070f]/10 to-transparent pointer-events-none"></div>
+          <div className="absolute inset-0 z-[1] pointer-events-none" style={{ background: 'radial-gradient(ellipse 55% 32% at 50% 50%, rgba(0,0,0,0.38), transparent 70%)' }}></div>
+          <div className="absolute inset-0 z-[1] pointer-events-none" style={{ background: 'radial-gradient(ellipse at 20% 110%, rgba(255,140,60,0.14), transparent 55%)' }}></div>
+          <div className="absolute inset-0 z-[1] pointer-events-none" style={{ background: 'radial-gradient(ellipse at 82% 8%, rgba(255,180,110,0.08), transparent 50%)' }}></div>
+
+          {/* Editorial eyebrow — top-left meta */}
+          <div className="absolute top-6 left-4 sm:left-8 md:top-8 md:left-20 lg:left-24 z-20 hidden sm:flex items-center gap-3 text-sm md:text-base font-semibold tracking-[0.22em] uppercase text-white">
+            <span className="w-8 h-[1px] bg-white/80"></span>
+            <span>Nearby Traveler &middot; For Locals</span>
+          </div>
+
+          {/* Content */}
+          <div className="relative z-10 w-full max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-24 md:py-28">
+            <div className="max-w-4xl mx-auto text-center">
+              <h1 className="font-sans leading-[1.04] tracking-tight" style={{ textWrap: 'balance' }}>
+                <span className="block text-[2.125rem] sm:text-[2.75rem] md:text-6xl lg:text-[4.25rem] xl:text-[5rem] font-normal text-white/75">
+                  Your city has friends
+                </span>
+                <span className="block text-[2.375rem] sm:text-[3rem] md:text-6xl lg:text-[4.25rem] xl:text-[5rem] font-semibold text-white tracking-[-0.02em] mt-1 md:mt-1.5">
+                  you haven&rsquo;t met yet
+                </span>
+              </h1>
+
+              <p className="mt-7 md:mt-10 max-w-xl mx-auto text-[0.9375rem] md:text-[1.0625rem] leading-[1.6] text-white/90 font-normal">
+                Some of them live here. Some of them just landed for four days. Either way, they&rsquo;re the people you&rsquo;re meant to know &mdash; through what you actually have in common.
+              </p>
+
+              <div className="mt-9 md:mt-12 flex flex-col sm:flex-row sm:items-center sm:justify-center gap-4 sm:gap-5">
+                <button
+                  type="button"
+                  onClick={handleGetStarted}
+                  className="group inline-flex items-center justify-center gap-2 bg-orange-500 text-white hover:bg-orange-600 px-7 py-3.5 rounded-full text-[0.9375rem] font-semibold tracking-tight transition-all duration-300 shadow-[0_1px_0_0_rgba(255,255,255,0.15)_inset,0_10px_36px_-10px_rgba(249,115,22,0.45)] hover:shadow-[0_1px_0_0_rgba(255,255,255,0.15)_inset,0_14px_44px_-12px_rgba(249,115,22,0.6)]"
+                  data-testid="button-main-cta"
+                >
+                  Go meet someone
+                  <span aria-hidden="true" className="inline-block transition-transform duration-300 group-hover:translate-x-0.5">&rarr;</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    trackEvent('learn_more_click', 'locals_landing', 'see_how_it_works');
+                    document.querySelector('#how-it-works')?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  className="group inline-flex items-center justify-center gap-2 text-[0.9375rem] font-medium text-white/75 hover:text-white px-1.5 py-3 sm:py-2 min-h-[44px] sm:min-h-0 transition-colors duration-300"
+                  data-testid="button-learn-more"
+                >
+                  See how it works
+                  <span aria-hidden="true" className="inline-block text-white/40 group-hover:text-white/85 transition-all duration-300 group-hover:translate-x-0.5">&rarr;</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent z-10"></div>
+        </section>
+
+        {/* Why locals find their people here — light features grid, 4 cards */}
+        <section className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-800">
+          <div className="max-w-5xl mx-auto">
+            <div className="text-center mb-14 md:mb-20">
+              <h2 className="text-[2rem] sm:text-4xl md:text-5xl lg:text-[3.5rem] font-semibold text-gray-900 dark:text-white leading-[1.08] tracking-[-0.015em]" style={{ textWrap: 'balance' }}>
+                Why locals find their people here
+              </h2>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 lg:gap-6">
+              <div className="p-7 sm:p-8 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/[0.02] hover:border-gray-300 dark:hover:border-white/20 transition-colors">
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-3 tracking-tight">Your city, but with more friends in it</h3>
+                <p className="text-[0.9375rem] sm:text-base text-gray-600 dark:text-white/65 leading-[1.6]">
+                  The neighbors you haven&rsquo;t met yet, the travelers passing through, the people you&rsquo;d actually like if you knew them. Nearby Traveler finds each other for you.
                 </p>
-                
-                {/* CTA Buttons */}
-                <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                  <Button
-                    onClick={() => {
-                      trackEvent('signup_cta_click', 'locals_landing', 'main_cta');
-                      setLocation('/launching-soon');
-                    }}
-                    size="lg"
-                    className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white px-8 py-4 rounded-xl text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
-                    data-testid="button-main-cta"
-                  >
-                    Join Now
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      trackEvent('learn_more_click', 'locals_landing', 'see_how_it_works');
-                      document.querySelector('#community-section')?.scrollIntoView({ behavior: 'smooth' });
-                    }}
-                    variant="outline"
-                    size="lg"
-                    className="border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800 px-8 py-4 rounded-xl text-lg font-medium transition-all duration-200"
-                    data-testid="button-learn-more"
-                  >
-                    See How It Works
-                  </Button>
-                </div>
               </div>
 
-              {/* Right image side */}
-              <div className="order-1 lg:order-2 flex flex-col items-center">
-                <div className="mb-4 sm:mb-6 text-center w-full">
-                  <p className="landing-quote text-lg sm:text-xl md:text-2xl font-bold italic px-2">
-                    Travel doesn't change you.<br />
-                    The people you meet do.
-                  </p>
-                </div>
-                
-                <div className="overflow-hidden relative w-full max-w-sm sm:max-w-md lg:max-w-lg h-[250px] sm:h-[300px] md:h-[350px] lg:h-[400px] rounded-2xl shadow-lg">
-                  <img
-                    src={localsHeaderImage}
-                    alt="Locals sharing experiences and welcoming travelers"
-                    className="absolute top-0 left-0 w-full h-full object-cover rounded-2xl"
-                  />
-                </div>
-                
-                <p className="mt-3 sm:mt-4 text-sm sm:text-base italic text-orange-600 text-center font-medium">
-                  Where Local Experiences Meet Worldwide Connections
+              <div className="p-7 sm:p-8 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/[0.02] hover:border-gray-300 dark:hover:border-white/20 transition-colors">
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-3 tracking-tight">Real plans, not chat</h3>
+                <p className="text-[0.9375rem] sm:text-base text-gray-600 dark:text-white/65 leading-[1.6]">
+                  Bonfires, hikes, rooftops, taco crawls, gallery walks. Host your own or join what&rsquo;s already happening. Plans that turn into friendships.
+                </p>
+              </div>
+
+              <div className="p-7 sm:p-8 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/[0.02] hover:border-gray-300 dark:hover:border-white/20 transition-colors">
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-3 tracking-tight">Show off your city</h3>
+                <p className="text-[0.9375rem] sm:text-base text-gray-600 dark:text-white/65 leading-[1.6]">
+                  The coffee shop, the hiking trail, the taco truck nobody else knows about. Share what makes your neighborhood yours &mdash; with travelers who want the real version.
+                </p>
+              </div>
+
+              <div className="p-7 sm:p-8 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/[0.02] hover:border-gray-300 dark:hover:border-white/20 transition-colors">
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-3 tracking-tight">Friendships that don&rsquo;t end at the airport</h3>
+                <p className="text-[0.9375rem] sm:text-base text-gray-600 dark:text-white/65 leading-[1.6]">
+                  You meet someone great who&rsquo;s in town for four days. Six months later, they land in your city again &mdash; or you land in theirs. Nearby Traveler keeps it going.
                 </p>
               </div>
             </div>
           </div>
-        </div>
-      </div>
+        </section>
 
-      {/* Quick Value Proposition - Fill the dead space */}
-      <div className="py-3 bg-white dark:bg-gray-900">
-        <div className="max-w-6xl mx-auto px-4 text-center">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm">
-              <h3 className="text-base font-bold text-gray-900 dark:text-white mb-2">Share Your Secret Spots</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-300">Show off those hidden gems only locals know — from secret viewpoints to hole-in-the-wall restaurants.</p>
-            </div>
-            <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm">
-              <h3 className="text-base font-bold text-gray-900 dark:text-white mb-2">Meet Amazing People</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-300">Connect with curious travelers and like-minded neighbors who share your interests.</p>
-            </div>
-            <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm">
-              <h3 className="text-base font-bold text-gray-900 dark:text-white mb-2">Instant Social Life</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-300">Create "meet now" events anytime you want to hang out or explore your own city.</p>
-            </div>
-            <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm">
-              <h3 className="text-base font-bold text-gray-900 dark:text-white mb-2">Stay Connected Globally</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-300">Keep friendships alive as your traveler friends move to new cities around the world.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-        <LandingCTA />
-
-        {/* FOUNDER STORY SECTION - Consistent with main page */}
-        <div className="relative z-10 py-6 overflow-hidden mb-4">
-          {/* Clean background for light mode */}
-          <div className="absolute inset-0 bg-gray-50 dark:bg-gradient-to-r dark:from-blue-600 dark:via-blue-500 dark:to-orange-500"></div>
-          
-          <div className="relative">
-            <section className="relative isolate mx-auto w-full max-w-4xl px-4 md:px-6 py-4">
-              {/* subtle background accent */}
-              <div className="absolute inset-x-4 -inset-y-1 -z-10 rounded-2xl bg-gradient-to-b from-orange-50/70 to-blue-50/70 dark:from-orange-500/5 dark:to-blue-500/5" />
-
-              <div className="overflow-hidden rounded-2xl border border-zinc-200/70 bg-white/80 p-4 sm:p-6 shadow-xl ring-1 ring-black/5 backdrop-blur-md dark:border-white/10 dark:bg-zinc-900/70">
-                <div className="text-center space-y-4">
-                  {/* Title */}
-                  <h3 className="inline-block bg-gradient-to-r from-orange-500 to-blue-600 bg-clip-text text-xl font-bold text-transparent md:text-2xl">
-                    From the Founder
-                  </h3>
-
-                  {/* Quote */}
-                  <blockquote className="text-balance text-lg leading-relaxed text-zinc-800 dark:text-zinc-200 md:text-xl max-w-3xl mx-auto">
-                    "I have friends spanning across the globe now. Connect with genuine travelers who want authentic local experiences, not tourist traps. Be the local friend you'd want to meet."
-                  </blockquote>
-
-                  {/* Attribution */}
-                  <div className="pt-2">
-                    <p className="text-sm text-zinc-600 dark:text-zinc-400">
-                      — Aaron Lefkowitz, Founder, Nearby Traveler
-                    </p>
-                  </div>
-
-                  {/* Tagline */}
-                  <div className="flex items-center justify-center gap-4 pt-4">
-                    <div className="h-2 w-16 rounded-full bg-gradient-to-r from-orange-500 to-blue-600" />
-                    <p className="text-xl md:text-2xl font-bold italic text-zinc-700 dark:text-zinc-300">
-                      Real Locals, Real Connections
-                    </p>
-                    <div className="h-2 w-16 rounded-full bg-gradient-to-r from-orange-500 to-blue-600" />
-                  </div>
-                </div>
-              </div>
-            </section>
-          </div>
-        </div>
-
-      {/* Live Local Experiences Section */}
-      <div className="py-6 sm:py-12 bg-white dark:bg-gray-900">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-6 animate-slide-in-left">
-            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black text-gray-900 dark:text-white mb-4 leading-tight px-2">
-              Build Your Local Community & Welcome Travelers
+        {/* Editorial beat — "The city looks different" (dark, warm radial accent) */}
+        <section className="relative bg-[#120a10] py-16 md:py-20 lg:py-24 px-6 sm:px-8 lg:px-12 overflow-hidden">
+          <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(255,140,60,0.09), transparent 55%)' }}></div>
+          <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at 85% 100%, rgba(255,180,110,0.06), transparent 50%)' }}></div>
+          <div className="relative max-w-3xl mx-auto text-center">
+            <h2 className="font-sans leading-[1.06] tracking-[-0.015em]" style={{ textWrap: 'balance' }}>
+              <span className="block text-[1.75rem] sm:text-3xl md:text-4xl lg:text-[3rem] font-normal text-white/75">
+                The city looks different
+              </span>
+              <span className="block text-[2rem] sm:text-[2.25rem] md:text-[2.75rem] lg:text-[3.25rem] font-semibold text-white mt-1 md:mt-1.5">
+                when you know more people in it
+              </span>
             </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-300">
-              Connect with neighbors. Welcome visitors. Share your city's best secrets.
+
+            <p className="mt-8 md:mt-10 max-w-xl mx-auto text-[0.9375rem] md:text-[1.0625rem] leading-[1.7] text-white/70 font-normal">
+              A coffee shop becomes a ritual. A hiking trail becomes a Saturday tradition. A Tuesday night becomes plans. Nearby Traveler helps you find the people who make a city home.
             </p>
           </div>
-          
+          <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+        </section>
 
-
-          {/* Unique Features Section */}
-          <div className="max-w-6xl mx-auto px-4 text-center mb-6 sm:mb-8">
-            <h2 className="text-3xl sm:text-4xl font-bold mb-8 text-gray-900 dark:text-white" style={{fontFamily: '"Open Sans", sans-serif', fontWeight: '700'}}>
-              Why Locals Choose Nearby Traveler
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 items-stretch">
-              <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 flex flex-col h-full">
-                <h3 className="text-lg sm:text-xl font-bold mb-4 text-gray-900 dark:text-white leading-tight">Real Friendships & Connections</h3>
-                <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed flex-grow">
-                  Meet people who share your interests and travel style — friendships that last beyond the trip.
-                </p>
-              </div>
-              <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 flex flex-col h-full">
-                <h3 className="text-lg sm:text-xl font-bold mb-4 text-gray-900 dark:text-white leading-tight">Host or Join Events</h3>
-                <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed flex-grow">
-                  Create or join activities you love — from rooftop parties and food tours to hikes and art walks.
-                </p>
-              </div>
-              <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 flex flex-col h-full">
-                <h3 className="text-lg sm:text-xl font-bold mb-4 text-gray-900 dark:text-white leading-tight">Interest-Based Matching</h3>
-                <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed flex-grow">
-                  Connect with travelers who share your hobbies and interests. Find hiking buddies, food lovers, art enthusiasts, and adventure seekers in your city.
-                </p>
-              </div>
-              <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 flex flex-col h-full">
-                <h3 className="text-lg sm:text-xl font-bold mb-4 text-gray-900 dark:text-white leading-tight">Stay Connected Globally</h3>
-                <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed flex-grow">
-                  Keep friendships alive as your traveler friends move to new cities around the world.
-                </p>
-              </div>
-              <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 flex flex-col h-full">
-                <h3 className="text-lg sm:text-xl font-bold mb-4 text-gray-900 dark:text-white leading-tight">Weekly Sponsored Events</h3>
-                <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed flex-grow">
-                  Every week, Nearby Traveler sponsors authentic local experiences. Host sponsored events or join curated activities that bring our community together.
-                </p>
-              </div>
-              <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 flex flex-col h-full">
-                <h3 className="text-lg sm:text-xl font-bold mb-4 text-gray-900 dark:text-white leading-tight">Always Free to Connect</h3>
-                <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed flex-grow">
-                  Meeting travelers and building your local network costs nothing. Nearby Traveler is free to join and use.
-                </p>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-
-
-      {/* Why Locals Love It - Modern Cards */}
-      <div className="py-8 bg-gray-50 dark:bg-gray-800">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="text-center mb-8">
-            <h2 className="text-4xl font-black text-gray-900 dark:text-white mb-2">
-              How Locals Connect with Amazing Travelers
-            </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-300">Turn your city knowledge into amazing friendships</p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div className="bg-white dark:bg-gray-700 p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow">
-              <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Share Your Secret Spots</h3>
-              <p className="text-gray-700 dark:text-gray-300 text-lg">Show off those hidden gems only locals know. From secret viewpoints to hole-in-the-wall restaurants - share what makes your city special.</p>
-            </div>
-            
-            <div className="bg-white dark:bg-gray-700 p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow">
-              <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Meet Amazing People</h3>
-              <p className="text-gray-700 dark:text-gray-300 text-lg">Connect with curious travelers AND like-minded locals. Build friendships that span the globe while discovering your own city.</p>
-            </div>
-            
-            <div className="bg-white dark:bg-gray-700 p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow">
-              <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Instant Social Life</h3>
-              <p className="text-gray-700 dark:text-gray-300 text-lg">Create "meet now" events when you want to hang out. Always have someone interesting to explore your city with.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* How It Works - Modern Steps */}
-      <div className="py-6 sm:py-12 bg-white dark:bg-gray-900">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-8">
+        {/* How It Works — dark editorial, Step 01/02/03 labels */}
+        <section id="how-it-works" className="relative py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-[#0b1020] overflow-hidden">
+          <div className="relative max-w-6xl mx-auto">
+            <h2 className="text-[2rem] sm:text-4xl md:text-5xl lg:text-[3.5rem] font-semibold text-center text-white leading-[1.08] tracking-[-0.015em] mb-14 md:mb-20" style={{ textWrap: 'balance' }}>
               How It Works
             </h2>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-10 lg:gap-12">
-            <div className="text-center bg-white dark:bg-gray-800 p-6 sm:p-8 lg:p-10 rounded-xl shadow-sm">
-              <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 text-gray-700 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-bold">
-                1
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-8 lg:gap-12">
+              <div>
+                <div className="text-sm font-semibold tracking-[0.24em] uppercase text-orange-400 mb-5">
+                  Step 01
+                </div>
+                <h3 className="text-xl sm:text-[1.375rem] font-semibold text-white mb-3 tracking-tight leading-snug">Create your local profile</h3>
+                <p className="text-[0.9375rem] sm:text-base text-white/65 leading-[1.6]">
+                  Your interests, your neighborhood, the stuff you actually like to do.
+                </p>
               </div>
-              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">Create Your Local Profile</h3>
-              <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300">
-                Share your interests, favorite spots, and what makes you the perfect local connection.
+
+              <div>
+                <div className="text-sm font-semibold tracking-[0.24em] uppercase text-orange-400 mb-5">
+                  Step 02
+                </div>
+                <h3 className="text-xl sm:text-[1.375rem] font-semibold text-white mb-3 tracking-tight leading-snug">See who&rsquo;s around</h3>
+                <p className="text-[0.9375rem] sm:text-base text-white/65 leading-[1.6]">
+                  Locals and travelers nearby who share what you love &mdash; right now, or planning a trip to your city.
+                </p>
+              </div>
+
+              <div>
+                <div className="text-sm font-semibold tracking-[0.24em] uppercase text-orange-400 mb-5">
+                  Step 03
+                </div>
+                <h3 className="text-xl sm:text-[1.375rem] font-semibold text-white mb-3 tracking-tight leading-snug">Make a plan</h3>
+                <p className="text-[0.9375rem] sm:text-base text-white/65 leading-[1.6]">
+                  Host an event, join one that&rsquo;s happening, or just say hi. Real plans, real people, in real places.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+        </section>
+
+        {/* Community events — light, simplified cards (matches main landing) */}
+        <section className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-14 md:mb-20">
+              <h2 className="text-[2rem] sm:text-4xl md:text-5xl lg:text-[3.5rem] font-semibold text-gray-900 dark:text-white leading-[1.08] tracking-[-0.015em] mb-5 md:mb-7" style={{ textWrap: 'balance' }}>
+                See our community in action
+              </h2>
+              <p className="text-base sm:text-lg md:text-xl text-gray-600 dark:text-white/70 max-w-2xl mx-auto leading-relaxed">
+                Every week, Nearby Traveler members host real experiences in their own cities &mdash; bonfires, food crawls, hikes, gallery walks. Free or near-free. Open to anyone in the community.
               </p>
             </div>
 
-            <div className="text-center bg-white dark:bg-gray-800 p-6 sm:p-8 lg:p-10 rounded-xl shadow-sm">
-              <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 text-gray-700 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-bold">
-                2
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-6">
+              <div className="p-6 sm:p-7 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/[0.02] hover:border-gray-300 dark:hover:border-white/20 transition-colors">
+                <div className="flex items-start justify-between mb-4 gap-3">
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white tracking-tight">Beach Bonfire & BBQ</h3>
+                  <span className="shrink-0 bg-orange-500 text-white px-2.5 py-0.5 rounded-full text-[0.75rem] font-semibold tracking-tight">Free</span>
+                </div>
+                <p className="text-[0.9375rem] sm:text-base text-gray-600 dark:text-white/65 leading-[1.6]">
+                  Sunset gathering with locals &mdash; authentic LA beach culture, music, and new friends.
+                </p>
               </div>
-              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">Host Experiences</h3>
-              <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300">
-                Organize meetups, share hidden gems, or create local adventures that showcase the real side of your city.
-              </p>
-            </div>
 
-            <div className="text-center bg-white dark:bg-gray-800 p-6 sm:p-8 lg:p-10 rounded-xl shadow-sm">
-              <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 text-gray-700 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-bold">
-                3
+              <div className="p-6 sm:p-7 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/[0.02] hover:border-gray-300 dark:hover:border-white/20 transition-colors">
+                <div className="flex items-start justify-between mb-4 gap-3">
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white tracking-tight">Taco Tuesday</h3>
+                  <span className="shrink-0 bg-orange-500 text-white px-2.5 py-0.5 rounded-full text-[0.75rem] font-semibold tracking-tight">$1.50</span>
+                </div>
+                <p className="text-[0.9375rem] sm:text-base text-gray-600 dark:text-white/65 leading-[1.6]">
+                  Weekly street taco adventure with fellow food lovers at the city&rsquo;s best Mexican spots.
+                </p>
               </div>
-              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">Build Global Friendships</h3>
-              <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300">
-                Connect with amazing travelers and locals — friendships that span the globe while you discover your own city.
-              </p>
-            </div>
-          </div>
-          
-          {/* Perfect For Section */}
-          <div className="mt-8 mb-6">
-            <h3 className="text-3xl font-bold text-gray-900 dark:text-white text-center mb-8">Perfect For</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
-                <h4 className="font-bold text-gray-900 dark:text-white mb-2">City Enthusiasts</h4>
-                <p className="text-gray-600 dark:text-gray-300 text-sm">Show off your knowledge and meet people who appreciate the real local scene</p>
-              </div>
-              <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
-                <h4 className="font-bold text-gray-900 dark:text-white mb-2">Social Locals</h4>
-                <p className="text-gray-600 dark:text-gray-300 text-sm">Expand your friend circle with interesting people from around the world</p>
-              </div>
-              <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
-                <h4 className="font-bold text-gray-900 dark:text-white mb-2">New Residents</h4>
-                <p className="text-gray-600 dark:text-gray-300 text-sm">Share what you're discovering while meeting established locals and fellow newcomers</p>
-              </div>
-              <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
-                <h4 className="font-bold text-gray-900 dark:text-white mb-2">Business Hosts</h4>
-                <p className="text-gray-600 dark:text-gray-300 text-sm">Welcome colleagues and clients with authentic local experiences</p>
-              </div>
-              <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
-                <h4 className="font-bold text-gray-900 dark:text-white mb-2">Adventure Seekers</h4>
-                <p className="text-gray-600 dark:text-gray-300 text-sm">Find people to try new restaurants, events, and activities in your own city</p>
-              </div>
-              <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm">
-                <h4 className="font-bold text-gray-900 dark:text-white mb-2">Digital Nomads</h4>
-                <p className="text-gray-600 dark:text-gray-300 text-sm">Working remotely? Find your community and make any city feel like home.</p>
+
+              <div className="p-6 sm:p-7 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/[0.02] hover:border-gray-300 dark:hover:border-white/20 transition-colors">
+                <div className="flex items-start justify-between mb-4 gap-3">
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white tracking-tight">Hollywood Sign Hike</h3>
+                  <span className="shrink-0 bg-orange-500 text-white px-2.5 py-0.5 rounded-full text-[0.75rem] font-semibold tracking-tight">Free</span>
+                </div>
+                <p className="text-[0.9375rem] sm:text-base text-gray-600 dark:text-white/65 leading-[1.6]">
+                  Saturday morning hikes with locals and travelers &mdash; amazing views, great photos, real LA.
+                </p>
               </div>
             </div>
           </div>
+        </section>
 
-          {/* Another CTA */}
-          <div className="text-center mt-8">
-            <Button
-              onClick={() => setLocation('/launching-soon')}
-              size="lg"
-              className="bg-blue-500 hover:bg-blue-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
-              style={{
-                boxShadow: '0 12px 40px rgba(0,0,0,0.2)',
-                animation: 'gentle-pulse 2.5s ease-in-out infinite',
-              }}
-            >
-BECOME A NEARBY LOCAL NOW
-            </Button>
-            <p className="text-gray-600 dark:text-gray-300 mt-4 text-lg">Free to join • Start connecting today • Build amazing friendships</p>
+        {/* Founder — dark editorial, quote-forward */}
+        <section className="relative py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-[#0b1020] overflow-hidden">
+          <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(255,140,60,0.07), transparent 55%)' }}></div>
+          <div className="relative max-w-3xl mx-auto text-center">
+            <h2 className="text-sm font-semibold tracking-[0.24em] uppercase text-orange-400 mb-6 md:mb-8">
+              From the Founder
+            </h2>
+            <blockquote className="text-xl sm:text-2xl md:text-[1.75rem] lg:text-[2rem] leading-[1.35] text-white font-normal tracking-[-0.01em]" style={{ textWrap: 'balance' }}>
+              &ldquo;I have friends spanning across the globe now. Connect with genuine travelers who want authentic local experiences, not tourist traps. Be the local friend you&rsquo;d want to meet.&rdquo;
+            </blockquote>
+            <p className="mt-8 md:mt-10 text-[0.8125rem] sm:text-sm font-semibold tracking-[0.12em] uppercase text-white/55">
+              Aaron Lefkowitz, Founder, Nearby Traveler
+            </p>
           </div>
-        </div>
-      </div>
+          <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+        </section>
 
-      {/* Final Power CTA Section */}
-      <div className="py-10 bg-gray-100 dark:bg-gradient-to-r dark:from-blue-600 dark:via-purple-600 dark:to-orange-600">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <h2 className="text-5xl font-black text-black dark:text-white mb-6">
-            Ready to Share Your City?
-          </h2>
-          <p className="text-2xl text-black dark:text-white mb-6 leading-relaxed">
-            Be part of a new way for locals to build global friendships while sharing what they love about their city.
-          </p>
-          
-          <div className="flex flex-col sm:flex-row gap-6 justify-center mb-8">
-            <Button
-              onClick={() => setLocation('/launching-soon')}
-              size="lg"
-              className="bg-blue-500 hover:bg-blue-600 dark:bg-orange-500 dark:hover:bg-orange-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm transition-all duration-200"
-              style={{
-                boxShadow: '0 15px 50px rgba(0,0,0,0.3)',
-              }}
-            >
-              Join Now
-            </Button>
+        {/* Final CTA — light, single orange CTA */}
+        <section className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900">
+          <div className="max-w-3xl mx-auto text-center">
+            <h2 className="text-[2rem] sm:text-4xl md:text-5xl lg:text-[3.5rem] font-semibold text-gray-900 dark:text-white leading-[1.08] tracking-[-0.015em] mb-10 md:mb-12" style={{ textWrap: 'balance' }}>
+              Find your people in your city
+            </h2>
+
+            <div className="flex justify-center">
+              <button
+                type="button"
+                onClick={() => {
+                  trackEvent('signup_cta_click', 'locals_landing', 'final_cta');
+                  setLocation('/launching-soon');
+                }}
+                className="group inline-flex items-center justify-center gap-2 bg-orange-500 text-white hover:bg-orange-600 px-8 py-4 rounded-full text-base font-semibold tracking-tight transition-all duration-300 shadow-[0_1px_0_0_rgba(255,255,255,0.15)_inset,0_10px_36px_-10px_rgba(249,115,22,0.45)] hover:shadow-[0_1px_0_0_rgba(255,255,255,0.15)_inset,0_14px_44px_-12px_rgba(249,115,22,0.6)]"
+                data-testid="button-final-cta"
+              >
+                Join Nearby Traveler
+                <span aria-hidden="true" className="inline-block transition-transform duration-300 group-hover:translate-x-0.5">&rarr;</span>
+              </button>
+            </div>
+
+            <p className="mt-8 text-sm sm:text-base text-gray-500 dark:text-white/55">
+              Free to join &middot; Start connecting today
+            </p>
           </div>
-          
-          <p className="text-xl text-gray-600 dark:text-white/90">
-            Free to join • Global community
-          </p>
-        </div>
+        </section>
+
       </div>
       <Footer />
     </div>

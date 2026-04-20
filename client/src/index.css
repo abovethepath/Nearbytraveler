@@ -1040,14 +1040,14 @@ html.theme-loading * {
   }
 }
 
-/* Improve image rendering quality on mobile devices */
+/* Use default smooth scaling for images. Previous rule forced crisp-edges
+   (nearest-neighbor) globally, which made anti-aliased logos/wordmarks render
+   jagged when downscaled. For pixel-art or QR codes that genuinely need hard
+   edges, opt in per-element with `image-rendering: pixelated`. */
 img,
 .avatar img,
 [data-radix-avatar-image] {
-  image-rendering: -webkit-optimize-contrast;
-  image-rendering: crisp-edges;
-  image-rendering: optimizeQuality;
-  -ms-interpolation-mode: bicubic;
+  image-rendering: auto;
 }
 
 /* Prevent images from being draggable so widgets/cards don't feel like they slide when touching images */

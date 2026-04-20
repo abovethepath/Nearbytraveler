@@ -1,404 +1,349 @@
 import React, { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
+import { Helmet } from "react-helmet-async";
 import { useLocation } from "wouter";
 import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
 import Footer from "@/components/footer";
-import LandingCTA from "@/components/LandingCTA";
 import { trackEvent } from "@/lib/analytics";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 const travelersHeaderImage = "/travlersonastreet.jpg";
 
 export default function TravelersLanding() {
   const [, setLocation] = useLocation();
-  const [isMobile, setIsMobile] = useState(false);
-  const [currentWisdom, setCurrentWisdom] = useState(0);
-  const wisdomSayings = ["Adventure Awaits Everywhere.", "The World Is Your Playground.", "Travel Like a Local."];
+  const [showFloatingCTA, setShowFloatingCTA] = useState(false);
 
-  const whyChooseCards = [
-    {
-      title: "Quality Over Quantity",
-      description:
-        "We focus on meaningful connections, not endless swiping. Every match is based on genuine compatibility and shared interests.",
-    },
-    {
-      title: "Safe & Verified",
-      description:
-        "All users are verified for safety. Meet in public places and trust your instincts - we provide the tools for safe connections.",
-    },
-    {
-      title: "Connect Before You Arrive",
-      description:
-        "Meet locals and travelers before your trip starts. Plan meetups, get insider tips, and hit the ground running.",
-    },
-    {
-      title: "Know When Friends Are Nearby",
-      description:
-        "Reconnect when paths cross again. See when someone you met in Barcelona shows up in Tokyo.",
-    },
-    {
-      title: "Join Weekly Sponsored Events",
-      description:
-        "Free and low-cost events every week. From beach bonfires to taco tours—authentic experiences hosted by passionate locals.",
-    },
-    {
-      title: "Friendships That Last",
-      description:
-        "Build a global network of real connections. These aren't just travel buddies—they're lifelong friends.",
-    },
-  ] as const;
+  const handleGetStarted = () => {
+    trackEvent('signup_cta_click', 'travelers_landing', 'main_cta');
+    setLocation('/launching-soon');
+  };
 
-  // Detailed reasons below the card grid. Keep this list at 6 to balance the layout.
-  // (We promote “Friendships That Last” in the grid above.)
-  const whyChooseTabs = [
-    {
-      value: "quality",
-      label: "Quality",
-      title: "Quality Over Quantity",
-      body:
-        "Skip the noise. Meet people you’ll genuinely click with—based on shared interests, travel style, and what you actually want to do.",
-    },
-    {
-      value: "safety",
-      label: "Safety",
-      title: "Safe & Verified",
-      body:
-        "Verified profiles plus community-first design means you can focus on fun, with tools that encourage meeting safely in public and building trust.",
-    },
-    {
-      value: "before",
-      label: "Before You Arrive",
-      title: "Connect Before You Arrive",
-      body:
-        "Line up plans before you land—meetups, tips, and people who are excited to explore with you so your first day isn’t spent figuring it out alone.",
-    },
-    {
-      value: "nearby",
-      label: "Nearby Friends",
-      title: "Know When Friends Are Nearby",
-      body:
-        "Turn one great meetup into a worldwide network. Get reconnected when your paths cross again in future cities.",
-    },
-    {
-      value: "events",
-      label: "Weekly Events",
-      title: "Join Weekly Sponsored Events",
-      body:
-        "Hop into weekly community experiences—easy, social, and designed to help you meet people without awkward introductions.",
-    },
-    {
-      value: "coordination",
-      label: "Coordination",
-      title: "Real-Time Coordination",
-      body:
-        "Chat, share photos, coordinate meetups, and keep group conversations in one place—no more juggling apps mid-trip.",
-    },
-  ] as const;
-
+  // Show the floating CTA after the user scrolls past the hero
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 640);
+    const onScroll = () => {
+      setShowFloatingCTA(window.scrollY > window.innerHeight * 0.8);
     };
-    
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setCurrentWisdom((prev) => (prev + 1) % wisdomSayings.length);
-    }, 8000);
-    return () => clearTimeout(timeout);
-  }, [currentWisdom, wisdomSayings.length]);
-
   return (
-    <div className="bg-white dark:bg-gray-900 font-sans">
-      {/* Fixed CTA Button */}
-      <div className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-50">
-        <Button 
+    <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900 font-sans">
+      <Helmet>
+        <title>Nearby Traveler &mdash; For Travelers</title>
+        <meta name="description" content="Don't travel alone. Travel doesn't change you — the people you meet do. Nearby Traveler connects travelers with locals and other travelers in every destination." />
+        <link rel="canonical" href="https://nearbytraveler.org/travelers-landing" />
+        <meta property="og:title" content="Don't travel alone. Travel like you live there." />
+        <meta property="og:description" content="Meet locals who actually live in your destination, and other travelers who just landed. Plan it before you land, keep the friendships after you leave." />
+        <meta property="og:url" content="https://nearbytraveler.org/travelers-landing" />
+        <meta property="og:image" content="https://nearbytraveler.org/og-image.png" />
+        <meta name="twitter:title" content="Don't travel alone. Travel like you live there." />
+        <meta name="twitter:description" content="Meet locals who actually live in your destination, and other travelers who just landed. Plan it before you land, keep the friendships after you leave." />
+      </Helmet>
+
+      {/* Floating CTA — scroll-gated orange pill, matches main landing */}
+      <div
+        className={`fixed right-4 sm:right-6 z-50 transition-opacity duration-300 ${showFloatingCTA ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+        style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 1rem)' }}
+        aria-hidden={!showFloatingCTA}
+      >
+        <button
+          type="button"
           onClick={() => {
             trackEvent('signup_cta_click', 'travelers_landing', 'floating_join_now');
             setLocation('/launching-soon');
           }}
-          className="bg-blue-500 hover:bg-blue-600 text-white font-medium px-4 py-2 sm:px-6 sm:py-3 rounded-lg shadow-sm transition-all duration-200 text-sm sm:text-base"
+          className="inline-flex items-center justify-center gap-2 bg-orange-500 text-white hover:bg-orange-600 px-5 py-3 rounded-full text-sm font-semibold tracking-tight transition-all duration-300 shadow-[0_10px_36px_-10px_rgba(249,115,22,0.55)]"
           data-testid="button-floating-join-now"
         >
-          Join Now
-        </Button>
+          Join now
+          <span aria-hidden="true">&rarr;</span>
+        </button>
       </div>
-      
+
       <LandingHeader />
       <LandingHeaderSpacer />
-      
+
       <div className="w-full">
-        
-        {/* HERO SECTION */}
-        <div className="pt-4 pb-8 sm:pt-8 sm:pb-12 bg-white dark:bg-gray-900">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid gap-6 md:gap-8 lg:gap-12 lg:grid-cols-2 items-center">
-              
-              {/* Left text side */}
-              <div className="order-2 lg:order-1 text-center lg:text-left">
-                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-6 sm:mb-8">
-                  <span className="landing-gradient-text text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-orange-500">Travel Like a Local</span>
-                </h1>
-                <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300 mb-8 sm:mb-10 leading-relaxed max-w-2xl mx-auto lg:mx-0">
-                  Connect with locals and travelers for authentic experiences. Build real friendships that last a lifetime.
-                </p>
-                
-                {/* CTA Buttons */}
-                <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                  <Button
-                    onClick={() => {
-                      trackEvent('signup_cta_click', 'travelers_landing', 'main_cta');
-                      setLocation('/launching-soon');
-                    }}
-                    size="lg"
-                    className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white px-8 py-4 rounded-xl text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
-                    data-testid="button-main-cta"
-                  >
-                    Join Now
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      trackEvent('learn_more_click', 'travelers_landing', 'see_how_it_works');
-                      document.querySelector('#how-it-works')?.scrollIntoView({ behavior: 'smooth' });
-                    }}
-                    variant="outline"
-                    size="lg"
-                    className="border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800 px-8 py-4 rounded-xl text-lg font-medium transition-all duration-200"
-                    data-testid="button-learn-more"
-                  >
-                    See How It Works
-                  </Button>
-                </div>
-              </div>
 
-              {/* Right image side */}
-              <div className="order-1 lg:order-2 flex flex-col items-center">
-                <div className="mb-4 sm:mb-6 text-center w-full">
-                  <p className="landing-quote text-lg sm:text-xl md:text-2xl font-bold italic px-2">
-                    Travel doesn't change you.<br />
-                    The people you meet do.
-                  </p>
-                </div>
-                
-                <div className="overflow-hidden relative w-full max-w-sm sm:max-w-md lg:max-w-lg h-[250px] sm:h-[300px] md:h-[350px] lg:h-[400px] rounded-2xl shadow-lg">
-                  <img
-                    src={travelersHeaderImage}
-                    alt="Travelers connecting with arms around each other"
-                    className="absolute top-0 left-0 w-full h-full object-cover rounded-2xl"
-                  />
-                </div>
-                
-                <p className="mt-3 sm:mt-4 text-sm sm:text-base italic text-orange-600 text-center font-medium">
-                  Where Local Experiences Meet Worldwide Connections
+        {/* HERO SECTION — full-bleed travelers image with editorial overlay */}
+        <section className="relative w-full overflow-hidden bg-[#0b1020] min-h-[80vh] md:min-h-[88vh] lg:min-h-[92vh] flex items-center">
+          {/* Full-bleed background image — atmospheric only */}
+          <img
+            src={travelersHeaderImage}
+            alt=""
+            aria-hidden="true"
+            className="absolute top-0 left-0 w-full h-full object-cover pointer-events-none"
+            loading="eager"
+          />
+
+          {/* Layered overlay — dark gradients + warm amber radials + text-band wash */}
+          <div className="absolute inset-0 z-[1] bg-gradient-to-b from-[#05070f]/60 via-[#070a14]/45 to-[#05070f]/78 pointer-events-none"></div>
+          <div className="absolute inset-0 z-[1] bg-gradient-to-r from-[#05070f]/55 via-[#05070f]/10 to-transparent pointer-events-none"></div>
+          <div className="absolute inset-0 z-[1] pointer-events-none" style={{ background: 'radial-gradient(ellipse 55% 40% at 50% 50%, rgba(0,0,0,0.42), transparent 72%)' }}></div>
+          <div className="absolute inset-0 z-[1] pointer-events-none" style={{ background: 'radial-gradient(ellipse at 20% 110%, rgba(255,140,60,0.14), transparent 55%)' }}></div>
+          <div className="absolute inset-0 z-[1] pointer-events-none" style={{ background: 'radial-gradient(ellipse at 82% 8%, rgba(255,180,110,0.08), transparent 50%)' }}></div>
+
+          {/* Editorial eyebrow — top-left meta */}
+          <div className="absolute top-6 left-4 sm:left-8 md:top-8 md:left-20 lg:left-24 z-20 hidden sm:flex items-center gap-3 text-sm md:text-base font-semibold tracking-[0.22em] uppercase text-white">
+            <span className="w-8 h-[1px] bg-white/80"></span>
+            <span>Nearby Traveler &middot; For Travelers</span>
+          </div>
+
+          {/* Content */}
+          <div className="relative z-10 w-full max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-24 md:py-28">
+            <div className="max-w-4xl mx-auto text-center">
+              <h1 className="font-sans leading-[1.04] tracking-tight" style={{ textWrap: 'balance' }}>
+                <span className="block text-[2.125rem] sm:text-[2.75rem] md:text-6xl lg:text-[4.25rem] xl:text-[5rem] font-normal text-white/75">
+                  Don&rsquo;t travel alone
+                </span>
+                <span className="block text-[2.375rem] sm:text-[3rem] md:text-6xl lg:text-[4.25rem] xl:text-[5rem] font-semibold text-white tracking-[-0.02em] mt-1 md:mt-1.5">
+                  Travel like you live there
+                </span>
+              </h1>
+
+              <p className="mt-7 md:mt-10 max-w-2xl mx-auto text-[0.9375rem] md:text-[1.0625rem] leading-[1.6] text-white/90 font-normal">
+                Nearby Traveler connects you with the locals who actually live in your destination, and the other travelers who just landed. Coffee meetups, food tours, rooftop nights &mdash; the moments that turn a trip into a story.
+              </p>
+
+              {/* Secondary editorial beat — brand thesis, smaller than headline but more present than subhead */}
+              <div className="mt-8 md:mt-10 leading-[1.2]" style={{ textWrap: 'balance' }}>
+                <p className="text-lg sm:text-xl md:text-2xl font-normal text-white/55">
+                  Travel doesn&rsquo;t change you
+                </p>
+                <p className="text-xl sm:text-2xl md:text-[1.75rem] font-semibold text-white mt-0.5">
+                  The people you meet do
                 </p>
               </div>
+
+              <div className="mt-9 md:mt-12 flex flex-col sm:flex-row sm:items-center sm:justify-center gap-4 sm:gap-5">
+                <button
+                  type="button"
+                  onClick={handleGetStarted}
+                  className="group inline-flex items-center justify-center gap-2 bg-orange-500 text-white hover:bg-orange-600 px-7 py-3.5 rounded-full text-[0.9375rem] font-semibold tracking-tight transition-all duration-300 shadow-[0_1px_0_0_rgba(255,255,255,0.15)_inset,0_10px_36px_-10px_rgba(249,115,22,0.45)] hover:shadow-[0_1px_0_0_rgba(255,255,255,0.15)_inset,0_14px_44px_-12px_rgba(249,115,22,0.6)]"
+                  data-testid="button-main-cta"
+                >
+                  Go meet someone
+                  <span aria-hidden="true" className="inline-block transition-transform duration-300 group-hover:translate-x-0.5">&rarr;</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    trackEvent('learn_more_click', 'travelers_landing', 'see_how_it_works');
+                    document.querySelector('#how-it-works')?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  className="group inline-flex items-center justify-center gap-2 text-[0.9375rem] font-medium text-white/75 hover:text-white px-1.5 py-3 sm:py-2 min-h-[44px] sm:min-h-0 transition-colors duration-300"
+                  data-testid="button-learn-more"
+                >
+                  See how it works
+                  <span aria-hidden="true" className="inline-block text-white/40 group-hover:text-white/85 transition-all duration-300 group-hover:translate-x-0.5">&rarr;</span>
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      <LandingCTA />
-      <main className="flex-1 px-4 py-6">
+          <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent z-10"></div>
+        </section>
 
-        {/* Core Features */}
-        <div className="max-w-6xl mx-auto mb-8">
-          <h2 className="text-3xl font-bold text-center mb-8 text-gray-900 dark:text-white">
-            What Makes Us Different
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-lg border border-gray-200 dark:border-white/10">
-              <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Instant Meetups</h3>
-              <p className="text-gray-700 dark:text-gray-200 mb-3">Create "meet now" events for instant connections.</p>
-              <ul className="text-sm text-gray-700 dark:text-gray-200 space-y-1">
-                <li>• Spontaneous adventures</li>
-                <li>• Skip the planning stress</li>
-                <li>• Connect in real-time</li>
-              </ul>
+        {/* Why travelers find their people through Nearby Traveler — light, 4 cards */}
+        <section className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-800">
+          <div className="max-w-5xl mx-auto">
+            <div className="text-center mb-14 md:mb-20">
+              <h2 className="text-[2rem] sm:text-4xl md:text-5xl lg:text-[3.5rem] font-semibold text-gray-900 dark:text-white leading-[1.08] tracking-[-0.015em]" style={{ textWrap: 'balance' }}>
+                Why travelers find their people through Nearby Traveler
+              </h2>
             </div>
-            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-lg border border-gray-200 dark:border-white/10">
-              <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Local Connections</h3>
-              <p className="text-gray-700 dark:text-gray-200 mb-3">Connect with locals for authentic experiences.</p>
-              <ul className="text-sm text-gray-700 dark:text-gray-200 space-y-1">
-                <li>• Skip tourist traps</li>
-                <li>• Insider knowledge</li>
-                <li>• Authentic cultural exchange</li>
-              </ul>
-            </div>
-            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-lg border border-gray-200 dark:border-white/10">
-              <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Real-Time Chat</h3>
-              <p className="text-gray-700 dark:text-gray-200 mb-3">Instant messaging with full features.</p>
-              <ul className="text-sm text-gray-700 dark:text-gray-200 space-y-1">
-                <li>• Group conversations</li>
-                <li>• Photo & location sharing</li>
-                <li>• Coordinated meetups</li>
-              </ul>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 lg:gap-6">
+              <div className="p-7 sm:p-8 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/[0.02] hover:border-gray-300 dark:hover:border-white/20 transition-colors">
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-3 tracking-tight">Locals who actually live there</h3>
+                <p className="text-[0.9375rem] sm:text-base text-gray-600 dark:text-white/65 leading-[1.6]">
+                  Not tour guides, not hosts pretending to be locals. Real people who&rsquo;ll meet you for coffee, take you to the spot only their neighborhood knows, or grab dinner the night you land.
+                </p>
+              </div>
+
+              <div className="p-7 sm:p-8 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/[0.02] hover:border-gray-300 dark:hover:border-white/20 transition-colors">
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-3 tracking-tight">Other travelers, same city</h3>
+                <p className="text-[0.9375rem] sm:text-base text-gray-600 dark:text-white/65 leading-[1.6]">
+                  Someone else who just landed, same week, same vibe. The friend you make over a rooftop drink in Lisbon you&rsquo;d never have met otherwise.
+                </p>
+              </div>
+
+              <div className="p-7 sm:p-8 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/[0.02] hover:border-gray-300 dark:hover:border-white/20 transition-colors">
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-3 tracking-tight">Plan it before you land</h3>
+                <p className="text-[0.9375rem] sm:text-base text-gray-600 dark:text-white/65 leading-[1.6]">
+                  Find your people in your destination before the flight. Coffee meetup the morning you arrive, food tour Tuesday night, hike Saturday. Don&rsquo;t show up with nothing.
+                </p>
+              </div>
+
+              <div className="p-7 sm:p-8 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/[0.02] hover:border-gray-300 dark:hover:border-white/20 transition-colors">
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-3 tracking-tight">Your network grows with every trip</h3>
+                <p className="text-[0.9375rem] sm:text-base text-gray-600 dark:text-white/65 leading-[1.6]">
+                  Every city you visit adds people to your life. Years later, when one of them lands in your city &mdash; or you in theirs &mdash; Nearby Traveler tells you. The trip ends. The friendships don&rsquo;t.
+                </p>
+              </div>
             </div>
           </div>
-        </div>
+        </section>
 
-        {/* How It Works */}
-        <div className="max-w-4xl mx-auto mb-8 text-center">
-          <h2 className="text-3xl font-bold mb-8 text-gray-900 dark:text-white">
-            How It Works
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div>
-              <div className="bg-orange-100 dark:bg-orange-900/50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl font-bold text-orange-600 dark:text-orange-400">1</span>
+        {/* Editorial beat — "Some trips you remember for the place" (dark, warm radial) */}
+        <section className="relative bg-[#120a10] py-16 md:py-20 lg:py-24 px-6 sm:px-8 lg:px-12 overflow-hidden">
+          <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(255,140,60,0.09), transparent 55%)' }}></div>
+          <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at 85% 100%, rgba(255,180,110,0.06), transparent 50%)' }}></div>
+          <div className="relative max-w-3xl mx-auto text-center">
+            <h2 className="font-sans leading-[1.06] tracking-[-0.015em]" style={{ textWrap: 'balance' }}>
+              <span className="block text-[1.75rem] sm:text-3xl md:text-4xl lg:text-[3rem] font-normal text-white/75">
+                Some trips you remember for the place
+              </span>
+              <span className="block text-[2rem] sm:text-[2.25rem] md:text-[2.75rem] lg:text-[3.25rem] font-semibold text-white mt-1 md:mt-1.5">
+                Most trips you remember for the people
+              </span>
+            </h2>
+
+            <p className="mt-8 md:mt-10 max-w-2xl mx-auto text-[0.9375rem] md:text-[1.0625rem] leading-[1.7] text-white/70 font-normal">
+              The dinner with the local who took you to her favorite restaurant. The hike with three other travelers you met that morning. The night that turned into a friendship that lasted years. Nearby Traveler is how those moments start.
+            </p>
+          </div>
+          <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+        </section>
+
+        {/* How It Works — dark editorial, Step 01/02/03 labels */}
+        <section id="how-it-works" className="relative py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-[#0b1020] overflow-hidden">
+          <div className="relative max-w-6xl mx-auto">
+            <h2 className="text-[2rem] sm:text-4xl md:text-5xl lg:text-[3.5rem] font-semibold text-center text-white leading-[1.08] tracking-[-0.015em] mb-14 md:mb-20" style={{ textWrap: 'balance' }}>
+              How It Works
+            </h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-8 lg:gap-12">
+              <div>
+                <div className="text-sm font-semibold tracking-[0.24em] uppercase text-orange-400 mb-5">
+                  Step 01
+                </div>
+                <h3 className="text-xl sm:text-[1.375rem] font-semibold text-white mb-3 tracking-tight leading-snug">Add your trip</h3>
+                <p className="text-[0.9375rem] sm:text-base text-white/65 leading-[1.6]">
+                  Where you&rsquo;re going, when you&rsquo;ll be there, what you actually want to do.
+                </p>
               </div>
-              <h3 className="font-bold mb-2 text-gray-900 dark:text-white text-lg">Share Your Plans</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Add travel dates, interests, and what you want to explore</p>
-            </div>
-            <div>
-              <div className="bg-blue-100 dark:bg-blue-900/50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">2</span>
+
+              <div>
+                <div className="text-sm font-semibold tracking-[0.24em] uppercase text-orange-400 mb-5">
+                  Step 02
+                </div>
+                <h3 className="text-xl sm:text-[1.375rem] font-semibold text-white mb-3 tracking-tight leading-snug">See who&rsquo;s there</h3>
+                <p className="text-[0.9375rem] sm:text-base text-white/65 leading-[1.6]">
+                  Locals who&rsquo;ll meet you for coffee, dinner, or a hike. Other travelers landing the same week. People who actually share your interests.
+                </p>
               </div>
-              <h3 className="font-bold mb-2 text-gray-900 dark:text-white text-lg">Get Matched</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Find compatible travelers and locals based on your interests</p>
-            </div>
-            <div>
-              <div className="bg-green-100 dark:bg-green-900/50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl font-bold text-green-600 dark:text-green-400">3</span>
+
+              <div>
+                <div className="text-sm font-semibold tracking-[0.24em] uppercase text-orange-400 mb-5">
+                  Step 03
+                </div>
+                <h3 className="text-xl sm:text-[1.375rem] font-semibold text-white mb-3 tracking-tight leading-snug">Make plans before you land</h3>
+                <p className="text-[0.9375rem] sm:text-base text-white/65 leading-[1.6]">
+                  Message ahead. Lock in a meetup, an event, or a meal. Show up with people already waiting to meet you.
+                </p>
               </div>
-              <h3 className="font-bold mb-2 text-gray-900 dark:text-white text-lg">Connect & Explore</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Join events, create meetups, and make lasting friendships</p>
             </div>
           </div>
-        </div>
+          <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+        </section>
 
-        {/* Founder Story */}
-        <div className="max-w-4xl mx-auto mb-6 text-center px-4">
-          <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">From the Founder</h2>
-          <blockquote className="text-lg italic text-gray-700 dark:text-gray-300 mb-4">
-            "After hosting 400+ travelers from 50 countries, I learned that one connection can change everything. Travelers spend billions on flights and hotels, yet the most valuable part—the people you meet—is left to chance. I built the solution I wished existed."
-          </blockquote>
-          <p className="text-sm text-gray-600 dark:text-gray-400">— Aaron Lefkowitz, Founder, Nearby Traveler</p>
-        </div>
+        {/* Community events — light, simplified cards matching main landing */}
+        <section className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-14 md:mb-20">
+              <h2 className="text-[2rem] sm:text-4xl md:text-5xl lg:text-[3.5rem] font-semibold text-gray-900 dark:text-white leading-[1.08] tracking-[-0.015em] mb-5 md:mb-7" style={{ textWrap: 'balance' }}>
+                See our community in action
+              </h2>
+              <p className="text-base sm:text-lg md:text-xl text-gray-600 dark:text-white/70 max-w-2xl mx-auto leading-relaxed">
+                Every week, Nearby Traveler members host real experiences in their cities. Travelers welcome. Free or near-free. The local friend you&rsquo;d want to know, ready to introduce you to their city.
+              </p>
+            </div>
 
-        {/* Benefits Section */}
-        <div className="max-w-6xl mx-auto mb-8">
-          <h2 className="text-3xl font-bold text-center mb-8 text-gray-900 dark:text-white">
-            Why Choose Nearby Traveler?
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {whyChooseCards.map((card) => (
-              <div
-                key={card.title}
-                className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 flex flex-col h-full"
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-6">
+              <div className="p-6 sm:p-7 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/[0.02] hover:border-gray-300 dark:hover:border-white/20 transition-colors">
+                <div className="flex items-start justify-between mb-4 gap-3">
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white tracking-tight">Beach Bonfire & BBQ</h3>
+                  <span className="shrink-0 bg-orange-500 text-white px-2.5 py-0.5 rounded-full text-[0.75rem] font-semibold tracking-tight">Free</span>
+                </div>
+                <p className="text-[0.9375rem] sm:text-base text-gray-600 dark:text-white/65 leading-[1.6]">
+                  Sunset gathering with locals &mdash; authentic LA beach culture, music, and new friends.
+                </p>
+              </div>
+
+              <div className="p-6 sm:p-7 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/[0.02] hover:border-gray-300 dark:hover:border-white/20 transition-colors">
+                <div className="flex items-start justify-between mb-4 gap-3">
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white tracking-tight">Taco Tuesday</h3>
+                  <span className="shrink-0 bg-orange-500 text-white px-2.5 py-0.5 rounded-full text-[0.75rem] font-semibold tracking-tight">$1.50</span>
+                </div>
+                <p className="text-[0.9375rem] sm:text-base text-gray-600 dark:text-white/65 leading-[1.6]">
+                  Weekly street taco adventure with fellow food lovers at the city&rsquo;s best Mexican spots.
+                </p>
+              </div>
+
+              <div className="p-6 sm:p-7 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/[0.02] hover:border-gray-300 dark:hover:border-white/20 transition-colors">
+                <div className="flex items-start justify-between mb-4 gap-3">
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white tracking-tight">Hollywood Sign Hike</h3>
+                  <span className="shrink-0 bg-orange-500 text-white px-2.5 py-0.5 rounded-full text-[0.75rem] font-semibold tracking-tight">Free</span>
+                </div>
+                <p className="text-[0.9375rem] sm:text-base text-gray-600 dark:text-white/65 leading-[1.6]">
+                  Saturday morning hikes with locals and travelers &mdash; amazing views, great photos, real LA.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Founder — dark editorial, quote-forward, original copy preserved */}
+        <section className="relative py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-[#0b1020] overflow-hidden">
+          <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(255,140,60,0.07), transparent 55%)' }}></div>
+          <div className="relative max-w-3xl mx-auto text-center">
+            <h2 className="text-sm font-semibold tracking-[0.24em] uppercase text-orange-400 mb-6 md:mb-8">
+              From the Founder
+            </h2>
+            <blockquote className="text-xl sm:text-2xl md:text-[1.75rem] lg:text-[2rem] leading-[1.35] text-white font-normal tracking-[-0.01em]" style={{ textWrap: 'balance' }}>
+              &ldquo;After hosting 400+ travelers from 50 countries, I learned that one connection can change everything. Travelers spend billions on flights and hotels, yet the most valuable part&mdash;the people you meet&mdash;is left to chance. I built the solution I wished existed.&rdquo;
+            </blockquote>
+            <p className="mt-8 md:mt-10 text-[0.8125rem] sm:text-sm font-semibold tracking-[0.12em] uppercase text-white/55">
+              Aaron Lefkowitz &middot; Founder, Nearby Traveler
+            </p>
+          </div>
+          <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+        </section>
+
+        {/* Final CTA — light, single orange CTA */}
+        <section className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900">
+          <div className="max-w-3xl mx-auto text-center">
+            <h2 className="text-[2rem] sm:text-4xl md:text-5xl lg:text-[3.5rem] font-semibold text-gray-900 dark:text-white leading-[1.08] tracking-[-0.015em] mb-5 md:mb-6" style={{ textWrap: 'balance' }}>
+              Don&rsquo;t land alone
+            </h2>
+            <p className="text-base sm:text-lg md:text-xl text-gray-600 dark:text-white/70 mb-10 md:mb-12 max-w-xl mx-auto leading-relaxed">
+              Find your people before take off
+            </p>
+
+            <div className="flex justify-center">
+              <button
+                type="button"
+                onClick={() => {
+                  trackEvent('signup_cta_click', 'travelers_landing', 'final_cta');
+                  setLocation('/launching-soon');
+                }}
+                className="group inline-flex items-center justify-center gap-2 bg-orange-500 text-white hover:bg-orange-600 px-8 py-4 rounded-full text-base font-semibold tracking-tight transition-all duration-300 shadow-[0_1px_0_0_rgba(255,255,255,0.15)_inset,0_10px_36px_-10px_rgba(249,115,22,0.45)] hover:shadow-[0_1px_0_0_rgba(255,255,255,0.15)_inset,0_14px_44px_-12px_rgba(249,115,22,0.6)]"
+                data-testid="button-final-cta"
               >
-                <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">{card.title}</h3>
-                <p className="text-gray-700 dark:text-gray-200 flex-grow">{card.description}</p>
-              </div>
-            ))}
-          </div>
+                Join Nearby Traveler
+                <span aria-hidden="true" className="inline-block transition-transform duration-300 group-hover:translate-x-0.5">&rarr;</span>
+              </button>
+            </div>
 
-          {/* Balanced detail section: 6 tabs */}
-          <div className="mt-10">
-            <Tabs defaultValue={whyChooseTabs[0].value} className="w-full">
-              <TabsList className="w-full grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 bg-transparent p-0 h-auto">
-                {whyChooseTabs.map((t) => (
-                  <TabsTrigger
-                    key={t.value}
-                    value={t.value}
-                    className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-800/70 data-[state=active]:bg-[#FF6B35] data-[state=active]:text-white data-[state=active]:border-[#FF6B35] text-gray-900 dark:text-gray-100"
-                  >
-                    {t.label}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
+            <p className="mt-8 text-sm sm:text-base text-gray-500 dark:text-white/55">
+              Free to join &middot; Used in 50+ countries
+            </p>
+          </div>
+        </section>
 
-              <div className="mt-5">
-                {whyChooseTabs.map((t) => (
-                  <TabsContent key={t.value} value={t.value} className="m-0">
-                    <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm">
-                      <div className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
-                        {t.title}
-                      </div>
-                      <p className="mt-2 text-gray-700 dark:text-gray-200 leading-relaxed">
-                        {t.body}
-                      </p>
-                    </div>
-                  </TabsContent>
-                ))}
-              </div>
-            </Tabs>
-          </div>
-        </div>
-
-        {/* Community Events Section */}
-        <div className="max-w-6xl mx-auto mb-6">
-          <h2 className="text-3xl font-bold text-center mb-4 text-gray-900 dark:text-white">
-            Join Authentic Experiences Every Week
-          </h2>
-          <p className="text-center text-gray-600 dark:text-gray-400 mb-8 max-w-3xl mx-auto">
-            Every week, Nearby Traveler sponsors authentic local experiences. From cultural adventures to food tours, these events bring our community together.
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
-              <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">Beach Bonfire & BBQ</h3>
-              <p className="text-sm font-semibold text-orange-700 dark:text-orange-100 mb-3">Free</p>
-              <p className="text-gray-800 dark:text-gray-100">Sunset gathering with locals—authentic LA beach culture, music, and new friends.</p>
-            </div>
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
-              <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">Taco Tuesday</h3>
-              <p className="text-sm font-semibold text-orange-700 dark:text-orange-100 mb-3">$1.50</p>
-              <p className="text-gray-800 dark:text-gray-100">Weekly street taco adventure with fellow food lovers at the city's best Mexican spots.</p>
-            </div>
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
-              <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">Hollywood Sign Hike</h3>
-              <p className="text-sm font-semibold text-orange-700 dark:text-orange-100 mb-3">Free</p>
-              <p className="text-gray-800 dark:text-gray-100">Saturday morning hikes with locals and travelers—amazing views, great photos, real LA.</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Perfect For Section */}
-        <div className="max-w-6xl mx-auto mb-6">
-          <h3 className="text-3xl font-bold text-gray-900 dark:text-white text-center mb-8">Perfect For</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-sm border border-gray-200 dark:border-white/10">
-              <h4 className="font-bold text-gray-900 dark:text-white mb-2">Solo Travelers</h4>
-              <p className="text-gray-600 dark:text-gray-300 text-sm">Turn exploring alone into shared adventures</p>
-            </div>
-            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-sm border border-gray-200 dark:border-white/10">
-              <h4 className="font-bold text-gray-900 dark:text-white mb-2">Families</h4>
-              <p className="text-gray-600 dark:text-gray-300 text-sm">Connect with local families and fellow travelers with kids</p>
-            </div>
-            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-sm border border-gray-200 dark:border-white/10">
-              <h4 className="font-bold text-gray-900 dark:text-white mb-2">Business Travelers</h4>
-              <p className="text-gray-600 dark:text-gray-300 text-sm">Make work trips more than just meetings</p>
-            </div>
-            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-sm border border-gray-200 dark:border-white/10">
-              <h4 className="font-bold text-gray-900 dark:text-white mb-2">New in Town</h4>
-              <p className="text-gray-600 dark:text-gray-300 text-sm">Moving to a new city? Find your tribe fast</p>
-            </div>
-            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-sm border border-gray-200 dark:border-white/10">
-              <h4 className="font-bold text-gray-900 dark:text-white mb-2">Digital Nomads</h4>
-              <p className="text-gray-600 dark:text-gray-300 text-sm">Build community wherever you land</p>
-            </div>
-          </div>
-        </div>
-        
-        {/* Get Started */}
-        <div className="bg-gradient-to-r from-orange-500 to-blue-600 py-12 rounded-2xl shadow-lg mb-8">
-          <div className="max-w-4xl mx-auto text-center px-6">
-            <h2 className="text-3xl font-bold mb-4 text-black dark:text-white">Ready to Travel Like a Local?</h2>
-            <p className="text-lg mb-6 text-black dark:text-white">Join thousands of travelers who've turned solo trips into lifelong friendships. Your next adventure starts with the people you'll meet.</p>
-            <p className="text-xl mb-6 text-black dark:text-white">Free to join • Global community</p>
-            <Button
-              onClick={() => setLocation('/launching-soon')}
-              size="lg"
-              className="bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 text-orange-600 font-bold px-8 py-3 rounded-lg"
-              data-testid="button-get-started"
-            >
-              Join Now
-            </Button>
-          </div>
-        </div>
-      </main>
+      </div>
       <Footer />
     </div>
   );

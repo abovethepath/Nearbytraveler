@@ -11,7 +11,7 @@ export default function LandingNavbar() {
     <nav className="bg-transparent relative z-10 block w-full" style={{display: 'block', visibility: 'visible', minHeight: '48px'}}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-12 lg:h-16" style={{display: 'flex'}}>
-          
+
           <div className="flex-shrink-0 flex items-center gap-2">
             <Logo variant="navbar" />
             <span className="text-red-600 text-xs font-bold uppercase leading-none">Beta</span>
@@ -31,9 +31,6 @@ export default function LandingNavbar() {
               </Link>
               <Link href="/events-landing" className="border-transparent text-gray-500 dark:text-gray-200 hover:border-gray-300 hover:text-gray-700 dark:hover:text-white inline-flex items-center px-2 xl:px-3 pt-1 border-b-2 text-sm font-medium whitespace-nowrap transition-colors duration-200 flex-shrink-0">
                 Events
-              </Link>
-              <Link href="/business-landing" className="border-transparent text-gray-500 dark:text-gray-200 hover:border-gray-300 hover:text-gray-700 dark:hover:text-white inline-flex items-center px-2 xl:px-3 pt-1 border-b-2 text-sm font-medium whitespace-nowrap transition-colors duration-200 flex-shrink-0">
-                Business
               </Link>
               <Link href="/connector" className="border-transparent text-gray-500 dark:text-gray-200 hover:border-gray-300 hover:text-gray-700 dark:hover:text-white inline-flex items-center px-2 xl:px-3 pt-1 border-b-2 text-sm font-medium whitespace-nowrap transition-colors duration-200 flex-shrink-0">
                 Connector
@@ -95,7 +92,7 @@ export default function LandingNavbar() {
           </div>
         </div>
       </div>
-      
+
       {mobileMenuOpen && (
         <div className="lg:hidden shadow-lg max-h-screen overflow-y-auto bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700" style={{ WebkitOverflowScrolling: 'touch' }}>
           <div className="pt-2 pb-2 space-y-0.5 px-3">
@@ -104,7 +101,6 @@ export default function LandingNavbar() {
               { href: "/locals-landing", label: "For Locals" },
               { href: "/travelers-landing", label: "For Travelers" },
               { href: "/events-landing", label: "For Events" },
-              { href: "/business-landing", label: "For Businesses" },
               { href: "/connector", label: "Connector" },
               { href: "/blog", label: "Blog" },
             ].map((item) => (
