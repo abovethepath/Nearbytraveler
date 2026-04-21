@@ -33,13 +33,16 @@ export default function BusinessLanding() {
     <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900">
       
       {/* Fixed CTA Button */}
-      <div className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-50">
+      <div
+        className="fixed right-4 sm:right-6 z-50"
+        style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 1rem)' }}
+      >
         <Button 
           onClick={() => {
             trackEvent('signup_cta_click', 'business_landing', 'floating_sign_up');
             setLocation('/join');
           }}
-          className="bg-blue-500 hover:bg-blue-600 text-white font-medium px-4 py-2 sm:px-6 sm:py-3 rounded-lg shadow-sm transition-all duration-200 text-sm sm:text-base"
+          className="bg-blue-500 hover:bg-blue-600 text-white font-medium px-4 py-2 sm:px-6 sm:py-3 rounded-lg shadow-sm transition-all duration-200 text-sm sm:text-base min-h-[44px]"
           data-testid="button-floating-sign-up"
         >
           Sign Up

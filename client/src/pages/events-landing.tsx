@@ -138,7 +138,7 @@ export default function EventsLanding() {
             </div>
           </div>
 
-          <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent z-10"></div>
+          <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent z-10 pointer-events-none"></div>
         </section>
 
         {/* Why people show up to these — light features grid, 4 cards */}
@@ -200,7 +200,7 @@ export default function EventsLanding() {
               Every long-running friendship started with a Saturday morning hike, a Tuesday taco run, a bonfire that ran late. Nearby Traveler events are how people meet who never would&rsquo;ve otherwise. The plan is the catalyst.
             </p>
           </div>
-          <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+          <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none"></div>
         </section>
 
         {/* Event showcase — 6 cards, photos preserved, restyled chrome */}
@@ -245,7 +245,7 @@ export default function EventsLanding() {
                   <button
                     type="button"
                     onClick={() => setLocation('/join')}
-                    className="group/btn inline-flex items-center gap-1.5 self-start text-[0.9375rem] font-semibold tracking-tight text-gray-700 hover:text-orange-500 dark:text-white/80 dark:hover:text-orange-400 transition-colors"
+                    className="group/btn inline-flex items-center gap-1.5 self-start text-[0.9375rem] font-semibold tracking-tight text-gray-700 hover:text-orange-500 dark:text-white/80 dark:hover:text-orange-400 px-1.5 py-3 sm:py-2 min-h-[44px] sm:min-h-0 transition-colors"
                   >
                     Join event
                     <span aria-hidden="true" className="inline-block transition-transform duration-300 group-hover/btn:translate-x-0.5">&rarr;</span>
@@ -281,7 +281,7 @@ export default function EventsLanding() {
                   <button
                     type="button"
                     onClick={() => setLocation('/join')}
-                    className="group/btn inline-flex items-center gap-1.5 self-start text-[0.9375rem] font-semibold tracking-tight text-gray-700 hover:text-orange-500 dark:text-white/80 dark:hover:text-orange-400 transition-colors"
+                    className="group/btn inline-flex items-center gap-1.5 self-start text-[0.9375rem] font-semibold tracking-tight text-gray-700 hover:text-orange-500 dark:text-white/80 dark:hover:text-orange-400 px-1.5 py-3 sm:py-2 min-h-[44px] sm:min-h-0 transition-colors"
                   >
                     Join event
                     <span aria-hidden="true" className="inline-block transition-transform duration-300 group-hover/btn:translate-x-0.5">&rarr;</span>
@@ -317,7 +317,7 @@ export default function EventsLanding() {
                   <button
                     type="button"
                     onClick={() => setLocation('/join')}
-                    className="group/btn inline-flex items-center gap-1.5 self-start text-[0.9375rem] font-semibold tracking-tight text-gray-700 hover:text-orange-500 dark:text-white/80 dark:hover:text-orange-400 transition-colors"
+                    className="group/btn inline-flex items-center gap-1.5 self-start text-[0.9375rem] font-semibold tracking-tight text-gray-700 hover:text-orange-500 dark:text-white/80 dark:hover:text-orange-400 px-1.5 py-3 sm:py-2 min-h-[44px] sm:min-h-0 transition-colors"
                   >
                     Join event
                     <span aria-hidden="true" className="inline-block transition-transform duration-300 group-hover/btn:translate-x-0.5">&rarr;</span>
@@ -352,7 +352,7 @@ export default function EventsLanding() {
                   <button
                     type="button"
                     onClick={() => setLocation('/join')}
-                    className="group/btn inline-flex items-center gap-1.5 self-start text-[0.9375rem] font-semibold tracking-tight text-gray-700 hover:text-orange-500 dark:text-white/80 dark:hover:text-orange-400 transition-colors"
+                    className="group/btn inline-flex items-center gap-1.5 self-start text-[0.9375rem] font-semibold tracking-tight text-gray-700 hover:text-orange-500 dark:text-white/80 dark:hover:text-orange-400 px-1.5 py-3 sm:py-2 min-h-[44px] sm:min-h-0 transition-colors"
                   >
                     Join event
                     <span aria-hidden="true" className="inline-block transition-transform duration-300 group-hover/btn:translate-x-0.5">&rarr;</span>
@@ -387,7 +387,7 @@ export default function EventsLanding() {
                   <button
                     type="button"
                     onClick={() => setLocation('/join')}
-                    className="group/btn inline-flex items-center gap-1.5 self-start text-[0.9375rem] font-semibold tracking-tight text-gray-700 hover:text-orange-500 dark:text-white/80 dark:hover:text-orange-400 transition-colors"
+                    className="group/btn inline-flex items-center gap-1.5 self-start text-[0.9375rem] font-semibold tracking-tight text-gray-700 hover:text-orange-500 dark:text-white/80 dark:hover:text-orange-400 px-1.5 py-3 sm:py-2 min-h-[44px] sm:min-h-0 transition-colors"
                   >
                     Join event
                     <span aria-hidden="true" className="inline-block transition-transform duration-300 group-hover/btn:translate-x-0.5">&rarr;</span>
@@ -422,7 +422,7 @@ export default function EventsLanding() {
                   <button
                     type="button"
                     onClick={() => setLocation('/join')}
-                    className="group/btn inline-flex items-center gap-1.5 self-start text-[0.9375rem] font-semibold tracking-tight text-gray-700 hover:text-orange-500 dark:text-white/80 dark:hover:text-orange-400 transition-colors"
+                    className="group/btn inline-flex items-center gap-1.5 self-start text-[0.9375rem] font-semibold tracking-tight text-gray-700 hover:text-orange-500 dark:text-white/80 dark:hover:text-orange-400 px-1.5 py-3 sm:py-2 min-h-[44px] sm:min-h-0 transition-colors"
                   >
                     Join event
                     <span aria-hidden="true" className="inline-block transition-transform duration-300 group-hover/btn:translate-x-0.5">&rarr;</span>

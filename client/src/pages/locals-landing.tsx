@@ -131,7 +131,7 @@ export default function LocalsLanding() {
             </div>
           </div>
 
-          <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent z-10"></div>
+          <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent z-10 pointer-events-none"></div>
         </section>
 
         {/* Why locals find their people here — light features grid, 4 cards */}
@@ -193,7 +193,7 @@ export default function LocalsLanding() {
               A coffee shop becomes a ritual. A hiking trail becomes a Saturday tradition. A Tuesday night becomes plans. Nearby Traveler helps you find the people who make a city home.
             </p>
           </div>
-          <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+          <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none"></div>
         </section>
 
         {/* How It Works — dark editorial, Step 01/02/03 labels */}
@@ -235,7 +235,7 @@ export default function LocalsLanding() {
               </div>
             </div>
           </div>
-          <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+          <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none"></div>
         </section>
 
         {/* Community events — light, simplified cards (matches main landing) */}
@@ -298,7 +298,7 @@ export default function LocalsLanding() {
               Aaron Lefkowitz, Founder, Nearby Traveler
             </p>
           </div>
-          <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+          <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none"></div>
         </section>
 
         {/* Final CTA — light, single orange CTA */}

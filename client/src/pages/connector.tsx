@@ -107,7 +107,7 @@ export default function ConnectorLanding() {
               </div>
               <Button
                 onClick={() => setLocation("/dashboard/connector")}
-                className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white font-bold"
+                className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white font-bold min-h-[44px]"
               >
                 Go to Connector dashboard
               </Button>
@@ -146,14 +146,14 @@ export default function ConnectorLanding() {
             <div className="mt-8 flex flex-col sm:flex-row gap-3">
               <Button
                 onClick={() => scrollToId("how-to-join")}
-                className="bg-orange-500 hover:bg-orange-600 text-white"
+                className="bg-orange-500 hover:bg-orange-600 text-white min-h-[44px]"
               >
                 How to Get In
               </Button>
               <Button
                 variant="outline"
                 onClick={() => scrollToId("how-it-works")}
-                className="border-gray-300 dark:border-gray-700"
+                className="border-gray-300 dark:border-gray-700 min-h-[44px]"
               >
                 How It Works
               </Button>
@@ -540,7 +540,7 @@ export default function ConnectorLanding() {
                 <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
                   <Button
                     onClick={() => setLocation("/home")}
-                    className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                    className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 min-h-[44px]"
                   >
                     Open the App
                   </Button>

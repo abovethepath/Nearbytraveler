@@ -23,7 +23,7 @@ export default function About() {
               <Link href="/">
                 <Button 
                   variant="outline" 
-                  className="flex items-center gap-2 hover:bg-gray-50 dark:bg-gray-800"
+                  className="flex items-center gap-2 hover:bg-gray-50 dark:bg-gray-800 min-h-[44px]"
                   onClick={scrollToTop}
                 >
                   <ArrowLeft className="h-4 w-4" />

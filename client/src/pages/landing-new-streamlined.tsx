@@ -131,7 +131,7 @@ export default function LandingStreamlined() {
             trackEvent('signup_cta_click', 'landing_page', 'floating_get_started');
             handleGetStarted();
           }}
-          className="bg-blue-500 hover:bg-blue-600 text-white font-medium px-4 py-2 sm:px-6 sm:py-3 rounded-lg shadow-sm transition-all duration-200 text-sm sm:text-base"
+          className="bg-blue-500 hover:bg-blue-600 text-white font-medium px-4 py-2 sm:px-6 sm:py-3 rounded-lg shadow-sm transition-all duration-200 text-sm sm:text-base min-h-[44px]"
           data-testid="button-floating-get-started"
         >
           Get Started
@@ -224,7 +224,7 @@ export default function LandingStreamlined() {
           </div>
 
           {/* Thin bottom separator */}
-          <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent z-10"></div>
+          <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent z-10 pointer-events-none"></div>
         </section>
 
         {/* Everyone's a traveler — editorial manifesto */}
@@ -245,7 +245,7 @@ export default function LandingStreamlined() {
               </p>
             </div>
           </div>
-          <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+          <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none"></div>
         </section>
 
         {/* Reconnection — editorial narrative beat (slightly warmer dark tone) */}
@@ -266,7 +266,7 @@ export default function LandingStreamlined() {
               Most apps connect you with strangers. Nearby Traveler connects you with the people you&rsquo;ve already met &mdash; notifying you when someone you crossed paths with on a trip is nearby again. A coffee in Paris becomes dinner in New York. A hiking buddy in Bali reconnects with you in Berlin. One-time encounters turn into lifelong friendships &mdash; no matter where life takes any of you next.
             </p>
           </div>
-          <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+          <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none"></div>
         </section>
 
         {/* Why Nearby Traveler — harmonized: editorial typography, subtle bordered cards */}
@@ -366,7 +366,7 @@ export default function LandingStreamlined() {
               </div>
             </div>
           </div>
-          <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+          <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none"></div>
         </section>
 
         {/* Community in Action — harmonized: simplified event cards, no gradients, minimal elevation */}
@@ -432,7 +432,7 @@ export default function LandingStreamlined() {
               Call it whatever you want &mdash; travel buddies, locals, your crew. The truth is simpler: the people you were meant to know are already out there. Some live in your city. Some will be there for four days. Nearby Traveler helps you find each other.
             </p>
           </div>
-          <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+          <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none"></div>
         </section>
 
         {/* From the Founder — harmonized: dark editorial, gradient killed, quote-forward */}
@@ -449,7 +449,7 @@ export default function LandingStreamlined() {
               Aaron Lefkowitz, Founder
             </p>
           </div>
-          <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+          <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none"></div>
         </section>
 
         {/* Credibility Bar */}
