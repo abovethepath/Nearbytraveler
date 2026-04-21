@@ -12,7 +12,7 @@ export default function LocalsLanding() {
 
   const handleGetStarted = () => {
     trackEvent('signup_cta_click', 'locals_landing', 'main_cta');
-    setLocation('/launching-soon');
+    setLocation('/join');
   };
 
   // Show the floating CTA after the user scrolls past the hero
@@ -49,7 +49,7 @@ export default function LocalsLanding() {
           type="button"
           onClick={() => {
             trackEvent('signup_cta_click', 'locals_landing', 'floating_join_now');
-            setLocation('/launching-soon');
+            setLocation('/join');
           }}
           className="inline-flex items-center justify-center gap-2 bg-orange-500 text-white hover:bg-orange-600 px-5 py-3 rounded-full text-sm font-semibold tracking-tight transition-all duration-300 shadow-[0_10px_36px_-10px_rgba(249,115,22,0.55)]"
           data-testid="button-floating-join-now"
@@ -313,7 +313,7 @@ export default function LocalsLanding() {
                 type="button"
                 onClick={() => {
                   trackEvent('signup_cta_click', 'locals_landing', 'final_cta');
-                  setLocation('/launching-soon');
+                  setLocation('/join');
                 }}
                 className="group inline-flex items-center justify-center gap-2 bg-orange-500 text-white hover:bg-orange-600 px-8 py-4 rounded-full text-base font-semibold tracking-tight transition-all duration-300 shadow-[0_1px_0_0_rgba(255,255,255,0.15)_inset,0_10px_36px_-10px_rgba(249,115,22,0.45)] hover:shadow-[0_1px_0_0_rgba(255,255,255,0.15)_inset,0_14px_44px_-12px_rgba(249,115,22,0.6)]"
                 data-testid="button-final-cta"

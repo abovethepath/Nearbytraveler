@@ -16,7 +16,7 @@ export default function EventsLanding() {
 
   const handleGetStarted = () => {
     trackEvent('signup_cta_click', 'events_landing', 'main_cta');
-    setLocation('/launching-soon');
+    setLocation('/join');
   };
 
   // Show the floating CTA after the user scrolls past the hero
@@ -56,7 +56,7 @@ export default function EventsLanding() {
           type="button"
           onClick={() => {
             trackEvent('signup_cta_click', 'events_landing', 'floating_join_now');
-            setLocation('/launching-soon');
+            setLocation('/join');
           }}
           className="inline-flex items-center justify-center gap-2 bg-orange-500 text-white hover:bg-orange-600 px-5 py-3 rounded-full text-sm font-semibold tracking-tight transition-all duration-300 shadow-[0_10px_36px_-10px_rgba(249,115,22,0.55)]"
           data-testid="button-floating-join-now"
@@ -244,7 +244,7 @@ export default function EventsLanding() {
 
                   <button
                     type="button"
-                    onClick={() => setLocation('/launching-soon')}
+                    onClick={() => setLocation('/join')}
                     className="group/btn inline-flex items-center gap-1.5 self-start text-[0.9375rem] font-semibold tracking-tight text-gray-700 hover:text-orange-500 dark:text-white/80 dark:hover:text-orange-400 transition-colors"
                   >
                     Join event
@@ -280,7 +280,7 @@ export default function EventsLanding() {
 
                   <button
                     type="button"
-                    onClick={() => setLocation('/launching-soon')}
+                    onClick={() => setLocation('/join')}
                     className="group/btn inline-flex items-center gap-1.5 self-start text-[0.9375rem] font-semibold tracking-tight text-gray-700 hover:text-orange-500 dark:text-white/80 dark:hover:text-orange-400 transition-colors"
                   >
                     Join event
@@ -316,7 +316,7 @@ export default function EventsLanding() {
 
                   <button
                     type="button"
-                    onClick={() => setLocation('/launching-soon')}
+                    onClick={() => setLocation('/join')}
                     className="group/btn inline-flex items-center gap-1.5 self-start text-[0.9375rem] font-semibold tracking-tight text-gray-700 hover:text-orange-500 dark:text-white/80 dark:hover:text-orange-400 transition-colors"
                   >
                     Join event
@@ -351,7 +351,7 @@ export default function EventsLanding() {
 
                   <button
                     type="button"
-                    onClick={() => setLocation('/launching-soon')}
+                    onClick={() => setLocation('/join')}
                     className="group/btn inline-flex items-center gap-1.5 self-start text-[0.9375rem] font-semibold tracking-tight text-gray-700 hover:text-orange-500 dark:text-white/80 dark:hover:text-orange-400 transition-colors"
                   >
                     Join event
@@ -386,7 +386,7 @@ export default function EventsLanding() {
 
                   <button
                     type="button"
-                    onClick={() => setLocation('/launching-soon')}
+                    onClick={() => setLocation('/join')}
                     className="group/btn inline-flex items-center gap-1.5 self-start text-[0.9375rem] font-semibold tracking-tight text-gray-700 hover:text-orange-500 dark:text-white/80 dark:hover:text-orange-400 transition-colors"
                   >
                     Join event
@@ -421,7 +421,7 @@ export default function EventsLanding() {
 
                   <button
                     type="button"
-                    onClick={() => setLocation('/launching-soon')}
+                    onClick={() => setLocation('/join')}
                     className="group/btn inline-flex items-center gap-1.5 self-start text-[0.9375rem] font-semibold tracking-tight text-gray-700 hover:text-orange-500 dark:text-white/80 dark:hover:text-orange-400 transition-colors"
                   >
                     Join event
@@ -449,7 +449,7 @@ export default function EventsLanding() {
                 type="button"
                 onClick={() => {
                   trackEvent('signup_cta_click', 'events_landing', 'final_cta');
-                  setLocation('/launching-soon');
+                  setLocation('/join');
                 }}
                 className="group inline-flex items-center justify-center gap-2 bg-orange-500 text-white hover:bg-orange-600 px-8 py-4 rounded-full text-base font-semibold tracking-tight transition-all duration-300 shadow-[0_1px_0_0_rgba(255,255,255,0.15)_inset,0_10px_36px_-10px_rgba(249,115,22,0.45)] hover:shadow-[0_1px_0_0_rgba(255,255,255,0.15)_inset,0_14px_44px_-12px_rgba(249,115,22,0.6)]"
                 data-testid="button-final-cta"
@@ -462,7 +462,7 @@ export default function EventsLanding() {
                 type="button"
                 onClick={() => {
                   trackEvent('create_event_click', 'events_landing', 'final_cta');
-                  setLocation('/launching-soon');
+                  setLocation('/join');
                 }}
                 className="group inline-flex items-center justify-center gap-2 text-[0.9375rem] font-medium text-gray-700 hover:text-orange-500 dark:text-white/75 dark:hover:text-orange-400 px-1.5 py-3 sm:py-2 min-h-[44px] sm:min-h-0 transition-colors duration-300"
                 data-testid="button-create-event"
