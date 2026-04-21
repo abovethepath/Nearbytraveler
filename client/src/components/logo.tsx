@@ -53,7 +53,7 @@ export default function Logo({ className, variant = "default" }: LogoProps) {
 
   return (
     <img
-      src={`/new-logo.png?t=${Date.now()}`}
+      src="/new-logo.png"
       alt="Nearby Traveler"
       className={`${finalClass} ${isAuthVariant ? "dark:mix-blend-lighten" : ""}`}
       onClick={handleClick}

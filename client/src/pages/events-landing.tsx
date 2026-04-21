@@ -1,10 +1,8 @@
-
 import React, { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
+import { Helmet } from "react-helmet-async";
 import { useLocation } from "wouter";
 import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
 import Footer from "@/components/footer";
-import LandingCTA from "@/components/LandingCTA";
 import { trackEvent } from "@/lib/analytics";
 import karaokeImage from "@assets/image_1756447354157.png";
 import bikeImage from "@assets/image_1756447442403.png";
@@ -14,447 +12,471 @@ import eventHeaderImage from "@assets/event-photo.png";
 
 export default function EventsLanding() {
   const [, setLocation] = useLocation();
-  const [isMobile, setIsMobile] = useState(false);
-  // Rotating wisdom sayings above the photo
-  const [currentWisdom, setCurrentWisdom] = useState(0);
-  const wisdomSayings = [
-    "Every Event Tells a Story.",
-    "Where Memories Are Made.",
-    "Connect Through Shared Experiences.",
-    "Life Happens Together.",
-    "Create Moments That Matter.",
-    "Events Bring People Together."
-  ];
-  
-  // Mobile-friendly shorter versions
-  const wisdomSayingsMobile = [
-    "Every Event Tells a Story.",
-    "Where Memories Are Made.",
-    "Connect Through Experiences.",
-    "Life Happens Together.",
-    "Create Moments That Matter.",
-    "Events Bring People Together."
-  ];
-  
-  // Check URL for layout parameter - default to Airbnb style
-  const urlParams = new URLSearchParams(window.location.search);
-  const isAirbnbStyle = urlParams.get('layout') !== 'centered';
+  const [showFloatingCTA, setShowFloatingCTA] = useState(false);
 
+  const handleGetStarted = () => {
+    trackEvent('signup_cta_click', 'events_landing', 'main_cta');
+    setLocation('/launching-soon');
+  };
+
+  // Show the floating CTA after the user scrolls past the hero
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 640);
+    const onScroll = () => {
+      setShowFloatingCTA(window.scrollY > window.innerHeight * 0.8);
     };
-    
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // Rotating wisdom sayings effect
-  useEffect(() => {
-    const rotateWisdom = () => {
-      setCurrentWisdom((prev) => (prev + 1) % wisdomSayings.length);
-    };
-
-    const timeout = setTimeout(rotateWisdom, 10000); // 10 seconds
-    return () => clearTimeout(timeout);
-  }, [currentWisdom, wisdomSayings.length]);
+  // Unified tag pill class — same muted treatment on every pill
+  const tagClass = "text-[0.65rem] sm:text-xs uppercase tracking-[0.12em] font-semibold px-2 py-0.5 rounded-full border border-gray-300 dark:border-white/15 text-gray-600 dark:text-white/60";
 
   return (
-    <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900">
-      
-      {/* Fixed CTA Button */}
-      <div className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-50">
-        <Button 
+    <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900 font-sans">
+      <Helmet>
+        <title>Nearby Traveler &mdash; Events</title>
+        <meta name="description" content="Events are where people become your people. Weekly bonfires, taco crawls, hikes, and gallery walks hosted by locals, open to anyone. Free or near-free." />
+        <link rel="canonical" href="https://nearbytraveler.org/events-landing" />
+        <meta property="og:title" content="Events are where people become your people." />
+        <meta property="og:description" content="Real plans, hosted by locals, open to travelers. Bonfires, hikes, food crawls — the events that turn strangers into your people." />
+        <meta property="og:url" content="https://nearbytraveler.org/events-landing" />
+        <meta property="og:image" content="https://nearbytraveler.org/og-image.png" />
+        <meta name="twitter:title" content="Events are where people become your people." />
+        <meta name="twitter:description" content="Real plans, hosted by locals, open to travelers. Bonfires, hikes, food crawls — the events that turn strangers into your people." />
+      </Helmet>
+
+      {/* Floating CTA — scroll-gated orange pill, matches main landing */}
+      <div
+        className={`fixed right-4 sm:right-6 z-50 transition-opacity duration-300 ${showFloatingCTA ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+        style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 1rem)' }}
+        aria-hidden={!showFloatingCTA}
+      >
+        <button
+          type="button"
           onClick={() => {
             trackEvent('signup_cta_click', 'events_landing', 'floating_join_now');
             setLocation('/launching-soon');
           }}
-          className="bg-blue-500 hover:bg-blue-600 text-white font-medium px-4 py-2 sm:px-6 sm:py-3 rounded-lg shadow-sm transition-all duration-200 text-sm sm:text-base"
+          className="inline-flex items-center justify-center gap-2 bg-orange-500 text-white hover:bg-orange-600 px-5 py-3 rounded-full text-sm font-semibold tracking-tight transition-all duration-300 shadow-[0_10px_36px_-10px_rgba(249,115,22,0.55)]"
           data-testid="button-floating-join-now"
         >
-          Join Now
-        </Button>
+          Join now
+          <span aria-hidden="true">&rarr;</span>
+        </button>
       </div>
 
       <LandingHeader />
       <LandingHeaderSpacer />
-      
+
       <div className="w-full">
-        
-        {/* HERO SECTION */}
-        <div className="pt-4 pb-8 sm:pt-8 sm:pb-12 bg-white dark:bg-gray-900">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid gap-6 md:gap-8 lg:gap-12 lg:grid-cols-2 items-center">
-              
-              {/* Left text side */}
-              <div className="order-2 lg:order-1 text-center lg:text-left">
-                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-6 sm:mb-8">
-                  <span className="landing-gradient-text text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-orange-500">Join User Created Events</span>
-                </h1>
-                <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300 mb-8 sm:mb-10 leading-relaxed max-w-2xl mx-auto lg:mx-0">
-                  Make real connections with nearby travelers and locals through authentic experiences. Build real friendships that last a lifetime.
+
+        {/* HERO SECTION — full-bleed bonfire image, editorial overlay */}
+        <section className="relative w-full overflow-hidden bg-[#0b1020] min-h-[80vh] md:min-h-[88vh] lg:min-h-[92vh] flex items-center">
+          {/* Full-bleed background image */}
+          <img
+            src={eventHeaderImage}
+            alt=""
+            aria-hidden="true"
+            className="absolute top-0 left-0 w-full h-full object-cover pointer-events-none"
+            loading="eager"
+          />
+
+          {/* Layered overlay */}
+          <div className="absolute inset-0 z-[1] bg-gradient-to-b from-[#05070f]/60 via-[#070a14]/45 to-[#05070f]/78 pointer-events-none"></div>
+          <div className="absolute inset-0 z-[1] bg-gradient-to-r from-[#05070f]/55 via-[#05070f]/10 to-transparent pointer-events-none"></div>
+          <div className="absolute inset-0 z-[1] pointer-events-none" style={{ background: 'radial-gradient(ellipse 55% 38% at 50% 50%, rgba(0,0,0,0.4), transparent 70%)' }}></div>
+          <div className="absolute inset-0 z-[1] pointer-events-none" style={{ background: 'radial-gradient(ellipse at 20% 110%, rgba(255,140,60,0.14), transparent 55%)' }}></div>
+          <div className="absolute inset-0 z-[1] pointer-events-none" style={{ background: 'radial-gradient(ellipse at 82% 8%, rgba(255,180,110,0.08), transparent 50%)' }}></div>
+
+          {/* Editorial eyebrow */}
+          <div className="absolute top-6 left-4 sm:left-8 md:top-8 md:left-20 lg:left-24 z-20 hidden sm:flex items-center gap-3 text-sm md:text-base font-semibold tracking-[0.22em] uppercase text-white">
+            <span className="w-8 h-[1px] bg-white/80"></span>
+            <span>Nearby Traveler &middot; Events</span>
+          </div>
+
+          {/* Content */}
+          <div className="relative z-10 w-full max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-24 md:py-28">
+            <div className="max-w-4xl mx-auto text-center">
+              <h1 className="font-sans leading-[1.04] tracking-tight" style={{ textWrap: 'balance' }}>
+                <span className="block text-[2.125rem] sm:text-[2.75rem] md:text-6xl lg:text-[4.25rem] xl:text-[5rem] font-normal text-white/75">
+                  Events are where people
+                </span>
+                <span className="block text-[2.375rem] sm:text-[3rem] md:text-6xl lg:text-[4.25rem] xl:text-[5rem] font-semibold text-white tracking-[-0.02em] mt-1 md:mt-1.5">
+                  become your people
+                </span>
+              </h1>
+
+              <p className="mt-7 md:mt-10 max-w-2xl mx-auto text-[0.9375rem] md:text-[1.0625rem] leading-[1.6] text-white/90 font-normal">
+                Weekly bonfires, taco crawls, hikes, gallery walks. Hosted by locals, joined by travelers. This is how real friendships actually start.
+              </p>
+
+              <div className="mt-9 md:mt-12 flex flex-col sm:flex-row sm:items-center sm:justify-center gap-4 sm:gap-5">
+                <button
+                  type="button"
+                  onClick={handleGetStarted}
+                  className="group inline-flex items-center justify-center gap-2 bg-orange-500 text-white hover:bg-orange-600 px-7 py-3.5 rounded-full text-[0.9375rem] font-semibold tracking-tight transition-all duration-300 shadow-[0_1px_0_0_rgba(255,255,255,0.15)_inset,0_10px_36px_-10px_rgba(249,115,22,0.45)] hover:shadow-[0_1px_0_0_rgba(255,255,255,0.15)_inset,0_14px_44px_-12px_rgba(249,115,22,0.6)]"
+                  data-testid="button-main-cta"
+                >
+                  Go meet someone
+                  <span aria-hidden="true" className="inline-block transition-transform duration-300 group-hover:translate-x-0.5">&rarr;</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    trackEvent('learn_more_click', 'events_landing', 'see_upcoming_events');
+                    document.querySelector('#event-showcase')?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  className="group inline-flex items-center justify-center gap-2 text-[0.9375rem] font-medium text-white/75 hover:text-white px-1.5 py-3 sm:py-2 min-h-[44px] sm:min-h-0 transition-colors duration-300"
+                  data-testid="button-see-upcoming-events"
+                >
+                  See upcoming events
+                  <span aria-hidden="true" className="inline-block text-white/40 group-hover:text-white/85 transition-all duration-300 group-hover:translate-x-0.5">&rarr;</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent z-10"></div>
+        </section>
+
+        {/* Why people show up to these — light features grid, 4 cards */}
+        <section className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-800">
+          <div className="max-w-5xl mx-auto">
+            <div className="text-center mb-14 md:mb-20">
+              <h2 className="text-[2rem] sm:text-4xl md:text-5xl lg:text-[3.5rem] font-semibold text-gray-900 dark:text-white leading-[1.08] tracking-[-0.015em]" style={{ textWrap: 'balance' }}>
+                Why people show up to these
+              </h2>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 lg:gap-6">
+              <div className="p-7 sm:p-8 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/[0.02] hover:border-gray-300 dark:hover:border-white/20 transition-colors">
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-3 tracking-tight">Real plans, not invitations to nothing</h3>
+                <p className="text-[0.9375rem] sm:text-base text-gray-600 dark:text-white/65 leading-[1.6]">
+                  Bonfires that actually happen. Taco crawls with real meeting times. Hikes you can show up to Saturday morning. Events that turn into people you want to see again.
                 </p>
-                
-                {/* CTA Buttons */}
-                <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                  <Button
-                    onClick={() => {
-                      trackEvent('signup_cta_click', 'events_landing', 'main_cta');
-                      setLocation('/launching-soon');
-                    }}
-                    size="lg"
-                    className="bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white px-8 py-4 rounded-xl text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
-                    data-testid="button-main-cta"
-                  >
-                    Join Now
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      trackEvent('learn_more_click', 'events_landing', 'see_how_it_works');
-                      document.querySelector('#community-section')?.scrollIntoView({ behavior: 'smooth' });
-                    }}
-                    variant="outline"
-                    size="lg"
-                    className="border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-800 px-8 py-4 rounded-xl text-lg font-medium transition-all duration-200"
-                    data-testid="button-learn-more"
-                  >
-                    See How It Works
-                  </Button>
-                </div>
-                
-                {/* Event History Link */}
-                <div className="mt-6 text-center lg:text-left">
-                  <Button
-                    onClick={() => {
-                      trackEvent('event_history_click', 'events_landing', 'browse_past');
-                      setLocation('/event-history');
-                    }}
-                    variant="link"
-                    className="text-orange-600 hover:text-orange-700 font-medium"
-                    data-testid="button-event-history"
-                  >
-                    📜 Browse Past Events & Connect with Attendees
-                  </Button>
-                </div>
               </div>
 
-              {/* Right image side */}
-              <div className="order-1 lg:order-2 flex flex-col items-center">
-                <div className="mb-4 sm:mb-6 text-center w-full">
-                  <p className="landing-quote text-lg sm:text-xl md:text-2xl font-bold italic px-2">
-                    Travel doesn't change you.<br />
-                    The people you meet do.
-                  </p>
-                </div>
-                
-                <div className="overflow-hidden relative w-full max-w-sm sm:max-w-md lg:max-w-lg h-[250px] sm:h-[300px] md:h-[350px] lg:h-[400px] rounded-2xl shadow-lg">
+              <div className="p-7 sm:p-8 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/[0.02] hover:border-gray-300 dark:hover:border-white/20 transition-colors">
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-3 tracking-tight">Hosted by locals, open to anyone</h3>
+                <p className="text-[0.9375rem] sm:text-base text-gray-600 dark:text-white/65 leading-[1.6]">
+                  Every event is hosted by someone in the community &mdash; a local who knows the spot, the timing, the vibe. Travelers welcome. Strangers turn into your people.
+                </p>
+              </div>
+
+              <div className="p-7 sm:p-8 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/[0.02] hover:border-gray-300 dark:hover:border-white/20 transition-colors">
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-3 tracking-tight">Free or near-free</h3>
+                <p className="text-[0.9375rem] sm:text-base text-gray-600 dark:text-white/65 leading-[1.6]">
+                  No event tickets, no cover charges, no paid memberships. Most events are free. The ones that aren&rsquo;t are usually under $10.
+                </p>
+              </div>
+
+              <div className="p-7 sm:p-8 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/[0.02] hover:border-gray-300 dark:hover:border-white/20 transition-colors">
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-3 tracking-tight">Host your own</h3>
+                <p className="text-[0.9375rem] sm:text-base text-gray-600 dark:text-white/65 leading-[1.6]">
+                  Have a hike you do every Saturday? A coffee shop nobody knows about? A movie night idea? Spin it up as an event in two minutes. Your people will find it.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Editorial beat — "The friendship doesn't start..." */}
+        <section className="relative bg-[#120a10] py-16 md:py-20 lg:py-24 px-6 sm:px-8 lg:px-12 overflow-hidden">
+          <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(255,140,60,0.09), transparent 55%)' }}></div>
+          <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at 85% 100%, rgba(255,180,110,0.06), transparent 50%)' }}></div>
+          <div className="relative max-w-3xl mx-auto text-center">
+            <h2 className="font-sans leading-[1.06] tracking-[-0.015em]" style={{ textWrap: 'balance' }}>
+              <span className="block text-[1.75rem] sm:text-3xl md:text-4xl lg:text-[3rem] font-normal text-white/75">
+                The friendship doesn&rsquo;t start
+              </span>
+              <span className="block text-[2rem] sm:text-[2.25rem] md:text-[2.75rem] lg:text-[3.25rem] font-semibold text-white mt-1 md:mt-1.5">
+                until you actually show up
+              </span>
+            </h2>
+
+            <p className="mt-8 md:mt-10 max-w-2xl mx-auto text-[0.9375rem] md:text-[1.0625rem] leading-[1.7] text-white/70 font-normal">
+              Every long-running friendship started with a Saturday morning hike, a Tuesday taco run, a bonfire that ran late. Nearby Traveler events are how people meet who never would&rsquo;ve otherwise. The plan is the catalyst.
+            </p>
+          </div>
+          <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+        </section>
+
+        {/* Event showcase — 6 cards, photos preserved, restyled chrome */}
+        <section id="event-showcase" className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-14 md:mb-20">
+              <h2 className="text-[2rem] sm:text-4xl md:text-5xl lg:text-[3.5rem] font-semibold text-gray-900 dark:text-white leading-[1.08] tracking-[-0.015em] mb-5 md:mb-7" style={{ textWrap: 'balance' }}>
+                What&rsquo;s actually happening
+              </h2>
+              <p className="text-base sm:text-lg md:text-xl text-gray-600 dark:text-white/70 max-w-2xl mx-auto leading-relaxed">
+                These are real events from the LA community. Same kinds of plans happen in every city Nearby Traveler is live in.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6">
+
+              {/* Venice Beach Dance Party */}
+              <div className="group flex flex-col rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/[0.02] overflow-hidden hover:border-gray-300 dark:hover:border-white/20 transition-colors">
+                <div className="relative w-full aspect-[16/10] bg-gray-100 dark:bg-white/5 overflow-hidden">
                   <img
-                    src={eventHeaderImage}
-                    alt="People enjoying events and activities together"
-                    className="absolute top-0 left-0 w-full h-full object-cover rounded-2xl"
+                    src="/venice-beach-dance-party.png"
+                    alt="Venice Beach dance party event"
+                    className="absolute inset-0 w-full h-full object-cover"
                   />
                 </div>
-                
-                <p className="mt-3 sm:mt-4 text-sm sm:text-base italic text-orange-600 text-center font-medium">
-                  Where Shared Experiences Create Lifelong Bonds
-                </p>
+                <div className="p-6 flex flex-col flex-grow">
+                  <div className="flex items-start justify-between gap-3 mb-2">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white tracking-tight">Venice Beach Dance Party</h3>
+                    <span className="shrink-0 bg-orange-500 text-white px-2.5 py-0.5 rounded-full text-[0.75rem] font-semibold tracking-tight">Free</span>
+                  </div>
+                  <p className="text-sm text-gray-500 dark:text-white/50 mb-4">Sunset dancing on the famous boardwalk</p>
+
+                  <div className="flex flex-wrap gap-1.5 mb-4">
+                    <span className={tagClass}>Beach</span>
+                    <span className={tagClass}>Dancing</span>
+                  </div>
+
+                  <p className="text-[0.9375rem] text-gray-600 dark:text-white/65 leading-[1.6] flex-grow mb-5">
+                    Join locals dancing to live music at Venice Beach boardwalk. Experience the authentic LA beach culture with sunset vibes and great people.
+                  </p>
+
+                  <button
+                    type="button"
+                    onClick={() => setLocation('/launching-soon')}
+                    className="group/btn inline-flex items-center gap-1.5 self-start text-[0.9375rem] font-semibold tracking-tight text-gray-700 hover:text-orange-500 dark:text-white/80 dark:hover:text-orange-400 transition-colors"
+                  >
+                    Join event
+                    <span aria-hidden="true" className="inline-block transition-transform duration-300 group-hover/btn:translate-x-0.5">&rarr;</span>
+                  </button>
+                </div>
               </div>
+
+              {/* Authentic Food Adventure */}
+              <div className="group flex flex-col rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/[0.02] overflow-hidden hover:border-gray-300 dark:hover:border-white/20 transition-colors">
+                <div className="relative w-full aspect-[16/10] bg-gray-100 dark:bg-white/5 overflow-hidden">
+                  <img
+                    src="/authentic-food-adventure.png"
+                    alt="Local food experience event"
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                </div>
+                <div className="p-6 flex flex-col flex-grow">
+                  <div className="flex items-start justify-between gap-3 mb-2">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white tracking-tight">Authentic Food Adventure</h3>
+                  </div>
+                  <p className="text-sm text-gray-500 dark:text-white/50 mb-4">Discover your local&rsquo;s favorite eats</p>
+
+                  <div className="flex flex-wrap gap-1.5 mb-4">
+                    <span className={tagClass}>Food</span>
+                    <span className={tagClass}>Local Spots</span>
+                    <span className={tagClass}>Social</span>
+                  </div>
+
+                  <p className="text-[0.9375rem] text-gray-600 dark:text-white/65 leading-[1.6] flex-grow mb-5">
+                    Join locals as they plan meals at awesome hidden food spots &mdash; $1 tacos, Korean BBQ, Ethiopian, and the best burgers in town.
+                  </p>
+
+                  <button
+                    type="button"
+                    onClick={() => setLocation('/launching-soon')}
+                    className="group/btn inline-flex items-center gap-1.5 self-start text-[0.9375rem] font-semibold tracking-tight text-gray-700 hover:text-orange-500 dark:text-white/80 dark:hover:text-orange-400 transition-colors"
+                  >
+                    Join event
+                    <span aria-hidden="true" className="inline-block transition-transform duration-300 group-hover/btn:translate-x-0.5">&rarr;</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Marina Movie Nights */}
+              <div className="group flex flex-col rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/[0.02] overflow-hidden hover:border-gray-300 dark:hover:border-white/20 transition-colors">
+                <div className="relative w-full aspect-[16/10] bg-gray-100 dark:bg-white/5 overflow-hidden">
+                  <img
+                    src={movieImage}
+                    alt="Marina del Rey outdoor movie night at Burton Chace Park"
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                </div>
+                <div className="p-6 flex flex-col flex-grow">
+                  <div className="flex items-start justify-between gap-3 mb-2">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white tracking-tight">Marina Movie Nights</h3>
+                    <span className="shrink-0 bg-orange-500 text-white px-2.5 py-0.5 rounded-full text-[0.75rem] font-semibold tracking-tight">Free</span>
+                  </div>
+                  <p className="text-sm text-gray-500 dark:text-white/50 mb-4">Saturday &middot; 8:00 PM &middot; Burton Chace Park</p>
+
+                  <div className="flex flex-wrap gap-1.5 mb-4">
+                    <span className={tagClass}>Movies</span>
+                    <span className={tagClass}>Outdoor</span>
+                  </div>
+
+                  <p className="text-[0.9375rem] text-gray-600 dark:text-white/65 leading-[1.6] flex-grow mb-5">
+                    Free outdoor movie screenings at Burton Chace Park in Marina del Rey. Bring a blanket, pack a picnic, and enjoy movies under the stars with locals and travelers.
+                  </p>
+
+                  <button
+                    type="button"
+                    onClick={() => setLocation('/launching-soon')}
+                    className="group/btn inline-flex items-center gap-1.5 self-start text-[0.9375rem] font-semibold tracking-tight text-gray-700 hover:text-orange-500 dark:text-white/80 dark:hover:text-orange-400 transition-colors"
+                  >
+                    Join event
+                    <span aria-hidden="true" className="inline-block transition-transform duration-300 group-hover/btn:translate-x-0.5">&rarr;</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Art Gallery Walk */}
+              <div className="group flex flex-col rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/[0.02] overflow-hidden hover:border-gray-300 dark:hover:border-white/20 transition-colors">
+                <div className="relative w-full aspect-[16/10] bg-gray-100 dark:bg-white/5 overflow-hidden">
+                  <img
+                    src={artWalkImage}
+                    alt="First Friday Art Walk in colorful arts district with people walking"
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                </div>
+                <div className="p-6 flex flex-col flex-grow">
+                  <div className="flex items-start justify-between gap-3 mb-2">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white tracking-tight">Art Gallery Walk</h3>
+                    <span className="shrink-0 bg-orange-500 text-white px-2.5 py-0.5 rounded-full text-[0.75rem] font-semibold tracking-tight">Free</span>
+                  </div>
+                  <p className="text-sm text-gray-500 dark:text-white/50 mb-4">First Friday &middot; Arts District</p>
+
+                  <div className="flex flex-wrap gap-1.5 mb-4">
+                    <span className={tagClass}>Culture</span>
+                  </div>
+
+                  <p className="text-[0.9375rem] text-gray-600 dark:text-white/65 leading-[1.6] flex-grow mb-5">
+                    Monthly gallery walk through the Arts District. Meet artists, see local work, and discuss creativity with fellow art lovers and travelers.
+                  </p>
+
+                  <button
+                    type="button"
+                    onClick={() => setLocation('/launching-soon')}
+                    className="group/btn inline-flex items-center gap-1.5 self-start text-[0.9375rem] font-semibold tracking-tight text-gray-700 hover:text-orange-500 dark:text-white/80 dark:hover:text-orange-400 transition-colors"
+                  >
+                    Join event
+                    <span aria-hidden="true" className="inline-block transition-transform duration-300 group-hover/btn:translate-x-0.5">&rarr;</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Karaoke Night */}
+              <div className="group flex flex-col rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/[0.02] overflow-hidden hover:border-gray-300 dark:hover:border-white/20 transition-colors">
+                <div className="relative w-full aspect-[16/10] bg-gray-100 dark:bg-white/5 overflow-hidden">
+                  <img
+                    src={karaokeImage}
+                    alt="Person singing karaoke with silhouette against stage lights"
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                </div>
+                <div className="p-6 flex flex-col flex-grow">
+                  <div className="flex items-start justify-between gap-3 mb-2">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white tracking-tight">Karaoke Night</h3>
+                  </div>
+                  <p className="text-sm text-gray-500 dark:text-white/50 mb-4">Wednesday &middot; 8:00 PM</p>
+
+                  <div className="flex flex-wrap gap-1.5 mb-4">
+                    <span className={tagClass}>Fun</span>
+                    <span className={tagClass}>Music</span>
+                  </div>
+
+                  <p className="text-[0.9375rem] text-gray-600 dark:text-white/65 leading-[1.6] flex-grow mb-5">
+                    Weekly karaoke night where locals and travelers sing, laugh, and bond over terrible singing voices. No talent required &mdash; just bring the energy.
+                  </p>
+
+                  <button
+                    type="button"
+                    onClick={() => setLocation('/launching-soon')}
+                    className="group/btn inline-flex items-center gap-1.5 self-start text-[0.9375rem] font-semibold tracking-tight text-gray-700 hover:text-orange-500 dark:text-white/80 dark:hover:text-orange-400 transition-colors"
+                  >
+                    Join event
+                    <span aria-hidden="true" className="inline-block transition-transform duration-300 group-hover/btn:translate-x-0.5">&rarr;</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* City Bike Tour */}
+              <div className="group flex flex-col rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/[0.02] overflow-hidden hover:border-gray-300 dark:hover:border-white/20 transition-colors">
+                <div className="relative w-full aspect-[16/10] bg-gray-100 dark:bg-white/5 overflow-hidden">
+                  <img
+                    src={bikeImage}
+                    alt="Group of cyclists with bikes under palm trees in beach setting"
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                </div>
+                <div className="p-6 flex flex-col flex-grow">
+                  <div className="flex items-start justify-between gap-3 mb-2">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white tracking-tight">City Bike Tour</h3>
+                  </div>
+                  <p className="text-sm text-gray-500 dark:text-white/50 mb-4">Saturday &middot; 10:00 AM</p>
+
+                  <div className="flex flex-wrap gap-1.5 mb-4">
+                    <span className={tagClass}>Active</span>
+                    <span className={tagClass}>Sightseeing</span>
+                  </div>
+
+                  <p className="text-[0.9375rem] text-gray-600 dark:text-white/65 leading-[1.6] flex-grow mb-5">
+                    Explore the city&rsquo;s best neighborhoods on two wheels. Local guides show hidden spots, street art, and authentic culture you&rsquo;d never find on your own.
+                  </p>
+
+                  <button
+                    type="button"
+                    onClick={() => setLocation('/launching-soon')}
+                    className="group/btn inline-flex items-center gap-1.5 self-start text-[0.9375rem] font-semibold tracking-tight text-gray-700 hover:text-orange-500 dark:text-white/80 dark:hover:text-orange-400 transition-colors"
+                  >
+                    Join event
+                    <span aria-hidden="true" className="inline-block transition-transform duration-300 group-hover/btn:translate-x-0.5">&rarr;</span>
+                  </button>
+                </div>
+              </div>
+
             </div>
           </div>
-        </div>
-      </div>
+        </section>
 
-      <LandingCTA />
+        {/* Final CTA — light, single orange CTA + ghost create-event link */}
+        <section className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-white/5">
+          <div className="max-w-3xl mx-auto text-center">
+            <h2 className="text-[2rem] sm:text-4xl md:text-5xl lg:text-[3.5rem] font-semibold text-gray-900 dark:text-white leading-[1.08] tracking-[-0.015em] mb-5 md:mb-6" style={{ textWrap: 'balance' }}>
+              Find your next plan
+            </h2>
+            <p className="text-base sm:text-lg md:text-xl text-gray-600 dark:text-white/70 mb-10 md:mb-12 max-w-xl mx-auto leading-relaxed">
+              Or host one. Either way, this is how it starts.
+            </p>
 
-      {/* Quick Value Prop */}
-      <div className="py-3 bg-white dark:bg-gray-900">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">
-            Create events and connect with nearby travelers and locals • Build real relationships through shared experiences
-          </p>
-        </div>
-      </div>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-center gap-4 sm:gap-5">
+              <button
+                type="button"
+                onClick={() => {
+                  trackEvent('signup_cta_click', 'events_landing', 'final_cta');
+                  setLocation('/launching-soon');
+                }}
+                className="group inline-flex items-center justify-center gap-2 bg-orange-500 text-white hover:bg-orange-600 px-8 py-4 rounded-full text-base font-semibold tracking-tight transition-all duration-300 shadow-[0_1px_0_0_rgba(255,255,255,0.15)_inset,0_10px_36px_-10px_rgba(249,115,22,0.45)] hover:shadow-[0_1px_0_0_rgba(255,255,255,0.15)_inset,0_14px_44px_-12px_rgba(249,115,22,0.6)]"
+                data-testid="button-final-cta"
+              >
+                Join Nearby Traveler
+                <span aria-hidden="true" className="inline-block transition-transform duration-300 group-hover:translate-x-0.5">&rarr;</span>
+              </button>
 
-      {/* Event Features Section - Fill the dead space */}
-      <div className="py-4 bg-gray-50 dark:bg-gray-800">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">Beyond Event Discovery - We Connect You</h2>
-            <p className="text-gray-600 dark:text-gray-300">Create meaningful connections through user-generated events and experiences</p>
+              <button
+                type="button"
+                onClick={() => {
+                  trackEvent('create_event_click', 'events_landing', 'final_cta');
+                  setLocation('/launching-soon');
+                }}
+                className="group inline-flex items-center justify-center gap-2 text-[0.9375rem] font-medium text-gray-700 hover:text-orange-500 dark:text-white/75 dark:hover:text-orange-400 px-1.5 py-3 sm:py-2 min-h-[44px] sm:min-h-0 transition-colors duration-300"
+                data-testid="button-create-event"
+              >
+                Or create an event
+                <span aria-hidden="true" className="inline-block text-gray-400 group-hover:text-orange-500 dark:text-white/40 dark:group-hover:text-orange-400 transition-all duration-300 group-hover:translate-x-0.5">&rarr;</span>
+              </button>
+            </div>
+
+            <p className="mt-10 text-sm sm:text-base text-gray-500 dark:text-white/55">
+              Free to join &middot; Free to host &middot; Free to attend most events
+            </p>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="text-center p-4">
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Last-Minute Magic</h3>
-              <p className="text-gray-600 dark:text-gray-300 text-sm">Create "meet now" events when you're free. Perfect for spontaneous coffee meetups, quick walks, or impromptu adventures.</p>
-            </div>
-            
-            <div className="text-center p-4">
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Recurring Experiences</h3>
-              <p className="text-gray-600 dark:text-gray-300 text-sm">Join weekly hiking groups, monthly food tours, or regular photography walks. Build lasting friendships through consistent connections.</p>
-            </div>
-            
-            <div className="text-center p-4">
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Pre-Event Connections</h3>
-              <p className="text-gray-600 dark:text-gray-300 text-sm">Connect with fellow travelers before local events and festivals. Turn events into reunions, not rooms full of strangers.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Sample Events Section */}
-      <div className="px-4 py-6 sm:py-12">
-        <div className="max-w-6xl mx-auto mb-6 sm:mb-8">
-          <h2 className="text-3xl font-bold mb-4 text-center text-gray-900 dark:text-white">
-            Upcoming Local Events & Experiences
-          </h2>
-          <p className="text-center text-gray-600 dark:text-gray-400 mb-8">
-            Sample events from our LA community. Events available in 50+ cities worldwide.
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-6 sm:mb-8">
-            
-            {/* Venice Beach Dance Party */}
-            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
-              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-blue-400 to-purple-500">
-                <img 
-                  src="/venice-beach-dance-party.png" 
-                  alt="Venice Beach dance party event" 
-                  className="w-full h-48 object-cover"
-                />
-              </div>
-              <div className="p-6 flex flex-col flex-grow">
-                <div className="mb-3">
-                  <h3 className="font-bold text-gray-900 dark:text-white mb-1">Venice Beach Dance Party</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Sunset dancing on the famous boardwalk</p>
-                </div>
-                
-                <div className="flex flex-wrap gap-2 mb-3">
-                  <span className="bg-orange-100 dark:bg-orange-900/50 text-orange-700 dark:text-orange-300 px-2 py-1 rounded-full text-xs font-medium">Free</span>
-                  <span className="bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 px-2 py-1 rounded-full text-xs font-medium">Beach</span>
-                  <span className="bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 px-2 py-1 rounded-full text-xs font-medium">Dancing</span>
-                </div>
-                
-                <p className="text-gray-700 dark:text-gray-300 text-sm mb-4 flex-grow">Join locals dancing to live music at Venice Beach boardwalk. Experience the authentic LA beach culture with sunset vibes and great people.</p>
-                <button
-                  onClick={() => setLocation('/launching-soon')}
-                  className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold py-2 px-4 rounded text-center transition duration-200"
-                >
-                  JOIN THE PARTY
-                </button>
-              </div>
-            </div>
-
-            {/* Food Adventure */}
-            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
-              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-orange-400 to-red-500">
-                <img 
-                  src="/authentic-food-adventure.png" 
-                  alt="Local food experience event" 
-                  className="w-full h-48 object-cover"
-                />
-              </div>
-              <div className="p-6 flex flex-col flex-grow">
-                <div className="mb-3">
-                  <h3 className="font-bold text-gray-900 dark:text-white mb-1">Authentic Food Adventure</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Discover your local's favorite eats</p>
-                </div>
-                
-                <div className="flex flex-wrap gap-2 mb-3">
-                  <span className="bg-orange-100 dark:bg-orange-900/50 text-orange-700 dark:text-orange-300 px-2 py-1 rounded-full text-xs font-medium">Food</span>
-                  <span className="bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300 px-2 py-1 rounded-full text-xs font-medium">Local Spots</span>
-                  <span className="bg-yellow-100 dark:bg-yellow-900/50 text-yellow-700 dark:text-yellow-300 px-2 py-1 rounded-full text-xs font-medium">Social</span>
-                </div>
-                
-                <p className="text-gray-700 dark:text-gray-300 text-sm mb-4 flex-grow">Join Locals as they plan meals at awesome hidden food spots like top tacos for a buck, korean bbq, from ethepian to korean and where to find the best burgers in town.</p>
-                <button
-                  onClick={() => setLocation('/launching-soon')}
-                  className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold py-2 px-4 rounded text-center transition duration-200"
-                >
-                  JOIN FOOD TOUR
-                </button>
-              </div>
-            </div>
-
-            {/* Marina Movie Nights */}
-            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
-              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-blue-500 to-purple-600">
-                <img 
-                  src={movieImage} 
-                  alt="Marina del Rey outdoor movie night at Burton Chace Park" 
-                  className="w-full h-48 object-cover"
-                />
-              </div>
-              <div className="p-6 flex flex-col flex-grow">
-                <div className="mb-3">
-                  <h3 className="text-sm sm:text-base font-bold text-gray-900 dark:text-white mb-1 leading-tight">Marina Movie Nights</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Saturday • 8:00 PM • Burton Chace Park</p>
-                </div>
-                
-                <div className="flex flex-wrap gap-2 mb-3">
-                  <span className="bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 px-2 py-1 rounded-full text-xs font-medium">Free</span>
-                  <span className="bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 px-2 py-1 rounded-full text-xs font-medium">Movies</span>
-                  <span className="bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300 px-2 py-1 rounded-full text-xs font-medium">Outdoor</span>
-                </div>
-                
-                <p className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm mb-4 flex-grow leading-relaxed">Free outdoor movie screenings at Burton Chace Park in Marina del Rey. Bring a blanket, pack a picnic, and enjoy movies under the stars with locals and travelers.</p>
-                <button
-                  onClick={() => setLocation('/launching-soon')}
-                  className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold py-2 px-4 rounded text-center transition duration-200"
-                >
-                  JOIN MOVIE NIGHT
-                </button>
-              </div>
-            </div>
-
-            {/* Art Gallery Walk */}
-            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
-              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-purple-400 to-pink-500">
-                <img 
-                  src={artWalkImage} 
-                  alt="First Friday Art Walk in colorful arts district with people walking" 
-                  className="w-full h-48 object-cover"
-                />
-              </div>
-              <div className="p-6 flex flex-col flex-grow">
-                <div className="mb-3">
-                  <h3 className="text-sm sm:text-base font-bold text-gray-900 dark:text-white mb-1 leading-tight">Art Gallery Walk</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">First Friday • Arts District</p>
-                </div>
-                
-                <div className="flex flex-wrap gap-2 mb-3">
-                  <span className="bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 px-2 py-1 rounded-full text-xs font-medium">Free</span>
-                  <span className="bg-pink-100 dark:bg-pink-900/50 text-pink-700 dark:text-pink-300 px-2 py-1 rounded-full text-xs font-medium">Culture</span>
-                </div>
-                
-                <p className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm mb-4 flex-grow leading-relaxed">Monthly gallery walk through the Arts District. Meet artists, see local work, and discuss creativity with fellow art lovers and travelers.</p>
-                <button
-                  onClick={() => setLocation('/launching-soon')}
-                  className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-2 px-4 rounded text-center transition duration-200"
-                >
-                  JOIN ART WALK
-                </button>
-              </div>
-            </div>
-
-            {/* Karaoke Night */}
-            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
-              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-red-500 to-pink-600">
-                <img 
-                  src={karaokeImage} 
-                  alt="Person singing karaoke with silhouette against stage lights" 
-                  className="w-full h-48 object-cover"
-                />
-              </div>
-              <div className="p-6 flex flex-col flex-grow">
-                <div className="mb-3">
-                  <h3 className="text-sm sm:text-base font-bold text-gray-900 dark:text-white mb-1 leading-tight">Karaoke Night</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Wednesday • 8:00 PM</p>
-                </div>
-                
-                <div className="flex flex-wrap gap-2 mb-3">
-                  <span className="bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300 px-2 py-1 rounded-full text-xs font-medium">Fun</span>
-                  <span className="bg-pink-100 dark:bg-pink-900/50 text-pink-700 dark:text-pink-300 px-2 py-1 rounded-full text-xs font-medium">Music</span>
-                </div>
-                
-                <p className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm mb-4 flex-grow leading-relaxed">Weekly karaoke night where locals and travelers sing, laugh, and bond over terrible singing voices. No talent required - just bring the energy!</p>
-                <button
-                  onClick={() => setLocation('/launching-soon')}
-                  className="w-full bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white font-bold py-2 px-4 rounded text-center transition duration-200"
-                >
-                  JOIN KARAOKE
-                </button>
-              </div>
-            </div>
-
-            {/* Bike Tour */}
-            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transform transition-all duration-300 flex flex-col">
-              <div className="aspect-w-16 aspect-h-10 bg-gradient-to-br from-teal-500 to-green-600">
-                <img 
-                  src={bikeImage} 
-                  alt="Group of cyclists with bikes under palm trees in beach setting" 
-                  className="w-full h-48 object-cover"
-                />
-              </div>
-              <div className="p-6 flex flex-col flex-grow">
-                <div className="mb-3">
-                  <h3 className="text-sm sm:text-base font-bold text-gray-900 dark:text-white mb-1 leading-tight">City Bike Tour</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Saturday • 10:00 AM</p>
-                </div>
-                
-                <div className="flex flex-wrap gap-2 mb-3">
-                  <span className="bg-teal-100 dark:bg-teal-900/50 text-teal-700 dark:text-teal-300 px-2 py-1 rounded-full text-xs font-medium">Active</span>
-                  <span className="bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300 px-2 py-1 rounded-full text-xs font-medium">Sightseeing</span>
-                </div>
-                
-                <p className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm mb-4 flex-grow leading-relaxed">Explore the city's best neighborhoods on two wheels. Local guides show hidden spots, street art, and authentic culture you'd never find on your own.</p>
-                <button
-                  onClick={() => setLocation('/launching-soon')}
-                  className="w-full bg-gradient-to-r from-teal-500 to-green-600 hover:from-teal-600 hover:to-green-700 text-white font-bold py-2 px-4 rounded text-center transition duration-200"
-                >
-                  JOIN BIKE TOUR
-                </button>
-              </div>
-            </div>
-
-          </div>
-        </div>
-
-        {/* What Makes Events Special Section */}
-        <div className="mt-20 max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold mb-8 text-center text-gray-900 dark:text-white">
-            What Makes Our Events Special
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-6">
-            <div className="bg-white dark:bg-orange-600 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
-              <h3 className="text-xl font-bold mb-3 text-black dark:text-white">From $1 Taco Tours to Free Beach Parties</h3>
-              <p className="text-black dark:text-white text-sm leading-relaxed">Join unforgettable events created by passionate locals who know the best spots. Every experience is authentic and affordable.</p>
-            </div>
-            <div className="bg-white dark:bg-blue-600 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
-              <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Meet 5-20 People Per Event</h3>
-              <p className="text-black dark:text-white text-sm leading-relaxed">Every event is a chance to make lifelong friendships. Small groups mean real connections, not anonymous crowds.</p>
-            </div>
-            <div className="bg-white dark:bg-teal-600 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
-              <h3 className="text-xl font-bold mb-3 text-black dark:text-white">Hidden Spots Locals Actually Go To</h3>
-              <p className="text-black dark:text-white text-sm leading-relaxed">Discover experiences that tourists never find. Access the real side of every city through insider knowledge.</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Create Your Own Event Section */}
-        <div className="mt-16 mb-20 max-w-4xl mx-auto text-center px-4">
-          <h2 className="text-3xl font-bold mb-4 text-gray-900 dark:text-white">Have a Great Idea?</h2>
-          <h3 className="text-xl font-semibold mb-6 text-gray-700 dark:text-gray-300">Host Your Own Experience</h3>
-          <p className="text-lg text-gray-600 dark:text-gray-400 mb-8">
-            Share your passion with travelers and locals. From coffee meetups to hiking adventures—create the event you wish existed.
-          </p>
-          <Button
-            onClick={() => setLocation('/launching-soon')}
-            size="lg"
-            className="bg-orange-500 hover:bg-orange-600 text-white font-bold px-8 py-3 rounded-lg mb-4"
-          >
-            Create an Event
-          </Button>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            2,000+ events created this month by our community
-          </p>
-        </div>
-
-        {/* Get Started Section - Clean Airbnb Style */}
-        <div className="bg-gradient-to-r from-orange-500 to-blue-600 py-12 rounded-2xl shadow-lg mb-6 sm:mb-8">
-          <div className="max-w-4xl mx-auto text-center px-6">
-            <h2 className="text-3xl font-bold mb-6 text-black dark:text-white">Ready to Join Events Only The Nearby Traveler Community Knows About?</h2>
-            <p className="text-lg mb-8 text-black dark:text-white">Join others already creating unforgettable experiences together.</p>
-            
-            <Button
-              onClick={() => setLocation('/launching-soon')}
-              size="lg"
-              className="bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 text-orange-600 font-bold px-10 py-3 rounded-lg transition-all duration-200"
-            >
-              Join Now
-            </Button>
-          </div>
-        </div>
+        </section>
 
       </div>
       <Footer />

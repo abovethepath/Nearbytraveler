@@ -8,3 +8,5 @@ vite.config.ts.*
 .env.*
 .env.local
 .env.production
+*.backup.tsx
+*.backup.jsx
