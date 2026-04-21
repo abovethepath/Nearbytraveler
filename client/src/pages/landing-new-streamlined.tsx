@@ -203,7 +203,7 @@ export default function LandingStreamlined() {
                   className="group inline-flex items-center justify-center gap-2 bg-orange-500 text-white hover:bg-orange-600 px-7 py-3.5 rounded-full text-[0.9375rem] font-semibold tracking-tight transition-all duration-300 shadow-[0_1px_0_0_rgba(255,255,255,0.15)_inset,0_10px_36px_-10px_rgba(249,115,22,0.45)] hover:shadow-[0_1px_0_0_rgba(255,255,255,0.15)_inset,0_14px_44px_-12px_rgba(249,115,22,0.6)]"
                   data-testid="button-hero-get-started"
                 >
-                  Go meet someone
+                  Meet Your People
                   <span aria-hidden="true" className="inline-block transition-transform duration-300 group-hover:translate-x-0.5">&rarr;</span>
                 </button>
 
@@ -475,7 +475,7 @@ export default function LandingStreamlined() {
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="font-sans leading-[1.05] tracking-tight" style={{ textWrap: 'balance' }}>
               <span className="block text-[2.25rem] sm:text-5xl md:text-6xl lg:text-[4.25rem] font-normal text-gray-500 dark:text-white/50">
-                Go meet someone.
+                Meet your people.
               </span>
               <span className="block text-[2.5rem] sm:text-[3.25rem] md:text-6xl lg:text-[4.25rem] font-semibold text-gray-900 dark:text-white tracking-[-0.02em] mt-1 md:mt-1.5">
                 Find your people.
