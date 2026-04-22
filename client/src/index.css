@@ -59,7 +59,14 @@ body.chat-page-active html {
   --ios-font: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Inter', system-ui, sans-serif;
 }
 
-/* iOS-style base body */
+/* iOS-style base body.
+   NOTE: padding-left/right removed — they were applying env(safe-area-inset-left/right)
+   globally to body, which on some iPhones (Dynamic Island / notch devices, landscape,
+   or certain WebView modes) reports non-zero values and pushes content inward from the
+   edge asymmetrically, creating a visible right-side gap on landing pages.
+   Components that need horizontal safe-area padding (LandingHeader, fixed CTAs) apply
+   env(safe-area-inset-*) directly on themselves. Keep top/bottom so body content clears
+   the notch on pages that don't have a fixed header. */
 body {
   font-family: var(--ios-font);
   -webkit-font-smoothing: antialiased;
@@ -68,8 +75,8 @@ body {
   text-size-adjust: 100%;
   padding-top: var(--sat);
   padding-bottom: var(--sab);
-  padding-left: var(--sal);
-  padding-right: var(--sar);
+  padding-left: 0;
+  padding-right: 0;
   background-color: #111827;
 }
 
