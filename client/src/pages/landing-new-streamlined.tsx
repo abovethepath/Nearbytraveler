@@ -159,7 +159,7 @@ export default function LandingStreamlined() {
   }, []);
 
   return (
-    <div id="__root_dbg" className="w-full bg-white dark:bg-gray-900 font-sans overflow-x-hidden" style={{ outline: '4px solid red', outlineOffset: '-4px' }}>
+    <div id="__root_dbg" className="w-full bg-white dark:bg-gray-900 font-sans" style={{ outline: '4px solid red', outlineOffset: '-4px' }}>
 
 
       <div

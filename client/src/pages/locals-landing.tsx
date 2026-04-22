@@ -34,7 +34,7 @@ export default function LocalsLanding() {
   }, []);
 
   return (
-    <div className="w-full min-h-screen flex flex-col bg-white dark:bg-gray-900 font-sans overflow-x-hidden">
+    <div className="w-full min-h-screen flex flex-col bg-white dark:bg-gray-900 font-sans">
       <Helmet>
         <title>Nearby Traveler &mdash; For Locals</title>
         <meta name="description" content="Your city has friends you haven't met yet. Nearby Traveler connects locals with each other and with travelers passing through — through what you actually have in common." />
