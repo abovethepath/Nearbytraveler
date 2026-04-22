@@ -1292,6 +1292,20 @@ app.use((req, res, next) => {
           }
         });
 
+        // Daily beta-tester user seeding: 5-10 fake users per day at 00:00 UTC.
+        // Mirrors the real signup flow (storage.createUser + chatroom helpers).
+        // Seeded users are identifiable by email pattern testuser+*@nearbytraveler.org
+        // and bio prefix "[Beta Tester]".
+        cron.schedule("0 0 * * *", async () => {
+          console.log("🌱 [cron] Running daily beta-tester user seeding...");
+          try {
+            const { seedDailyUsers } = await import("../scripts/seed-daily-users");
+            await seedDailyUsers();
+          } catch (error) {
+            console.error("⚠️ [cron] Daily user seeding failed:", error);
+          }
+        }, { timezone: "UTC" });
+
         // Event reminders: run every 30 minutes. Sends 24h and 1h-before emails, each only once per user per event.
         const EVENT_REMINDER_INTERVAL = 30 * 60 * 1000;
         setInterval(async () => {

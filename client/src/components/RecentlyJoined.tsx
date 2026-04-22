@@ -60,7 +60,7 @@ export default function RecentlyJoined({ currentUserId, messagedUserIds }: Recen
   };
 
   return (
-    <div className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm overflow-hidden">
+    <div className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm overflow-clip">
       <div className="px-4 pt-4 pb-2 flex items-center gap-2">
         <UserPlus className="w-4 h-4 text-orange-500 shrink-0" />
         <h2 className="text-sm font-bold text-gray-900 dark:text-white">
