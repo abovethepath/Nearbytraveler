@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Helmet } from "react-helmet-async";
 import { useLocation } from "wouter";
 import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
@@ -13,27 +13,33 @@ import eventHeaderImage from "@assets/event-photo.png";
 export default function EventsLanding() {
   const [, setLocation] = useLocation();
   const [showFloatingCTA, setShowFloatingCTA] = useState(false);
+  const heroRef = useRef<HTMLElement | null>(null);
 
   const handleGetStarted = () => {
     trackEvent('signup_cta_click', 'events_landing', 'main_cta');
     setLocation('/join');
   };
 
-  // Show the floating CTA after the user scrolls past the hero
+  // Show the floating CTA when the hero section leaves the viewport.
   useEffect(() => {
-    const onScroll = () => {
-      setShowFloatingCTA(window.scrollY > window.innerHeight * 0.8);
-    };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
-    return () => window.removeEventListener('scroll', onScroll);
+    const target = heroRef.current;
+    console.log('[CTA events] heroRef on mount:', target);
+    if (!target) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setShowFloatingCTA(!entry.isIntersecting);
+      },
+      { threshold: 0 }
+    );
+    observer.observe(target);
+    return () => observer.disconnect();
   }, []);
 
   // Unified tag pill class — same muted treatment on every pill
   const tagClass = "text-[0.65rem] sm:text-xs uppercase tracking-[0.12em] font-semibold px-2 py-0.5 rounded-full border border-gray-300 dark:border-white/15 text-gray-600 dark:text-white/60";
 
   return (
-    <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900 font-sans overflow-x-hidden">
+    <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900 font-sans overflow-x-hidden" style={{ background: 'green' }}>
       <Helmet>
         <title>Nearby Traveler &mdash; Events</title>
         <meta name="description" content="Events are where people become your people. Weekly bonfires, taco crawls, hikes, and gallery walks hosted by locals, open to anyone. Free or near-free." />
@@ -72,7 +78,7 @@ export default function EventsLanding() {
       <div className="w-full">
 
         {/* HERO SECTION — full-bleed bonfire image, editorial overlay */}
-        <section className="relative w-full overflow-hidden bg-[#0b1020] min-h-[80vh] md:min-h-[88vh] lg:min-h-[92vh] flex items-center">
+        <section ref={heroRef} className="relative w-full overflow-hidden bg-[#0b1020] min-h-[80vh] md:min-h-[88vh] lg:min-h-[92vh] flex items-center">
           {/* Full-bleed background image */}
           <img
             src={eventHeaderImage}
