@@ -1,5 +1,5 @@
 import { useLocation } from "wouter";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/footer";
 import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
@@ -26,6 +26,7 @@ export default function LandingStreamlined() {
   });
   const [currentVideo, setCurrentVideo] = useState(0);
   const [showFloatingCTA, setShowFloatingCTA] = useState(false);
+  const heroRef = useRef<HTMLElement | null>(null);
 
   // NOTE: Some clips in the current rotation may read ambiguously (e.g., two people
   // connecting in ways that could be mistaken for romantic/dating content).
@@ -79,15 +80,25 @@ export default function LandingStreamlined() {
     } catch {}
   }, []);
 
-  // Show the floating "Get Started" button only after the user scrolls past
-  // the hero area. Threshold is ~80% of viewport height (approx hero height).
+  // Show the floating "Get Started" button when the hero section leaves the
+  // viewport. IntersectionObserver avoids the iOS Safari dynamic-viewport
+  // issue: the URL bar collapses/expands during scroll, changing
+  // window.innerHeight and making any innerHeight-based threshold race the
+  // user's scroll position — which caused the CTA to only appear on scroll-up.
+  // IntersectionObserver tracks visibility independently and fires in both
+  // directions regardless of the dynamic viewport.
   useEffect(() => {
-    const onScroll = () => {
-      setShowFloatingCTA(window.scrollY > window.innerHeight * 0.8);
-    };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
-    return () => window.removeEventListener('scroll', onScroll);
+    const target = heroRef.current;
+    if (!target) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        // Hero visible at all (any fraction) → hide CTA. Hero fully out → show CTA.
+        setShowFloatingCTA(!entry.isIntersecting);
+      },
+      { threshold: 0 }
+    );
+    observer.observe(target);
+    return () => observer.disconnect();
   }, []);
 
   // Intersection Observer for fade-in animations
@@ -144,7 +155,7 @@ export default function LandingStreamlined() {
       <div className="w-full">
 
         {/* HERO SECTION - Full Video Background with Rotation */}
-        <section className="relative w-full overflow-hidden bg-[#0b1020] min-h-[80vh] md:min-h-[88vh] lg:min-h-[92vh] flex items-center">
+        <section ref={heroRef} className="relative w-full overflow-hidden bg-[#0b1020] min-h-[80vh] md:min-h-[88vh] lg:min-h-[92vh] flex items-center">
           {/* Rotating Video Backgrounds with Crossfade — atmospheric only */}
           {heroVideos.map((video, index) => (
             <video
