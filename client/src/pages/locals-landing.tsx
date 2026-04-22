@@ -34,7 +34,7 @@ export default function LocalsLanding() {
   }, []);
 
   return (
-    <div className="w-full min-h-screen flex flex-col bg-white dark:bg-gray-900 font-sans">
+    <div className="w-full min-h-screen flex flex-col bg-white dark:bg-[#0b1020] font-sans">
       <Helmet>
         <title>Nearby Traveler &mdash; For Locals</title>
         <meta name="description" content="Your city has friends you haven't met yet. Nearby Traveler connects locals with each other and with travelers passing through — through what you actually have in common." />
@@ -70,7 +70,7 @@ export default function LocalsLanding() {
       <LandingHeader />
       <LandingHeaderSpacer />
 
-      <div className="w-full" style={{ background: 'limegreen' }}>
+      <div className="w-full">
 
         {/* HERO SECTION — full-bleed locals image with editorial overlay */}
         <section ref={heroRef} className="relative w-full overflow-hidden bg-[#0b1020] min-h-[80vh] md:min-h-[88vh] lg:min-h-[92vh] flex items-center">

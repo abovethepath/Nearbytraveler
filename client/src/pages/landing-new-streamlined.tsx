@@ -128,38 +128,8 @@ export default function LandingStreamlined() {
     setLocation('/join');
   };
 
-  const [widthReport, setWidthReport] = useState<string[]>([]);
-  useEffect(() => {
-    const measure = () => {
-      const r: string[] = [];
-      r.push('vp=' + window.innerWidth);
-      r.push('docEl=' + document.documentElement.clientWidth);
-      r.push('body=' + Math.round(document.body.getBoundingClientRect().width));
-      const root = document.getElementById('__root_dbg');
-      if (root) r.push('root=' + Math.round(root.getBoundingClientRect().width));
-      const wrap = document.getElementById('__wrap_dbg');
-      if (wrap) {
-        const wr = wrap.getBoundingClientRect();
-        r.push('wrap=' + Math.round(wr.width) + '@L' + Math.round(wr.left));
-      }
-      const secs = document.querySelectorAll('#__wrap_dbg > section');
-      secs.forEach((s, i) => {
-        const rc = (s as HTMLElement).getBoundingClientRect();
-        r.push('s' + i + '=' + Math.round(rc.width) + '@L' + Math.round(rc.left));
-      });
-      setWidthReport(r);
-    };
-    measure();
-    window.addEventListener('resize', measure);
-    window.addEventListener('scroll', measure, { passive: true });
-    return () => {
-      window.removeEventListener('resize', measure);
-      window.removeEventListener('scroll', measure);
-    };
-  }, []);
-
   return (
-    <div id="__root_dbg" className="w-full bg-white dark:bg-gray-900 font-sans" style={{ outline: '4px solid red', outlineOffset: '-4px' }}>
+    <div className="w-full bg-white dark:bg-[#0b1020] font-sans">
 
 
       <div
@@ -182,28 +152,7 @@ export default function LandingStreamlined() {
       <LandingHeader />
       <LandingHeaderSpacer />
 
-      <div
-        style={{
-          position: 'fixed',
-          top: 80,
-          left: 8,
-          right: 8,
-          zIndex: 99999,
-          background: 'rgba(0,0,0,0.85)',
-          color: 'lime',
-          fontFamily: 'monospace',
-          fontSize: 11,
-          padding: '8px 10px',
-          borderRadius: 6,
-          lineHeight: 1.35,
-          whiteSpace: 'pre-wrap',
-          pointerEvents: 'none',
-        }}
-      >
-        {widthReport.join('\n')}
-      </div>
-
-      <div id="__wrap_dbg" className="w-full" style={{ background: 'limegreen', outline: '4px solid blue', outlineOffset: '-4px' }}>
+      <div className="w-full">
 
         {/* HERO SECTION - Full Video Background with Rotation */}
         <section ref={heroRef} className="relative w-full overflow-hidden bg-[#0b1020] min-h-[80vh] md:min-h-[88vh] lg:min-h-[92vh] flex items-center">

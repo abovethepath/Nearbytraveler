@@ -39,7 +39,7 @@ export default function EventsLanding() {
   const tagClass = "text-[0.65rem] sm:text-xs uppercase tracking-[0.12em] font-semibold px-2 py-0.5 rounded-full border border-gray-300 dark:border-white/15 text-gray-600 dark:text-white/60";
 
   return (
-    <div className="w-full min-h-screen flex flex-col bg-white dark:bg-gray-900 font-sans">
+    <div className="w-full min-h-screen flex flex-col bg-white dark:bg-[#0b1020] font-sans">
       <Helmet>
         <title>Nearby Traveler &mdash; Events</title>
         <meta name="description" content="Events are where people become your people. Weekly bonfires, taco crawls, hikes, and gallery walks hosted by locals, open to anyone. Free or near-free." />
@@ -75,7 +75,7 @@ export default function EventsLanding() {
       <LandingHeader />
       <LandingHeaderSpacer />
 
-      <div className="w-full" style={{ background: 'limegreen' }}>
+      <div className="w-full">
 
         {/* HERO SECTION — full-bleed bonfire image, editorial overlay */}
         <section ref={heroRef} className="relative w-full overflow-hidden bg-[#0b1020] min-h-[80vh] md:min-h-[88vh] lg:min-h-[92vh] flex items-center">
