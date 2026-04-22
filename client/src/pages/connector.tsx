@@ -89,7 +89,7 @@ export default function ConnectorLanding() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 overflow-x-hidden">
       <LandingHeader />
       <LandingHeaderSpacer />
 
@@ -160,19 +160,19 @@ export default function ConnectorLanding() {
             </div>
 
             <div className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <Card className="border-2 border-gray-200 dark:border-gray-600">
+              <Card className="border-2 border-gray-200 dark:border-gray-600 text-center sm:text-left">
                 <CardContent className="p-4">
                   <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Global Ownership Pool</div>
                   <div className="text-lg font-bold text-gray-900 dark:text-white">4%</div>
                 </CardContent>
               </Card>
-              <Card className="border-2 border-gray-200 dark:border-gray-600">
+              <Card className="border-2 border-gray-200 dark:border-gray-600 text-center sm:text-left">
                 <CardContent className="p-4">
                   <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">LA Connector Bonus</div>
                   <div className="text-lg font-bold text-gray-900 dark:text-white">+1%</div>
                 </CardContent>
               </Card>
-              <Card className="border-2 border-gray-200 dark:border-gray-600">
+              <Card className="border-2 border-gray-200 dark:border-gray-600 text-center sm:text-left">
                 <CardContent className="p-4">
                   <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Exit Only</div>
                   <div className="text-lg font-bold text-gray-900 dark:text-white">Acquisition or IPO</div>
@@ -204,7 +204,7 @@ export default function ConnectorLanding() {
                 { n: "03", title: "Calculate Your Share", body: "Your share = your total points ÷ all connector points combined." },
                 { n: "04", title: "Exit Only", body: "Points have value only upon a qualifying exit — acquisition or IPO. No exit, no value." },
               ].map((s) => (
-                <Card key={s.n} className="border-2 border-gray-200 dark:border-gray-600">
+                <Card key={s.n} className="border-2 border-gray-200 dark:border-gray-600 text-center sm:text-left">
                   <CardHeader className="pb-2">
                     <div className="text-xs font-bold text-gray-500 dark:text-gray-400">Step {s.n}</div>
                     <CardTitle className="text-base">{s.title}</CardTitle>
@@ -234,7 +234,7 @@ export default function ConnectorLanding() {
             </h2>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card className="border-2 border-gray-200 dark:border-gray-600">
+              <Card className="border-2 border-gray-200 dark:border-gray-600 text-center sm:text-left">
                 <CardContent className="p-6">
                   <div className="text-6xl font-extrabold bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent">
                     4%
@@ -255,7 +255,7 @@ export default function ConnectorLanding() {
               </Card>
 
               <div className="grid grid-cols-1 gap-4">
-                <Card className="border-2 border-gray-200 dark:border-gray-600">
+                <Card className="border-2 border-gray-200 dark:border-gray-600 text-center sm:text-left">
                   <CardHeader>
                     <CardTitle className="text-base">How Your Share Is Calculated</CardTitle>
                   </CardHeader>
@@ -273,7 +273,7 @@ export default function ConnectorLanding() {
                   </CardContent>
                 </Card>
 
-                <Card className="border-2 border-gray-200 dark:border-gray-600">
+                <Card className="border-2 border-gray-200 dark:border-gray-600 text-center sm:text-left">
                   <CardHeader>
                     <CardTitle className="text-base">When Does It Have Value?</CardTitle>
                   </CardHeader>
@@ -282,7 +282,7 @@ export default function ConnectorLanding() {
                   </CardContent>
                 </Card>
 
-                <Card className="border-2 border-gray-200 dark:border-gray-600">
+                <Card className="border-2 border-gray-200 dark:border-gray-600 text-center sm:text-left">
                   <CardHeader>
                     <CardTitle className="text-base">The Long Game</CardTitle>
                   </CardHeader>
@@ -316,7 +316,7 @@ export default function ConnectorLanding() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {points.map((p) => (
-                  <Card key={p.title} className="border-2 border-gray-200 dark:border-gray-600">
+                  <Card key={p.title} className="border-2 border-gray-200 dark:border-gray-600 text-center sm:text-left">
                     <CardContent className="p-4">
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
@@ -337,7 +337,7 @@ export default function ConnectorLanding() {
               </div>
 
               <div className="space-y-3">
-                <Card className="border-2 border-gray-200 dark:border-gray-600">
+                <Card className="border-2 border-gray-200 dark:border-gray-600 text-center sm:text-left">
                   <CardHeader>
                     <CardTitle className="text-base">Staying Active</CardTitle>
                   </CardHeader>
@@ -347,7 +347,7 @@ export default function ConnectorLanding() {
                     <p>Inactive for 12 months → status revoked, points no longer count toward equity. You can reapply after 12 months and start fresh.</p>
                   </CardContent>
                 </Card>
-                <Card className="border-2 border-gray-200 dark:border-gray-600">
+                <Card className="border-2 border-gray-200 dark:border-gray-600 text-center sm:text-left">
                   <CardHeader>
                     <CardTitle className="text-base">Points Are Verified</CardTitle>
                   </CardHeader>
@@ -393,7 +393,7 @@ export default function ConnectorLanding() {
                   body: "From that moment on, your connector actions (referrals, events, business partners) earn you points toward the ownership pool. Aura and connector points are tracked separately.",
                 },
               ].map((s) => (
-                <Card key={s.title} className="border-2 border-gray-200 dark:border-gray-600">
+                <Card key={s.title} className="border-2 border-gray-200 dark:border-gray-600 text-center sm:text-left">
                   <CardHeader className="pb-2">
                     <div className="text-xs font-semibold text-gray-500 dark:text-gray-400">Step</div>
                     <CardTitle className="text-base">{s.title}</CardTitle>
@@ -406,7 +406,7 @@ export default function ConnectorLanding() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Card className="border-2 border-gray-200 dark:border-gray-600">
+              <Card className="border-2 border-gray-200 dark:border-gray-600 text-center sm:text-left">
                 <CardHeader>
                   <CardTitle className="text-base">Aura Points — Your Entry Ticket</CardTitle>
                 </CardHeader>
@@ -414,7 +414,7 @@ export default function ConnectorLanding() {
                   Aura points are earned through everyday activity on the platform — joining events, connecting with people, being an engaged member. They measure how real and active you are. A strong Aura score shows you're a committed member of the community.
                 </CardContent>
               </Card>
-              <Card className="border-2 border-gray-200 dark:border-gray-600">
+              <Card className="border-2 border-gray-200 dark:border-gray-600 text-center sm:text-left">
                 <CardHeader>
                   <CardTitle className="text-base">Connector Points — Your Equity Tracker</CardTitle>
                 </CardHeader>
@@ -452,7 +452,7 @@ export default function ConnectorLanding() {
                   body: "NearbyTraveler may change, pause, or end the program at any time to prevent fraud or maintain fairness. Equity details — timing, form, vesting, eligibility — are defined in official program documents.",
                 },
               ].map((c) => (
-                <Card key={c.title} className="border-2 border-gray-200 dark:border-gray-600">
+                <Card key={c.title} className="border-2 border-gray-200 dark:border-gray-600 text-center sm:text-left">
                   <CardHeader>
                     <CardTitle className="text-base">{c.title}</CardTitle>
                   </CardHeader>
@@ -478,7 +478,7 @@ export default function ConnectorLanding() {
             </h2>
             <div className="space-y-3">
               {faqs.map((f) => (
-                <Card key={f.q} className="border-2 border-gray-200 dark:border-gray-600">
+                <Card key={f.q} className="border-2 border-gray-200 dark:border-gray-600 text-center sm:text-left">
                   <CardContent className="p-4 grid grid-cols-1 md:grid-cols-3 gap-3">
                     <div className="md:col-span-1 font-semibold text-gray-900 dark:text-white">
                       {f.q}

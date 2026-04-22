@@ -30,7 +30,7 @@ export default function BusinessLanding() {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900">
+    <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900 overflow-x-hidden">
       
       {/* Fixed CTA Button */}
       <div
@@ -150,27 +150,27 @@ export default function BusinessLanding() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-lg border-2 border-gray-200 dark:border-white/20">
+            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-lg border-2 border-gray-200 dark:border-white/20 text-center sm:text-left">
               <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Tour Operators</h3>
               <p className="text-gray-700 dark:text-gray-200 text-sm">Walking tours, food tours, cultural experiences</p>
             </div>
-            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-lg border-2 border-gray-200 dark:border-white/20">
+            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-lg border-2 border-gray-200 dark:border-white/20 text-center sm:text-left">
               <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Activity Providers</h3>
               <p className="text-gray-700 dark:text-gray-200 text-sm">Hiking, biking, water sports, adventure activities</p>
             </div>
-            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-lg border-2 border-gray-200 dark:border-white/20">
+            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-lg border-2 border-gray-200 dark:border-white/20 text-center sm:text-left">
               <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Restaurants & Cafes</h3>
               <p className="text-gray-700 dark:text-gray-200 text-sm">Hidden gems seeking authentic food lovers</p>
             </div>
-            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-lg border-2 border-gray-200 dark:border-white/20">
+            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-lg border-2 border-gray-200 dark:border-white/20 text-center sm:text-left">
               <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Cultural Experiences</h3>
               <p className="text-gray-700 dark:text-gray-200 text-sm">Art classes, cooking lessons, craft workshops</p>
             </div>
-            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-lg border-2 border-gray-200 dark:border-white/20">
+            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-lg border-2 border-gray-200 dark:border-white/20 text-center sm:text-left">
               <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Transportation Services</h3>
               <p className="text-gray-700 dark:text-gray-200 text-sm">Local guides, drivers, unique transport</p>
             </div>
-            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-lg border-2 border-gray-200 dark:border-white/20">
+            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-lg border-2 border-gray-200 dark:border-white/20 text-center sm:text-left">
               <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Local Guides</h3>
               <p className="text-gray-700 dark:text-gray-200 text-sm">Photography tours, city experts, neighborhood specialists</p>
             </div>
@@ -232,27 +232,27 @@ export default function BusinessLanding() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-lg border-2 border-gray-200 dark:border-white/20">
+            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-lg border-2 border-gray-200 dark:border-white/20 text-center sm:text-left">
               <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Keep 100% of Your Revenue</h3>
               <p className="text-gray-700 dark:text-gray-200 text-sm">No commission fees like TripAdvisor or Viator. What you earn is yours.</p>
             </div>
-            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-lg border-2 border-gray-200 dark:border-white/20">
+            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-lg border-2 border-gray-200 dark:border-white/20 text-center sm:text-left">
               <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Direct Relationships</h3>
               <p className="text-gray-700 dark:text-gray-200 text-sm">Build lasting customer relationships without middlemen taking a cut.</p>
             </div>
-            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-lg border-2 border-gray-200 dark:border-white/20">
+            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-lg border-2 border-gray-200 dark:border-white/20 text-center sm:text-left">
               <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Recurring Customers</h3>
               <p className="text-gray-700 dark:text-gray-200 text-sm">Travelers return and bring friends. Build a loyal following.</p>
             </div>
-            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-lg border-2 border-gray-200 dark:border-white/20">
+            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-lg border-2 border-gray-200 dark:border-white/20 text-center sm:text-left">
               <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Real Customer Insights</h3>
               <p className="text-gray-700 dark:text-gray-200 text-sm">Understand what travelers want before they arrive in your city.</p>
             </div>
-            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-lg border-2 border-gray-200 dark:border-white/20">
+            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-lg border-2 border-gray-200 dark:border-white/20 text-center sm:text-left">
               <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Instant Notifications</h3>
               <p className="text-gray-700 dark:text-gray-200 text-sm">Get alerted when travelers matching your services are planning trips.</p>
             </div>
-            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-lg border-2 border-gray-200 dark:border-white/20">
+            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-lg border-2 border-gray-200 dark:border-white/20 text-center sm:text-left">
               <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Event Sponsorship Opportunities</h3>
               <p className="text-gray-700 dark:text-gray-200 text-sm">Sponsor local experiences to get featured visibility with travelers who want what you offer.</p>
             </div>
@@ -306,19 +306,19 @@ export default function BusinessLanding() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-lg border-2 border-gray-200 dark:border-white/20">
+            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-lg border-2 border-gray-200 dark:border-white/20 text-center sm:text-left">
               <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Local Tour Guide</h3>
               <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
                 "Maria runs photography walking tours. Through Nearby Traveler, she connects with photography enthusiasts before they arrive. She now books 15-20 tours monthly with travelers who specifically want her expertise."
               </p>
             </div>
-            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-lg border-2 border-gray-200 dark:border-white/20">
+            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-lg border-2 border-gray-200 dark:border-white/20 text-center sm:text-left">
               <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Hidden Restaurant</h3>
               <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
                 "Carlos owns a family taqueria locals love but tourists never find. Now travelers seeking authentic Mexican food discover him through local recommendations. His evening crowds doubled."
               </p>
             </div>
-            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-lg border-2 border-gray-200 dark:border-white/20">
+            <div className="bg-white dark:bg-[#1e2139] p-6 rounded-xl shadow-lg border-2 border-gray-200 dark:border-white/20 text-center sm:text-left">
               <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Adventure Activity Provider</h3>
               <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
                 "Jake offers sunrise kayaking tours. He connects with early-bird travelers who love outdoor adventures. No more competing with hundreds of activities on tourist sites—just direct connections with his ideal customers."

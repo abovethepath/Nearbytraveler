@@ -33,7 +33,7 @@ export default function EventsLanding() {
   const tagClass = "text-[0.65rem] sm:text-xs uppercase tracking-[0.12em] font-semibold px-2 py-0.5 rounded-full border border-gray-300 dark:border-white/15 text-gray-600 dark:text-white/60";
 
   return (
-    <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900 font-sans">
+    <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900 font-sans overflow-x-hidden">
       <Helmet>
         <title>Nearby Traveler &mdash; Events</title>
         <meta name="description" content="Events are where people become your people. Weekly bonfires, taco crawls, hikes, and gallery walks hosted by locals, open to anyone. Free or near-free." />
@@ -83,9 +83,9 @@ export default function EventsLanding() {
           />
 
           {/* Layered overlay */}
-          <div className="absolute inset-0 z-[1] bg-gradient-to-b from-[#05070f]/60 via-[#070a14]/45 to-[#05070f]/78 pointer-events-none"></div>
-          <div className="absolute inset-0 z-[1] bg-gradient-to-r from-[#05070f]/55 via-[#05070f]/10 to-transparent pointer-events-none"></div>
-          <div className="absolute inset-0 z-[1] pointer-events-none" style={{ background: 'radial-gradient(ellipse 55% 38% at 50% 50%, rgba(0,0,0,0.4), transparent 70%)' }}></div>
+          <div className="absolute inset-0 z-[1] bg-gradient-to-b from-[#05070f]/30 via-[#070a14]/22 to-[#05070f]/40 pointer-events-none"></div>
+          <div className="absolute inset-0 z-[1] bg-gradient-to-r from-[#05070f]/25 via-[#05070f]/5 to-transparent pointer-events-none"></div>
+          <div className="absolute inset-0 z-[1] pointer-events-none" style={{ background: 'radial-gradient(ellipse 55% 38% at 50% 50%, rgba(0,0,0,0.25), transparent 70%)' }}></div>
           <div className="absolute inset-0 z-[1] pointer-events-none" style={{ background: 'radial-gradient(ellipse at 20% 110%, rgba(255,140,60,0.14), transparent 55%)' }}></div>
           <div className="absolute inset-0 z-[1] pointer-events-none" style={{ background: 'radial-gradient(ellipse at 82% 8%, rgba(255,180,110,0.08), transparent 50%)' }}></div>
 
@@ -151,28 +151,28 @@ export default function EventsLanding() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 lg:gap-6">
-              <div className="p-7 sm:p-8 rounded-2xl border-2 border-gray-200 dark:border-white/20 bg-white dark:bg-white/[0.02] hover:border-gray-300 dark:hover:border-white/30 transition-colors">
+              <div className="p-7 sm:p-8 rounded-2xl border-2 border-gray-200 dark:border-white/20 bg-white dark:bg-white/[0.02] hover:border-gray-300 dark:hover:border-white/30 transition-colors text-center sm:text-left">
                 <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-3 tracking-tight">Real plans, not invitations to nothing</h3>
                 <p className="text-[0.9375rem] sm:text-base text-gray-600 dark:text-white/65 leading-[1.6]">
                   Bonfires that actually happen. Taco crawls with real meeting times. Hikes you can show up to Saturday morning. Events that turn into people you want to see again.
                 </p>
               </div>
 
-              <div className="p-7 sm:p-8 rounded-2xl border-2 border-gray-200 dark:border-white/20 bg-white dark:bg-white/[0.02] hover:border-gray-300 dark:hover:border-white/30 transition-colors">
+              <div className="p-7 sm:p-8 rounded-2xl border-2 border-gray-200 dark:border-white/20 bg-white dark:bg-white/[0.02] hover:border-gray-300 dark:hover:border-white/30 transition-colors text-center sm:text-left">
                 <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-3 tracking-tight">Hosted by locals, open to anyone</h3>
                 <p className="text-[0.9375rem] sm:text-base text-gray-600 dark:text-white/65 leading-[1.6]">
                   Every event is hosted by someone in the community &mdash; a local who knows the spot, the timing, the vibe. Travelers welcome. Strangers turn into your people.
                 </p>
               </div>
 
-              <div className="p-7 sm:p-8 rounded-2xl border-2 border-gray-200 dark:border-white/20 bg-white dark:bg-white/[0.02] hover:border-gray-300 dark:hover:border-white/30 transition-colors">
+              <div className="p-7 sm:p-8 rounded-2xl border-2 border-gray-200 dark:border-white/20 bg-white dark:bg-white/[0.02] hover:border-gray-300 dark:hover:border-white/30 transition-colors text-center sm:text-left">
                 <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-3 tracking-tight">Free or near-free</h3>
                 <p className="text-[0.9375rem] sm:text-base text-gray-600 dark:text-white/65 leading-[1.6]">
                   No event tickets, no cover charges, no paid memberships. Most events are free. The ones that aren&rsquo;t are usually under $10.
                 </p>
               </div>
 
-              <div className="p-7 sm:p-8 rounded-2xl border-2 border-gray-200 dark:border-white/20 bg-white dark:bg-white/[0.02] hover:border-gray-300 dark:hover:border-white/30 transition-colors">
+              <div className="p-7 sm:p-8 rounded-2xl border-2 border-gray-200 dark:border-white/20 bg-white dark:bg-white/[0.02] hover:border-gray-300 dark:hover:border-white/30 transition-colors text-center sm:text-left">
                 <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-3 tracking-tight">Host your own</h3>
                 <p className="text-[0.9375rem] sm:text-base text-gray-600 dark:text-white/65 leading-[1.6]">
                   Have a hike you do every Saturday? A coffee shop nobody knows about? A movie night idea? Spin it up as an event in two minutes. Your people will find it.
@@ -218,7 +218,7 @@ export default function EventsLanding() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6">
 
               {/* Venice Beach Dance Party */}
-              <div className="group flex flex-col rounded-2xl border-2 border-gray-200 dark:border-white/20 bg-white dark:bg-white/[0.02] overflow-hidden hover:border-gray-300 dark:hover:border-white/30 transition-colors">
+              <div className="group flex flex-col rounded-2xl border-2 border-gray-200 dark:border-white/20 bg-white dark:bg-white/[0.02] overflow-hidden hover:border-gray-300 dark:hover:border-white/30 transition-colors text-center sm:text-left">
                 <div className="relative w-full aspect-[16/10] bg-gray-100 dark:bg-white/5 overflow-hidden">
                   <img
                     src="/venice-beach-dance-party.png"
@@ -254,7 +254,7 @@ export default function EventsLanding() {
               </div>
 
               {/* Authentic Food Adventure */}
-              <div className="group flex flex-col rounded-2xl border-2 border-gray-200 dark:border-white/20 bg-white dark:bg-white/[0.02] overflow-hidden hover:border-gray-300 dark:hover:border-white/30 transition-colors">
+              <div className="group flex flex-col rounded-2xl border-2 border-gray-200 dark:border-white/20 bg-white dark:bg-white/[0.02] overflow-hidden hover:border-gray-300 dark:hover:border-white/30 transition-colors text-center sm:text-left">
                 <div className="relative w-full aspect-[16/10] bg-gray-100 dark:bg-white/5 overflow-hidden">
                   <img
                     src="/authentic-food-adventure.png"
@@ -290,7 +290,7 @@ export default function EventsLanding() {
               </div>
 
               {/* Marina Movie Nights */}
-              <div className="group flex flex-col rounded-2xl border-2 border-gray-200 dark:border-white/20 bg-white dark:bg-white/[0.02] overflow-hidden hover:border-gray-300 dark:hover:border-white/30 transition-colors">
+              <div className="group flex flex-col rounded-2xl border-2 border-gray-200 dark:border-white/20 bg-white dark:bg-white/[0.02] overflow-hidden hover:border-gray-300 dark:hover:border-white/30 transition-colors text-center sm:text-left">
                 <div className="relative w-full aspect-[16/10] bg-gray-100 dark:bg-white/5 overflow-hidden">
                   <img
                     src={movieImage}
@@ -326,7 +326,7 @@ export default function EventsLanding() {
               </div>
 
               {/* Art Gallery Walk */}
-              <div className="group flex flex-col rounded-2xl border-2 border-gray-200 dark:border-white/20 bg-white dark:bg-white/[0.02] overflow-hidden hover:border-gray-300 dark:hover:border-white/30 transition-colors">
+              <div className="group flex flex-col rounded-2xl border-2 border-gray-200 dark:border-white/20 bg-white dark:bg-white/[0.02] overflow-hidden hover:border-gray-300 dark:hover:border-white/30 transition-colors text-center sm:text-left">
                 <div className="relative w-full aspect-[16/10] bg-gray-100 dark:bg-white/5 overflow-hidden">
                   <img
                     src={artWalkImage}
@@ -361,7 +361,7 @@ export default function EventsLanding() {
               </div>
 
               {/* Karaoke Night */}
-              <div className="group flex flex-col rounded-2xl border-2 border-gray-200 dark:border-white/20 bg-white dark:bg-white/[0.02] overflow-hidden hover:border-gray-300 dark:hover:border-white/30 transition-colors">
+              <div className="group flex flex-col rounded-2xl border-2 border-gray-200 dark:border-white/20 bg-white dark:bg-white/[0.02] overflow-hidden hover:border-gray-300 dark:hover:border-white/30 transition-colors text-center sm:text-left">
                 <div className="relative w-full aspect-[16/10] bg-gray-100 dark:bg-white/5 overflow-hidden">
                   <img
                     src={karaokeImage}
@@ -396,7 +396,7 @@ export default function EventsLanding() {
               </div>
 
               {/* City Bike Tour */}
-              <div className="group flex flex-col rounded-2xl border-2 border-gray-200 dark:border-white/20 bg-white dark:bg-white/[0.02] overflow-hidden hover:border-gray-300 dark:hover:border-white/30 transition-colors">
+              <div className="group flex flex-col rounded-2xl border-2 border-gray-200 dark:border-white/20 bg-white dark:bg-white/[0.02] overflow-hidden hover:border-gray-300 dark:hover:border-white/30 transition-colors text-center sm:text-left">
                 <div className="relative w-full aspect-[16/10] bg-gray-100 dark:bg-white/5 overflow-hidden">
                   <img
                     src={bikeImage}
