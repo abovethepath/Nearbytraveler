@@ -396,8 +396,9 @@ html {
   background-color: #111827;
   overflow-x: clip !important;
   max-width: 100vw !important;
-  /* Scrollbar: always reserve space (prevents layout shift) but make it invisible */
-  overflow-y: scroll;
+  /* Scrollbar only when scrollable — prevents reserved right-gutter that
+     was shifting mx-auto content left on some Android Chrome builds. */
+  overflow-y: auto;
   scrollbar-width: none;
   scrollbar-color: transparent transparent;
 }
