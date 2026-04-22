@@ -152,7 +152,7 @@ export default function LandingStreamlined() {
       <LandingHeader />
       <LandingHeaderSpacer />
 
-      <div className="w-full">
+      <div className="w-full" style={{ background: 'limegreen' }}>
 
         {/* HERO SECTION - Full Video Background with Rotation */}
         <section ref={heroRef} className="relative w-full overflow-hidden bg-[#0b1020] min-h-[80vh] md:min-h-[88vh] lg:min-h-[92vh] flex items-center">
@@ -239,7 +239,7 @@ export default function LandingStreamlined() {
         </section>
 
         {/* Everyone's a traveler — editorial manifesto */}
-        <section className="animate-on-scroll relative bg-[#0b1020] py-16 md:py-20 lg:py-24 px-6 sm:px-8 lg:px-12 overflow-hidden">
+        <section className="w-full animate-on-scroll relative bg-[#0b1020] py-16 md:py-20 lg:py-24 px-6 sm:px-8 lg:px-12 overflow-hidden">
           <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.04), transparent 60%)' }}></div>
           <div className="relative max-w-3xl mx-auto text-center">
             <h2 className="text-[2rem] sm:text-4xl md:text-5xl lg:text-[3.5rem] font-semibold text-white leading-[1.08] tracking-[-0.015em]" style={{ textWrap: 'balance' }}>
@@ -260,7 +260,7 @@ export default function LandingStreamlined() {
         </section>
 
         {/* Reconnection — editorial narrative beat (slightly warmer dark tone) */}
-        <section className="animate-on-scroll relative bg-[#120a10] py-16 md:py-20 lg:py-24 px-6 sm:px-8 lg:px-12 overflow-hidden">
+        <section className="w-full animate-on-scroll relative bg-[#120a10] py-16 md:py-20 lg:py-24 px-6 sm:px-8 lg:px-12 overflow-hidden">
           <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(255,140,60,0.09), transparent 55%)' }}></div>
           <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at 85% 100%, rgba(255,180,110,0.06), transparent 50%)' }}></div>
           <div className="relative max-w-3xl mx-auto text-center">
@@ -281,7 +281,7 @@ export default function LandingStreamlined() {
         </section>
 
         {/* Why Nearby Traveler — harmonized: editorial typography, subtle bordered cards */}
-        <section className="animate-on-scroll py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-800">
+        <section className="w-full animate-on-scroll py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-800">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-14 md:mb-20">
               <h2 className="text-[2rem] sm:text-4xl md:text-5xl lg:text-[3.5rem] font-semibold text-gray-900 dark:text-white leading-[1.08] tracking-[-0.015em] mb-5 md:mb-7" style={{ textWrap: 'balance' }}>
@@ -339,7 +339,7 @@ export default function LandingStreamlined() {
         </section>
 
         {/* How It Works — harmonized: dark editorial, "Step 01" labels, transparent cards */}
-        <section id="how-it-works" className="animate-on-scroll relative py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-[#0b1020] overflow-hidden">
+        <section id="how-it-works" className="w-full animate-on-scroll relative py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-[#0b1020] overflow-hidden">
           <div className="relative max-w-6xl mx-auto">
             <h2 className="text-[2rem] sm:text-4xl md:text-5xl lg:text-[3.5rem] font-semibold text-center text-white leading-[1.08] tracking-[-0.015em] mb-14 md:mb-20" style={{ textWrap: 'balance' }}>
               How It Works
@@ -381,7 +381,7 @@ export default function LandingStreamlined() {
         </section>
 
         {/* Community in Action — harmonized: simplified event cards, no gradients, minimal elevation */}
-        <section className="animate-on-scroll py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900">
+        <section className="w-full animate-on-scroll py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-14 md:mb-20">
               <h2 className="text-[2rem] sm:text-4xl md:text-5xl lg:text-[3.5rem] font-semibold text-gray-900 dark:text-white leading-[1.08] tracking-[-0.015em] mb-5 md:mb-7" style={{ textWrap: 'balance' }}>
@@ -427,7 +427,7 @@ export default function LandingStreamlined() {
         </section>
 
         {/* Finding your people — mid-page editorial beat */}
-        <section className="animate-on-scroll relative bg-[#0b1020] py-16 md:py-20 lg:py-24 px-6 sm:px-8 lg:px-12 overflow-hidden">
+        <section className="w-full animate-on-scroll relative bg-[#0b1020] py-16 md:py-20 lg:py-24 px-6 sm:px-8 lg:px-12 overflow-hidden">
           <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at 50% 100%, rgba(255,255,255,0.04), transparent 60%)' }}></div>
           <div className="relative max-w-3xl mx-auto text-center">
             <h2 className="font-sans leading-[1.06] tracking-[-0.015em]" style={{ textWrap: 'balance' }}>
@@ -447,7 +447,7 @@ export default function LandingStreamlined() {
         </section>
 
         {/* From the Founder — harmonized: dark editorial, gradient killed, quote-forward */}
-        <section className="animate-on-scroll relative py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-[#0b1020] overflow-hidden">
+        <section className="w-full animate-on-scroll relative py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-[#0b1020] overflow-hidden">
           <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(255,140,60,0.07), transparent 55%)' }}></div>
           <div className="relative max-w-3xl mx-auto text-center">
             <h2 className="text-sm font-semibold tracking-[0.24em] uppercase text-orange-400 mb-6 md:mb-8">
@@ -464,7 +464,7 @@ export default function LandingStreamlined() {
         </section>
 
         {/* Credibility Bar */}
-        <section className="py-4 sm:py-6 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900 border-t border-b border-gray-200 dark:border-gray-700">
+        <section className="w-full py-4 sm:py-6 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900 border-t border-b border-gray-200 dark:border-gray-700">
           <div className="max-w-6xl mx-auto">
             <p className="text-xs sm:text-sm text-center text-gray-600 dark:text-gray-400 leading-relaxed">
               400+ travelers hosted by our founder | 5 community connectors in Los Angeles | Inspired by global travel communities like Couchsurfing & Meetup
@@ -473,7 +473,7 @@ export default function LandingStreamlined() {
         </section>
 
         {/* For anyone — editorial single line */}
-        <section className="animate-on-scroll py-16 sm:py-20 lg:py-24 px-6 sm:px-8 lg:px-12 bg-gray-50 dark:bg-gray-800">
+        <section className="w-full animate-on-scroll py-16 sm:py-20 lg:py-24 px-6 sm:px-8 lg:px-12 bg-gray-50 dark:bg-gray-800">
           <div className="max-w-4xl mx-auto text-center">
             <p className="text-[1.75rem] sm:text-3xl md:text-4xl lg:text-[2.75rem] font-semibold text-gray-900 dark:text-white leading-[1.15] tracking-[-0.015em]" style={{ textWrap: 'balance' }}>
               For anyone who&rsquo;s ever felt alone in a city full of people.
@@ -482,7 +482,7 @@ export default function LandingStreamlined() {
         </section>
 
         {/* Final CTA — two-line editorial */}
-        <section className="animate-on-scroll py-16 sm:py-20 lg:py-24 px-6 sm:px-8 lg:px-12 bg-white dark:bg-gray-900">
+        <section className="w-full animate-on-scroll py-16 sm:py-20 lg:py-24 px-6 sm:px-8 lg:px-12 bg-white dark:bg-gray-900">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="font-sans leading-[1.05] tracking-tight" style={{ textWrap: 'balance' }}>
               <span className="block text-[2.25rem] sm:text-5xl md:text-6xl lg:text-[4.25rem] font-normal text-gray-500 dark:text-white/50">
@@ -508,7 +508,7 @@ export default function LandingStreamlined() {
         </section>
 
         {/* Launch Cities & Features */}
-        <section className="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+        <section className="w-full py-12 sm:py-16 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
           <div className="max-w-4xl mx-auto text-center">
             <p className="text-lg sm:text-xl text-gray-700 dark:text-gray-300 mb-6">
               Launching soon in <span className="font-bold">Los Angeles and worldwide</span>

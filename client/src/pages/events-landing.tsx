@@ -75,7 +75,7 @@ export default function EventsLanding() {
       <LandingHeader />
       <LandingHeaderSpacer />
 
-      <div className="w-full">
+      <div className="w-full" style={{ background: 'limegreen' }}>
 
         {/* HERO SECTION — full-bleed bonfire image, editorial overlay */}
         <section ref={heroRef} className="relative w-full overflow-hidden bg-[#0b1020] min-h-[80vh] md:min-h-[88vh] lg:min-h-[92vh] flex items-center">
@@ -148,7 +148,7 @@ export default function EventsLanding() {
         </section>
 
         {/* Why people show up to these — light features grid, 4 cards */}
-        <section className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-800">
+        <section className="w-full py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-800">
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-14 md:mb-20">
               <h2 className="text-[2rem] sm:text-4xl md:text-5xl lg:text-[3.5rem] font-semibold text-gray-900 dark:text-white leading-[1.08] tracking-[-0.015em]" style={{ textWrap: 'balance' }}>
@@ -189,7 +189,7 @@ export default function EventsLanding() {
         </section>
 
         {/* Editorial beat — "The friendship doesn't start..." */}
-        <section className="relative bg-[#120a10] py-16 md:py-20 lg:py-24 px-6 sm:px-8 lg:px-12 overflow-hidden">
+        <section className="w-full relative bg-[#120a10] py-16 md:py-20 lg:py-24 px-6 sm:px-8 lg:px-12 overflow-hidden">
           <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(255,140,60,0.09), transparent 55%)' }}></div>
           <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at 85% 100%, rgba(255,180,110,0.06), transparent 50%)' }}></div>
           <div className="relative max-w-3xl mx-auto text-center">
@@ -210,7 +210,7 @@ export default function EventsLanding() {
         </section>
 
         {/* Event showcase — 6 cards, photos preserved, restyled chrome */}
-        <section id="event-showcase" className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900">
+        <section id="event-showcase" className="w-full py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-14 md:mb-20">
               <h2 className="text-[2rem] sm:text-4xl md:text-5xl lg:text-[3.5rem] font-semibold text-gray-900 dark:text-white leading-[1.08] tracking-[-0.015em] mb-5 md:mb-7" style={{ textWrap: 'balance' }}>
@@ -441,7 +441,7 @@ export default function EventsLanding() {
         </section>
 
         {/* Final CTA — light, single orange CTA + ghost create-event link */}
-        <section className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-white/5">
+        <section className="w-full py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-white/5">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="text-[2rem] sm:text-4xl md:text-5xl lg:text-[3.5rem] font-semibold text-gray-900 dark:text-white leading-[1.08] tracking-[-0.015em] mb-5 md:mb-6" style={{ textWrap: 'balance' }}>
               Find your next plan
