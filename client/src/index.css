@@ -397,15 +397,6 @@ button.user-card [data-role="user-card-text-container"] {
   width: 100% !important;
 }
 
-/* ═══ TEMPORARY DEBUG BLOCK — iPhone right-edge gap diagnosis ═══ */
-/* If a color shows through on the right edge of the screen, the element
-   painted in that color is extending where another element isn't.
-   Remove this block once the gap source is identified. */
-html { background: red !important; }
-body { background: blue !important; }
-/* Landing-page root divs get inline style={{ background: 'green' }} */
-/* ═══ END DEBUG BLOCK ═══ */
-
 /* CRITICAL: Prevent ALL horizontal scrolling on mobile + Safari dark mode white border fix */
 /* Default to dark background so Chrome gutters never show white around max-width containers */
 html {

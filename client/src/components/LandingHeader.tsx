@@ -13,17 +13,16 @@ export default function LandingHeader() {
     <div
       className="fixed inset-x-0 top-0 z-[100]"
       style={{
-        paddingTop: 'env(safe-area-inset-top, 0px)',
-        /* Force GPU compositing so iOS WKWebView keeps this element fixed
-           during scroll. Without this, position:fixed can scroll with the page
-           when parent elements have overflow:clip or certain background transitions. */
         WebkitTransform: 'translateZ(0)',
         transform: 'translateZ(0)',
         WebkitBackfaceVisibility: 'hidden',
         backfaceVisibility: 'hidden',
       }}
     >
-      <div className="landing-header-nav border-b-2 border-orange-500">
+      <div
+        className="landing-header-nav border-b-2 border-orange-500"
+        style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
+      >
         <div className="max-w-7xl mx-auto">
           <LandingNavbar />
         </div>

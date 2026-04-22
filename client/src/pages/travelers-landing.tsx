@@ -33,7 +33,7 @@ export default function TravelersLanding() {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col bg-white dark:bg-gray-900 font-sans overflow-x-hidden" style={{ background: 'green' }}>
+    <div className="w-full min-h-screen flex flex-col bg-white dark:bg-gray-900 font-sans overflow-x-hidden">
       <Helmet>
         <title>Nearby Traveler &mdash; For Travelers</title>
         <meta name="description" content="Don't travel alone. Travel doesn't change you — the people you meet do. Nearby Traveler connects travelers with locals and other travelers in every destination." />

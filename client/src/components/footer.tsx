@@ -7,9 +7,9 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
         {/* Main footer content */}
         <div className="flex flex-col lg:flex-row lg:items-start gap-8 lg:gap-12">
-          
-          {/* Left side - Logo */}
-          <div className="flex flex-col items-start lg:items-start lg:max-w-sm mb-6 lg:mb-0 shrink-0">
+
+          {/* Logo — top on desktop (left column), bottom-centered on mobile */}
+          <div className="order-last lg:order-first flex flex-col items-center lg:items-start lg:max-w-sm shrink-0">
             <div className="w-40">
               <Logo
                 variant="footer"
@@ -18,9 +18,9 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Right side - Links organized in columns */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12 w-full">
-            
+          {/* Links — 2-col grid on mobile (Platform + Company), Contact full-width below; 3-col on desktop */}
+          <div className="order-first lg:order-last grid grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12 w-full">
+
             {/* Navigation Links */}
             <div>
               <h3 className="text-sm font-semibold mb-4 text-black dark:text-white">Platform</h3>
@@ -46,8 +46,8 @@ export default function Footer() {
               </ul>
             </div>
 
-            {/* Contact */}
-            <div className="sm:col-span-2 lg:col-span-1">
+            {/* Contact — full-width below on mobile, single column on desktop */}
+            <div className="col-span-2 lg:col-span-1">
               <h3 className="text-sm font-semibold mb-4 text-black dark:text-white">Contact</h3>
               <div className="flex flex-col space-y-3 text-gray-600 dark:text-gray-300 text-sm">
                 <div>

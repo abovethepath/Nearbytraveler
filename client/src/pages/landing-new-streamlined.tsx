@@ -129,7 +129,7 @@ export default function LandingStreamlined() {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-900 font-sans overflow-x-hidden" style={{ background: 'green' }}>
+    <div className="w-full bg-white dark:bg-gray-900 font-sans overflow-x-hidden">
 
 
       <div
