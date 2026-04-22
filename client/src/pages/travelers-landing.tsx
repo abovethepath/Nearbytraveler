@@ -33,7 +33,7 @@ export default function TravelersLanding() {
   }, []);
 
   return (
-    <div className="w-full min-h-screen flex flex-col bg-white dark:bg-[#0b1020] font-sans">
+    <div className="w-full min-h-screen flex flex-col bg-white dark:bg-gray-900 font-sans">
       <Helmet>
         <title>Nearby Traveler &mdash; For Travelers</title>
         <meta name="description" content="Don't travel alone. Travel doesn't change you — the people you meet do. Nearby Traveler connects travelers with locals and other travelers in every destination." />
@@ -152,8 +152,8 @@ export default function TravelersLanding() {
         </section>
 
         {/* Why travelers find their people through Nearby Traveler — light, 4 cards */}
-        <section className="w-full py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-800">
-          <div className="max-w-5xl mx-auto">
+        <section className="w-full py-16 sm:py-20 lg:py-24 bg-gray-50 dark:bg-gray-800">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-14 md:mb-20">
               <h2 className="text-[2rem] sm:text-4xl md:text-5xl lg:text-[3.5rem] font-semibold text-gray-900 dark:text-white leading-[1.08] tracking-[-0.015em]" style={{ textWrap: 'balance' }}>
                 Why travelers find their people through Nearby Traveler
@@ -193,10 +193,10 @@ export default function TravelersLanding() {
         </section>
 
         {/* Editorial beat — "Some trips you remember for the place" (dark, warm radial) */}
-        <section className="w-full relative bg-[#120a10] py-16 md:py-20 lg:py-24 px-6 sm:px-8 lg:px-12 overflow-hidden">
+        <section className="w-full relative bg-[#120a10] py-16 md:py-20 lg:py-24 overflow-hidden">
           <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(255,140,60,0.09), transparent 55%)' }}></div>
           <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at 85% 100%, rgba(255,180,110,0.06), transparent 50%)' }}></div>
-          <div className="relative max-w-3xl mx-auto text-center">
+          <div className="relative max-w-3xl mx-auto text-center px-6 sm:px-8 lg:px-12">
             <h2 className="font-sans leading-[1.06] tracking-[-0.015em]" style={{ textWrap: 'balance' }}>
               <span className="block text-[1.75rem] sm:text-3xl md:text-4xl lg:text-[3rem] font-normal text-white/75">
                 Some trips you remember for the place
@@ -214,8 +214,8 @@ export default function TravelersLanding() {
         </section>
 
         {/* How It Works — dark editorial, Step 01/02/03 labels */}
-        <section id="how-it-works" className="w-full relative py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-[#0b1020] overflow-hidden">
-          <div className="relative max-w-6xl mx-auto">
+        <section id="how-it-works" className="w-full relative py-16 sm:py-20 lg:py-24 bg-[#0b1020] overflow-hidden">
+          <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 className="text-[2rem] sm:text-4xl md:text-5xl lg:text-[3.5rem] font-semibold text-center text-white leading-[1.08] tracking-[-0.015em] mb-14 md:mb-20" style={{ textWrap: 'balance' }}>
               How It Works
             </h2>
@@ -256,8 +256,8 @@ export default function TravelersLanding() {
         </section>
 
         {/* Community events — light, simplified cards matching main landing */}
-        <section className="w-full py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900">
-          <div className="max-w-6xl mx-auto">
+        <section className="w-full py-16 sm:py-20 lg:py-24 bg-white dark:bg-gray-900">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-14 md:mb-20">
               <h2 className="text-[2rem] sm:text-4xl md:text-5xl lg:text-[3.5rem] font-semibold text-gray-900 dark:text-white leading-[1.08] tracking-[-0.015em] mb-5 md:mb-7" style={{ textWrap: 'balance' }}>
                 See our community in action
@@ -302,9 +302,9 @@ export default function TravelersLanding() {
         </section>
 
         {/* Founder — dark editorial, quote-forward, original copy preserved */}
-        <section className="w-full relative py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-[#0b1020] overflow-hidden">
+        <section className="w-full relative py-16 sm:py-20 lg:py-24 bg-[#0b1020] overflow-hidden">
           <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(255,140,60,0.07), transparent 55%)' }}></div>
-          <div className="relative max-w-3xl mx-auto text-center">
+          <div className="relative max-w-3xl mx-auto text-center px-4 sm:px-6 lg:px-8">
             <h2 className="text-sm font-semibold tracking-[0.24em] uppercase text-orange-400 mb-6 md:mb-8">
               From the Founder
             </h2>
@@ -319,8 +319,8 @@ export default function TravelersLanding() {
         </section>
 
         {/* Final CTA — light, single orange CTA */}
-        <section className="w-full py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900">
-          <div className="max-w-3xl mx-auto text-center">
+        <section className="w-full py-16 sm:py-20 lg:py-24 bg-white dark:bg-gray-900">
+          <div className="max-w-3xl mx-auto text-center px-4 sm:px-6 lg:px-8">
             <h2 className="text-[2rem] sm:text-4xl md:text-5xl lg:text-[3.5rem] font-semibold text-gray-900 dark:text-white leading-[1.08] tracking-[-0.015em] mb-5 md:mb-6" style={{ textWrap: 'balance' }}>
               Don&rsquo;t land alone
             </h2>

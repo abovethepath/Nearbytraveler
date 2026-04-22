@@ -39,7 +39,7 @@ export default function EventsLanding() {
   const tagClass = "text-[0.65rem] sm:text-xs uppercase tracking-[0.12em] font-semibold px-2 py-0.5 rounded-full border border-gray-300 dark:border-white/15 text-gray-600 dark:text-white/60";
 
   return (
-    <div className="w-full min-h-screen flex flex-col bg-white dark:bg-[#0b1020] font-sans">
+    <div className="w-full min-h-screen flex flex-col bg-white dark:bg-gray-900 font-sans">
       <Helmet>
         <title>Nearby Traveler &mdash; Events</title>
         <meta name="description" content="Events are where people become your people. Weekly bonfires, taco crawls, hikes, and gallery walks hosted by locals, open to anyone. Free or near-free." />
@@ -148,8 +148,8 @@ export default function EventsLanding() {
         </section>
 
         {/* Why people show up to these — light features grid, 4 cards */}
-        <section className="w-full py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-800">
-          <div className="max-w-5xl mx-auto">
+        <section className="w-full py-16 sm:py-20 lg:py-24 bg-gray-50 dark:bg-gray-800">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-14 md:mb-20">
               <h2 className="text-[2rem] sm:text-4xl md:text-5xl lg:text-[3.5rem] font-semibold text-gray-900 dark:text-white leading-[1.08] tracking-[-0.015em]" style={{ textWrap: 'balance' }}>
                 Why people show up to these
@@ -189,10 +189,10 @@ export default function EventsLanding() {
         </section>
 
         {/* Editorial beat — "The friendship doesn't start..." */}
-        <section className="w-full relative bg-[#120a10] py-16 md:py-20 lg:py-24 px-6 sm:px-8 lg:px-12 overflow-hidden">
+        <section className="w-full relative bg-[#120a10] py-16 md:py-20 lg:py-24 overflow-hidden">
           <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(255,140,60,0.09), transparent 55%)' }}></div>
           <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at 85% 100%, rgba(255,180,110,0.06), transparent 50%)' }}></div>
-          <div className="relative max-w-3xl mx-auto text-center">
+          <div className="relative max-w-3xl mx-auto text-center px-6 sm:px-8 lg:px-12">
             <h2 className="font-sans leading-[1.06] tracking-[-0.015em]" style={{ textWrap: 'balance' }}>
               <span className="block text-[1.75rem] sm:text-3xl md:text-4xl lg:text-[3rem] font-normal text-white/75">
                 The friendship doesn&rsquo;t start
@@ -210,8 +210,8 @@ export default function EventsLanding() {
         </section>
 
         {/* Event showcase — 6 cards, photos preserved, restyled chrome */}
-        <section id="event-showcase" className="w-full py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900">
-          <div className="max-w-6xl mx-auto">
+        <section id="event-showcase" className="w-full py-16 sm:py-20 lg:py-24 bg-white dark:bg-gray-900">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-14 md:mb-20">
               <h2 className="text-[2rem] sm:text-4xl md:text-5xl lg:text-[3.5rem] font-semibold text-gray-900 dark:text-white leading-[1.08] tracking-[-0.015em] mb-5 md:mb-7" style={{ textWrap: 'balance' }}>
                 What&rsquo;s actually happening
@@ -441,8 +441,8 @@ export default function EventsLanding() {
         </section>
 
         {/* Final CTA — light, single orange CTA + ghost create-event link */}
-        <section className="w-full py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-white/5">
-          <div className="max-w-3xl mx-auto text-center">
+        <section className="w-full py-16 sm:py-20 lg:py-24 bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-white/5">
+          <div className="max-w-3xl mx-auto text-center px-4 sm:px-6 lg:px-8">
             <h2 className="text-[2rem] sm:text-4xl md:text-5xl lg:text-[3.5rem] font-semibold text-gray-900 dark:text-white leading-[1.08] tracking-[-0.015em] mb-5 md:mb-6" style={{ textWrap: 'balance' }}>
               Find your next plan
             </h2>
