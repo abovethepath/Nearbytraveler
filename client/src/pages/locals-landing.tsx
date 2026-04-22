@@ -145,29 +145,29 @@ export default function LocalsLanding() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 lg:gap-6">
               <div className="p-7 sm:p-8 rounded-2xl border-2 border-gray-200 dark:border-white/20 bg-white dark:bg-white/[0.02] hover:border-gray-300 dark:hover:border-white/30 transition-colors text-center sm:text-left">
-                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-3 tracking-tight">Your city, but with more friends in it</h3>
-                <p className="text-[0.9375rem] sm:text-base text-gray-600 dark:text-white/65 leading-[1.6]">
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-3 tracking-tight text-center sm:text-left">Your city, but with more friends in it</h3>
+                <p className="text-[0.9375rem] sm:text-base text-gray-600 dark:text-white/65 leading-[1.6] text-center sm:text-left">
                   The neighbors you haven&rsquo;t met yet, the travelers passing through, the people you&rsquo;d actually like if you knew them. Nearby Traveler finds each other for you.
                 </p>
               </div>
 
               <div className="p-7 sm:p-8 rounded-2xl border-2 border-gray-200 dark:border-white/20 bg-white dark:bg-white/[0.02] hover:border-gray-300 dark:hover:border-white/30 transition-colors text-center sm:text-left">
-                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-3 tracking-tight">Real plans, not chat</h3>
-                <p className="text-[0.9375rem] sm:text-base text-gray-600 dark:text-white/65 leading-[1.6]">
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-3 tracking-tight text-center sm:text-left">Real plans, not chat</h3>
+                <p className="text-[0.9375rem] sm:text-base text-gray-600 dark:text-white/65 leading-[1.6] text-center sm:text-left">
                   Bonfires, hikes, rooftops, taco crawls, gallery walks. Host your own or join what&rsquo;s already happening. Plans that turn into friendships.
                 </p>
               </div>
 
               <div className="p-7 sm:p-8 rounded-2xl border-2 border-gray-200 dark:border-white/20 bg-white dark:bg-white/[0.02] hover:border-gray-300 dark:hover:border-white/30 transition-colors text-center sm:text-left">
-                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-3 tracking-tight">Show off your city</h3>
-                <p className="text-[0.9375rem] sm:text-base text-gray-600 dark:text-white/65 leading-[1.6]">
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-3 tracking-tight text-center sm:text-left">Show off your city</h3>
+                <p className="text-[0.9375rem] sm:text-base text-gray-600 dark:text-white/65 leading-[1.6] text-center sm:text-left">
                   The coffee shop, the hiking trail, the taco truck nobody else knows about. Share what makes your neighborhood yours &mdash; with travelers who want the real version.
                 </p>
               </div>
 
               <div className="p-7 sm:p-8 rounded-2xl border-2 border-gray-200 dark:border-white/20 bg-white dark:bg-white/[0.02] hover:border-gray-300 dark:hover:border-white/30 transition-colors text-center sm:text-left">
-                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-3 tracking-tight">Friendships that don&rsquo;t end at the airport</h3>
-                <p className="text-[0.9375rem] sm:text-base text-gray-600 dark:text-white/65 leading-[1.6]">
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-3 tracking-tight text-center sm:text-left">Friendships that don&rsquo;t end at the airport</h3>
+                <p className="text-[0.9375rem] sm:text-base text-gray-600 dark:text-white/65 leading-[1.6] text-center sm:text-left">
                   You meet someone great who&rsquo;s in town for four days. Six months later, they land in your city again &mdash; or you land in theirs. Nearby Traveler keeps it going.
                 </p>
               </div>
@@ -253,30 +253,30 @@ export default function LocalsLanding() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-6">
               <div className="p-6 sm:p-7 rounded-2xl border-2 border-gray-200 dark:border-white/20 bg-white dark:bg-white/[0.02] hover:border-gray-300 dark:hover:border-white/30 transition-colors text-center sm:text-left">
                 <div className="flex items-start justify-between mb-4 gap-3">
-                  <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white tracking-tight">Beach Bonfire & BBQ</h3>
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white tracking-tight text-center sm:text-left">Beach Bonfire & BBQ</h3>
                   <span className="shrink-0 bg-orange-500 text-white px-2.5 py-0.5 rounded-full text-[0.75rem] font-semibold tracking-tight">Free</span>
                 </div>
-                <p className="text-[0.9375rem] sm:text-base text-gray-600 dark:text-white/65 leading-[1.6]">
+                <p className="text-[0.9375rem] sm:text-base text-gray-600 dark:text-white/65 leading-[1.6] text-center sm:text-left">
                   Sunset gathering with locals &mdash; authentic LA beach culture, music, and new friends.
                 </p>
               </div>
 
               <div className="p-6 sm:p-7 rounded-2xl border-2 border-gray-200 dark:border-white/20 bg-white dark:bg-white/[0.02] hover:border-gray-300 dark:hover:border-white/30 transition-colors text-center sm:text-left">
                 <div className="flex items-start justify-between mb-4 gap-3">
-                  <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white tracking-tight">Taco Tuesday</h3>
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white tracking-tight text-center sm:text-left">Taco Tuesday</h3>
                   <span className="shrink-0 bg-orange-500 text-white px-2.5 py-0.5 rounded-full text-[0.75rem] font-semibold tracking-tight">$1.50</span>
                 </div>
-                <p className="text-[0.9375rem] sm:text-base text-gray-600 dark:text-white/65 leading-[1.6]">
+                <p className="text-[0.9375rem] sm:text-base text-gray-600 dark:text-white/65 leading-[1.6] text-center sm:text-left">
                   Weekly street taco adventure with fellow food lovers at the city&rsquo;s best Mexican spots.
                 </p>
               </div>
 
               <div className="p-6 sm:p-7 rounded-2xl border-2 border-gray-200 dark:border-white/20 bg-white dark:bg-white/[0.02] hover:border-gray-300 dark:hover:border-white/30 transition-colors text-center sm:text-left">
                 <div className="flex items-start justify-between mb-4 gap-3">
-                  <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white tracking-tight">Hollywood Sign Hike</h3>
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white tracking-tight text-center sm:text-left">Hollywood Sign Hike</h3>
                   <span className="shrink-0 bg-orange-500 text-white px-2.5 py-0.5 rounded-full text-[0.75rem] font-semibold tracking-tight">Free</span>
                 </div>
-                <p className="text-[0.9375rem] sm:text-base text-gray-600 dark:text-white/65 leading-[1.6]">
+                <p className="text-[0.9375rem] sm:text-base text-gray-600 dark:text-white/65 leading-[1.6] text-center sm:text-left">
                   Saturday morning hikes with locals and travelers &mdash; amazing views, great photos, real LA.
                 </p>
               </div>

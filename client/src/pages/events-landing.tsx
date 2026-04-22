@@ -152,29 +152,29 @@ export default function EventsLanding() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 lg:gap-6">
               <div className="p-7 sm:p-8 rounded-2xl border-2 border-gray-200 dark:border-white/20 bg-white dark:bg-white/[0.02] hover:border-gray-300 dark:hover:border-white/30 transition-colors text-center sm:text-left">
-                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-3 tracking-tight">Real plans, not invitations to nothing</h3>
-                <p className="text-[0.9375rem] sm:text-base text-gray-600 dark:text-white/65 leading-[1.6]">
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-3 tracking-tight text-center sm:text-left">Real plans, not invitations to nothing</h3>
+                <p className="text-[0.9375rem] sm:text-base text-gray-600 dark:text-white/65 leading-[1.6] text-center sm:text-left">
                   Bonfires that actually happen. Taco crawls with real meeting times. Hikes you can show up to Saturday morning. Events that turn into people you want to see again.
                 </p>
               </div>
 
               <div className="p-7 sm:p-8 rounded-2xl border-2 border-gray-200 dark:border-white/20 bg-white dark:bg-white/[0.02] hover:border-gray-300 dark:hover:border-white/30 transition-colors text-center sm:text-left">
-                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-3 tracking-tight">Hosted by locals, open to anyone</h3>
-                <p className="text-[0.9375rem] sm:text-base text-gray-600 dark:text-white/65 leading-[1.6]">
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-3 tracking-tight text-center sm:text-left">Hosted by locals, open to anyone</h3>
+                <p className="text-[0.9375rem] sm:text-base text-gray-600 dark:text-white/65 leading-[1.6] text-center sm:text-left">
                   Every event is hosted by someone in the community &mdash; a local who knows the spot, the timing, the vibe. Travelers welcome. Strangers turn into your people.
                 </p>
               </div>
 
               <div className="p-7 sm:p-8 rounded-2xl border-2 border-gray-200 dark:border-white/20 bg-white dark:bg-white/[0.02] hover:border-gray-300 dark:hover:border-white/30 transition-colors text-center sm:text-left">
-                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-3 tracking-tight">Free or near-free</h3>
-                <p className="text-[0.9375rem] sm:text-base text-gray-600 dark:text-white/65 leading-[1.6]">
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-3 tracking-tight text-center sm:text-left">Free or near-free</h3>
+                <p className="text-[0.9375rem] sm:text-base text-gray-600 dark:text-white/65 leading-[1.6] text-center sm:text-left">
                   No event tickets, no cover charges, no paid memberships. Most events are free. The ones that aren&rsquo;t are usually under $10.
                 </p>
               </div>
 
               <div className="p-7 sm:p-8 rounded-2xl border-2 border-gray-200 dark:border-white/20 bg-white dark:bg-white/[0.02] hover:border-gray-300 dark:hover:border-white/30 transition-colors text-center sm:text-left">
-                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-3 tracking-tight">Host your own</h3>
-                <p className="text-[0.9375rem] sm:text-base text-gray-600 dark:text-white/65 leading-[1.6]">
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-3 tracking-tight text-center sm:text-left">Host your own</h3>
+                <p className="text-[0.9375rem] sm:text-base text-gray-600 dark:text-white/65 leading-[1.6] text-center sm:text-left">
                   Have a hike you do every Saturday? A coffee shop nobody knows about? A movie night idea? Spin it up as an event in two minutes. Your people will find it.
                 </p>
               </div>
@@ -228,17 +228,17 @@ export default function EventsLanding() {
                 </div>
                 <div className="p-6 flex flex-col flex-grow">
                   <div className="flex items-start justify-between gap-3 mb-2">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white tracking-tight">Venice Beach Dance Party</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white tracking-tight text-center sm:text-left">Venice Beach Dance Party</h3>
                     <span className="shrink-0 bg-orange-500 text-white px-2.5 py-0.5 rounded-full text-[0.75rem] font-semibold tracking-tight">Free</span>
                   </div>
-                  <p className="text-sm text-gray-500 dark:text-white/50 mb-4">Sunset dancing on the famous boardwalk</p>
+                  <p className="text-sm text-gray-500 dark:text-white/50 mb-4 text-center sm:text-left">Sunset dancing on the famous boardwalk</p>
 
                   <div className="flex flex-wrap gap-1.5 mb-4">
                     <span className={tagClass}>Beach</span>
                     <span className={tagClass}>Dancing</span>
                   </div>
 
-                  <p className="text-[0.9375rem] text-gray-600 dark:text-white/65 leading-[1.6] flex-grow mb-5">
+                  <p className="text-[0.9375rem] text-gray-600 dark:text-white/65 leading-[1.6] flex-grow mb-5 text-center sm:text-left">
                     Join locals dancing to live music at Venice Beach boardwalk. Experience the authentic LA beach culture with sunset vibes and great people.
                   </p>
 
@@ -264,9 +264,9 @@ export default function EventsLanding() {
                 </div>
                 <div className="p-6 flex flex-col flex-grow">
                   <div className="flex items-start justify-between gap-3 mb-2">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white tracking-tight">Authentic Food Adventure</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white tracking-tight text-center sm:text-left">Authentic Food Adventure</h3>
                   </div>
-                  <p className="text-sm text-gray-500 dark:text-white/50 mb-4">Discover your local&rsquo;s favorite eats</p>
+                  <p className="text-sm text-gray-500 dark:text-white/50 mb-4 text-center sm:text-left">Discover your local&rsquo;s favorite eats</p>
 
                   <div className="flex flex-wrap gap-1.5 mb-4">
                     <span className={tagClass}>Food</span>
@@ -274,7 +274,7 @@ export default function EventsLanding() {
                     <span className={tagClass}>Social</span>
                   </div>
 
-                  <p className="text-[0.9375rem] text-gray-600 dark:text-white/65 leading-[1.6] flex-grow mb-5">
+                  <p className="text-[0.9375rem] text-gray-600 dark:text-white/65 leading-[1.6] flex-grow mb-5 text-center sm:text-left">
                     Join locals as they plan meals at awesome hidden food spots &mdash; $1 tacos, Korean BBQ, Ethiopian, and the best burgers in town.
                   </p>
 
@@ -300,17 +300,17 @@ export default function EventsLanding() {
                 </div>
                 <div className="p-6 flex flex-col flex-grow">
                   <div className="flex items-start justify-between gap-3 mb-2">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white tracking-tight">Marina Movie Nights</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white tracking-tight text-center sm:text-left">Marina Movie Nights</h3>
                     <span className="shrink-0 bg-orange-500 text-white px-2.5 py-0.5 rounded-full text-[0.75rem] font-semibold tracking-tight">Free</span>
                   </div>
-                  <p className="text-sm text-gray-500 dark:text-white/50 mb-4">Saturday &middot; 8:00 PM &middot; Burton Chace Park</p>
+                  <p className="text-sm text-gray-500 dark:text-white/50 mb-4 text-center sm:text-left">Saturday &middot; 8:00 PM &middot; Burton Chace Park</p>
 
                   <div className="flex flex-wrap gap-1.5 mb-4">
                     <span className={tagClass}>Movies</span>
                     <span className={tagClass}>Outdoor</span>
                   </div>
 
-                  <p className="text-[0.9375rem] text-gray-600 dark:text-white/65 leading-[1.6] flex-grow mb-5">
+                  <p className="text-[0.9375rem] text-gray-600 dark:text-white/65 leading-[1.6] flex-grow mb-5 text-center sm:text-left">
                     Free outdoor movie screenings at Burton Chace Park in Marina del Rey. Bring a blanket, pack a picnic, and enjoy movies under the stars with locals and travelers.
                   </p>
 
@@ -336,16 +336,16 @@ export default function EventsLanding() {
                 </div>
                 <div className="p-6 flex flex-col flex-grow">
                   <div className="flex items-start justify-between gap-3 mb-2">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white tracking-tight">Art Gallery Walk</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white tracking-tight text-center sm:text-left">Art Gallery Walk</h3>
                     <span className="shrink-0 bg-orange-500 text-white px-2.5 py-0.5 rounded-full text-[0.75rem] font-semibold tracking-tight">Free</span>
                   </div>
-                  <p className="text-sm text-gray-500 dark:text-white/50 mb-4">First Friday &middot; Arts District</p>
+                  <p className="text-sm text-gray-500 dark:text-white/50 mb-4 text-center sm:text-left">First Friday &middot; Arts District</p>
 
                   <div className="flex flex-wrap gap-1.5 mb-4">
                     <span className={tagClass}>Culture</span>
                   </div>
 
-                  <p className="text-[0.9375rem] text-gray-600 dark:text-white/65 leading-[1.6] flex-grow mb-5">
+                  <p className="text-[0.9375rem] text-gray-600 dark:text-white/65 leading-[1.6] flex-grow mb-5 text-center sm:text-left">
                     Monthly gallery walk through the Arts District. Meet artists, see local work, and discuss creativity with fellow art lovers and travelers.
                   </p>
 
@@ -371,16 +371,16 @@ export default function EventsLanding() {
                 </div>
                 <div className="p-6 flex flex-col flex-grow">
                   <div className="flex items-start justify-between gap-3 mb-2">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white tracking-tight">Karaoke Night</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white tracking-tight text-center sm:text-left">Karaoke Night</h3>
                   </div>
-                  <p className="text-sm text-gray-500 dark:text-white/50 mb-4">Wednesday &middot; 8:00 PM</p>
+                  <p className="text-sm text-gray-500 dark:text-white/50 mb-4 text-center sm:text-left">Wednesday &middot; 8:00 PM</p>
 
                   <div className="flex flex-wrap gap-1.5 mb-4">
                     <span className={tagClass}>Fun</span>
                     <span className={tagClass}>Music</span>
                   </div>
 
-                  <p className="text-[0.9375rem] text-gray-600 dark:text-white/65 leading-[1.6] flex-grow mb-5">
+                  <p className="text-[0.9375rem] text-gray-600 dark:text-white/65 leading-[1.6] flex-grow mb-5 text-center sm:text-left">
                     Weekly karaoke night where locals and travelers sing, laugh, and bond over terrible singing voices. No talent required &mdash; just bring the energy.
                   </p>
 
@@ -406,16 +406,16 @@ export default function EventsLanding() {
                 </div>
                 <div className="p-6 flex flex-col flex-grow">
                   <div className="flex items-start justify-between gap-3 mb-2">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white tracking-tight">City Bike Tour</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white tracking-tight text-center sm:text-left">City Bike Tour</h3>
                   </div>
-                  <p className="text-sm text-gray-500 dark:text-white/50 mb-4">Saturday &middot; 10:00 AM</p>
+                  <p className="text-sm text-gray-500 dark:text-white/50 mb-4 text-center sm:text-left">Saturday &middot; 10:00 AM</p>
 
                   <div className="flex flex-wrap gap-1.5 mb-4">
                     <span className={tagClass}>Active</span>
                     <span className={tagClass}>Sightseeing</span>
                   </div>
 
-                  <p className="text-[0.9375rem] text-gray-600 dark:text-white/65 leading-[1.6] flex-grow mb-5">
+                  <p className="text-[0.9375rem] text-gray-600 dark:text-white/65 leading-[1.6] flex-grow mb-5 text-center sm:text-left">
                     Explore the city&rsquo;s best neighborhoods on two wheels. Local guides show hidden spots, street art, and authentic culture you&rsquo;d never find on your own.
                   </p>
 
