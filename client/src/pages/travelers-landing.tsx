@@ -155,28 +155,28 @@ export default function TravelersLanding() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 lg:gap-6">
-              <div className="p-7 sm:p-8 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/[0.02] hover:border-gray-300 dark:hover:border-white/20 transition-colors">
+              <div className="p-7 sm:p-8 rounded-2xl border-2 border-gray-200 dark:border-white/20 bg-white dark:bg-white/[0.02] hover:border-gray-300 dark:hover:border-white/30 transition-colors">
                 <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-3 tracking-tight">Locals who actually live there</h3>
                 <p className="text-[0.9375rem] sm:text-base text-gray-600 dark:text-white/65 leading-[1.6]">
                   Not tour guides, not hosts pretending to be locals. Real people who&rsquo;ll meet you for coffee, take you to the spot only their neighborhood knows, or grab dinner the night you land.
                 </p>
               </div>
 
-              <div className="p-7 sm:p-8 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/[0.02] hover:border-gray-300 dark:hover:border-white/20 transition-colors">
+              <div className="p-7 sm:p-8 rounded-2xl border-2 border-gray-200 dark:border-white/20 bg-white dark:bg-white/[0.02] hover:border-gray-300 dark:hover:border-white/30 transition-colors">
                 <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-3 tracking-tight">Other travelers, same city</h3>
                 <p className="text-[0.9375rem] sm:text-base text-gray-600 dark:text-white/65 leading-[1.6]">
                   Someone else who just landed, same week, same vibe. The friend you make over a rooftop drink in Lisbon you&rsquo;d never have met otherwise.
                 </p>
               </div>
 
-              <div className="p-7 sm:p-8 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/[0.02] hover:border-gray-300 dark:hover:border-white/20 transition-colors">
+              <div className="p-7 sm:p-8 rounded-2xl border-2 border-gray-200 dark:border-white/20 bg-white dark:bg-white/[0.02] hover:border-gray-300 dark:hover:border-white/30 transition-colors">
                 <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-3 tracking-tight">Plan it before you land</h3>
                 <p className="text-[0.9375rem] sm:text-base text-gray-600 dark:text-white/65 leading-[1.6]">
                   Find your people in your destination before the flight. Coffee meetup the morning you arrive, food tour Tuesday night, hike Saturday. Don&rsquo;t show up with nothing.
                 </p>
               </div>
 
-              <div className="p-7 sm:p-8 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/[0.02] hover:border-gray-300 dark:hover:border-white/20 transition-colors">
+              <div className="p-7 sm:p-8 rounded-2xl border-2 border-gray-200 dark:border-white/20 bg-white dark:bg-white/[0.02] hover:border-gray-300 dark:hover:border-white/30 transition-colors">
                 <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-3 tracking-tight">Your network grows with every trip</h3>
                 <p className="text-[0.9375rem] sm:text-base text-gray-600 dark:text-white/65 leading-[1.6]">
                   Every city you visit adds people to your life. Years later, when one of them lands in your city &mdash; or you in theirs &mdash; Nearby Traveler tells you. The trip ends. The friendships don&rsquo;t.
@@ -262,7 +262,7 @@ export default function TravelersLanding() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-6">
-              <div className="p-6 sm:p-7 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/[0.02] hover:border-gray-300 dark:hover:border-white/20 transition-colors">
+              <div className="p-6 sm:p-7 rounded-2xl border-2 border-gray-200 dark:border-white/20 bg-white dark:bg-white/[0.02] hover:border-gray-300 dark:hover:border-white/30 transition-colors">
                 <div className="flex items-start justify-between mb-4 gap-3">
                   <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white tracking-tight">Beach Bonfire & BBQ</h3>
                   <span className="shrink-0 bg-orange-500 text-white px-2.5 py-0.5 rounded-full text-[0.75rem] font-semibold tracking-tight">Free</span>
@@ -272,7 +272,7 @@ export default function TravelersLanding() {
                 </p>
               </div>
 
-              <div className="p-6 sm:p-7 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/[0.02] hover:border-gray-300 dark:hover:border-white/20 transition-colors">
+              <div className="p-6 sm:p-7 rounded-2xl border-2 border-gray-200 dark:border-white/20 bg-white dark:bg-white/[0.02] hover:border-gray-300 dark:hover:border-white/30 transition-colors">
                 <div className="flex items-start justify-between mb-4 gap-3">
                   <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white tracking-tight">Taco Tuesday</h3>
                   <span className="shrink-0 bg-orange-500 text-white px-2.5 py-0.5 rounded-full text-[0.75rem] font-semibold tracking-tight">$1.50</span>
@@ -282,7 +282,7 @@ export default function TravelersLanding() {
                 </p>
               </div>
 
-              <div className="p-6 sm:p-7 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/[0.02] hover:border-gray-300 dark:hover:border-white/20 transition-colors">
+              <div className="p-6 sm:p-7 rounded-2xl border-2 border-gray-200 dark:border-white/20 bg-white dark:bg-white/[0.02] hover:border-gray-300 dark:hover:border-white/30 transition-colors">
                 <div className="flex items-start justify-between mb-4 gap-3">
                   <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white tracking-tight">Hollywood Sign Hike</h3>
                   <span className="shrink-0 bg-orange-500 text-white px-2.5 py-0.5 rounded-full text-[0.75rem] font-semibold tracking-tight">Free</span>
