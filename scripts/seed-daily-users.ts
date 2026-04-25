@@ -1,26 +1,42 @@
 // scripts/seed-daily-users.ts
 //
-// Generates 5-10 fake beta-tester users daily. Scheduled via node-cron in
+// Generates 5-10 fake beta users daily. Scheduled via node-cron in
 // server/index.ts at 00:00 UTC. Mirrors the real signup flow so seeded users
-// land in the same state as real signups: storage.createUser() runs
-// assignUserToChatrooms internally; we then call ensureMeetLocalsChatrooms
-// and autoJoinUserCityChatrooms to match routes.ts:6245-6266 exactly.
+// land in the same state as real signups, and shares its identifier scheme
+// with scripts/seed-realistic-users.ts so a single cleanup query covers both.
 //
-// Identifiers for admin filtering:
-//   - email: testuser+<username>@nearbytraveler.org (routes to aaron via + alias)
-//   - bio:   starts with "[Beta Tester]"
+// Per-user execution order (matches spec §8):
+//   1. storage.createUser(userData) — INSERTs users + assignUserToChatrooms
+//      (Global + Hometown [+ Destination if traveler])
+//   2. storage.ensureCityExists(hometown*)                 // mirrors routes.ts:6343-6354
+//   3. storage.ensureCityExists(destination*) (if traveler)// mirrors routes.ts:6358-6364
+//   4. storage.ensureMeetLocalsChatrooms(hometown*)
+//   5. storage.ensureMeetLocalsChatrooms(destination*) (if traveler)
+//   6. storage.autoJoinUserCityChatrooms(...)
+//   7. storage.createTravelPlan(...) (if traveler)
+//   8. storage.updateUser(user.id, { aura: isTraveler ? 2 : 1 })
 //
-// Aura, password storage, and founding-member flag all match the real signup:
+// No backdating: daily-cron seeds use real-time timestamps from defaultNow().
+//
+// Identifiers (NO marker in profile data):
+//   - username: `nts_` + 8 alnum chars (12 chars total, fits varchar(12))
+//   - email:    <username>@seed.nearbytraveler.org
+// Cleanup query (covers both seeds):
+//   DELETE FROM users WHERE username LIKE 'nts\_%' ESCAPE '\';
+//
+// Aura, password, founding-member: match real signup
 //   routes.ts:6654-6661  (aura = 1 local, 2 traveler)
 //   routes.ts:1511-1518  (plain-text password supported by login)
 //   routes.ts:6239       (isFoundingMember: true on all signups)
 //
-// Skipped vs real signup (by design — avoids spam):
-//   - Welcome email, PWA install DM, and new_member_nearby notifications
-//     live in the route handler's setImmediate block, not in storage.createUser,
-//     so calling storage.createUser directly bypasses them.
+// Skipped vs real signup (by design):
+//   - Welcome email, PWA install DM, new_member_nearby notification fanout,
+//     referral processing, auto-connect to nearbytrav (id=2), welcome DM.
+//   These live in routes.ts setImmediate block; calling storage.createUser
+//   directly bypasses them.
 
 import { storage } from "../server/storage";
+import { uploadImage } from "../server/services/cloudinary";
 
 type Region = "us" | "latam" | "europe" | "asia" | "oceania";
 
@@ -74,15 +90,6 @@ const CITIES: CityEntry[] = [
   { city: "Melbourne", state: null, country: "Australia", region: "oceania" },
 ];
 
-// Countries-visited pools by region keep visited lists geographically plausible.
-const VISITED_BY_REGION: Record<Region, string[]> = {
-  us:      ["United States", "Mexico", "Canada", "Italy", "Spain", "France", "Japan", "Thailand", "Costa Rica"],
-  latam:   ["Argentina", "Brazil", "Mexico", "Colombia", "Chile", "Peru", "United States", "Spain", "Portugal"],
-  europe:  ["France", "Spain", "Italy", "Germany", "Portugal", "Netherlands", "United Kingdom", "Greece", "Croatia", "United States"],
-  asia:    ["Japan", "South Korea", "Thailand", "Singapore", "Vietnam", "Indonesia", "Taiwan", "Malaysia", "Australia", "United States"],
-  oceania: ["Australia", "New Zealand", "Indonesia", "Thailand", "Japan", "United States", "Fiji"],
-};
-
 const FIRST_NAMES = [
   "Sarah", "Tom", "Jessica", "Marcus", "Emily", "David", "Rachel", "Ryan",
   "Jason", "Lauren", "Michael", "Nicole", "Brandon", "Ashley",
@@ -128,17 +135,43 @@ const INTERESTS = [
   "Cycling",
 ];
 
-const BIOS = [
-  "Exploring the city one coffee shop at a time.",
-  "Always down for a hike or a taco.",
-  "New here and looking to meet people who actually get out and do things.",
-  "Weekend wanderer, weekday grinder.",
-  "Food, music, and good conversation — in that order.",
-  "Born somewhere else, curious about everywhere.",
-  "Trying every bakery in town.",
-  "If you know a good sunset spot, tell me.",
-  "Local recs welcome — I'll trade you mine.",
-  "Moving through. Happy to share a meal.",
+// 4 bio templates with token slots. NO test markers anywhere.
+// Same template set + 60/40 split as scripts/seed-realistic-users.ts.
+interface BioCtx {
+  city: string;
+  adj: string;
+  role: string;
+  hook: string;
+  passionLine: string;
+  interest1: string;
+  interest2: string;
+}
+
+const BIO_TEMPLATES: Array<(ctx: BioCtx) => string> = [
+  (c) => `${c.adj} ${c.role} based in ${c.city}. ${c.hook}`,
+  (c) => `Currently in ${c.city}. ${c.hook} ${c.passionLine}`,
+  (c) => `${c.passionLine} ${c.hook}`,
+  (c) => `${c.role} who likes ${c.interest1.toLowerCase()} and ${c.interest2.toLowerCase()}. ${c.hook}`,
+];
+
+const BIO_ADJ = ["Curious", "Easygoing", "Restless", "Friendly", "Quietly social", "Always-on", "Low-key"];
+const BIO_ROLE = ["traveler", "designer", "engineer", "writer", "photographer", "chef", "teacher", "musician", "marketer", "barista"];
+const BIO_HOOK = [
+  "Down for coffee or a hike on short notice.",
+  "Always looking for the spot only locals know.",
+  "Ask me where to eat — I keep a list.",
+  "If you know a good sunset bar, message me.",
+  "Open to meeting people in the city.",
+  "Trying to get out more on weekends.",
+  "Slowly working through every neighborhood.",
+];
+const BIO_PASSION = [
+  "I take photos of strangers' dogs.",
+  "I keep a running list of taco places.",
+  "Mostly here for the food and the music.",
+  "Half my camera roll is sunsets.",
+  "I'd rather walk than Uber.",
+  "Trying to learn another language this year.",
 ];
 
 function pick<T>(arr: T[]): T {
@@ -159,26 +192,39 @@ function randInt(min: number, max: number): number {
   return min + Math.floor(Math.random() * (max - min + 1));
 }
 
-function slug(s: string): string {
-  return s
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9]/g, "");
+function randomToken(n: number): string {
+  const c = "abcdefghijklmnopqrstuvwxyz0123456789";
+  let s = "";
+  for (let i = 0; i < n; i++) s += c[Math.floor(Math.random() * c.length)];
+  return s;
 }
 
-function buildUsername(first: string, last: string): string {
-  const f = slug(first);
-  const l = slug(last);
-  // Aim for short/handle-ish names similar to the user's examples (sarahm, tomk).
-  // Always end with a random 2-digit suffix to make unique-within-run collisions
-  // vanishingly rare without making usernames look bot-like.
-  const suffix = String(randInt(10, 99));
-  const base =
-    f.length + 1 + suffix.length <= 12 ? `${f}${l.slice(0, 1)}${suffix}` :
-    f.length + suffix.length <= 12 ? `${f}${suffix}` :
-    `${f.slice(0, 10 - suffix.length)}${suffix}`;
-  return base.slice(0, 12);
+// Username: `nts_` (4) + 8 alnum chars = 12 chars. Matches scripts/seed-realistic-users.ts
+// so a single cleanup query (LIKE 'nts\_%' ESCAPE '\') catches both seeds.
+function buildSeedUsername(): string {
+  return `nts_${randomToken(8)}`;
+}
+
+function buildBio(home: CityEntry, interests: string[]): string {
+  return pick(BIO_TEMPLATES)({
+    city: home.city,
+    adj: pick(BIO_ADJ),
+    role: pick(BIO_ROLE),
+    hook: pick(BIO_HOOK),
+    passionLine: pick(BIO_PASSION),
+    interest1: interests[0] ?? "live music",
+    interest2: interests[1] ?? "good coffee",
+  });
+}
+
+async function uploadCloudinaryPhoto(sourceUrl: string, filename: string): Promise<string> {
+  // Mandatory per §9.7. Throws if upload/download fails — caller skips the user.
+  const res = await fetch(sourceUrl);
+  if (!res.ok) throw new Error(`photo download failed: ${res.status}`);
+  const arr = await res.arrayBuffer();
+  const buf = Buffer.from(arr);
+  const { url } = await uploadImage(buf, filename);
+  return url;
 }
 
 function ageBirthDate(minAge: number, maxAge: number): Date {
@@ -203,29 +249,28 @@ function buildLanguages(home: CityEntry): string[] {
   return Array.from(langs);
 }
 
-function buildCountriesVisited(home: CityEntry): string[] {
-  const pool = VISITED_BY_REGION[home.region];
-  const n = randInt(3, 6);
-  const picked = pickN(pool, n);
-  if (!picked.includes(home.country)) picked.unshift(home.country);
-  return picked.slice(0, n);
-}
-
 async function generateOneUser(): Promise<void> {
   const home = pick(CITIES);
   const first = pick(FIRST_NAMES);
   const last = pick(LAST_NAMES);
-  const username = buildUsername(first, last);
-  const email = `testuser+${username}@nearbytraveler.org`;
+  const username = buildSeedUsername();
+  const email = `${username}@seed.nearbytraveler.org`;
   const fullName = `${first} ${last}`;
 
   const isTraveler = Math.random() < 0.3;
   const userType = isTraveler ? "traveler" : "local";
-  const interests = pickN(INTERESTS, randInt(3, 7));
+  // Spec §0.3: real form requires ≥7 interests. Use 7-12 random.
+  const interests = pickN(INTERESTS, randInt(7, 12));
   const languagesSpoken = buildLanguages(home);
-  const countriesVisited = buildCountriesVisited(home);
   const dateOfBirth = ageBirthDate(22, 45);
-  const bio = `[Beta Tester] ${pick(BIOS)}`;
+
+  // Spec §9.2: 60% have a bio (no marker), 40% NULL to match fresh signups.
+  const hasBio = Math.random() < 0.6;
+  const bio = hasBio ? buildBio(home, interests) : undefined;
+
+  // Gender drives randomuser.me portrait URL pick (no API call needed).
+  const gender = Math.random() < 0.5 ? "male" : "female";
+  const portraitUrl = `https://randomuser.me/api/portraits/${gender === "male" ? "men" : "women"}/${randInt(0, 99)}.jpg`;
 
   let destination: CityEntry | null = null;
   let travelStartDate: Date | null = null;
@@ -240,6 +285,15 @@ async function generateOneUser(): Promise<void> {
     travelEndDate.setDate(travelEndDate.getDate() + randInt(5, 21));
   }
 
+  // Cloudinary upload BEFORE storage.createUser so profileImage is set on the
+  // initial INSERT, matching how real signups handle the avatar field.
+  // Mandatory per §9.7 — if upload throws, caller skips this user.
+  const profileImage = await uploadCloudinaryPhoto(portraitUrl, `${username}-${Date.now()}.jpg`);
+
+  // Build userData mirroring routes.ts:5644-5722 pre-processing.
+  // - countriesVisited NOT pre-populated; storage.createUser auto-fills (spec §2.2)
+  // - hometown / location strings built same as the route handler
+  // - traveler: currentTravelCity/State/Country mirrored from destination
   const userData: any = {
     username,
     email,
@@ -249,24 +303,27 @@ async function generateOneUser(): Promise<void> {
     lastName: last,
     userType,
     dateOfBirth,
-    bio,
+    gender,
+    profileImage,
     interests,
     languagesSpoken,
-    countriesVisited,
     hometownCity: home.city,
     hometownState: home.state ?? null,
     hometownCountry: home.country,
     hometown: [home.city, home.state, home.country].filter(Boolean).join(", "),
     location: [home.city, home.state].filter(Boolean).join(", "),
     isFoundingMember: true,
-    isActive: true,
   };
+  if (bio !== undefined) userData.bio = bio;
 
   if (isTraveler && destination) {
     userData.isCurrentlyTraveling = true;
     userData.destinationCity = destination.city;
     userData.destinationState = destination.state ?? null;
     userData.destinationCountry = destination.country;
+    userData.currentTravelCity = destination.city;
+    userData.currentTravelState = destination.state ?? "";
+    userData.currentTravelCountry = destination.country;
     userData.travelDestination = [destination.city, destination.state, destination.country]
       .filter(Boolean)
       .join(", ");
@@ -274,12 +331,22 @@ async function generateOneUser(): Promise<void> {
     userData.travelEndDate = travelEndDate;
   }
 
-  // Create user. storage.createUser runs assignUserToChatrooms internally,
-  // which joins: Welcome to Nearby Traveler + Welcome to <hometown> [+ Welcome to <destination>].
+  // 1. createUser — INSERTs users + assignUserToChatrooms (Global + Hometown[+ Destination]).
   const user = await storage.createUser(userData);
 
-  // Mirror routes.ts:6245-6266 — the route handler also runs these two helpers
-  // in addition to assignUserToChatrooms. They are idempotent where rooms exist.
+  // 2-3. ensureCityExists for hometown + destination (mirrors routes.ts:6342-6368).
+  try {
+    if (user.hometownCity && user.hometownCountry) {
+      await storage.ensureCityExists(user.hometownCity, user.hometownState ?? "", user.hometownCountry);
+    }
+    if (user.isCurrentlyTraveling && user.destinationCity && user.destinationCountry) {
+      await storage.ensureCityExists(user.destinationCity, user.destinationState ?? "", user.destinationCountry);
+    }
+  } catch (err) {
+    console.warn(`⚠️ [seed-daily-users] ensureCityExists failed for @${user.username}:`, (err as any)?.message);
+  }
+
+  // 4-6. ensureMeetLocalsChatrooms + autoJoinUserCityChatrooms (mirrors routes.ts:6245-6266).
   try {
     if (user.hometownCity && user.hometownCountry) {
       await storage.ensureMeetLocalsChatrooms(user.hometownCity, user.hometownState, user.hometownCountry);
@@ -298,7 +365,7 @@ async function generateOneUser(): Promise<void> {
     console.error(`⚠️ [seed-daily-users] chatroom join failed for ${user.username}:`, err);
   }
 
-  // Travel plan — mirrors routes.ts:6378-6442 background task.
+  // 7. Travel plan — mirrors routes.ts:6378-6442 background task.
   if (isTraveler && destination && travelStartDate && travelEndDate) {
     try {
       await storage.createTravelPlan({
@@ -320,9 +387,11 @@ async function generateOneUser(): Promise<void> {
     }
   }
 
-  // Aura — exact match to routes.ts:6654-6661: 1 for local, 2 for traveler. Nothing else.
+  // 8. Aura — match routes.ts:6654-6661 exactly: 1 for local, 2 for traveler.
   const aura = isTraveler ? 2 : 1;
   await storage.updateUser(user.id, { aura });
+
+  // (No backdating — daily cron uses real-time defaultNow() timestamps.)
 
   console.log(
     `✨ [seed-daily-users] #${user.id} @${user.username} "${fullName}" · ${userType} · ${home.city}, ${home.country}` +
