@@ -1197,43 +1197,48 @@ export class TravelMatchingService {
   }
 
   private async getSharedEvents(user1: User, user2: User): Promise<string[]> {
-    // Get events they're actually attending from the database
-    const user1Participations = await storage.getUserEventParticipations(user1.id);
-    const user2Participations = await storage.getUserEventParticipations(user2.id);
-    
-    // Extract event titles/names from their actual event participations
-    const user1AttendingEvents = await Promise.all(
-      user1Participations.map(async (participation) => {
-        const event = await storage.getEvent(participation.eventId);
-        return event?.title || '';
-      })
-    );
-    
-    const user2AttendingEvents = await Promise.all(
-      user2Participations.map(async (participation) => {
-        const event = await storage.getEvent(participation.eventId);
-        return event?.title || '';
-      })
-    );
-    
-    // Combine profile event interests with actual events they're attending
+    // Single SQL query: events both users participate in. Replaces a previous N+1
+    // implementation that called storage.getUserEventParticipations + storage.getEvent
+    // per row, fetching SELECT *  on the events table for every participation. With
+    // base64 imageUrl in events that produced multi-MB transient heap pressure under
+    // V8's 256 MB default — a contributor to the profile-bundle OOM.
+    let attendingTitles: string[] = [];
+    try {
+      const rows = await db.execute(sql`
+        SELECT e.title
+        FROM event_participants ep1
+        JOIN event_participants ep2 ON ep1.event_id = ep2.event_id
+        JOIN events e ON e.id = ep1.event_id
+        WHERE ep1.user_id = ${user1.id}
+          AND ep2.user_id = ${user2.id}
+        LIMIT 20
+      `);
+      const r = (rows as any).rows ?? rows;
+      attendingTitles = (Array.isArray(r) ? r : []).map((row: any) => row.title).filter(Boolean);
+    } catch (err) {
+      // Non-fatal — compatibility score still computes from profile-side event lists below.
+      console.warn('getSharedEvents: shared-attendance JOIN failed:', (err as any)?.message);
+    }
+
+    // Combine profile-side event lists (already in-memory on both User objects) with
+    // the small attending-titles list from the DB.
     const user1Events = [
-      ...this.parseInterests(user1.events), // Use the actual 'events' field
+      ...this.parseInterests(user1.events),
       ...this.parseInterests(user1.localEvents),
       ...this.parseInterests(user1.plannedEvents),
       ...this.parseInterests(user1.defaultTravelEvents),
-      ...user1AttendingEvents.filter(title => title.length > 0) // Add actual events they're attending
+      ...attendingTitles,
     ];
     const user2Events = [
-      ...this.parseInterests(user2.events), // Use the actual 'events' field
-      ...this.parseInterests(user2.localEvents), 
+      ...this.parseInterests(user2.events),
+      ...this.parseInterests(user2.localEvents),
       ...this.parseInterests(user2.plannedEvents),
       ...this.parseInterests(user2.defaultTravelEvents),
-      ...user2AttendingEvents.filter(title => title.length > 0) // Add actual events they're attending
+      ...attendingTitles,
     ];
-    
-    return user1Events.filter(event => 
-      user2Events.some(otherEvent => 
+
+    return user1Events.filter(event =>
+      user2Events.some(otherEvent =>
         this.areInterestsSimilar(event, otherEvent)
       )
     );

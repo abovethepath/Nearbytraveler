@@ -1743,14 +1743,39 @@ export class DatabaseStorage implements IStorage {
   // Get events a user is participating in with full event details, filtered by status
   async getUserParticipatedEventsWithDetails(userId: number, status?: 'interested' | 'going'): Promise<any[]> {
     const conditions = [eq(eventParticipants.userId, userId)];
-    
+
     if (status) {
       conditions.push(eq(eventParticipants.status, status));
     }
-    
+
+    // Narrow column list: exclude events.imageUrl (potentially base64), recurrencePattern jsonb,
+    // and other bulk columns that are not displayed in the bundle's events list.
+    // Cap at 100 — UI shows recent events, not full history. Without the cap, viewing a power
+    // user's profile fetched hundreds of full event rows and pushed JSON.stringify past the
+    // V8 heap limit.
     const participatedEvents = await db
       .select({
-        event: events,
+        eventId: events.id,
+        title: events.title,
+        description: events.description,
+        venueName: events.venueName,
+        city: events.city,
+        state: events.state,
+        country: events.country,
+        location: events.location,
+        date: events.date,
+        endDate: events.endDate,
+        category: events.category,
+        organizerId: events.organizerId,
+        maxParticipants: events.maxParticipants,
+        isActive: events.isActive,
+        isPublic: events.isPublic,
+        tags: events.tags,
+        eventType: events.eventType,
+        isSpontaneous: events.isSpontaneous,
+        createdAt: events.createdAt,
+        // image_url stripped of base64 (URLs preserved); UI fetches via /api/events/:id/image
+        imageUrl: sql<string | null>`CASE WHEN ${events.imageUrl} LIKE 'data:%' THEN NULL ELSE ${events.imageUrl} END`,
         participantStatus: eventParticipants.status,
         participantJoinedAt: eventParticipants.joinedAt,
         participantRole: eventParticipants.role,
@@ -1758,10 +1783,31 @@ export class DatabaseStorage implements IStorage {
       .from(eventParticipants)
       .innerJoin(events, eq(eventParticipants.eventId, events.id))
       .where(and(...conditions))
-      .orderBy(desc(events.date));
-    
+      .orderBy(desc(events.date))
+      .limit(100);
+
     return participatedEvents.map(row => ({
-      ...row.event,
+      // Frontend expects shape: { id, title, ..., userStatus, userJoinedAt, userRole }
+      id: row.eventId,
+      title: row.title,
+      description: row.description,
+      venueName: row.venueName,
+      city: row.city,
+      state: row.state,
+      country: row.country,
+      location: row.location,
+      date: row.date,
+      endDate: row.endDate,
+      category: row.category,
+      imageUrl: row.imageUrl,
+      organizerId: row.organizerId,
+      maxParticipants: row.maxParticipants,
+      isActive: row.isActive,
+      isPublic: row.isPublic,
+      tags: row.tags,
+      eventType: row.eventType,
+      isSpontaneous: row.isSpontaneous,
+      createdAt: row.createdAt,
       userStatus: row.participantStatus,
       userJoinedAt: row.participantJoinedAt,
       userRole: row.participantRole,
@@ -1964,6 +2010,9 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getConnectionRequests(userId: number): Promise<any[]> {
+    // profileImage SQL CASE: keep Cloudinary URLs (small strings), null base64 to keep
+    // bundle response off the V8 heap limit. Frontend Avatar components already fall
+    // back to initials when src is undefined/null.
     return await db
       .select({
         id: connections.id,
@@ -1982,7 +2031,7 @@ export class DatabaseStorage implements IStorage {
           hometownCity: users.hometownCity,
           hometownState: users.hometownState,
           hometownCountry: users.hometownCountry,
-          profileImage: users.profileImage,
+          profileImage: sql<string | null>`CASE WHEN ${users.profileImage} LIKE 'data:%' THEN NULL ELSE ${users.profileImage} END`,
           dateOfBirth: users.dateOfBirth,
           gender: users.gender,
           sexualPreference: users.sexualPreference,
@@ -2001,7 +2050,9 @@ export class DatabaseStorage implements IStorage {
           eq(connections.receiverId, userId),
           eq(connections.status, "pending")
         )
-      );
+      )
+      .orderBy(desc(connections.createdAt))
+      .limit(50);
   }
 
   async getOutgoingConnectionRequests(userId: number): Promise<any[]> {
@@ -2023,7 +2074,7 @@ export class DatabaseStorage implements IStorage {
           hometownCity: users.hometownCity,
           hometownState: users.hometownState,
           hometownCountry: users.hometownCountry,
-          profileImage: users.profileImage,
+          profileImage: sql<string | null>`CASE WHEN ${users.profileImage} LIKE 'data:%' THEN NULL ELSE ${users.profileImage} END`,
           dateOfBirth: users.dateOfBirth,
           gender: users.gender,
           sexualPreference: users.sexualPreference,
@@ -2042,7 +2093,9 @@ export class DatabaseStorage implements IStorage {
           eq(connections.requesterId, userId),
           eq(connections.status, "pending")
         )
-      );
+      )
+      .orderBy(desc(connections.createdAt))
+      .limit(50);
   }
 
   async getConnectionBetweenUsers(userId1: number, userId2: number): Promise<Connection | undefined> {

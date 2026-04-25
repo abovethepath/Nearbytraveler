@@ -7787,29 +7787,50 @@ Questions? Just reply to this message. Welcome aboard!
       const results = await Promise.allSettled([
         // 0. User data
         storage.getUser(userId),
-        // 1. Travel plans
-        db.select().from(travelPlans).where(eq(travelPlans.userId, userId)),
-        // 2. User connections (accepted)
-        db.select().from(connections).where(
+        // 1. Travel plans (cap 50 — typical user has <10)
+        db.select().from(travelPlans).where(eq(travelPlans.userId, userId)).limit(50),
+        // 2. User connections (accepted) — narrow column set, cap 200.
+        //    Bundle does not need full row; downstream code only reads ids/status/createdAt.
+        //    Without the cap, viewing nearbytrav (id=2) hauled every accepted connection row.
+        db.select({
+          id: connections.id,
+          requesterId: connections.requesterId,
+          receiverId: connections.receiverId,
+          status: connections.status,
+          connectionNote: connections.connectionNote,
+          createdAt: connections.createdAt,
+        }).from(connections).where(
           and(
             or(eq(connections.requesterId, userId), eq(connections.receiverId, userId)),
             eq(connections.status, 'accepted')
           )
-        ),
-        // 3. Connection requests (pending, incoming)
+        ).orderBy(desc(connections.createdAt)).limit(200),
+        // 3. Connection requests (pending, incoming) — cap 50, base64 stripped at SQL level
         storage.getConnectionRequests(userId),
-        // 4. Connection requests (pending, outgoing)
+        // 4. Connection requests (pending, outgoing) — cap 50, base64 stripped at SQL level
         storage.getOutgoingConnectionRequests(userId),
-        // 5. User references
-        db.select().from(userReferences).where(eq(userReferences.revieweeId, userId)),
-        // 6. User vouches
-        db.select().from(vouches).where(eq(vouches.vouchedUserId, userId)),
-        // 7. User photos
-        db.select().from(userPhotos).where(eq(userPhotos.userId, userId)),
-        // 8. Travel memories (completed trips)
+        // 5. User references (cap 100)
+        db.select().from(userReferences).where(eq(userReferences.revieweeId, userId)).limit(100),
+        // 6. User vouches (cap 100)
+        db.select().from(vouches).where(eq(vouches.vouchedUserId, userId)).limit(100),
+        // 7. User photos — exclude image_data (text base64 column, MB-scale).
+        //    The bundle previously SELECT *'d this then nulled image_data via stripPhotos —
+        //    too late: rows were already in heap, OOM during JSON.stringify.
+        //    Frontend renders via imageUrl or /api/photos/:id/image; image_data is never
+        //    read off the bundle response anyway.
+        db.select({
+          id: userPhotos.id,
+          userId: userPhotos.userId,
+          imageUrl: userPhotos.imageUrl,
+          caption: userPhotos.caption,
+          isPrivate: userPhotos.isPrivate,
+          isProfilePhoto: userPhotos.isProfilePhoto,
+          uploadedAt: userPhotos.uploadedAt,
+        }).from(userPhotos).where(eq(userPhotos.userId, userId)).orderBy(desc(userPhotos.uploadedAt)).limit(50),
+        // 8. Travel memories (completed trips) — cap 50
         db.select().from(travelPlans).where(
           and(eq(travelPlans.userId, userId), eq(travelPlans.status, 'completed'))
-        ),
+        ).limit(50),
         // 9. Platform stats — cached to avoid full table scans on every profile load
         (async () => {
           const statsCacheKey = 'platform-stats';
@@ -7823,8 +7844,32 @@ Questions? Just reply to this message. Welcome aboard!
           cache.set(statsCacheKey, stats, 300).catch(() => {}); // cache 5 min
           return stats;
         })(),
-        // 10. Profile events (organized by user)
-        db.select().from(events).where(eq(events.organizerId, userId)),
+        // 10. Profile events (organized by user) — narrow column set, cap 50.
+        //    Excludes events.imageUrl which can be inline base64; UI fetches event images
+        //    on demand. Excludes recurrencePattern jsonb and other bulk columns.
+        db.select({
+          id: events.id,
+          title: events.title,
+          description: events.description,
+          venueName: events.venueName,
+          city: events.city,
+          state: events.state,
+          country: events.country,
+          location: events.location,
+          date: events.date,
+          endDate: events.endDate,
+          category: events.category,
+          organizerId: events.organizerId,
+          maxParticipants: events.maxParticipants,
+          isActive: events.isActive,
+          isPublic: events.isPublic,
+          tags: events.tags,
+          eventType: events.eventType,
+          isSpontaneous: events.isSpontaneous,
+          createdAt: events.createdAt,
+          // imageUrl intentionally omitted — fetch via /api/events/:id/image
+          imageUrl: sql<string | null>`CASE WHEN ${events.imageUrl} LIKE 'data:%' THEN NULL ELSE ${events.imageUrl} END`.as('image_url'),
+        }).from(events).where(eq(events.organizerId, userId)).orderBy(desc(events.date)).limit(50),
         // 11. Events user is going to
         storage.getUserParticipatedEventsWithDetails(userId, 'going'),
         // 12. Events user is interested in
@@ -8134,10 +8179,16 @@ Questions? Just reply to this message. Welcome aboard!
         console.warn(`⚠️ PROFILE-BUNDLE: NOT caching for viewer=${viewerId} because connectionDegree is null (query failed)`);
       }
 
-      console.log(`📦 PROFILE-BUNDLE: TOTAL ${Date.now() - startTime}ms for user ${userId} (viewer: ${viewerId})`);
+      // Pre-stringify so we can log payload size and serve the same buffer.
+      // Single stringify (vs res.json which would do a second one) — and the byte
+      // count is the canary for the V8-OOM fix: anything over a few hundred KB
+      // for a single bundle is a regression worth investigating.
+      const responseStr = JSON.stringify(bundleResponse);
+      const duration = Date.now() - startTime;
+      console.log(`📦 PROFILE-BUNDLE OK: user=${userId} bytes=${responseStr.length} ms=${duration}`);
       resolveInFlight!(bundleResponse);
       bundleInFlight.delete(bundleCacheKey);
-      res.json(bundleResponse);
+      res.type('application/json').send(responseStr);
     } catch (error: any) {
       rejectInFlight!(error);
       bundleInFlight.delete(bundleCacheKey);
