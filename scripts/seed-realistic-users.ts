@@ -26,7 +26,8 @@
 //
 // Identification (NOT a marker in profile data):
 //   - username: `nts_` + 8 alnum chars (12 chars total, fits varchar(12))
-//   - email:    <username>@seed.nearbytraveler.org
+//   - email:    seed+<username>@nearbytraveler.org (plus-addressed under the
+//               real domain so welcome emails route to seed@nearbytraveler.org)
 // Cleanup query: DELETE FROM users WHERE username LIKE 'nts\_%' ESCAPE '\';
 // (Plus FK cascade across chatroom_members, connections, travel_plans, etc.)
 //
@@ -253,7 +254,9 @@ interface PreparedUser {
 function buildUserData(api: RandomUser): PreparedUser {
   const home = pickWeighted(CITY_POOL);
   const username = buildSeedUsername();
-  const email = `${username}@seed.nearbytraveler.org`;
+  // Plus-addressed under the real domain so welcome emails route to
+  // seed@nearbytraveler.org. Cleanup is keyed off aura/username, not email.
+  const email = `seed+${username}@nearbytraveler.org`;
   const fullName = `${api.name.first} ${api.name.last}`;
   const dob = new Date(api.dob.date);
 

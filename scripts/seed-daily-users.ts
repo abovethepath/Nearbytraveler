@@ -1,11 +1,12 @@
 // scripts/seed-daily-users.ts
 //
-// Generates 5-10 fake beta users daily. Scheduled via node-cron in
-// server/index.ts at 00:00 UTC. Mirrors the real signup flow so seeded users
-// land in the same state as real signups, and shares its identifier scheme
-// with scripts/seed-realistic-users.ts so a single cleanup query covers both.
+// Generates fake beta users on a 4-hour cadence. Scheduled via node-cron in
+// server/index.ts at "0 */4 * * *" UTC (00/04/08/12/16/20 = 6 fires/day).
+// Default count per fire is 2 → 12 users/day total. Mirrors the real signup
+// flow so seeded users land in the same state as real signups EXCEPT for
+// aura, which is set to 99 — the primary identification marker.
 //
-// Per-user execution order (matches spec §8):
+// Per-user execution order (matches spec §8 + production-parity background tasks):
 //   1. storage.createUser(userData) — INSERTs users + assignUserToChatrooms
 //      (Global + Hometown [+ Destination if traveler])
 //   2. storage.ensureCityExists(hometown*)                 // mirrors routes.ts:6343-6354
@@ -14,29 +15,49 @@
 //   5. storage.ensureMeetLocalsChatrooms(destination*) (if traveler)
 //   6. storage.autoJoinUserCityChatrooms(...)
 //   7. storage.createTravelPlan(...) (if traveler)
-//   8. storage.updateUser(user.id, { aura: isTraveler ? 2 : 1 })
+//   8. storage.updateUser(user.id, { aura: 99 })  ← OVERRIDES real-signup 1/2
+//   9. fireProductionBackgroundTasks(user) — welcome email, auto-connect to
+//      nearbytrav, welcome DM. INTENTIONAL: operator monitors the platform
+//      pipeline via the seed+ alias inbox.
 //
-// No backdating: daily-cron seeds use real-time timestamps from defaultNow().
+// No backdating: cron uses real-time timestamps from defaultNow().
 //
 // Identifiers (NO marker in profile data):
+//   - aura:     99 (real users never reach this organically — primary marker)
 //   - username: `nts_` + 8 alnum chars (12 chars total, fits varchar(12))
-//   - email:    <username>@seed.nearbytraveler.org
-// Cleanup query (covers both seeds):
-//   DELETE FROM users WHERE username LIKE 'nts\_%' ESCAPE '\';
+//   - email:    seed+<username>@nearbytraveler.org (plus-addressed under the
+//               real domain so welcome emails route to seed@nearbytraveler.org)
+// Cleanup query (single criterion now suffices):
+//   DELETE FROM users WHERE id <> 2 AND aura = 99;
 //
-// Aura, password, founding-member: match real signup
-//   routes.ts:6654-6661  (aura = 1 local, 2 traveler)
+// Password, founding-member: match real signup
 //   routes.ts:1511-1518  (plain-text password supported by login)
 //   routes.ts:6239       (isFoundingMember: true on all signups)
 //
-// Skipped vs real signup (by design):
-//   - Welcome email, PWA install DM, new_member_nearby notification fanout,
-//     referral processing, auto-connect to nearbytrav (id=2), welcome DM.
-//   These live in routes.ts setImmediate block; calling storage.createUser
-//   directly bypasses them.
+// What does/doesn't fire vs real signup:
+//   FIRES (intentional — for monitoring):
+//     - sendWelcomeEmail (routes.ts:6329-6340)
+//     - Auto-connect to nearbytrav id=2 (routes.ts:6558-6585)
+//     - Welcome DM from nearbytrav (routes.ts:6588-6647)
+//   SKIPPED (would harm real users or is fragile in cron context):
+//     - new_member_nearby fanout (routes.ts:6663-6722) — would create up to
+//       50 in-app notifications per seed × 6 fires/day = ~300 notifications
+//       per day to real users about fake new members. Skip until/unless the
+//       operator explicitly wants the platform-side fanout exercised.
+//     - 60s setTimeout PWA install DM (routes.ts:6605-6651) — setTimeout
+//       inside a cron-tick context is fragile; the immediate welcome DM is
+//       enough to verify the message-from-nearbytrav pipeline.
+//     - Referral processing — seeds carry no referralCode.
+//
+// Sequencing: users are created sequentially (await one before starting the
+// next) — Cloudinary uploads + DB writes can race otherwise, and the for-loop
+// in seedDailyUsers() at the bottom of this file enforces it.
 
 import { storage } from "../server/storage";
 import { uploadImage } from "../server/services/cloudinary";
+import { db } from "../server/db";
+import { connections } from "@shared/schema";
+import { or, and, eq } from "drizzle-orm";
 
 type Region = "us" | "latam" | "europe" | "asia" | "oceania";
 
@@ -254,7 +275,10 @@ async function generateOneUser(): Promise<void> {
   const first = pick(FIRST_NAMES);
   const last = pick(LAST_NAMES);
   const username = buildSeedUsername();
-  const email = `${username}@seed.nearbytraveler.org`;
+  // Plus-addressed under the real domain so welcome emails (sent by sendWelcomeEmail
+  // in fireProductionBackgroundTasks below) route to seed@nearbytraveler.org for
+  // operator monitoring. Cleanup is keyed off aura=99, not email pattern.
+  const email = `seed+${username}@nearbytraveler.org`;
   const fullName = `${first} ${last}`;
 
   const isTraveler = Math.random() < 0.3;
@@ -387,9 +411,17 @@ async function generateOneUser(): Promise<void> {
     }
   }
 
-  // 8. Aura — match routes.ts:6654-6661 exactly: 1 for local, 2 for traveler.
-  const aura = isTraveler ? 2 : 1;
+  // 8. Aura — OVERRIDE real-signup 1/2 with 99. This is the new primary
+  // identification marker for seed users (real users cannot reach 99
+  // organically; signup awards 1 or 2 and other actions award single digits).
+  // Cleanup is now: DELETE FROM users WHERE id <> 2 AND aura = 99;
+  const aura = 99;
   await storage.updateUser(user.id, { aura });
+
+  // 9. Fire production background side-effects (welcome email, auto-connect,
+  // welcome DM). INTENTIONAL: the seed+ alias routes welcome emails to the
+  // operator's inbox for monitoring. Skips fanout + PWA-DM (see header docstring).
+  await fireProductionBackgroundTasks(user);
 
   // (No backdating — daily cron uses real-time defaultNow() timestamps.)
 
@@ -400,9 +432,73 @@ async function generateOneUser(): Promise<void> {
   );
 }
 
-export async function seedDailyUsers(): Promise<void> {
-  const count = randInt(5, 10);
-  console.log(`🌱 [seed-daily-users] Generating ${count} fake beta users...`);
+// Mirrors the production setImmediate side-effects from routes.ts:6326-6651
+// for one user. Keeps the seed pipeline production-equivalent (per operator
+// instruction "DO NOT skip system emails for seed users — intentional for
+// monitoring"). See header docstring for what's intentionally skipped.
+async function fireProductionBackgroundTasks(user: any): Promise<void> {
+  const NEARBYTRAV_USER_ID = 2;
+
+  // 1. Welcome email — fires to seed+<username>@nearbytraveler.org which
+  //    is plus-aliased to seed@nearbytraveler.org (operator's inbox).
+  try {
+    const { sendWelcomeEmail } = await import("../server/email/notificationEmails");
+    const result = await sendWelcomeEmail(user.id);
+    if (result?.success && !result?.skipped) {
+      console.log(`  📧 welcome email queued for @${user.username}`);
+    }
+  } catch (err) {
+    console.warn(`  ⚠️ welcome email failed for @${user.username}:`, (err as any)?.message);
+  }
+
+  // 2. Auto-connect to nearbytrav (id=2) — same insert as routes.ts:6573-6579.
+  try {
+    if (user.id !== NEARBYTRAV_USER_ID) {
+      const existing = await db
+        .select()
+        .from(connections)
+        .where(
+          or(
+            and(eq(connections.requesterId, NEARBYTRAV_USER_ID), eq(connections.receiverId, user.id)),
+            and(eq(connections.requesterId, user.id), eq(connections.receiverId, NEARBYTRAV_USER_ID)),
+          ),
+        )
+        .limit(1);
+      if (existing.length === 0) {
+        await db.insert(connections).values({
+          requesterId: NEARBYTRAV_USER_ID,
+          receiverId: user.id,
+          status: "accepted",
+          connectionNote: "Welcome to Nearby Traveler!",
+        } as any);
+      }
+    }
+  } catch (err) {
+    console.warn(`  ⚠️ nearbytrav auto-connect failed for @${user.username}:`, (err as any)?.message);
+  }
+
+  // 3. Welcome DM from nearbytrav — fires storage.sendSystemMessage path.
+  try {
+    const firstName = user.firstName || (user.name || user.username || "Traveler").split(" ")[0];
+    const welcomeMsg =
+      `Hey ${firstName}! 👋\n\n` +
+      `Welcome to Nearby Traveler — you're in.\n\n` +
+      `A few things to try:\n` +
+      `• Add a few photos to your profile\n` +
+      `• Browse who's in your city under "Discover"\n` +
+      `• If you're traveling, set your destination + dates so locals can spot you\n\n` +
+      `Reach out anytime if you need anything.\n— Aaron @ Nearby Traveler`;
+    await storage.sendSystemMessage(NEARBYTRAV_USER_ID, user.id, welcomeMsg);
+  } catch (err) {
+    console.warn(`  ⚠️ welcome DM failed for @${user.username}:`, (err as any)?.message);
+  }
+}
+
+export async function seedDailyUsers(opts: { count?: number } = {}): Promise<void> {
+  // Default 2 per fire — see top docstring. Sequential await loop below
+  // prevents Cloudinary/DB races between the two creations.
+  const count = opts.count ?? 2;
+  console.log(`🌱 [seed-daily-users] Generating ${count} seed user${count === 1 ? "" : "s"} (aura=99)...`);
   let success = 0;
   for (let i = 0; i < count; i++) {
     try {

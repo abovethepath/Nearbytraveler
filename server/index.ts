@@ -1292,17 +1292,19 @@ app.use((req, res, next) => {
           }
         });
 
-        // Daily beta-tester user seeding: 5-10 fake users per day at 00:00 UTC.
-        // Mirrors the real signup flow (storage.createUser + chatroom helpers).
-        // Seeded users are identifiable by email pattern testuser+*@nearbytraveler.org
-        // and bio prefix "[Beta Tester]".
-        cron.schedule("0 0 * * *", async () => {
-          console.log("🌱 [cron] Running daily beta-tester user seeding...");
+        // Beta-tester user seeding: 2 fake users every 4 hours UTC
+        // (00/04/08/12/16/20 → 6 fires/day × 2 users = 12 users/day).
+        // Replaces the previous burst-style daily cron. Mirrors real signup
+        // exactly EXCEPT aura is set to 99 — that's the primary seed identifier
+        // (real users cannot reach 99 organically).
+        // Cleanup query: DELETE FROM users WHERE id <> 2 AND aura = 99;
+        cron.schedule("0 */4 * * *", async () => {
+          console.log("🌱 [cron] Running 4-hourly seed user creation (2 users, aura=99)...");
           try {
             const { seedDailyUsers } = await import("../scripts/seed-daily-users");
-            await seedDailyUsers();
+            await seedDailyUsers({ count: 2 });
           } catch (error) {
-            console.error("⚠️ [cron] Daily user seeding failed:", error);
+            console.error("⚠️ [cron] Seed user creation failed:", error);
           }
         }, { timezone: "UTC" });
 
