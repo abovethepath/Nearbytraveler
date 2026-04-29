@@ -8,7 +8,6 @@ import karaokeImage from "@assets/image_1756447354157.png";
 import bikeImage from "@assets/image_1756447442403.png";
 import artWalkImage from "@assets/image_1756447587360.png";
 import movieImage from "@assets/image_1756447721644.png";
-import eventHeaderImage from "@assets/event-photo.png";
 
 export default function EventsLanding() {
   const [, setLocation] = useLocation();
@@ -81,7 +80,7 @@ export default function EventsLanding() {
         <section ref={heroRef} className="relative w-full overflow-hidden bg-[#0b1020] min-h-[80vh] md:min-h-[88vh] lg:min-h-[92vh] flex items-center">
           {/* Full-bleed background image */}
           <img
-            src={eventHeaderImage}
+            src="/event-bbq.png"
             alt=""
             aria-hidden="true"
             className="absolute top-0 left-0 w-full h-full object-cover pointer-events-none"
