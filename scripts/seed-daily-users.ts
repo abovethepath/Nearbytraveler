@@ -3,8 +3,8 @@
 // Generates fake beta users on a 4-hour cadence. Scheduled via node-cron in
 // server/index.ts at "0 */4 * * *" UTC (00/04/08/12/16/20 = 6 fires/day).
 // Default count per fire is 2 → 12 users/day total. Mirrors the real signup
-// flow so seeded users land in the same state as real signups — including
-// aura (1 for locals, 2 for travelers, same as real signup awards).
+// flow so seeded users land in the same state as real signups EXCEPT for
+// aura, which is set to 99 — the primary identification marker.
 //
 // Per-user execution order (matches spec §8 + production-parity background tasks):
 //   1. storage.createUser(userData) — INSERTs users + assignUserToChatrooms
@@ -15,22 +15,20 @@
 //   5. storage.ensureMeetLocalsChatrooms(destination*) (if traveler)
 //   6. storage.autoJoinUserCityChatrooms(...)
 //   7. storage.createTravelPlan(...) (if traveler)
-//   8. storage.updateUser(user.id, { aura })  — aura = 1 (local) | 2 (traveler),
-//      matches what real signup awards.
+//   8. storage.updateUser(user.id, { aura: 99 })  ← OVERRIDES real-signup 1/2
 //   9. fireProductionBackgroundTasks(user) — welcome email, auto-connect to
 //      nearbytrav, welcome DM. INTENTIONAL: operator monitors the platform
 //      pipeline via the seed+ alias inbox.
 //
 // No backdating: cron uses real-time timestamps from defaultNow().
 //
-// Identifiers (NO marker in profile data — seed users are indistinguishable
-// from real users on the public surface, by design):
+// Identifiers (NO marker in profile data):
+//   - aura:     99 (real users never reach this organically — primary marker)
 //   - username: `nts_` + 8 alnum chars (12 chars total, fits varchar(12))
 //   - email:    seed+<username>@nearbytraveler.org (plus-addressed under the
 //               real domain so welcome emails route to seed@nearbytraveler.org)
-// Cleanup query (key off email pattern — aura is no longer a marker since
-// seed users now carry the same 1/2 values real users get):
-//   DELETE FROM users WHERE id <> 2 AND email LIKE 'seed+%@nearbytraveler.org';
+// Cleanup query (single criterion now suffices):
+//   DELETE FROM users WHERE id <> 2 AND aura = 99;
 //
 // Password, founding-member: match real signup
 //   routes.ts:1511-1518  (plain-text password supported by login)
@@ -279,7 +277,7 @@ async function generateOneUser(): Promise<void> {
   const username = buildSeedUsername();
   // Plus-addressed under the real domain so welcome emails (sent by sendWelcomeEmail
   // in fireProductionBackgroundTasks below) route to seed@nearbytraveler.org for
-  // operator monitoring. Cleanup is keyed off the seed+ email pattern.
+  // operator monitoring. Cleanup is keyed off aura=99, not email pattern.
   const email = `seed+${username}@nearbytraveler.org`;
   const fullName = `${first} ${last}`;
 
@@ -413,10 +411,11 @@ async function generateOneUser(): Promise<void> {
     }
   }
 
-  // 8. Aura — match real signup exactly: 1 for locals, 2 for travelers.
-  // No marker is set on the public-facing profile; seed users are identified
-  // by the seed+<username>@nearbytraveler.org email pattern.
-  const aura = isTraveler ? 2 : 1;
+  // 8. Aura — OVERRIDE real-signup 1/2 with 99. This is the new primary
+  // identification marker for seed users (real users cannot reach 99
+  // organically; signup awards 1 or 2 and other actions award single digits).
+  // Cleanup is now: DELETE FROM users WHERE id <> 2 AND aura = 99;
+  const aura = 99;
   await storage.updateUser(user.id, { aura });
 
   // 9. Fire production background side-effects (welcome email, auto-connect,
@@ -499,7 +498,7 @@ export async function seedDailyUsers(opts: { count?: number } = {}): Promise<voi
   // Default 2 per fire — see top docstring. Sequential await loop below
   // prevents Cloudinary/DB races between the two creations.
   const count = opts.count ?? 2;
-  console.log(`🌱 [seed-daily-users] Generating ${count} seed user${count === 1 ? "" : "s"}...`);
+  console.log(`🌱 [seed-daily-users] Generating ${count} seed user${count === 1 ? "" : "s"} (aura=99)...`);
   let success = 0;
   for (let i = 0; i < count; i++) {
     try {
