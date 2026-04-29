@@ -1298,7 +1298,7 @@ app.use((req, res, next) => {
         // exactly EXCEPT aura is set to 99 — that's the primary seed identifier
         // (real users cannot reach 99 organically).
         // Cleanup query: DELETE FROM users WHERE id <> 2 AND aura = 99;
-        cron.schedule("0 */4 * * *", async () => {
+        cron.schedule("0 */6 * * *", async () => {
           console.log("🌱 [cron] Running 4-hourly seed user creation (2 users, aura=99)...");
           try {
             const { seedDailyUsers } = await import("../scripts/seed-daily-users");

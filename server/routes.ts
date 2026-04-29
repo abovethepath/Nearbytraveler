@@ -9813,6 +9813,11 @@ Questions? Just reply to this message. Welcome aboard!
         };
       });
       
+      // Push seeded test users (aura=99) to the bottom of Discover People
+      // results so real users surface first. Stable sort preserves relative
+      // order within each bucket.
+      enrichedUsers.sort((a, b) => Number(a.aura === 99) - Number(b.aura === 99));
+
       // Store in cache for 60 seconds when no filters were applied
       if (!hasFilters) {
         cache.set('users:all:enriched', enrichedUsers, 60).catch(() => {});
