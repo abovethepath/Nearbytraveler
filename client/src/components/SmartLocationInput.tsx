@@ -110,6 +110,9 @@ export function SmartLocationInput({
     setCity("");
     setState("");
     emit({ city: "", state: "", country: newCountry });
+    // Android: blur the native <select> after the value commits so the browser
+    // stops anchoring page scroll to the focused element. iOS unaffected.
+    e.currentTarget.blur();
   };
 
   const handleStateChange = (e: React.ChangeEvent<HTMLSelectElement> | React.ChangeEvent<HTMLInputElement>) => {
@@ -121,6 +124,12 @@ export function SmartLocationInput({
       emit({ city: "", state: newState, country });
     } else {
       emit({ city, state: newState, country });
+    }
+    // Android: blur the native <select> after the value commits so the browser
+    // stops anchoring page scroll to the focused element. Only blurs on
+    // <select> — free-text region <input> retains focus so the user can keep typing.
+    if (e.currentTarget instanceof HTMLSelectElement) {
+      e.currentTarget.blur();
     }
   };
 
@@ -140,6 +149,12 @@ export function SmartLocationInput({
       }
       setState(nextState);
       emit({ city: newCity, state: nextState, country });
+    }
+    // Android: blur the native <select> after the value commits so the browser
+    // stops anchoring page scroll to the focused element. Only blurs on
+    // <select> — free-text city <input> retains focus so the user can keep typing.
+    if (e.currentTarget instanceof HTMLSelectElement) {
+      e.currentTarget.blur();
     }
   };
 
