@@ -4342,14 +4342,12 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
   app.get("/api/users/recently-joined", async (req, res) => {
     try {
       const limit = Math.min(parseInt(req.query.limit as string || '30'), 50);
-      const days = parseInt(req.query.days as string || '14');
 
       // 60-second server cache
-      const cacheKey = `recently-joined:${limit}:${days}`;
+      const cacheKey = `recently-joined:${limit}`;
       const cached = await cache.get<any[]>(cacheKey);
       if (cached) return res.json(cached);
 
-      const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
       const results = await db
         .select({
           id: users.id,
@@ -4366,7 +4364,6 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         .from(users)
         .where(
           and(
-            gte(users.createdAt, cutoff),
             ne(users.userType, 'business'),
             isNotNull(users.username),
             ne(users.username, ''),
