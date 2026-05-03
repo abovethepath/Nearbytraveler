@@ -1599,7 +1599,22 @@ export default function WhatsAppChat(props: WhatsAppChatProps) {
                     ? payload
                     : { ...payload, senderId: msgSenderId };
                   setMessages((prev) => {
+                    // Already have the real message
                     if (prev.some((m) => m.id == normalizedPayload.id)) return prev;
+                    // Replace the matching optimistic (temp) message sent by this user.
+                    // Without this, the WS echo races ahead of the HTTP response and gets
+                    // appended; the response then promotes the temp.id to the real id,
+                    // leaving two rows with the same id in state (the duplicate).
+                    const optIdx = prev.findIndex(m =>
+                      m.id < 0 &&
+                      m.content === normalizedPayload.content &&
+                      m.senderId == normalizedPayload.senderId
+                    );
+                    if (optIdx >= 0) {
+                      const next = [...prev];
+                      next[optIdx] = normalizedPayload;
+                      return next;
+                    }
                     return [...prev, normalizedPayload];
                   });
                   scrollToBottom();

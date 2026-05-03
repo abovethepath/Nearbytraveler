@@ -260,6 +260,11 @@ class WebSocketService {
         console.error('WebSocket server error:', data.message);
         break;
 
+      // Intentionally consumed by WhatsAppChat's own raw WS connection — silent here.
+      case 'message:new':
+      case 'sync:response':
+        break;
+
       default:
         console.warn('Unknown message type:', data.type);
     }
