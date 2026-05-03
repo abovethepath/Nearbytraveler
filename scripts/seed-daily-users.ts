@@ -57,6 +57,7 @@ import { storage } from "../server/storage";
 import { uploadImage } from "../server/services/cloudinary";
 import { db } from "../server/db";
 import { connections } from "@shared/schema";
+import { getMetroCities } from "@shared/metro-areas";
 import { or, and, eq } from "drizzle-orm";
 
 type Region = "us" | "latam" | "europe" | "asia" | "oceania";
@@ -111,28 +112,60 @@ const CITIES: CityEntry[] = [
   { city: "Melbourne", state: null, country: "Australia", region: "oceania" },
 ];
 
+// Hometown distribution for seed users — concentrated in launch market.
+// 60% LA Metro, 15% OC Metro, 25% other major US cities. Pulled from
+// shared/metro-areas.ts at call time so suburb lists stay in sync.
+const US_OTHER_CITIES: CityEntry[] = [
+  { city: "New York City", state: "New York",   country: "United States", region: "us" },
+  { city: "Brooklyn",      state: "New York",   country: "United States", region: "us" },
+  { city: "San Francisco", state: "California", country: "United States", region: "us" },
+  { city: "Austin",        state: "Texas",      country: "United States", region: "us" },
+  { city: "Miami",         state: "Florida",    country: "United States", region: "us" },
+  { city: "Las Vegas",     state: "Nevada",     country: "United States", region: "us" },
+  { city: "Nashville",     state: "Tennessee",  country: "United States", region: "us" },
+  { city: "New Orleans",   state: "Louisiana",  country: "United States", region: "us" },
+  { city: "Chicago",       state: "Illinois",   country: "United States", region: "us" },
+  { city: "Seattle",       state: "Washington", country: "United States", region: "us" },
+];
+
 const FIRST_NAMES = [
-  "Sarah", "Tom", "Jessica", "Marcus", "Emily", "David", "Rachel", "Ryan",
-  "Jason", "Lauren", "Michael", "Nicole", "Brandon", "Ashley",
-  "Luca", "Sophie", "Oliver", "Emma", "Lea", "Niklas", "Clara", "Mateusz",
-  "Anna", "Max", "Giulia", "Andres", "Martina", "Hannah",
-  "Javier", "Camila", "Diego", "Valentina", "Rafael", "Sofia", "Mateo", "Lucia",
-  "Gabriel", "Paula",
-  "Kenji", "Priya", "Wei", "Minjun", "Akira", "Aarav", "Yuki", "Hana",
-  "Siu", "Arjun", "Mei",
-  "Layla", "Omar", "Fatima", "Karim", "Noor",
+  // Anglo
+  "Michael", "David", "James", "John", "Robert", "Christopher", "Matthew",
+  "Joshua", "Andrew", "Daniel", "Ryan", "Tyler", "Brandon", "Justin", "Kevin",
+  "Brian", "Jason", "Jacob", "Ethan", "Noah", "Liam", "Lucas", "Mason", "Logan",
+  "Aiden", "Marcus",
+  // Black American
+  "Andre", "DeShawn", "Jamal", "Tyrone", "Darius", "Malik",
+  // Hispanic American
+  "Carlos", "Luis", "Miguel", "Antonio", "Diego", "Mateo", "Jose", "Juan",
+  // Asian American
+  "Raj", "Arjun", "Vikram", "Kenji", "Hiro",
+  // Anglo (women)
+  "Jennifer", "Sarah", "Jessica", "Ashley", "Amanda", "Emily", "Lauren",
+  "Megan", "Stephanie", "Nicole", "Rachel", "Rebecca", "Lisa", "Michelle",
+  "Angela", "Melissa",
+  // Hispanic American (women)
+  "Maria", "Sofia", "Camila", "Isabella", "Valentina",
+  // Black American (women)
+  "Aaliyah", "Imani", "Zora", "Ayana",
+  // Asian American (women)
+  "Priya", "Anjali", "Mei", "Yuna",
+  // Anglo (women, modern)
+  "Olivia", "Emma", "Ava", "Charlotte", "Mia", "Harper", "Evelyn",
 ];
 
 const LAST_NAMES = [
-  "Miller", "Johnson", "Brown", "Davis", "Wilson", "Anderson", "Thomas", "Moore",
-  "Jackson", "Martin", "White",
-  "Rossi", "Schmidt", "Novak", "Dubois", "Bergstrom", "Garcia",
-  "Kowalski", "Fischer", "Nielsen", "Silva",
-  "Rodriguez", "Lopez", "Cruz", "Santos", "Morales", "Ramirez", "Fernandez",
-  "Herrera",
-  "Tanaka", "Sharma", "Chen", "Park", "Yamamoto", "Gupta", "Kim", "Liu",
-  "Patel",
-  "Hassan", "Cohen", "Ahmed", "Hosseini",
+  // Top US Census surnames
+  "Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller",
+  "Davis", "Rodriguez", "Martinez", "Hernandez", "Lopez", "Gonzalez",
+  "Wilson", "Anderson", "Thomas", "Taylor", "Moore", "Jackson", "Martin",
+  "Lee", "Perez", "Thompson", "White", "Harris", "Sanchez", "Clark",
+  "Ramirez", "Lewis", "Robinson", "Walker", "Young", "Allen", "King",
+  "Wright", "Scott", "Torres", "Nguyen", "Hill", "Flores", "Green", "Adams",
+  "Nelson", "Baker", "Hall", "Rivera", "Campbell", "Mitchell", "Carter",
+  "Roberts",
+  // Common immigrant-origin US surnames
+  "Patel", "Kim", "Park", "Chen", "Singh", "Khan", "Ali",
 ];
 
 const INTERESTS = [
@@ -209,6 +242,18 @@ function pickN<T>(arr: T[], n: number): T[] {
   return out;
 }
 
+// Weighted hometown picker: 60% LA Metro, 15% OC Metro, 25% other major US cities.
+function pickHometown(): CityEntry {
+  const r = Math.random();
+  if (r < 0.60) {
+    return { city: pick(getMetroCities("Los Angeles Metro")), state: "California", country: "United States", region: "us" };
+  }
+  if (r < 0.75) {
+    return { city: pick(getMetroCities("Orange County Metro")), state: "California", country: "United States", region: "us" };
+  }
+  return pick(US_OTHER_CITIES);
+}
+
 function randInt(min: number, max: number): number {
   return min + Math.floor(Math.random() * (max - min + 1));
 }
@@ -271,7 +316,7 @@ function buildLanguages(home: CityEntry): string[] {
 }
 
 async function generateOneUser(): Promise<void> {
-  const home = pick(CITIES);
+  const home = pickHometown();
   const first = pick(FIRST_NAMES);
   const last = pick(LAST_NAMES);
   const username = buildSeedUsername();
