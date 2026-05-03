@@ -138,27 +138,30 @@ const MALE_FIRST_NAMES = [
   "Joshua", "Andrew", "Daniel", "Ryan", "Tyler", "Brandon", "Justin", "Kevin",
   "Brian", "Jason", "Jacob", "Ethan", "Noah", "Liam", "Lucas", "Mason", "Logan",
   "Aiden", "Marcus",
-  // Black American
-  "Andre", "DeShawn", "Jamal", "Tyrone", "Darius", "Malik",
+  "Chris", "Mark", "Peter", "Paul", "Steven", "Eric", "Greg", "Alex",
+  "Jake", "Sean", "Connor", "Aaron", "Adam", "Patrick",
   // Hispanic American
   "Carlos", "Luis", "Miguel", "Antonio", "Diego", "Mateo", "Jose", "Juan",
   // Asian American
-  "Raj", "Arjun", "Vikram", "Kenji", "Hiro",
+  "Raj", "Kenji", "Hiro",
+  // Black American
+  "Andre", "Marcus",
 ];
 
 const FEMALE_FIRST_NAMES = [
-  // Anglo (women)
+  // Anglo
   "Jennifer", "Sarah", "Jessica", "Ashley", "Amanda", "Emily", "Lauren",
   "Megan", "Stephanie", "Nicole", "Rachel", "Rebecca", "Lisa", "Michelle",
   "Angela", "Melissa",
-  // Hispanic American (women)
-  "Maria", "Sofia", "Camila", "Isabella", "Valentina",
-  // Black American (women)
-  "Aaliyah", "Imani", "Zora", "Ayana",
-  // Asian American (women)
-  "Priya", "Anjali", "Mei", "Yuna",
-  // Anglo (women, modern)
   "Olivia", "Emma", "Ava", "Charlotte", "Mia", "Harper", "Evelyn",
+  "Kate", "Anna", "Claire", "Grace", "Hannah", "Lily", "Sophie",
+  "Chloe",
+  // Hispanic American
+  "Maria", "Sofia", "Camila", "Isabella", "Valentina",
+  // Asian American
+  "Priya", "Mei",
+  // Black American
+  "Aaliyah", "Imani",
 ];
 
 const LAST_NAMES = [
