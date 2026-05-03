@@ -6,16 +6,6 @@ import { getProfileImageUrl } from "@/components/simple-avatar";
 import { UserPlus, MessageCircle, ChevronLeft, ChevronRight } from "lucide-react";
 import { abbreviateCity } from "@/lib/displayName";
 
-function timeAgo(dateStr: string): string {
-  const ms = Date.now() - new Date(dateStr).getTime();
-  const mins = Math.floor(ms / 60000);
-  if (mins < 60) return mins <= 1 ? "just now" : `${mins}m ago`;
-  const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return hrs === 1 ? "1h ago" : `${hrs}h ago`;
-  const days = Math.floor(hrs / 24);
-  return days === 1 ? "1 day ago" : `${days} days ago`;
-}
-
 function cityLabel(user: any): string {
   const city = user.hometownCity || "";
   const cityOnly = city.includes(",") ? city.split(",")[0].trim() : city;
@@ -133,11 +123,6 @@ export default function RecentlyJoined({ currentUserId, messagedUserIds }: Recen
                     {city}
                   </p>
                 )}
-
-                {/* Time */}
-                <p className="text-[10px] text-orange-400 font-medium">
-                  {timeAgo(user.createdAt)}
-                </p>
 
                 {!messagedUserIds?.has(user.id) && (
                   <button
