@@ -17,17 +17,19 @@
 //   7. storage.createTravelPlan(...) (if traveler)
 //   8. storage.updateUser(user.id, { aura: 99 })  ← OVERRIDES real-signup 1/2
 //   9. fireProductionBackgroundTasks(user) — welcome email, auto-connect to
-//      nearbytrav, welcome DM. INTENTIONAL: operator monitors the platform
-//      pipeline via the seed+ alias inbox.
+//      nearbytrav. INTENTIONAL: operator monitors the platform pipeline via
+//      the seed+ alias inbox.
 //
 // No backdating: cron uses real-time timestamps from defaultNow().
 //
 // Identifiers (NO marker in profile data):
-//   - aura:     99 (real users never reach this organically — primary marker)
-//   - username: `nts_` + 8 alnum chars (12 chars total, fits varchar(12))
+//   - aura:     99 (real users never reach this organically — SOLE seed marker)
+//   - username: realistic firstname-based handle (e.g. "mike_22", "carlos_k",
+//               "davidk", "christop_22"). Collision-checked against users.username
+//               at insert time. Username is NOT a seed signal — aura=99 is.
 //   - email:    seed+<username>@nearbytraveler.org (plus-addressed under the
 //               real domain so welcome emails route to seed@nearbytraveler.org)
-// Cleanup query (single criterion now suffices):
+// Cleanup query:
 //   DELETE FROM users WHERE id <> 2 AND aura = 99;
 //
 // Password, founding-member: match real signup
@@ -38,15 +40,17 @@
 //   FIRES (intentional — for monitoring):
 //     - sendWelcomeEmail (routes.ts:6329-6340)
 //     - Auto-connect to nearbytrav id=2 (routes.ts:6558-6585)
-//     - Welcome DM from nearbytrav (routes.ts:6588-6647)
 //   SKIPPED (would harm real users or is fragile in cron context):
+//     - Welcome DM from nearbytrav (routes.ts:6588-6647) — removed because the
+//       cron generates one per seed × 6 fires/day, accumulating templated DMs
+//       in nearbytrav's outbox. Real-signup DM remains; only the seed path
+//       skips it.
 //     - new_member_nearby fanout (routes.ts:6663-6722) — would create up to
 //       50 in-app notifications per seed × 6 fires/day = ~300 notifications
 //       per day to real users about fake new members. Skip until/unless the
 //       operator explicitly wants the platform-side fanout exercised.
 //     - 60s setTimeout PWA install DM (routes.ts:6605-6651) — setTimeout
-//       inside a cron-tick context is fragile; the immediate welcome DM is
-//       enough to verify the message-from-nearbytrav pipeline.
+//       inside a cron-tick context is fragile.
 //     - Referral processing — seeds carry no referralCode.
 //
 // Sequencing: users are created sequentially (await one before starting the
@@ -56,9 +60,9 @@
 import { storage } from "../server/storage";
 import { uploadImage } from "../server/services/cloudinary";
 import { db } from "../server/db";
-import { connections } from "@shared/schema";
+import { connections, users } from "@shared/schema";
 import { getMetroCities } from "@shared/metro-areas";
-import { or, and, eq } from "drizzle-orm";
+import { or, and, eq, sql } from "drizzle-orm";
 
 type Region = "us" | "latam" | "europe" | "asia" | "oceania";
 
@@ -265,10 +269,74 @@ function randomToken(n: number): string {
   return s;
 }
 
-// Username: `nts_` (4) + 8 alnum chars = 12 chars. Matches scripts/seed-realistic-users.ts
-// so a single cleanup query (LIKE 'nts\_%' ESCAPE '\') catches both seeds.
-function buildSeedUsername(): string {
-  return `nts_${randomToken(8)}`;
+// Username: realistic firstname-based handle (lowercase, 6-12 chars, fits varchar(12)).
+// Format candidates, in preference order:
+//   "carlos", "carlosk", "carlos_k", "mike_22", "christop_22", "lia_k_22"
+// Aura=99 is the SOLE seed marker — usernames carry no marker. Collision-checked
+// against existing users.username via a single LIKE query before returning.
+async function buildSeedUsername(firstName: string, lastName: string): Promise<string> {
+  const MIN_LEN = 6;
+  const MAX_LEN = 12;
+  const VALID = /^[a-z][a-z0-9_]*$/;
+  const sanitize = (s: string) => (s || "").toLowerCase().replace(/[^a-z]/g, "");
+
+  const base = sanitize(firstName) || "user";
+  const li = sanitize(lastName).slice(0, 1);
+  const baseShort = base.slice(0, 8);
+  // Single-query prefix scan covers every candidate shape below (all candidates
+  // start with `baseShort`, which is a prefix of `base`).
+  const prefix = baseShort;
+  const taken = new Set<string>(
+    (
+      await db
+        .select({ uname: sql<string>`LOWER(${users.username})` })
+        .from(users)
+        .where(sql`LOWER(${users.username}) LIKE ${prefix + "%"}`)
+    ).map((r) => r.uname),
+  );
+  const ok = (cand: string): boolean =>
+    cand.length >= MIN_LEN && cand.length <= MAX_LEN && VALID.test(cand) && !taken.has(cand);
+
+  // 1) base alone (e.g. "carlos")
+  if (ok(base)) return base;
+  // 2) base + last initial (e.g. "carlosk", "davidk")
+  if (li && ok(base + li)) return base + li;
+  // 3) base + "_" + last initial (e.g. "carlos_k")
+  if (li && ok(base + "_" + li)) return base + "_" + li;
+  // 4) base + "_NN"  (e.g. "mike_22", "anna_77")
+  for (let n = 1; n <= 99; n++) {
+    const cand = `${base}_${n}`;
+    if (ok(cand)) return cand;
+  }
+  // 5) base + last initial + "_NN"  (e.g. "carlosk_22")
+  if (li) {
+    for (let n = 1; n <= 99; n++) {
+      const cand = `${base}${li}_${n}`;
+      if (ok(cand)) return cand;
+    }
+  }
+  // 6) truncated base[:8] + "_NN"  (long firstnames, e.g. "christop_22")
+  if (base.length > 8) {
+    for (let n = 1; n <= 99; n++) {
+      const cand = `${baseShort}_${n}`;
+      if (ok(cand)) return cand;
+    }
+  }
+  // 7) base + "_" + last initial + "_NN"  (short firstnames, e.g. "lia_k_22")
+  if (li && base.length < 6) {
+    for (let n = 1; n <= 99; n++) {
+      const cand = `${base}_${li}_${n}`;
+      if (ok(cand)) return cand;
+    }
+  }
+  // 8) deep fallback: base + "_NNN"
+  for (let n = 100; n <= 999; n++) {
+    const cand = `${base}_${n}`;
+    if (ok(cand)) return cand;
+  }
+  throw new Error(
+    `Could not generate unique seed username for first="${firstName}" last="${lastName}"`,
+  );
 }
 
 function buildBio(home: CityEntry, interests: string[]): string {
@@ -319,7 +387,7 @@ async function generateOneUser(): Promise<void> {
   const home = pickHometown();
   const first = pick(FIRST_NAMES);
   const last = pick(LAST_NAMES);
-  const username = buildSeedUsername();
+  const username = await buildSeedUsername(first, last);
   // Plus-addressed under the real domain so welcome emails (sent by sendWelcomeEmail
   // in fireProductionBackgroundTasks below) route to seed@nearbytraveler.org for
   // operator monitoring. Cleanup is keyed off aura=99, not email pattern.
@@ -463,9 +531,9 @@ async function generateOneUser(): Promise<void> {
   const aura = 99;
   await storage.updateUser(user.id, { aura });
 
-  // 9. Fire production background side-effects (welcome email, auto-connect,
-  // welcome DM). INTENTIONAL: the seed+ alias routes welcome emails to the
-  // operator's inbox for monitoring. Skips fanout + PWA-DM (see header docstring).
+  // 9. Fire production background side-effects (welcome email, auto-connect).
+  // INTENTIONAL: the seed+ alias routes welcome emails to the operator's inbox
+  // for monitoring. Skips welcome DM, fanout, and PWA-DM (see header docstring).
   await fireProductionBackgroundTasks(user);
 
   // (No backdating — daily cron uses real-time defaultNow() timestamps.)
@@ -477,10 +545,11 @@ async function generateOneUser(): Promise<void> {
   );
 }
 
-// Mirrors the production setImmediate side-effects from routes.ts:6326-6651
-// for one user. Keeps the seed pipeline production-equivalent (per operator
-// instruction "DO NOT skip system emails for seed users — intentional for
-// monitoring"). See header docstring for what's intentionally skipped.
+// Mirrors a subset of the production setImmediate side-effects from
+// routes.ts:6326-6651 for one user: welcome email + auto-connect to nearbytrav.
+// The welcome DM (routes.ts:6588-6647) is intentionally NOT mirrored — see
+// header docstring for why. Operator monitoring still fires via the seed+
+// email alias.
 async function fireProductionBackgroundTasks(user: any): Promise<void> {
   const NEARBYTRAV_USER_ID = 2;
 
@@ -520,22 +589,6 @@ async function fireProductionBackgroundTasks(user: any): Promise<void> {
     }
   } catch (err) {
     console.warn(`  ⚠️ nearbytrav auto-connect failed for @${user.username}:`, (err as any)?.message);
-  }
-
-  // 3. Welcome DM from nearbytrav — fires storage.sendSystemMessage path.
-  try {
-    const firstName = user.firstName || (user.name || user.username || "Traveler").split(" ")[0];
-    const welcomeMsg =
-      `Hey ${firstName}! 👋\n\n` +
-      `Welcome to Nearby Traveler — you're in.\n\n` +
-      `A few things to try:\n` +
-      `• Add a few photos to your profile\n` +
-      `• Browse who's in your city under "Discover"\n` +
-      `• If you're traveling, set your destination + dates so locals can spot you\n\n` +
-      `Reach out anytime if you need anything.\n— Aaron @ Nearby Traveler`;
-    await storage.sendSystemMessage(NEARBYTRAV_USER_ID, user.id, welcomeMsg);
-  } catch (err) {
-    console.warn(`  ⚠️ welcome DM failed for @${user.username}:`, (err as any)?.message);
   }
 }
 
