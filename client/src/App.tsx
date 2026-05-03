@@ -382,7 +382,6 @@ function Router() {
   const [authLoading, setAuthLoading] = useState(!skipGate);
   // Auth init/verification gates to prevent landing/login flashes during nav.
   const [authInitialized, setAuthInitialized] = useState(skipGate);
-  const [isVerifyingAuth, setIsVerifyingAuth] = useState(false);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const loginSucceededAtRef = React.useRef<number>(0);
   const pageLoadTimeRef = React.useRef<number>(Date.now());
@@ -726,7 +725,6 @@ function Router() {
       const seq = ++authSyncSeqRef.current;
 
       const expectedAuth = !!user?.id;
-      if (expectedAuth) setIsVerifyingAuth(true);
 
       try {
         const doCheck = async () =>
@@ -784,7 +782,6 @@ function Router() {
         console.warn("Auth sync failed (" + reason + "):", e);
       } finally {
         authSyncInFlightRef.current = false;
-        if (expectedAuth) setIsVerifyingAuth(false);
       }
     },
     [
@@ -913,7 +910,9 @@ function Router() {
           clearSessionInvalid();
           markSessionVerified();
           writeSessionCache(serverUser);
-          setUser(serverUser);
+          if (serverUser.id !== user?.id || serverUser.username !== user?.username) {
+            setUser(serverUser);
+          }
           stopAuthenticating();
           setLoginPendingFlag(false);
           // Stamp the throttle so the first tab-click doesn't immediately re-fire syncAuthFromServer.
