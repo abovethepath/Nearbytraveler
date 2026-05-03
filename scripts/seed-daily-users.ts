@@ -132,7 +132,7 @@ const US_OTHER_CITIES: CityEntry[] = [
   { city: "Seattle",       state: "Washington", country: "United States", region: "us" },
 ];
 
-const FIRST_NAMES = [
+const MALE_FIRST_NAMES = [
   // Anglo
   "Michael", "David", "James", "John", "Robert", "Christopher", "Matthew",
   "Joshua", "Andrew", "Daniel", "Ryan", "Tyler", "Brandon", "Justin", "Kevin",
@@ -144,6 +144,9 @@ const FIRST_NAMES = [
   "Carlos", "Luis", "Miguel", "Antonio", "Diego", "Mateo", "Jose", "Juan",
   // Asian American
   "Raj", "Arjun", "Vikram", "Kenji", "Hiro",
+];
+
+const FEMALE_FIRST_NAMES = [
   // Anglo (women)
   "Jennifer", "Sarah", "Jessica", "Ashley", "Amanda", "Emily", "Lauren",
   "Megan", "Stephanie", "Nicole", "Rachel", "Rebecca", "Lisa", "Michelle",
@@ -385,7 +388,10 @@ function buildLanguages(home: CityEntry): string[] {
 
 async function generateOneUser(): Promise<void> {
   const home = pickHometown();
-  const first = pick(FIRST_NAMES);
+  // Pick gender first so the first name comes from the matching pool —
+  // keeps name and randomuser.me portrait gender in sync.
+  const gender = Math.random() < 0.5 ? "male" : "female";
+  const first = pick(gender === "male" ? MALE_FIRST_NAMES : FEMALE_FIRST_NAMES);
   const last = pick(LAST_NAMES);
   const username = await buildSeedUsername(first, last);
   // Plus-addressed under the real domain so welcome emails (sent by sendWelcomeEmail
@@ -406,7 +412,6 @@ async function generateOneUser(): Promise<void> {
   const bio = hasBio ? buildBio(home, interests) : undefined;
 
   // Gender drives randomuser.me portrait URL pick (no API call needed).
-  const gender = Math.random() < 0.5 ? "male" : "female";
   const portraitUrl = `https://randomuser.me/api/portraits/${gender === "male" ? "men" : "women"}/${randInt(0, 99)}.jpg`;
 
   let destination: CityEntry | null = null;
