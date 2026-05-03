@@ -22,7 +22,6 @@ import { datesOverlap, formatDateForDisplay, getCurrentTravelDestination } from 
 import { computeCommonStats } from "@/lib/whatYouHaveInCommonStats";
 import { getMetroContext, getMetroAreaName } from "@shared/metro-areas";
 import { format } from "date-fns";
-import { getVersionedCityImage } from "@/lib/imageVersioning";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";

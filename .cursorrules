@@ -289,14 +289,6 @@ All endpoints are relative to: https://nearbytraveler.org
 - POST /api/city-activities/:cityName/refresh-featured - Refresh featured
 - POST /api/city-activities/:cityName/seed-and-refresh - Seed and refresh
 
-### City Photos
-- GET /api/city-photos - Get city photos
-- GET /api/city-photos/:city - Get photos for city
-- GET /api/city-photos/all - Get all city photos
-- POST /api/city-photos/upload - Upload city photo
-- POST /api/city-photos/upload-url - Get upload URL
-- POST /api/city-photos/confirm - Confirm upload
-
 ### Companions
 - GET /api/companions - Get companions
 - POST /api/companions - Add companion

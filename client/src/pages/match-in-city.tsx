@@ -1917,11 +1917,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                 className="relative overflow-hidden rounded-xl cursor-pointer transition-transform hover:scale-105 shadow-lg group"
                 onClick={() => setSelectedCity(city.city)}
               >
-                {/* Beautiful city photo background like original */}
-                <div 
-                  className="w-full h-48 bg-cover bg-center relative"
-                  style={{ backgroundImage: `url(${city.photo})` }}
-                >
+                <div className="w-full h-48 bg-cover bg-center relative">
                   {/* Gradient overlay for text readability */}
                   <div className={`absolute inset-0 bg-gradient-to-br ${city.gradient} backdrop-blur-[1px]`}></div>
                   
@@ -1965,10 +1961,7 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
                       className="relative overflow-hidden rounded-xl cursor-pointer transition-transform hover:scale-105 shadow-lg group"
                       onClick={() => setSelectedCity(city.city)}
                     >
-                      <div 
-                        className="w-full h-36 bg-cover bg-center relative"
-                        style={{ backgroundImage: `url(${city.photo})` }}
-                      >
+                      <div className="w-full h-36 bg-cover bg-center relative">
                         <div className={`absolute inset-0 bg-gradient-to-br ${city.gradient} backdrop-blur-[1px]`}></div>
                         <div className="absolute inset-0 p-4 flex flex-col justify-end text-white">
                           <h3 className="text-lg font-bold">{city.city}</h3>

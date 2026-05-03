@@ -1,6 +1,6 @@
 import { db, pool } from "./db";
 import { getMetroAreaName, getMetroCities } from "../shared/metro-areas";
-import { users, connections, messages, events, eventParticipants, travelPlans, tripItineraries, itineraryItems, sharedItineraries, notifications, blockedUsers, travelMemories, travelMemoryLikes, travelMemoryComments, userPhotos, photoTags, userReferences, referrals, proximityNotifications, customLocationActivities, cityActivities, userCustomActivities, userCityInterests, cityLandmarks, landmarkRatings, secretLocalExperiences, secretLocalExperienceLikes, secretExperienceLikes, cityPages, citychatrooms, chatroomMembers, chatroomMessages, chatroomAccessRequests, chatroomInvitations, chatroomModerationRecords, chatroomBlocks, meetupChatrooms, meetupChatroomMessages, businessOffers, businessOfferRedemptions, businessReferrals, businessLocations, businessInterestNotifications, businessCustomerPhotos, cityPhotos, travelBlogPosts, travelBlogLikes, travelBlogComments, instagramPosts, quickMeetups, quickMeetupParticipants, quickMeetupTemplates, quickDeals, userNotificationSettings, businessSubscriptions, photoAlbums, externalEventInterests, vouches, waitlistLeads, type User, type InsertUser, type Connection, type InsertConnection, type Message, type InsertMessage, type Event, type InsertEvent, type EventParticipant, type EventParticipantWithUser, type TravelPlan, type InsertTravelPlan, type TripItinerary, type InsertTripItinerary, type ItineraryItem, type InsertItineraryItem, type SharedItinerary, type InsertSharedItinerary, type Notification, type InsertNotification, type PhotoTag, type InsertPhotoTag, type UserReference, type Referral, type InsertReferral, type ProximityNotification, type InsertProximityNotification, type CityLandmark, type InsertCityLandmark, type LandmarkRating, type InsertLandmarkRating, type SecretLocalExperience, type InsertSecretLocalExperience, type ChatroomInvitation, type InsertChatroomInvitation, type BusinessOffer, type InsertBusinessOffer, type BusinessOfferRedemption, type InsertBusinessOfferRedemption, type BusinessLocation, type InsertBusinessLocation, type BusinessInterestNotification, type InsertBusinessInterestNotification, type WaitlistLead, type InsertWaitlistLead, type BusinessCustomerPhoto, type InsertBusinessCustomerPhoto, type CityPhoto, type InsertCityPhoto, type TravelBlogPost, type InsertTravelBlogPost, type TravelBlogLike, type InsertTravelBlogLike, type TravelBlogComment, type InsertTravelBlogComment, type InstagramPost, type InsertInstagramPost, type QuickMeetupTemplate, type InsertQuickMeetupTemplate, type UserNotificationSettings, type InsertUserNotificationSettings, type BusinessSubscription, type InsertBusinessSubscription, type PhotoAlbum, type InsertPhotoAlbum, type ExternalEventInterest, type InsertExternalEventInterest, type Vouch, type VouchWithUsers } from "@shared/schema";
+import { users, connections, messages, events, eventParticipants, travelPlans, tripItineraries, itineraryItems, sharedItineraries, notifications, blockedUsers, travelMemories, travelMemoryLikes, travelMemoryComments, userPhotos, photoTags, userReferences, referrals, proximityNotifications, customLocationActivities, cityActivities, userCustomActivities, userCityInterests, cityLandmarks, landmarkRatings, secretLocalExperiences, secretLocalExperienceLikes, secretExperienceLikes, cityPages, citychatrooms, chatroomMembers, chatroomMessages, chatroomAccessRequests, chatroomInvitations, chatroomModerationRecords, chatroomBlocks, meetupChatrooms, meetupChatroomMessages, businessOffers, businessOfferRedemptions, businessReferrals, businessLocations, businessInterestNotifications, businessCustomerPhotos, travelBlogPosts, travelBlogLikes, travelBlogComments, instagramPosts, quickMeetups, quickMeetupParticipants, quickMeetupTemplates, quickDeals, userNotificationSettings, businessSubscriptions, photoAlbums, externalEventInterests, vouches, waitlistLeads, type User, type InsertUser, type Connection, type InsertConnection, type Message, type InsertMessage, type Event, type InsertEvent, type EventParticipant, type EventParticipantWithUser, type TravelPlan, type InsertTravelPlan, type TripItinerary, type InsertTripItinerary, type ItineraryItem, type InsertItineraryItem, type SharedItinerary, type InsertSharedItinerary, type Notification, type InsertNotification, type PhotoTag, type InsertPhotoTag, type UserReference, type Referral, type InsertReferral, type ProximityNotification, type InsertProximityNotification, type CityLandmark, type InsertCityLandmark, type LandmarkRating, type InsertLandmarkRating, type SecretLocalExperience, type InsertSecretLocalExperience, type ChatroomInvitation, type InsertChatroomInvitation, type BusinessOffer, type InsertBusinessOffer, type BusinessOfferRedemption, type InsertBusinessOfferRedemption, type BusinessLocation, type InsertBusinessLocation, type BusinessInterestNotification, type InsertBusinessInterestNotification, type WaitlistLead, type InsertWaitlistLead, type BusinessCustomerPhoto, type InsertBusinessCustomerPhoto, type TravelBlogPost, type InsertTravelBlogPost, type TravelBlogLike, type InsertTravelBlogLike, type TravelBlogComment, type InsertTravelBlogComment, type InstagramPost, type InsertInstagramPost, type QuickMeetupTemplate, type InsertQuickMeetupTemplate, type UserNotificationSettings, type InsertUserNotificationSettings, type BusinessSubscription, type InsertBusinessSubscription, type PhotoAlbum, type InsertPhotoAlbum, type ExternalEventInterest, type InsertExternalEventInterest, type Vouch, type VouchWithUsers } from "@shared/schema";
 import { eq, and, or, ilike, gte, desc, avg, count, sql, isNotNull, ne, lte, lt, gt, asc, like, inArray, getTableColumns, isNull } from "drizzle-orm";
 import { promises as fs } from 'fs';
 import path from 'path';
@@ -205,12 +205,7 @@ export interface IStorage {
   getLandmarkRatings(landmarkId: number): Promise<any>;
   getUserLandmarkRatings(userId: number): Promise<any>;
   updateAiRecommendation(): Promise<any>;
-  
-  // City Photos methods
-  getCityPhotos(cityName: string): Promise<CityPhoto[]>;
-  createCityPhoto(photoData: { cityName: string; imageData: string; photographerUsername: string }): Promise<CityPhoto>;
-  getAllCityPhotos(): Promise<CityPhoto[]>;
-  
+
   // Instagram methods
   createInstagramPost(data: InsertInstagramPost): Promise<InstagramPost>;
   getInstagramPosts(eventId?: number, userId?: number): Promise<InstagramPost[]>;
@@ -1004,7 +999,6 @@ export class DatabaseStorage implements IStorage {
         avatarGradient: 'avatar_gradient',
         coverPhoto: 'cover_photo',
         videoIntroUrl: 'video_intro_url',
-        videoIntroThumbnail: 'video_intro_thumbnail',
         subInterests: 'sub_interests'
       };
 
@@ -8932,144 +8926,6 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  // City Photos methods
-  async getCityPhotos(cityName: string): Promise<CityPhoto[]> {
-    try {
-      console.log('Getting city photos for:', cityName);
-      
-      // Parse location string if it contains comma-separated parts
-      const locationParts = cityName.split(',').map(part => part.trim());
-      const city = locationParts[0] || cityName;
-      const state = locationParts[1] || '';
-      const country = locationParts[2] || locationParts[1] || '';
-      
-      console.log('Parsed location - City:', city, 'State:', state, 'Country:', country);
-      
-      // Query by city name only since that's the primary identifier
-      // Order by ID descending to get newest photos first
-      const photos = await db.select().from(cityPhotos)
-        .where(eq(cityPhotos.city, city))
-        .orderBy(desc(cityPhotos.id));
-      console.log('Found', photos.length, 'photos for', city, '- ordered by newest first');
-      return photos;
-    } catch (error) {
-      console.error('Error getting city photos:', error);
-      return [];
-    }
-  }
-
-  async createCityPhoto(photoData: { cityName: string; imageData: string; photographerUsername: string }): Promise<CityPhoto> {
-    try {
-      console.log('=== CITY PHOTO UPLOAD ===');
-      console.log('RECEIVED photographerUsername:', photoData.photographerUsername);
-      console.log('RECEIVED cityName:', photoData.cityName);
-      
-      const actualUsername = photoData.photographerUsername;
-      console.log('Looking up user with username:', actualUsername);
-      
-      // Find user by username
-      const allUsers = await db.select().from(users).where(eq(users.username, actualUsername));
-      console.log('Database query results:', allUsers.length, 'users found for:', actualUsername);
-      
-      if (allUsers.length === 0) {
-        console.error('❌ User not found with username:', actualUsername);
-        throw new Error(`User not found: ${actualUsername}`);
-      }
-      
-      const user = allUsers[0];
-      console.log('✅ Found user:', { id: user.id, username: user.username });
-
-      // AUTOMATIC CLEANUP FOR CITY COVER PHOTOS ONLY
-      // This cleanup ensures each city has only one representative cover photo
-      // Note: This is specifically for city cover photos, not photo galleries
-      console.log('🏙️ CITY COVER PHOTO: Checking for existing cover photo for city:', photoData.cityName);
-      const existingPhotos = await db.select().from(cityPhotos)
-        .where(eq(cityPhotos.city, photoData.cityName));
-      
-      if (existingPhotos.length > 0) {
-        console.log(`🏙️ CITY COVER: Found ${existingPhotos.length} existing cover photo(s) for ${photoData.cityName} - replacing with new cover photo`);
-        
-        // Delete old cover photo files from filesystem
-        for (const oldPhoto of existingPhotos) {
-          if (oldPhoto.imageUrl) {
-            try {
-              const oldFilename = oldPhoto.imageUrl.replace('/attached_assets/', '');
-              const oldFilepath = path.join(process.cwd(), 'attached_assets', oldFilename);
-              await fs.unlink(oldFilepath);
-              console.log(`🗑️ Deleted old cover photo file: ${oldFilename}`);
-            } catch (fileError) {
-              console.log(`⚠️ Could not delete old cover photo file (may not exist): ${oldPhoto.imageUrl}`);
-            }
-          }
-        }
-        
-        // Delete old cover photo records from database
-        await db.delete(cityPhotos).where(eq(cityPhotos.city, photoData.cityName));
-        console.log(`🏙️ CITY COVER: Replaced ${existingPhotos.length} old cover photo(s) with new upload for ${photoData.cityName}`);
-      } else {
-        console.log(`✅ CITY COVER: No existing cover photo found for ${photoData.cityName} - proceeding with first cover photo upload`);
-      }
-      
-      // Save new image to filesystem
-      const timestamp = Date.now();
-      const filename = `${photoData.cityName.replace(/[^a-zA-Z0-9]/g, '_')}_${timestamp}.jpg`;
-      const filepath = path.join(process.cwd(), 'attached_assets', filename);
-      
-      // Convert base64 to buffer
-      const base64Data = photoData.imageData.replace(/^data:image\/[a-z]+;base64,/, '');
-      const buffer = Buffer.from(base64Data, 'base64');
-      
-      // Write file
-      await fs.writeFile(filepath, buffer);
-      console.log('✅ File saved to:', filepath);
-      
-      const imageUrl = `/attached_assets/${filename}`;
-      
-      // Insert new photo into database
-      const newPhoto = await db.insert(cityPhotos).values({
-        city: photoData.cityName,
-        state: null,
-        country: 'United States', // Default for now
-        imageUrl: imageUrl,
-        photographerUsername: user.username,
-        photographerId: user.id,
-        createdAt: new Date()
-      }).returning();
-      
-      console.log('✅ New photo saved to database:', newPhoto[0]);
-      console.log('🎯 RESULT: Database now contains exactly 1 photo for', photoData.cityName);
-      
-      // Award aura point to user
-      await db.update(users)
-        .set({ 
-          aura: sql`${users.aura} + 1`
-        })
-        .where(eq(users.id, user.id));
-      
-      console.log('✅ Awarded 1 aura point to user:', user.username);
-      
-      return newPhoto[0];
-    } catch (error) {
-      console.error('❌ Error creating city photo:', error);
-      throw error;
-    }
-  }
-
-  async getAllCityPhotos(): Promise<CityPhoto[]> {
-    try {
-      console.log('DatabaseStorage.getAllCityPhotos() called');
-      const photos = await db.select().from(cityPhotos).where(eq(cityPhotos.isActive, true));
-      console.log('📸 PHOTOS API: SQL query executed, found', photos.length, 'total city photos from database');
-      photos.forEach(photo => {
-        console.log(`📸 Photo found: ${photo.city} - imageUrl length: ${photo.imageUrl ? photo.imageUrl.length : 0}`);
-      });
-      return photos;
-    } catch (error) {
-      console.error('Error in getAllCityPhotos:', error);
-      return [];
-    }
-  }
-
   async getUserById(userId: number): Promise<User | undefined> {
     try {
       const [user] = await db.select()
@@ -10770,20 +10626,6 @@ export class DatabaseStorage implements IStorage {
       case 'everyone':
       default:
         return true;
-    }
-  }
-
-  async getCityPhotosByUser(userId: number): Promise<CityPhoto[]> {
-    try {
-      const photos = await db
-        .select()
-        .from(cityPhotos)
-        .where(eq(cityPhotos.uploadedBy, userId))
-        .orderBy(desc(cityPhotos.uploadedAt));
-      return photos;
-    } catch (error) {
-      console.error('Error fetching city photos by user:', error);
-      return [];
     }
   }
 

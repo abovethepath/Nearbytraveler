@@ -19,7 +19,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { calculateAge } from "@/lib/ageUtils";
 import { isNativeIOSApp } from "@/lib/nativeApp";
 import { useIsDesktop } from "@/hooks/useDeviceType";
-import { VideoIntroPlayer } from "@/components/VideoIntro";
 import TravelPlansWidget from "@/components/TravelPlansWidget";
 import { SimpleAvatar } from "@/components/simple-avatar";
 import { StealthToggle } from "@/components/stealth-toggle";
@@ -1006,14 +1005,6 @@ export function ProfileTabs(props: ProfilePageProps) {
                     <p className="italic text-gray-500 dark:text-gray-400">@{user?.username} hasn't written a bio yet.</p>
                   )}
                 </div>
-
-                {user?.userType !== 'business' && (
-                  <VideoIntroPlayer
-                    userId={user.id}
-                    isOwnProfile={isOwnProfile}
-                    hasVideo={!!user.videoIntroUrl}
-                  />
-                )}
 
                 {/* Business Contact Information - Prominent placement for business profiles */}
                 {user?.userType === 'business' && (

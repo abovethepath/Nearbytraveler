@@ -54,7 +54,6 @@ import { US_STATE_NAMES, CANADIAN_PROVINCES as SHARED_CA_PROVINCES, AUSTRALIAN_S
 import { SmartLocationInput } from "@/components/SmartLocationInput";
 import { calculateAge, formatDateOfBirthForInput, validateDateInput, getDateInputConstraints } from "@/lib/ageUtils";
 import { isTopChoiceInterest } from "@/lib/topChoicesUtils";
-import { VideoIntroPlayer } from "@/components/VideoIntro";
 import { BUSINESS_TYPES, MOST_POPULAR_INTERESTS, ADDITIONAL_INTERESTS, ALL_ACTIVITIES, ALL_INTERESTS, BUSINESS_INTERESTS, BUSINESS_ACTIVITIES } from "@shared/base-options";
 import { computeCommonStats } from "@/lib/whatYouHaveInCommonStats";
 
