@@ -2985,6 +2985,16 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         };
       }));
       
+      // Demote seeds (aura=99) below real users; within each group, most recently active first.
+      enrichedResults.sort((a: any, b: any) => {
+        const aSeed = a?.aura === 99 ? 1 : 0;
+        const bSeed = b?.aura === 99 ? 1 : 0;
+        if (aSeed !== bSeed) return aSeed - bSeed;
+        const aLast = a?.lastSeenAt ? new Date(a.lastSeenAt).getTime() : 0;
+        const bLast = b?.lastSeenAt ? new Date(b.lastSeenAt).getTime() : 0;
+        return bLast - aLast;
+      });
+
       console.log(`🌍 users-by-location: found ${enrichedResults.length} ${userType} users for "${searchCity}"`);
       res.json(enrichedResults);
     } catch (error: any) {
@@ -3405,7 +3415,8 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         WHERE tp1.user_id = ${uid}
           AND c.id IS NULL
           AND u.is_active = true
-        ORDER BY "overlapStart" DESC
+        ORDER BY (CASE WHEN u.aura = 99 THEN 1 ELSE 0 END) ASC,
+                 "overlapStart" DESC
         LIMIT 15
       `);
 
@@ -3536,8 +3547,13 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         });
       }
       
-      // Sort by compatibility score
-      matches.sort((a, b) => (b.compatibility.score || 0) - (a.compatibility.score || 0));
+      // Demote seeds (aura=99) below real users; preserve compatibility score within each group.
+      matches.sort((a, b) => {
+        const aSeed = (a.user as any)?.aura === 99 ? 1 : 0;
+        const bSeed = (b.user as any)?.aura === 99 ? 1 : 0;
+        if (aSeed !== bSeed) return aSeed - bSeed;
+        return (b.compatibility.score || 0) - (a.compatibility.score || 0);
+      });
       
       // Limit results
       const limitedMatches = matches.slice(0, parseInt(limit as string));
@@ -3749,6 +3765,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       if (type === 'travelers') {
         const rows = await db.execute(
           sql.raw(`SELECT u.id, u.username, u.first_name, u.full_name, u.profile_image,
+                 u.aura,
                  tp.destination_city, tp.start_date, tp.end_date, u.hometown_city
           FROM travel_plans tp
           JOIN users u ON tp.user_id = u.id
@@ -3756,7 +3773,8 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
             AND tp.start_date >= '${todayStart.toISOString()}'
             AND tp.start_date < '${new Date(todayStart.getTime() + 86400000).toISOString()}'
             AND tp.end_date >= '${now.toISOString()}'
-          ORDER BY tp.start_date ASC
+          ORDER BY (CASE WHEN u.aura = 99 THEN 1 ELSE 0 END) ASC,
+                   tp.start_date ASC
           LIMIT 50`)
         );
         return res.json((rows as any).rows || []);
@@ -3765,11 +3783,13 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       if (type === 'new-members') {
         const rows = await db.execute(
           sql.raw(`SELECT u.id, u.username, u.first_name, u.full_name, u.profile_image,
+                 u.aura,
                  u.hometown_city, u.created_at, u.user_type
           FROM users u
           WHERE LOWER(u.hometown_city) IN (${cityListLiteral})
             AND u.created_at >= '${todayStart.toISOString()}'
-          ORDER BY u.created_at DESC
+          ORDER BY (CASE WHEN u.aura = 99 THEN 1 ELSE 0 END) ASC,
+                   u.created_at DESC
           LIMIT 50`)
         );
         return res.json((rows as any).rows || []);
@@ -3778,6 +3798,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       if (type === 'connections-today') {
         const rows = await db.execute(
           sql.raw(`SELECT DISTINCT u.id, u.username, u.first_name, u.full_name, u.profile_image,
+                 u.aura,
                  u.hometown_city, u.user_type
           FROM connections c
           JOIN users u ON (u.id = c.requester_id OR u.id = c.receiver_id)
@@ -3787,7 +3808,8 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
               c.requester_id IN (SELECT id FROM users WHERE LOWER(hometown_city) IN (${cityListLiteral}))
               OR c.receiver_id IN (SELECT id FROM users WHERE LOWER(hometown_city) IN (${cityListLiteral}))
             )
-          ORDER BY u.username
+          ORDER BY (CASE WHEN u.aura = 99 THEN 1 ELSE 0 END) ASC,
+                   u.username
           LIMIT 50`)
         );
         return res.json((rows as any).rows || []);
@@ -4087,11 +4109,22 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       }));
       
       const filteredFinalUsers = finalUsers.filter(Boolean);
+
+      // Demote seeds (aura=99) below real users; within each group, most recently active first.
+      filteredFinalUsers.sort((a: any, b: any) => {
+        const aSeed = a?.aura === 99 ? 1 : 0;
+        const bSeed = b?.aura === 99 ? 1 : 0;
+        if (aSeed !== bSeed) return aSeed - bSeed;
+        const aLast = a?.lastSeenAt ? new Date(a.lastSeenAt).getTime() : 0;
+        const bLast = b?.lastSeenAt ? new Date(b.lastSeenAt).getTime() : 0;
+        return bLast - aLast;
+      });
+
       if (process.env.NODE_ENV === 'development') {
         console.log(`🏙️ CITY USERS: Found ${localUsers.length} locals + ${travelersInCity.length} travelers`);
         console.log(`🏙️ CITY USERS: Final result - ${filteredFinalUsers.length} users for ${city}`);
       }
-      
+
       return res.json(filteredFinalUsers);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Error fetching city users:", error);
@@ -4269,6 +4302,16 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       // Hide Connector status for users who opted out
       enrichedUsers.forEach(u => stripConnectorIfHidden(u, currentUserId));
 
+      // Demote seeds (aura=99) below real users; within each group, most recently active first.
+      enrichedUsers.sort((a: any, b: any) => {
+        const aSeed = a?.aura === 99 ? 1 : 0;
+        const bSeed = b?.aura === 99 ? 1 : 0;
+        if (aSeed !== bSeed) return aSeed - bSeed;
+        const aLast = a?.lastSeenAt ? new Date(a.lastSeenAt).getTime() : 0;
+        const bLast = b?.lastSeenAt ? new Date(b.lastSeenAt).getTime() : 0;
+        return bLast - aLast;
+      });
+
       return res.json(enrichedUsers);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') console.error("Failed to search users by location:", error);
@@ -4329,7 +4372,10 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
             ne(users.username, ''),
           )
         )
-        .orderBy(desc(users.createdAt))
+        .orderBy(
+          sql`CASE WHEN ${users.aura} = 99 THEN 1 ELSE 0 END`,
+          desc(users.createdAt),
+        )
         .limit(limit);
       cache.set(cacheKey, results, 60).catch(() => {});
       res.json(results);
@@ -4359,6 +4405,10 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
             ilike(users.username, `%${query}%`),
             ilike(users.name, `%${query}%`)
           )
+        )
+        .orderBy(
+          sql`CASE WHEN ${users.aura} = 99 THEN 1 ELSE 0 END`,
+          sql`${users.lastSeenAt} DESC NULLS LAST`,
         )
         .limit(20);
         
@@ -7550,7 +7600,10 @@ Questions? Just reply to this message. Welcome aboard!
         })
         .from(users)
         .where(whereConditions.length > 0 ? and(...whereConditions) : undefined)
-        .orderBy(desc(users.id))
+        .orderBy(
+          sql`CASE WHEN ${users.aura} = 99 THEN 1 ELSE 0 END`,
+          desc(users.id),
+        )
         .limit(20);
 
       if (process.env.NODE_ENV === 'development') {
@@ -9667,9 +9720,16 @@ Questions? Just reply to this message. Welcome aboard!
       });
       
       // Push seeded test users (aura=99) to the bottom of Discover People
-      // results so real users surface first. Stable sort preserves relative
-      // order within each bucket.
-      enrichedUsers.sort((a, b) => Number(a.aura === 99) - Number(b.aura === 99));
+      // results so real users surface first. Within each group, most recently
+      // active users appear first (lastSeenAt DESC, nulls last).
+      enrichedUsers.sort((a: any, b: any) => {
+        const aSeed = a?.aura === 99 ? 1 : 0;
+        const bSeed = b?.aura === 99 ? 1 : 0;
+        if (aSeed !== bSeed) return aSeed - bSeed;
+        const aLast = a?.lastSeenAt ? new Date(a.lastSeenAt).getTime() : 0;
+        const bLast = b?.lastSeenAt ? new Date(b.lastSeenAt).getTime() : 0;
+        return bLast - aLast;
+      });
 
       // Store in cache for 60 seconds when no filters were applied
       if (!hasFilters) {
@@ -24937,7 +24997,10 @@ Questions? Just reply to this message. Welcome aboard!
         .from(users)
         .innerJoin(userCityInterests, eq(users.id, userCityInterests.userId))
         .where(and(...whereConditions))
-        .orderBy(desc(userCityInterests.createdAt));
+        .orderBy(
+          sql`CASE WHEN ${users.aura} = 99 THEN 1 ELSE 0 END`,
+          desc(userCityInterests.createdAt),
+        );
 
       if (process.env.NODE_ENV === 'development') console.log(`✅ ACTIVITY NAME SEARCH: Found ${usersWithActivityInterests.length} users interested in "${activityName}"`);
       
@@ -25029,7 +25092,10 @@ Questions? Just reply to this message. Welcome aboard!
           inArray(userCityInterests.activityId, activityIds),
           eq(userCityInterests.isActive, true)
         ))
-        .orderBy(desc(userCityInterests.createdAt));
+        .orderBy(
+          sql`CASE WHEN ${users.aura} = 99 THEN 1 ELSE 0 END`,
+          desc(userCityInterests.createdAt),
+        );
 
       // Combine both result sets
       const allUsersWithMatches = [...usersWithActivityMatches, ...usersWithCityInterests];
@@ -25126,7 +25192,8 @@ Questions? Just reply to this message. Welcome aboard!
           hometownState: users.hometownState,
           hometownCountry: users.hometownCountry,
           profileImage: users.profileImage,
-          interests: users.interests
+          interests: users.interests,
+          aura: users.aura,
         })
         .from(users)
         .where(and(
@@ -25224,9 +25291,13 @@ Questions? Just reply to this message. Welcome aboard!
         };
       });
       
-      // Sort by best fit: city picks first, then sub-interests, then preferences
-      enhancedUsers.sort((a, b) => {
-        // Primary: shared city picks count (most important)
+      // Demote seeds (aura=99) below real users; preserve city-pick / sub-interest /
+      // preference ordering within each group.
+      enhancedUsers.sort((a: any, b: any) => {
+        const aSeed = a?.aura === 99 ? 1 : 0;
+        const bSeed = b?.aura === 99 ? 1 : 0;
+        if (aSeed !== bSeed) return aSeed - bSeed;
+        // Primary (within group): shared city picks count (most important)
         if (b.sharedCityPicksCount !== a.sharedCityPicksCount) {
           return b.sharedCityPicksCount - a.sharedCityPicksCount;
         }
