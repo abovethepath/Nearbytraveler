@@ -35,7 +35,7 @@ const POSTS_FILE = path.join(REPO_ROOT, "shared", "blog-posts.ts");
 
 // Sentinel string used to locate the end of the blogPosts array in the source
 // file. If you ever rename getAllBlogPosts(), update this too.
-const ARRAY_END_SENTINEL = "];\n\nexport function getAllBlogPosts";
+const ARRAY_END_SENTINEL_REGEX = /\]\s*;\s*[\r\n]+\s*export\s+function\s+getAllBlogPosts/;
 
 // Model used for both research and drafting. Sonnet is plenty for blog posts
 // and ~5x cheaper than Opus. Update if a newer Sonnet ships:
@@ -243,13 +243,14 @@ function serializePost(post: BlogPost): string {
 }
 
 function appendToSourceFile(source: string, post: BlogPost): string {
-  const idx = source.indexOf(ARRAY_END_SENTINEL);
-  if (idx === -1) {
+  const match = source.match(ARRAY_END_SENTINEL_REGEX);
+  if (!match || match.index === undefined) {
     throw new Error(
-      `Could not find array end sentinel "${ARRAY_END_SENTINEL}" in source file. ` +
+      `Could not find array end sentinel (closing "];" before "export function getAllBlogPosts") in source file. ` +
         `Did the structure of shared/blog-posts.ts change?`,
     );
   }
+  const idx = match.index; // position of `]`
 
   // Walk backwards from the sentinel to find the last non-whitespace char.
   // It's either `}` (no trailing comma) or `,` (trailing comma).
