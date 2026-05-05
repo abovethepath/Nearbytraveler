@@ -1,8 +1,6 @@
 import path from "path";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import Prerenderer from "@prerenderer/rollup-plugin";
-import PuppeteerRenderer from "@prerenderer/renderer-puppeteer";
 
 const isReplit = !!process.env.REPL_ID;
 const isDev = process.env.NODE_ENV !== "production";
@@ -42,9 +40,9 @@ export default defineConfig(async ({ command }) => ({
       : []),
     ...(command === "build"
       ? [
-          Prerenderer({
+          (await import("@prerenderer/rollup-plugin")).default({
             routes: PRERENDER_ROUTES,
-            renderer: new PuppeteerRenderer({
+            renderer: new ((await import("@prerenderer/renderer-puppeteer")).default)({
               renderAfterTime: 5000,
               maxConcurrentRoutes: 2,
               headless: true,

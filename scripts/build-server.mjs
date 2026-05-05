@@ -12,6 +12,9 @@ await build({
   external: [
     "@replit/vite-plugin-runtime-error-modal",
     "@replit/vite-plugin-cartographer",
+    "@prerenderer/rollup-plugin",
+    "@prerenderer/renderer-puppeteer",
+    "puppeteer",
     "lightningcss",
     "lightningcss/node",
     "bufferutil",
