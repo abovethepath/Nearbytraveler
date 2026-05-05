@@ -649,6 +649,7 @@ function getTomorrowInUserTimezone(userCity?: string, userState?: string): Date 
 }
 
 import { insertUserSchema, insertConnectionSchema, insertMessageSchema, insertEventSchema, insertUserPhotoSchema, insertTravelPlanSchema, insertEventParticipantSchema, insertAiRecommendationSchema, insertCityLandmarkSchema, insertLandmarkRatingSchema, insertUserTravelPreferencesSchema } from "@shared/schema";
+import { blogPosts } from "@shared/blog-posts";
 import { recommendationService } from "./services/recommendations";
 import { matchingService } from "./services/matching";
 import { aiTravelCompanion } from "./services/aiTravelCompanion";
@@ -1011,16 +1012,6 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         { loc: "/couchsurfing", priority: "0.7", changefreq: "monthly" },
         { loc: "/business-landing", priority: "0.7", changefreq: "monthly" },
         { loc: "/blog", priority: "0.7", changefreq: "weekly" },
-        { loc: "/blog/how-to-meet-people-when-traveling-alone", priority: "0.6", changefreq: "monthly" },
-        { loc: "/blog/solo-female-travel-safety-tips", priority: "0.6", changefreq: "monthly" },
-        { loc: "/blog/how-to-find-travel-buddies", priority: "0.6", changefreq: "monthly" },
-        { loc: "/blog/best-apps-for-solo-travelers", priority: "0.6", changefreq: "monthly" },
-        { loc: "/blog/meet-locals-when-traveling", priority: "0.6", changefreq: "monthly" },
-        { loc: "/blog/curing-travel-loneliness", priority: "0.6", changefreq: "monthly" },
-        { loc: "/blog/arriving-in-los-angeles-guide", priority: "0.7", changefreq: "monthly" },
-        { loc: "/blog/whats-happening-los-angeles", priority: "0.7", changefreq: "weekly" },
-        { loc: "/blog/solo-travel-los-angeles", priority: "0.7", changefreq: "monthly" },
-        { loc: "/blog/lessons-from-solo-travel-meeting-people", priority: "0.6", changefreq: "monthly" },
         { loc: "/explore", priority: "0.8", changefreq: "weekly" },
         { loc: "/discover", priority: "0.8", changefreq: "weekly" },
         { loc: "/available-now", priority: "0.8", changefreq: "daily" },
@@ -1034,6 +1025,11 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       // Static pages — guaranteed output
       for (const p of staticPages) {
         xml += `  <url>\n    <loc>${BASE}${p.loc}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>${p.changefreq}</changefreq>\n    <priority>${p.priority}</priority>\n  </url>\n`;
+      }
+
+      // Blog posts — generated from shared/blog-posts.ts so new posts auto-include
+      for (const post of blogPosts) {
+        xml += `  <url>\n    <loc>${BASE}/blog/${post.slug}</loc>\n    <lastmod>${post.date}</lastmod>\n    <changefreq>${post.changefreq ?? "monthly"}</changefreq>\n    <priority>0.7</priority>\n  </url>\n`;
       }
 
       // City pages — wrapped in try/catch so failure doesn't kill the sitemap

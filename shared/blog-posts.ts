@@ -4,6 +4,7 @@ export interface BlogPost {
   slug: string;
   description: string;
   body: string;
+  changefreq?: "weekly" | "monthly" | "yearly";
 }
 
 // Blog posts registry — add new posts here.
@@ -501,6 +502,7 @@ That version is the real one. It's worth finding.`,
     date: "2026-04-16",
     slug: "whats-happening-los-angeles",
     description: "The best events in LA never make it onto tourist sites. Here's how locals actually find out what's happening in the city — and how you can too.",
+    changefreq: "weekly",
     body: `The best things happening in Los Angeles this weekend are probably not on any list you've found.
 
 The pop-up dinner in someone's backyard in Silver Lake. The free jazz night at a bar in Leimert Park. The art opening in a Culver City warehouse. The pickup basketball game at Runyon Canyon that's been happening every Saturday morning for years.
