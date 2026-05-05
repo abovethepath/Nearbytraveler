@@ -90,15 +90,35 @@ export default function LandingStreamlined() {
   useEffect(() => {
     const target = heroRef.current;
     if (!target) return;
-    const observer = new IntersectionObserver(
+    const footer = document.querySelector('footer');
+    let heroVisible = true;
+    let footerVisible = false;
+    const update = () => setShowFloatingCTA(!heroVisible && !footerVisible);
+
+    const heroObserver = new IntersectionObserver(
       ([entry]) => {
-        // Hero visible at all (any fraction) → hide CTA. Hero fully out → show CTA.
-        setShowFloatingCTA(!entry.isIntersecting);
+        heroVisible = entry.isIntersecting;
+        update();
       },
       { threshold: 0 }
     );
-    observer.observe(target);
-    return () => observer.disconnect();
+    heroObserver.observe(target);
+
+    const footerObserver = footer
+      ? new IntersectionObserver(
+          ([entry]) => {
+            footerVisible = entry.isIntersecting;
+            update();
+          },
+          { threshold: 0 }
+        )
+      : null;
+    if (footer && footerObserver) footerObserver.observe(footer);
+
+    return () => {
+      heroObserver.disconnect();
+      footerObserver?.disconnect();
+    };
   }, []);
 
   // Intersection Observer for fade-in animations
