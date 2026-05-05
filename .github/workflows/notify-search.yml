@@ -1,0 +1,35 @@
+name: Notify search engines (after blog merge)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "shared/blog-posts.ts"
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Wait for Render deploy
+        # Render auto-deploys on push to main. Give it ~3 min so the new URL
+        # actually responds 200 before we tell search engines about it.
+        run: sleep 180
+
+      - name: Notify search engines
+        env:
+          INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}
+          GOOGLE_SC_CLIENT_EMAIL: ${{ secrets.GOOGLE_SC_CLIENT_EMAIL }}
+          GOOGLE_SC_PRIVATE_KEY: ${{ secrets.GOOGLE_SC_PRIVATE_KEY }}
+        run: npx tsx scripts/auto-blog/notify-search.ts
