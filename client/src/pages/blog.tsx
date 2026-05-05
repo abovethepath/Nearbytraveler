@@ -1,5 +1,5 @@
 import { useLocation } from "wouter";
-import { getAllBlogPosts } from "@/lib/blogPosts";
+import { getAllBlogPosts } from "@shared/blog-posts";
 import { ArrowLeft } from "lucide-react";
 import { SEOHelmet } from "@/components/SEOHelmet";
 
