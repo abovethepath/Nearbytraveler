@@ -997,7 +997,10 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
 
       const toDate = (d: any) => {
         if (!d) return today;
-        try { return new Date(d).toISOString().split("T")[0]; } catch { return today; }
+        try {
+          const iso = new Date(d).toISOString().split("T")[0];
+          return iso > today ? today : iso;
+        } catch { return today; }
       };
 
       // Static pages — always included regardless of DB state
@@ -1029,7 +1032,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
 
       // Blog posts — generated from shared/blog-posts.ts so new posts auto-include
       for (const post of blogPosts) {
-        xml += `  <url>\n    <loc>${BASE}/blog/${post.slug}</loc>\n    <lastmod>${post.date}</lastmod>\n    <changefreq>${post.changefreq ?? "monthly"}</changefreq>\n    <priority>0.7</priority>\n  </url>\n`;
+        xml += `  <url>\n    <loc>${BASE}/blog/${post.slug}</loc>\n    <lastmod>${toDate(post.date)}</lastmod>\n    <changefreq>${post.changefreq ?? "monthly"}</changefreq>\n    <priority>0.7</priority>\n  </url>\n`;
       }
 
       // City pages — wrapped in try/catch so failure doesn't kill the sitemap
@@ -1059,21 +1062,6 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           xml += `  <url>\n    <loc>${BASE}/events/${(row as any).id}</loc>\n    <lastmod>${toDate((row as any).updatedAt)}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.7</priority>\n  </url>\n`;
         }
       } catch (e) { console.warn("Sitemap: events query failed:", (e as any)?.message); }
-
-      // Public user profiles — wrapped in try/catch
-      try {
-        const userRows = await db
-          .select({ username: users.username, updatedAt: users.createdAt })
-          .from(users)
-          .where(and(isNotNull(users.username), ne(users.username, "")))
-          .orderBy(desc(users.createdAt))
-          .limit(10000);
-        for (const row of userRows) {
-          const username = (row as any).username;
-          if (!username) continue;
-          xml += `  <url>\n    <loc>${BASE}/profile/${encodeURIComponent(username)}</loc>\n    <lastmod>${toDate((row as any).updatedAt)}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.5</priority>\n  </url>\n`;
-        }
-      } catch (e) { console.warn("Sitemap: profiles query failed:", (e as any)?.message); }
 
       xml += `</urlset>`;
 
