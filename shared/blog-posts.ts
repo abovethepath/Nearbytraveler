@@ -721,6 +721,113 @@ It won't eliminate every lonely evening. But it will make them rarer.
 
 Try it free at nearbytraveler.org`,
   },
+  {
+    title: "How to Eat Alone While Traveling (Without the Awkwardness)",
+    date: "2026-05-05",
+    slug: "eating-alone-while-traveling",
+    description: "Dining alone while traveling doesn't have to feel awkward. Here's how to eat solo at restaurants confidently — and actually enjoy it.",
+    body: `## The Table-for-One Problem
+
+You're hungry. You've been walking around a new city all day and you've found a restaurant that looks perfect. The kind of place you'd normally be excited to try.
+
+But now you're standing outside, hesitating.
+
+You imagine walking in alone. The host asking "just one?" with that slight pause. The table they'll seat you at — probably too close to the kitchen or squeezed near the bathroom. Everyone else in couples or groups, talking and laughing while you sit there with your phone, trying to look like you're doing something important.
+
+So you end up at a chain restaurant. Or getting takeout. Again. You came all this way to experience a new city and you're eating mediocre food alone in your hotel room because the alternative felt too uncomfortable.
+
+This is one of the most common anxieties solo travelers face. And almost nobody admits it because it sounds trivial compared to "real" travel concerns like safety or logistics.
+
+It's not trivial. Food is one of the primary ways we experience a place. Missing out on good restaurants because you're eating alone means missing out on a core part of travel.
+
+## Why Dining Alone Feels Awkward
+
+The discomfort isn't in your head. Restaurants are socially coded as group spaces. The entire design — tables for two or four, chairs facing each other, the pacing of service — assumes you're there with someone.
+
+When you eat alone, you're breaking an unwritten social rule. Not in a way that anyone will call you out on, but in a way that makes you visible. The solo diner. The person who couldn't find anyone to eat with.
+
+That story you're telling yourself about what other people are thinking? They're probably not thinking it. But the feeling is real anyway because the infrastructure of restaurants wasn't built for solo diners.
+
+The anxiety also peaks at specific moments. Walking in and asking for a table. Waiting for food with nothing to do. The check coming too fast because the server assumes you want to leave. That moment when you wonder if you should have just stayed in.
+
+## What Makes It Easier
+
+### Pick the Right Type of Restaurant
+
+Not all restaurants are equally comfortable for solo dining.
+
+Counter seating places — ramen shops, sushi bars, tapas counters — are perfect. You're facing the kitchen or the wall, not a empty chair across from you. The setup itself normalizes eating alone.
+
+Casual spots with communal tables work well. Bistros, wine bars, places where people come for the food more than the occasion. The fancier the restaurant, the more it's designed around the idea of dining as a social event.
+
+Busy restaurants are easier than quiet ones. When a place is humming with energy, you blend in. Empty restaurants make solo diners more visible.
+
+### Go at Off-Peak Times
+
+Lunch is easier than dinner. Early dinner is easier than prime seating time. Breakfast is the easiest of all — solo diners are completely normal at breakfast.
+
+If you want to try a nicer restaurant but feel self-conscious, go at 5:30pm before the couples and groups arrive. You'll get better service, a better table, and less of that feeling that you're the only person eating alone.
+
+### Bring Something to Do (But Not Your Phone)
+
+The worst part of dining alone is the waiting. Waiting for food. Waiting for the check. Those stretches where you're just sitting there with nothing to occupy you.
+
+A book or notebook solves this completely. It gives you something to do that doesn't look like you're desperately trying to look busy. People respect someone reading at a table in a way they don't respect someone scrolling Instagram.
+
+Sketch the scene if you draw. Write down what you're tasting. Anything that makes you look engaged rather than lonely.
+
+### Sit at the Bar
+
+This is the single best strategy for solo dining. The bar section of any restaurant.
+
+You can watch the bartender work. You can talk to them when it's slow. You're positioned next to other people rather than across from an empty chair. The whole dynamic is different.
+
+Bartenders also tend to be better at reading solo diners. They know when you want conversation and when you want to be left alone. They'll pace things better than a server who's managing six tables.
+
+## The Moments That Still Feel Hard
+
+Even with all the strategies, some moments stay uncomfortable.
+
+Walking in is always the worst part. That brief interaction with the host where you say "table for one" and they process what that means. It gets easier with repetition but it never fully goes away.
+
+The check coming too quickly. Some servers assume solo diners want to be in and out. It can feel rushed, like you're being encouraged to leave. You're not — they're just trying to be considerate. But it lands wrong.
+
+Seeing groups of people clearly having a great time while you're eating alone. It can highlight what you don't have in that moment. [Travel loneliness hits hardest around mealtimes](/blog/curing-travel-loneliness) for exactly this reason.
+
+## When to Skip Solo Dining Entirely
+
+Sometimes the right move is not to eat alone.
+
+If you're in a city where meals are explicitly social — Spain, Italy, parts of Latin America — forcing yourself to dine alone at nice restaurants can work against the grain of the culture. Street food, markets, and casual spots will give you a better experience.
+
+If you've been eating alone for three days straight and it's wearing on you, don't push through it. [Meeting people when traveling alone](/blog/how-to-meet-people-when-traveling-alone) isn't complicated when you know where to look, and sharing a meal changes everything about how it feels.
+
+Nearby Traveler makes this easy. Open the app when you're hungry, see who else is around and available right now — locals who know good spots, other travelers looking for dinner company. Mark yourself free and you'll match with someone who wants the same thing you do: a good meal and decent conversation. Much better than another night scrolling your phone at a table built for two.
+
+## What Changes After You Do It a Few Times
+
+The first solo dinner in a new city is always the hardest. The second one is noticeably easier. By the fifth, it's just something you do.
+
+You stop projecting stories onto other diners. You stop assuming everyone is judging you for eating alone. You start noticing other solo diners and realizing how unremarkable it actually is.
+
+The self-consciousness fades. Not completely, but enough that you can focus on the food and the experience rather than managing your anxiety about being seen alone.
+
+You also start noticing things you miss when you're dining with someone. The details of a dish. The rhythm of the kitchen. The conversations happening around you. Solo dining forces a kind of attention that group dining doesn't.
+
+Some of the best meals of your life will happen alone. Not because the food is better, but because you're fully present for it in a way you rarely are when you're splitting your attention across a conversation.
+
+## The Real Barrier
+
+The hard part of eating alone while traveling isn't the logistics. It's overriding the feeling that you shouldn't be doing it.
+
+Restaurants are built for groups. Society tells us meals are social events. Solo dining feels like you're admitting you're alone, which feels like admitting you couldn't find anyone to be with.
+
+But solo dining isn't a consolation prize. It's a different experience. Sometimes it's exactly what you want. Sometimes you'd rather have company and [finding travel buddies](/blog/how-to-find-travel-buddies) is the better move.
+
+The goal isn't to love eating alone. The goal is to stop letting the fear of it dictate where you eat and what you experience. To walk into a good restaurant, ask for a table for one, and not feel like you're doing something wrong.
+
+Because you're not. You're just hungry, in a new city, wanting a good meal. That's reason enough.`
+  }
 ];
 
 export function getBlogPost(slug: string): BlogPost | undefined {
