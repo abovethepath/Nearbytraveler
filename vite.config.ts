@@ -29,29 +29,33 @@ const PRERENDER_ROUTES = [
   "/city/Chicago Metro",
 ];
 
-export default defineConfig(async ({ command }) => ({
-  plugins: [
-    react(),
-    ...(isReplit && isDev
-      ? [
-          (await import("@replit/vite-plugin-runtime-error-modal")).default(),
-          (await import("@replit/vite-plugin-cartographer")).default(),
-        ]
-      : []),
-    ...(command === "build"
-      ? [
-          (await import("@prerenderer/rollup-plugin")).default({
-            routes: PRERENDER_ROUTES,
-            renderer: new ((await import("@prerenderer/renderer-puppeteer")).default)({
-              renderAfterTime: 5000,
-              maxConcurrentRoutes: 2,
-              headless: true,
-              args: ["--no-sandbox", "--disable-setuid-sandbox"],
-            }),
-          }),
-        ]
-      : []),
-  ],
+export default defineConfig(async ({ command }) => {
+  const plugins: any[] = [react()];
+
+  if (isReplit && isDev) {
+    plugins.push((await import("@replit/vite-plugin-runtime-error-modal")).default());
+    plugins.push((await import("@replit/vite-plugin-cartographer")).default());
+  }
+
+  if (command === "build") {
+    console.log("[vite.config] Adding prerenderer plugin for", PRERENDER_ROUTES.length, "routes");
+    const { default: Prerenderer } = await import("@prerenderer/rollup-plugin");
+    const { default: PuppeteerRenderer } = await import("@prerenderer/renderer-puppeteer");
+    plugins.push(
+      Prerenderer({
+        routes: PRERENDER_ROUTES,
+        renderer: new PuppeteerRenderer({
+          renderAfterTime: 5000,
+          maxConcurrentRoutes: 2,
+          headless: true,
+          args: ["--no-sandbox", "--disable-setuid-sandbox"],
+        }),
+      })
+    );
+  }
+
+  return {
+    plugins,
 
   resolve: {
     alias: {
@@ -73,10 +77,11 @@ export default defineConfig(async ({ command }) => ({
     emptyOutDir: true,
   },
 
-  server: {
-    fs: {
-      strict: true,
-      deny: ["**/.*"],
+    server: {
+      fs: {
+        strict: true,
+        deny: ["**/.*"],
+      },
     },
-  },
-}));
+  };
+});
