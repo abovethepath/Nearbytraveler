@@ -47,21 +47,18 @@ function isPrerenderedPath(pathname: string): boolean {
 const rootEl = document.getElementById("root");
 
 if (rootEl) {
-  // Only show a pre-render loading screen for protected routes where the user might
-  // be authenticated (session cache exists). On public/auth routes for logged-out users,
-  // skip the loading screen entirely to avoid a flash before React renders the real page.
-  const p = window.location.pathname;
-  const isPublicEntry = p === '/' || p === '/auth' || p === '/signin' || p === '/join'
-    || p.startsWith('/signup') || p.startsWith('/landing') || p === '/about'
-    || p === '/privacy' || p === '/terms'
-    || p === '/blog' || p.startsWith('/blog/') || p.startsWith('/city/');
-  const hasSessionHint = !!sessionStorage.getItem('nt_session_verified');
-
   // Hydrate only when this exact path was prerendered, so the served HTML matches
   // what React is about to render. Otherwise fall back to a fresh client render.
+  const p = window.location.pathname;
+  const hasSessionHint = !!sessionStorage.getItem('nt_session_verified');
   const shouldHydrate = isPrerenderedPath(p) && !hasSessionHint;
 
-  if (!isPublicEntry || hasSessionHint) {
+  // For any path we won't hydrate, replace the served HTML with a neutral loading
+  // shell before React renders. Without this, the SPA fallback serves the prerendered
+  // homepage HTML for routes we didn't prerender (e.g. /auth, /privacy), and users
+  // see a brief flash of the wrong page (notably the homepage hero video) before
+  // React's createRoot wipes #root.
+  if (!shouldHydrate) {
     rootEl.innerHTML = `
       <div style="
         min-height: 100vh;

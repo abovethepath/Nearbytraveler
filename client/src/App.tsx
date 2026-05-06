@@ -583,12 +583,15 @@ function Router() {
   }, [location]);
 
   // Permanent client-side redirect: consolidate /signin → /auth (single login URL).
+  // Use wouter's setLocation (not window.location.replace) so we don't trigger a full
+  // page reload, which would re-fetch the SPA fallback HTML and flash the prerendered
+  // homepage video before React renders the auth page.
   useEffect(() => {
     if (isNativeIOSApp()) return;
     if (normalizedPath === "/signin") {
-      window.location.replace("/auth");
+      setLocation("/auth");
     }
-  }, [normalizedPath]);
+  }, [normalizedPath, setLocation]);
 
   // Single source of truth: whether a route is public (no auth required).
   // Redirect logic must rely exclusively on `!isPublicRoute`.
