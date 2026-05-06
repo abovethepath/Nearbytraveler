@@ -4348,15 +4348,13 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         .from(users)
         .where(
           and(
+            eq(users.aura, 99),
             ne(users.userType, 'business'),
             isNotNull(users.username),
             ne(users.username, ''),
           )
         )
-        .orderBy(
-          sql`CASE WHEN ${users.aura} = 99 THEN 1 ELSE 0 END`,
-          desc(users.createdAt),
-        )
+        .orderBy(desc(users.createdAt))
         .limit(limit);
       cache.set(cacheKey, results, 60).catch(() => {});
       res.json(results);

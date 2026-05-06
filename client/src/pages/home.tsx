@@ -353,7 +353,15 @@ export default function Home() {
       // Current user always first
       if (a.id === effectiveUser?.id) return -1;
       if (b.id === effectiveUser?.id) return 1;
-      
+
+      // Seeded users (aura=99) are always pinned to the bottom regardless of any
+      // location or interest score, so real users surface first in Discover People.
+      // They stay visible to fill space when real-user density is low.
+      const aSeed = a?.aura === 99;
+      const bSeed = b?.aura === 99;
+      if (aSeed && !bSeed) return 1;
+      if (bSeed && !aSeed) return -1;
+
       // Score based on location relevance
       let scoreA = 0, scoreB = 0;
       
