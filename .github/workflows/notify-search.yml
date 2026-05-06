@@ -1,10 +1,18 @@
-name: Notify search engines (after blog merge)
+name: Post-blog-merge tasks (notify search + distribution kit)
 
 on:
   push:
     branches: [main]
     paths:
       - "shared/blog-posts.ts"
+  # Manual trigger for testing the kit generator against an existing post
+  # without waiting for a new merge. Leave `slug` blank to use git diff detection.
+  workflow_dispatch:
+    inputs:
+      slug:
+        description: "Blog post slug to target (overrides git diff detection). Leave blank for normal flow."
+        required: false
+        type: string
 
 jobs:
   notify:
@@ -12,6 +20,10 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+        with:
+          # Need HEAD~1 so the kit generator can `git diff HEAD~1 HEAD` to find
+          # newly-added blog posts in the merge commit.
+          fetch-depth: 2
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -25,11 +37,31 @@ jobs:
       - name: Wait for Render deploy
         # Render auto-deploys on push to main. Give it ~3 min so the new URL
         # actually responds 200 before we tell search engines about it.
+        # Skipped on workflow_dispatch — no Render deploy is happening.
+        if: github.event_name == 'push'
         run: sleep 180
 
       - name: Notify search engines
+        # Skipped on workflow_dispatch — manual runs are for kit testing; no
+        # new content has been published.
+        if: github.event_name == 'push'
         env:
           INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}
           GOOGLE_SC_CLIENT_EMAIL: ${{ secrets.GOOGLE_SC_CLIENT_EMAIL }}
           GOOGLE_SC_PRIVATE_KEY: ${{ secrets.GOOGLE_SC_PRIVATE_KEY }}
         run: npx tsx scripts/auto-blog/notify-search.ts
+
+      - name: Generate distribution kit
+        # Runs on every push that touches blog-posts.ts (auto-detect new post
+        # via git diff) and on workflow_dispatch (use provided slug). Emails the
+        # generated kit to aaron@nearbytraveler.org via Brevo.
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+          INPUT_SLUG: ${{ github.event.inputs.slug }}
+        run: |
+          if [ -n "$INPUT_SLUG" ]; then
+            npx tsx scripts/auto-blog/generate-kit.ts --slug=$INPUT_SLUG
+          else
+            npx tsx scripts/auto-blog/generate-kit.ts
+          fi

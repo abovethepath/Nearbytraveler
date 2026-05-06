@@ -40,7 +40,7 @@ const ARRAY_END_SENTINEL_REGEX = /\]\s*;\s*[\r\n]+\s*export\s+(?:function|const)
 // Model used for both research and drafting. Sonnet is plenty for blog posts
 // and ~5x cheaper than Opus. Update if a newer Sonnet ships:
 // https://docs.claude.com/en/docs/about-claude/models
-const MODEL = "claude-sonnet-4-5-20250929";
+const MODEL = "claude-sonnet-4-6";
 
 // -----------------------------------------------------------------------------
 // Types (mirrors shared/blog-posts.ts, kept in sync manually)
