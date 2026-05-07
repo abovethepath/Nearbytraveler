@@ -11,6 +11,10 @@ type SmartLocationInputProps = {
   country?: string;
   onLocationChange?: (loc: { city: string; state: string; country: string }) => void;
   onLocationSelect?: (loc: { city: string; state: string; country: string }) => void;
+  // Fires inside the same setTimeout(0) as the post-change blur, after React
+  // commits. Receives the new loc so the parent dodges stale-closure issues.
+  // Used by signup pages on Android to scrollIntoView past the location block.
+  onAfterChange?: (loc: { city: string; state: string; country: string }) => void;
   required?: boolean;
   label?: string;
   placeholder?: string | { country: string; state: string; city: string };
@@ -31,6 +35,7 @@ export function SmartLocationInput({
   country: propCountry = "",
   onLocationChange,
   onLocationSelect,
+  onAfterChange,
   required = false,
   label,
   placeholder,
@@ -107,44 +112,53 @@ export function SmartLocationInput({
   const handleCountryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newCountry = e.target.value;
     const target = e.currentTarget;
+    const finalLoc = { city: "", state: "", country: newCountry };
     setCountry(newCountry);
     setCity("");
     setState("");
-    emit({ city: "", state: "", country: newCountry });
+    emit(finalLoc);
     // Android: defer blur via setTimeout so React commits layout (green
     // confirmation box, sibling field insertion) BEFORE the scroll anchor
-    // releases. Without the defer the page reflow has no anchor and gets
-    // stuck. iOS unaffected.
-    setTimeout(() => target?.blur(), 0);
+    // releases. onAfterChange fires in the same tick so the parent can
+    // scrollIntoView past the location block once layout has settled.
+    setTimeout(() => {
+      target?.blur();
+      onAfterChange?.(finalLoc);
+    }, 0);
   };
 
   const handleStateChange = (e: React.ChangeEvent<HTMLSelectElement> | React.ChangeEvent<HTMLInputElement>) => {
     const newState = e.target.value;
     const target = e.currentTarget;
+    let finalLoc: { city: string; state: string; country: string };
     setState(newState);
     // Reset city when state changes (for US state-first flow)
     if (hasStateFirst) {
       setCity("");
-      emit({ city: "", state: newState, country });
+      finalLoc = { city: "", state: newState, country };
     } else {
-      emit({ city, state: newState, country });
+      finalLoc = { city, state: newState, country };
     }
+    emit(finalLoc);
     // Android: defer blur via setTimeout so React commits layout BEFORE the
     // scroll anchor releases. Only blurs on <select> — free-text region
-    // <input> retains focus so the user can keep typing.
-    if (target instanceof HTMLSelectElement) {
-      setTimeout(() => target.blur(), 0);
-    }
+    // <input> retains focus so the user can keep typing. onAfterChange
+    // always fires regardless of input type.
+    setTimeout(() => {
+      if (target instanceof HTMLSelectElement) target.blur();
+      onAfterChange?.(finalLoc);
+    }, 0);
   };
 
   const handleCityChange = (e: React.ChangeEvent<HTMLSelectElement> | React.ChangeEvent<HTMLInputElement>) => {
     const newCity = e.target.value;
     const target = e.currentTarget;
+    let finalLoc: { city: string; state: string; country: string };
     setCity(newCity);
 
     if (hasStateFirst) {
       // State is already selected, just emit
-      emit({ city: newCity, state, country });
+      finalLoc = { city: newCity, state, country };
     } else {
       // Auto-fill region/state from lookup
       let nextState = "";
@@ -153,14 +167,17 @@ export function SmartLocationInput({
         if (auto) nextState = auto;
       }
       setState(nextState);
-      emit({ city: newCity, state: nextState, country });
+      finalLoc = { city: newCity, state: nextState, country };
     }
+    emit(finalLoc);
     // Android: defer blur via setTimeout so React commits layout BEFORE the
     // scroll anchor releases. Only blurs on <select> — free-text city <input>
-    // retains focus so the user can keep typing.
-    if (target instanceof HTMLSelectElement) {
-      setTimeout(() => target.blur(), 0);
-    }
+    // retains focus so the user can keep typing. onAfterChange always fires
+    // regardless of input type.
+    setTimeout(() => {
+      if (target instanceof HTMLSelectElement) target.blur();
+      onAfterChange?.(finalLoc);
+    }, 0);
   };
 
   // US/CA lists — imported from shared/locationData.ts (single source of truth)

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -62,6 +62,12 @@ export default function SignupLocal() {
   }, [formData]);
 
   const [isLoading, setIsLoading] = useState(false);
+
+  // Marker placed after the hometown SmartLocationInput. Android Chrome can
+  // get stuck after the city pick because the deferred blur leaves no scroll
+  // anchor through the layout reflow; we actively scrollIntoView this marker
+  // from SmartLocationInput's onAfterChange to push the user past the trap.
+  const afterHometownRef = useRef<HTMLDivElement>(null);
 
   // Helper functions to count all interests including custom ones
   const getCustomInterestsCount = () => {
@@ -356,7 +362,7 @@ export default function SignupLocal() {
       </div>
       
       <div className="max-w-2xl mx-auto pt-16">
-        <Card className="shadow-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-clip">
+        <Card className="shadow-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-hidden">
           <CardHeader className="text-center bg-gradient-to-r from-blue-600 to-orange-500 pb-8 pt-6">
             <div className="flex justify-start mb-4">
               <Button
@@ -428,6 +434,12 @@ export default function SignupLocal() {
                         hometownState: location.state
                       }));
                     }}
+                    onAfterChange={(loc) => {
+                      if (!loc.city) return;
+                      requestAnimationFrame(() => {
+                        afterHometownRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                      });
+                    }}
                     placeholder={{ country: "Select country", city: "Select city", state: "Select state/region" }}
                     required
                     data-testid="hometown-input"
@@ -471,6 +483,10 @@ export default function SignupLocal() {
                   </div>
                 </div>
               </div>
+
+              {/* Marker for Android scroll-into-view after hometown city pick.
+                  scroll-mt-24 keeps it clear of the fixed banner at top. */}
+              <div ref={afterHometownRef} aria-hidden className="h-0 scroll-mt-24" />
 
               {/* Top Choices */}
               <div className="space-y-4">
