@@ -18,6 +18,9 @@
     },
     "production": {
       "distribution": "store",
+      "env": {
+        "EAS_NO_NPM_CI": "1"
+      },
       "ios": {
         "resourceClass": "m-medium",
         "image": "macos-sequoia-15.6-xcode-26.2"
