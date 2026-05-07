@@ -106,17 +106,21 @@ export function SmartLocationInput({
 
   const handleCountryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newCountry = e.target.value;
+    const target = e.currentTarget;
     setCountry(newCountry);
     setCity("");
     setState("");
     emit({ city: "", state: "", country: newCountry });
-    // Android: blur the native <select> after the value commits so the browser
-    // stops anchoring page scroll to the focused element. iOS unaffected.
-    e.currentTarget.blur();
+    // Android: defer blur via setTimeout so React commits layout (green
+    // confirmation box, sibling field insertion) BEFORE the scroll anchor
+    // releases. Without the defer the page reflow has no anchor and gets
+    // stuck. iOS unaffected.
+    setTimeout(() => target?.blur(), 0);
   };
 
   const handleStateChange = (e: React.ChangeEvent<HTMLSelectElement> | React.ChangeEvent<HTMLInputElement>) => {
     const newState = e.target.value;
+    const target = e.currentTarget;
     setState(newState);
     // Reset city when state changes (for US state-first flow)
     if (hasStateFirst) {
@@ -125,16 +129,17 @@ export function SmartLocationInput({
     } else {
       emit({ city, state: newState, country });
     }
-    // Android: blur the native <select> after the value commits so the browser
-    // stops anchoring page scroll to the focused element. Only blurs on
-    // <select> — free-text region <input> retains focus so the user can keep typing.
-    if (e.currentTarget instanceof HTMLSelectElement) {
-      e.currentTarget.blur();
+    // Android: defer blur via setTimeout so React commits layout BEFORE the
+    // scroll anchor releases. Only blurs on <select> — free-text region
+    // <input> retains focus so the user can keep typing.
+    if (target instanceof HTMLSelectElement) {
+      setTimeout(() => target.blur(), 0);
     }
   };
 
   const handleCityChange = (e: React.ChangeEvent<HTMLSelectElement> | React.ChangeEvent<HTMLInputElement>) => {
     const newCity = e.target.value;
+    const target = e.currentTarget;
     setCity(newCity);
 
     if (hasStateFirst) {
@@ -150,11 +155,11 @@ export function SmartLocationInput({
       setState(nextState);
       emit({ city: newCity, state: nextState, country });
     }
-    // Android: blur the native <select> after the value commits so the browser
-    // stops anchoring page scroll to the focused element. Only blurs on
-    // <select> — free-text city <input> retains focus so the user can keep typing.
-    if (e.currentTarget instanceof HTMLSelectElement) {
-      e.currentTarget.blur();
+    // Android: defer blur via setTimeout so React commits layout BEFORE the
+    // scroll anchor releases. Only blurs on <select> — free-text city <input>
+    // retains focus so the user can keep typing.
+    if (target instanceof HTMLSelectElement) {
+      setTimeout(() => target.blur(), 0);
     }
   };
 
