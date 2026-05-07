@@ -22,6 +22,10 @@ import SignupStep3Screen from '../screens/SignupStep3Screen';
 import SignupStep3BusinessScreen from '../screens/SignupStep3BusinessScreen';
 import { GenericWebViewScreen, BusinessSignupWebViewScreen } from '../screens/WebViewScreens';
 import ForgotPasswordScreen from '../screens/ForgotPasswordScreen';
+import MessagesScreen from '../screens/MessagesScreen';
+import ChatScreen from '../screens/ChatScreen';
+import ProfileScreen from '../screens/ProfileScreen';
+import ExploreScreen from '../screens/ExploreScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -49,6 +53,31 @@ function WebViewStack({ route }) {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false, gestureEnabled: false }}>
       <Stack.Screen name="WebViewPage" component={GenericWebViewScreen} initialParams={{ path }} />
+    </Stack.Navigator>
+  );
+}
+
+// Native Messages tab: conversations list → individual chat thread.
+// MessagesScreen.handlePress calls navigation.navigate('Chat', { userId, userName, otherUser }).
+function MessagesStack() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false, gestureEnabled: true }}>
+      <Stack.Screen name="MessagesList" component={MessagesScreen} />
+      <Stack.Screen name="Chat" component={ChatScreen} />
+    </Stack.Navigator>
+  );
+}
+
+// Native Profile tab. ProfileScreen menu items navigate to EditProfile/Connections/Settings,
+// which fall back to the existing web pages via GenericWebViewScreen until native equivalents
+// land. Keeps menu taps functional without modifying ProfileScreen itself.
+function ProfileStack() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false, gestureEnabled: true }}>
+      <Stack.Screen name="ProfileMain" component={ProfileScreen} />
+      <Stack.Screen name="EditProfile" component={GenericWebViewScreen} initialParams={{ path: '/settings' }} />
+      <Stack.Screen name="Connections" component={GenericWebViewScreen} initialParams={{ path: '/connections' }} />
+      <Stack.Screen name="Settings" component={GenericWebViewScreen} initialParams={{ path: '/settings' }} />
     </Stack.Navigator>
   );
 }
@@ -180,11 +209,10 @@ function MainTabs() {
       />
       <Tab.Screen
         name="Explore"
-        component={WebViewStack}
+        component={ExploreScreen}
         options={{
           tabBarIcon: ({ focused }) => <TabIcon emoji="🔍" focused={focused} />,
         }}
-        initialParams={{ path: "/explore" }}
       />
       <Tab.Screen
         name="Create"
@@ -200,20 +228,18 @@ function MainTabs() {
       />
       <Tab.Screen
         name="Messages"
-        component={WebViewStack}
+        component={MessagesStack}
         options={{
           tabBarIcon: ({ focused }) => <TabIcon emoji="💬" focused={focused} />,
         }}
-        initialParams={{ path: "/messages" }}
       />
       <Tab.Screen
         name="Profile"
-        component={WebViewStack}
+        component={ProfileStack}
         options={{
           tabBarIcon: ({ focused }) => <TabIcon emoji="👤" focused={focused} />,
           unmountOnBlur: false,
         }}
-        initialParams={{ path: "/profile" }}
       />
     </Tab.Navigator>
   );
@@ -223,6 +249,11 @@ function RootStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="MainTabs" component={MainTabs} />
+      {/* Root-level WebView for cross-tab navigation. UserAvatar (in Messages,
+          Chat, Profile screens) and ExploreScreen both call
+          `rootNav.navigate('WebView', { path, title })` to open user profiles
+          and other deep-linked pages — this screen is the target. */}
+      <Stack.Screen name="WebView" component={GenericWebViewScreen} />
     </Stack.Navigator>
   );
 }
