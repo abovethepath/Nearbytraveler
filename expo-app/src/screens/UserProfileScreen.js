@@ -19,7 +19,18 @@ export default function UserProfileScreen({ route, navigation }) {
   const handleConnect = async () => {
     try { await api.sendConnection(userId); Alert.alert('Request Sent', 'Connection request sent!'); } catch (e) { Alert.alert('Error', 'Could not send request.'); }
   };
-  const handleMessage = () => { navigation.navigate('Chat', { userId: profile.id, userName: profile.fullName || profile.username }); };
+  // UserProfile is a root-level Stack.Screen, so `navigation` here is the root
+  // stack — `Chat` is not a sibling. Route through MainTabs → Messages stack
+  // → Chat instead. See expo-app/NEXT-SESSION.md.
+  const handleMessage = () => {
+    navigation.getParent()?.navigate('MainTabs', {
+      screen: 'Messages',
+      params: {
+        screen: 'Chat',
+        params: { userId: profile.id, userName: profile.fullName || profile.username },
+      },
+    });
+  };
 
   if (loading) return <SafeAreaView style={styles.container}><View style={styles.centered}><ActivityIndicator size={36} color="#F97316" /></View></SafeAreaView>;
   if (!profile) return <SafeAreaView style={styles.container}><TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}><Text style={styles.backText}>Back</Text></TouchableOpacity><View style={styles.centered}><Text>User not found</Text></View></SafeAreaView>;

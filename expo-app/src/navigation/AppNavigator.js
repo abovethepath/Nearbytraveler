@@ -28,6 +28,7 @@ import ProfileScreen from '../screens/ProfileScreen';
 import ExploreScreen from '../screens/ExploreScreen';
 import DiscoverScreen from '../screens/DiscoverScreen';
 import UserProfileScreen from '../screens/UserProfileScreen';
+import AvailableNowScreen from '../screens/AvailableNowScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -254,6 +255,9 @@ function RootStack() {
           ExploreScreen all call `rootNav.navigate('UserProfile', { userId })`
           to open another user's profile from any tab. */}
       <Stack.Screen name="UserProfile" component={UserProfileScreen} />
+      {/* Root-level native Available Now. DiscoverScreen header button
+          navigates here. Map view + list of available users + self-toggle. */}
+      <Stack.Screen name="AvailableNow" component={AvailableNowScreen} />
       {/* Root-level WebView fallback for any deep-linked page that doesn't yet
           have a native equivalent (event details, blog posts, etc.). */}
       <Stack.Screen name="WebView" component={GenericWebViewScreen} />

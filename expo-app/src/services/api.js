@@ -401,6 +401,58 @@ const api = {
     return r.json();
   },
 
+  /** Full Available Now list for a city — returns array of entries with
+   *  { user, isAvailable, expiresAt, activities? }. Powers AvailableNowScreen. */
+  async getAvailableNowList(city) {
+    if (!city) return [];
+    const r = await fetch(
+      `${BASE_URL}/api/available-now?city=${encodeURIComponent(city)}`,
+      { headers: getHeaders(), credentials: 'include' },
+    );
+    if (!r.ok) return [];
+    return r.json();
+  },
+
+  /** Current user's own Available Now status. */
+  async getMyAvailableNowStatus() {
+    const r = await fetch(`${BASE_URL}/api/available-now/my-status`, {
+      headers: getHeaders(),
+      credentials: 'include',
+    });
+    if (!r.ok) return { isAvailable: false };
+    return r.json();
+  },
+
+  /** Mark current user as Available Now. Optional fields mirror the web POST
+   *  body (city, activities, expiresInMinutes, etc.). */
+  async setAvailableNow(opts = {}) {
+    const r = await fetch(`${BASE_URL}/api/available-now`, {
+      method: 'POST',
+      headers: getHeaders(),
+      credentials: 'include',
+      body: JSON.stringify(opts),
+    });
+    if (!r.ok) {
+      const text = await r.text().catch(() => '');
+      throw new Error(text || `Could not set available (status ${r.status})`);
+    }
+    return r.json().catch(() => ({}));
+  },
+
+  /** Clear current user's Available Now status. */
+  async clearAvailableNow() {
+    const r = await fetch(`${BASE_URL}/api/available-now`, {
+      method: 'DELETE',
+      headers: getHeaders(),
+      credentials: 'include',
+    });
+    if (!r.ok) {
+      const text = await r.text().catch(() => '');
+      throw new Error(text || `Could not clear available (status ${r.status})`);
+    }
+    return r.json().catch(() => ({}));
+  },
+
   // Register Expo push token with the backend
   async registerPushToken(expoPushToken) {
     try {

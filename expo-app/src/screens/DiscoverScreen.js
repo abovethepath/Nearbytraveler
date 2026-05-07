@@ -169,6 +169,9 @@ export default function DiscoverScreen({ navigation }) {
     if (!u?.id) return;
     rootNav.navigate('UserProfile', { userId: u.id });
   };
+  const handleOpenAvailableNow = () => {
+    rootNav.navigate('AvailableNow');
+  };
 
   // Filter: drop businesses, drop @nearbytravlr (id=1), pin current user first.
   // Server already sorted seeded users (aura=99) to the bottom, so we trust order.
@@ -238,8 +241,19 @@ export default function DiscoverScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Discover</Text>
-        <Text style={styles.headerSubtitle}>People nearby and around the world</Text>
+        <View style={styles.headerRow}>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.headerTitle}>Discover</Text>
+            <Text style={styles.headerSubtitle}>People nearby and around the world</Text>
+          </View>
+          <TouchableOpacity
+            style={styles.availableNowButton}
+            onPress={handleOpenAvailableNow}
+            activeOpacity={0.85}
+          >
+            <Text style={styles.availableNowButtonText}>{'⚡ Available now'}</Text>
+          </TouchableOpacity>
+        </View>
       </View>
       <FlatList
         data={orderedUsers}
@@ -283,8 +297,18 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#F3F4F6',
   },
+  headerRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   headerTitle: { fontSize: 28, fontWeight: '800', color: '#111827' },
   headerSubtitle: { fontSize: 13, color: '#6B7280', marginTop: 2 },
+  availableNowButton: {
+    backgroundColor: '#FEF3C7',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: '#FDE68A',
+  },
+  availableNowButtonText: { fontSize: 12, fontWeight: '700', color: '#92400E' },
 
   centered: { flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 32 },
   errorIcon: { fontSize: 36, marginBottom: 12 },
