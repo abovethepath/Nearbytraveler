@@ -366,6 +366,41 @@ const api = {
     return r.json();
   },
 
+  /** Discover People feed for the Home tab. Server already sorts seeded users
+   *  (aura=99) to the bottom. Optional `location` query param filters by city. */
+  async getDiscoverPeople(opts = {}) {
+    const params = new URLSearchParams();
+    if (opts.location) params.set('location', opts.location);
+    const qs = params.toString();
+    const r = await fetch(`${BASE_URL}/api/users${qs ? '?' + qs : ''}`, {
+      headers: getHeaders(),
+      credentials: 'include',
+    });
+    if (!r.ok) return [];
+    return r.json();
+  },
+
+  /** "New to Nearby Traveler" horizontal scroll. Returns recently-joined users
+   *  (currently filtered server-side to seeded users for social proof). */
+  async getRecentlyJoined(limit = 10) {
+    const r = await fetch(
+      `${BASE_URL}/api/users/recently-joined?limit=${limit}&days=14`,
+      { headers: getHeaders(), credentials: 'include' },
+    );
+    if (!r.ok) return [];
+    return r.json();
+  },
+
+  /** IDs of users currently marked Available Now (used for green-dot badges). */
+  async getAvailableNowIds() {
+    const r = await fetch(`${BASE_URL}/api/available-now/active-ids`, {
+      headers: getHeaders(),
+      credentials: 'include',
+    });
+    if (!r.ok) return [];
+    return r.json();
+  },
+
   // Register Expo push token with the backend
   async registerPushToken(expoPushToken) {
     try {

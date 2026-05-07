@@ -26,6 +26,8 @@ import MessagesScreen from '../screens/MessagesScreen';
 import ChatScreen from '../screens/ChatScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import ExploreScreen from '../screens/ExploreScreen';
+import DiscoverScreen from '../screens/DiscoverScreen';
+import UserProfileScreen from '../screens/UserProfileScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -201,11 +203,10 @@ function MainTabs() {
     >
       <Tab.Screen
         name="Home"
-        component={WebViewStack}
+        component={DiscoverScreen}
         options={{
           tabBarIcon: ({ focused }) => <TabIcon emoji="🏠" focused={focused} />,
         }}
-        initialParams={{ path: "/home" }}
       />
       <Tab.Screen
         name="Explore"
@@ -249,10 +250,12 @@ function RootStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="MainTabs" component={MainTabs} />
-      {/* Root-level WebView for cross-tab navigation. UserAvatar (in Messages,
-          Chat, Profile screens) and ExploreScreen both call
-          `rootNav.navigate('WebView', { path, title })` to open user profiles
-          and other deep-linked pages — this screen is the target. */}
+      {/* Root-level native UserProfile. UserAvatar, DiscoverScreen, and
+          ExploreScreen all call `rootNav.navigate('UserProfile', { userId })`
+          to open another user's profile from any tab. */}
+      <Stack.Screen name="UserProfile" component={UserProfileScreen} />
+      {/* Root-level WebView fallback for any deep-linked page that doesn't yet
+          have a native equivalent (event details, blog posts, etc.). */}
       <Stack.Screen name="WebView" component={GenericWebViewScreen} />
     </Stack.Navigator>
   );

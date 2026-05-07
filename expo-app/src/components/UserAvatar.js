@@ -29,8 +29,9 @@ function getImageUrl(user) {
 
 /**
  * User avatar: profile image or initials in a colored circle.
- * Tappable: navigates to WebView /users/:id with title.
- * Pass root navigation (e.g. navigation.getParent()?.getParent() ?? navigation) so WebView is reachable.
+ * Tappable: navigates to native UserProfile screen at the root navigator.
+ * Pass root navigation (e.g. navigation.getParent()?.getParent() ?? navigation)
+ * so the root-level UserProfile screen is reachable from any tab.
  */
 export default function UserAvatar({ user, size = 52, navigation, style }) {
   const imageUrl = getImageUrl(user);
@@ -41,10 +42,7 @@ export default function UserAvatar({ user, size = 52, navigation, style }) {
   const onPress = () => {
     if (!user?.id || !navigation) return;
     const rootNav = navigation.getParent?.()?.getParent?.() ?? navigation;
-    rootNav.navigate('WebView', {
-      path: `/users/${user.id}`,
-      title: user.fullName || user.name || user.username || 'Profile',
-    });
+    rootNav.navigate('UserProfile', { userId: user.id });
   };
 
   const content = imageUrl ? (

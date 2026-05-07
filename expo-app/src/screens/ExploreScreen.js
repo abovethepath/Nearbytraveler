@@ -87,7 +87,7 @@ export default function ExploreScreen({ navigation }) {
   const onRefresh = () => { setRefreshing(true); fetchUsers(); };
   const rootNav = navigation.getParent?.()?.getParent?.() ?? navigation;
   const handleUserPress = (selectedUser) => {
-    rootNav.navigate('WebView', { path: `/users/${selectedUser.id}`, title: selectedUser.fullName || selectedUser.username });
+    rootNav.navigate('UserProfile', { userId: selectedUser.id });
   };
 
   return (
