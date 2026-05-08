@@ -53,7 +53,10 @@ export function InterestSelector({
   }
 
   const handleTouch = (e: React.TouchEvent, interest: string) => {
-    e.preventDefault();
+    // Do NOT call e.preventDefault() here. On Android Chrome it cancels
+    // the scroll momentum when a swipe ends on a chip, locking users out
+    // of scrolling past the chip grid. The touchedRecently flag (set
+    // inside toggleInterest) already debounces the synthetic click.
     toggleInterest(interest, true);
   };
 

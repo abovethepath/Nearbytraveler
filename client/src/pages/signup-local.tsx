@@ -68,6 +68,22 @@ export default function SignupLocal() {
   // anchor through the layout reflow; we actively scrollIntoView this marker
   // from SmartLocationInput's onAfterChange to push the user past the trap.
   const afterHometownRef = useRef<HTMLDivElement>(null);
+  // Same pattern, for the Interests section. Auto-scrolls past the chip grid
+  // once the user picks 7+ interests so they don't have to swipe through
+  // chips (where preventDefault on touchend used to cancel scroll momentum).
+  const afterInterestsRef = useRef<HTMLDivElement>(null);
+  const hasScrolledPastInterestsRef = useRef(false);
+  useEffect(() => {
+    const customCount = (formData.customInterests || '')
+      .split(',').map(s => s.trim()).filter(s => s.length > 0).length;
+    const totalInterests = formData.interests.length + customCount;
+    if (totalInterests >= 7 && !hasScrolledPastInterestsRef.current) {
+      hasScrolledPastInterestsRef.current = true;
+      requestAnimationFrame(() => {
+        afterInterestsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    }
+  }, [formData.interests, formData.customInterests]);
 
   // Helper functions to count all interests including custom ones
   const getCustomInterestsCount = () => {
@@ -536,6 +552,10 @@ export default function SignupLocal() {
                   </div>
                 </div>
               </div>
+
+              {/* Marker for Android scroll-into-view after reaching 7 interests.
+                  Auto-scrolls past the chip grid to the Submit area. */}
+              <div ref={afterInterestsRef} aria-hidden className="h-0 scroll-mt-24" />
 
               {/* Terms agreement */}
               <p className="text-sm text-gray-600 dark:text-gray-400 text-center mb-4">
