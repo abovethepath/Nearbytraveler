@@ -21,6 +21,68 @@ const DARK = {
 
 const EXTERNAL_HOSTNAMES = ['lu.ma', 'www.lu.ma', 'partiful.com', 'www.partiful.com', 'eventbrite.com', 'www.eventbrite.com', 'wa.me', 'twitter.com', 'x.com', 'facebook.com', 'www.facebook.com', 'instagram.com', 'www.instagram.com'];
 
+// Build 12 diagnostic — runs AFTER the page's JS has loaded. Pings native with:
+//   1) document.readyState + key localStorage flags (hasUser, nt_session_verified)
+//   2) result of fetch('/api/auth/user', credentials:'include') — the same call
+//      AuthContext makes. This is the load-bearing question: does the in-page
+//      fetch include the nt.sid cookie that the initial nav was sent with?
+// Posts back via window.ReactNativeWebView.postMessage; native onMessage updates
+// the overlay so we can see what's happening without a Mac/dev menu.
+const POST_LOAD_DIAG_JS = `
+(function() {
+  function send(payload) {
+    try {
+      if (window.ReactNativeWebView && window.ReactNativeWebView.postMessage) {
+        window.ReactNativeWebView.postMessage(JSON.stringify(payload));
+      }
+    } catch (e) {}
+  }
+  function runDiag() {
+    try {
+      send({
+        type: 'DIAG_LOAD',
+        readyState: document.readyState,
+        title: (document.title || '').substring(0, 40),
+        hasUser: !!localStorage.getItem('user'),
+        ntVerified: localStorage.getItem('nt_session_verified') || 'null',
+        docCookie: (document.cookie || '(empty)').substring(0, 60)
+      });
+    } catch (e) {}
+    var t0 = Date.now();
+    try {
+      fetch('/api/auth/user', { credentials: 'include', headers: { Accept: 'application/json' } })
+        .then(function (r) {
+          var status = r.status;
+          return r.text().then(function (body) {
+            send({
+              type: 'DIAG_AUTH',
+              status: status,
+              ms: Date.now() - t0,
+              body: (body || '').substring(0, 80)
+            });
+          });
+        })
+        .catch(function (e) {
+          send({
+            type: 'DIAG_AUTH',
+            status: -1,
+            ms: Date.now() - t0,
+            error: String(e && e.message || e).substring(0, 60)
+          });
+        });
+    } catch (e) {
+      send({ type: 'DIAG_AUTH', status: -2, error: String(e).substring(0, 60) });
+    }
+  }
+  if (document.readyState === 'complete') {
+    runDiag();
+  } else {
+    window.addEventListener('load', runDiag);
+  }
+})();
+true;
+`;
+
 const NATIVE_INJECT_JS = `
   window.NearbyTravelerNative = true;
   window.__NEARBY_NATIVE_IOS__ = true;
@@ -111,9 +173,13 @@ function WebViewWithChrome({ path, navigation }) {
   const [headerProfileImage, setHeaderProfileImage] = useState(null);
   const [canGoBackWeb, setCanGoBackWeb] = useState(false);
   const [sessionReady, setSessionReady] = useState(false);
-  // Diagnostic state for the temporary debug overlay (build 11). Tracks the
-  // last HTTP status from the WebView's navigation. Remove after Alt E confirmed.
+  // Diagnostic state for the temporary debug overlay (build 12). Tracks the
+  // last HTTP status from the WebView's navigation, plus what the in-page
+  // /api/auth/user fetch returns (load-bearing for AuthContext). Remove after
+  // Alt E confirmed in production.
   const [lastHttpStatus, setLastHttpStatus] = useState(null);
+  const [diagLoad, setDiagLoad] = useState(null); // { readyState, hasUser, ntVerified, docCookie }
+  const [diagAuth, setDiagAuth] = useState(null); // { status, ms, body | error }
   const webViewRef = useRef(null);
   const displayUser = authUser || user;
   const source = useMemo(() => webViewSource(path, sessionCookie), [path, sessionCookie]);
@@ -267,6 +333,16 @@ function WebViewWithChrome({ path, navigation }) {
   const onMessage = useCallback((event) => {
     try {
       const data = JSON.parse(event.nativeEvent?.data || '{}');
+      if (data.type === 'DIAG_LOAD') {
+        console.log('🩺 [DIAG_LOAD]', data);
+        setDiagLoad(data);
+        return;
+      }
+      if (data.type === 'DIAG_AUTH') {
+        console.log('🩺 [DIAG_AUTH]', data);
+        setDiagAuth(data);
+        return;
+      }
       if (data.type === 'START_SPEECH_RECOGNITION') {
         const sendError = (err) => {
           try {
@@ -449,6 +525,7 @@ function WebViewWithChrome({ path, navigation }) {
 })();
 true;
 ` : '')}
+        injectedJavaScript={POST_LOAD_DIAG_JS}
         onLoadStart={onLoadStart}
         onLoadEnd={onLoadEnd}
         onError={onError}
@@ -485,23 +562,29 @@ true;
         )}
       />
       )}
-      {/* DIAG OVERLAY (build 11) — shows what's happening with auth.
-          Cookie should start with "nt.sid=s:" if Alt E is working.
-          If cookie shows "nt.sid=" without "s:", we stored raw sessionId.
-          status=401 means server rejected the cookie.
-          Remove this overlay once Alt E confirmed in production. */}
+      {/* DIAG OVERLAY (build 12) — shows what's happening with auth.
+          c:        cookie sent on initial nav (should start with "nt.sid=s:")
+          u:        the URL the WebView loaded
+          nav:      "?" means no onHttpError fired (initial nav was 2xx)
+          ready:    document.readyState reported by post-load injected JS
+          ntVer:    localStorage.nt_session_verified ("null" means not set)
+          auth:     status returned by in-page fetch('/api/auth/user')
+                    -1 = network error, -2 = JS exception, 401 = cookie missing
+          body:     first 80 chars of /api/auth/user response
+          jsCookie: document.cookie visible to JS (httpOnly cookies excluded)
+          Remove this overlay once auth confirmed in production. */}
       <View pointerEvents="none" style={{
         position: 'absolute',
         top: 60,
         right: 6,
         zIndex: 9999,
-        backgroundColor: 'rgba(0,0,0,0.78)',
+        backgroundColor: 'rgba(0,0,0,0.82)',
         paddingHorizontal: 6,
         paddingVertical: 4,
         borderRadius: 6,
-        maxWidth: 220,
+        maxWidth: 260,
       }}>
-        <Text style={{ color: '#FFD700', fontSize: 9, fontWeight: '700' }}>DIAG b11</Text>
+        <Text style={{ color: '#FFD700', fontSize: 9, fontWeight: '700' }}>DIAG b12</Text>
         <Text style={{ color: '#FFFFFF', fontSize: 8 }} numberOfLines={2}>
           c: {api.getSessionCookie() ? api.getSessionCookie().substring(0, 30) + '…' : 'NULL'}
         </Text>
@@ -509,7 +592,19 @@ true;
           u: {(effectiveSource?.uri || 'no source').replace(BASE_URL, '') || '/'}
         </Text>
         <Text style={{ color: '#FFFFFF', fontSize: 8 }}>
-          status: {lastHttpStatus == null ? '?' : String(lastHttpStatus)}
+          nav: {lastHttpStatus == null ? '?' : String(lastHttpStatus)}
+        </Text>
+        <Text style={{ color: '#9CDCFE', fontSize: 8 }} numberOfLines={1}>
+          ready: {diagLoad?.readyState || '…'}  ntVer: {diagLoad?.ntVerified || '…'}
+        </Text>
+        <Text style={{ color: diagAuth?.status === 200 ? '#7CFC7C' : '#FF8080', fontSize: 8 }}>
+          auth: {diagAuth == null ? '…' : `${diagAuth.status} (${diagAuth.ms ?? '?'}ms)`}
+        </Text>
+        <Text style={{ color: '#FFFFFF', fontSize: 8 }} numberOfLines={2}>
+          body: {diagAuth?.body || diagAuth?.error || '…'}
+        </Text>
+        <Text style={{ color: '#FFFFFF', fontSize: 8 }} numberOfLines={2}>
+          jsCookie: {diagLoad?.docCookie || '…'}
         </Text>
       </View>
     </SafeAreaView>
