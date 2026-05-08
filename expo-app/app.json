@@ -18,7 +18,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.nearbytraveler.app",
-      "buildNumber": "10",
+      "buildNumber": "11",
       "usesAppleSignIn": true,
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "Nearby Traveler uses your location to connect you with nearby travelers, locals, and events in your area.",

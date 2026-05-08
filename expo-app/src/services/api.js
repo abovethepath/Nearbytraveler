@@ -33,13 +33,18 @@ const restoreSession = async () => {
     const signed = await AsyncStorage.getItem(SIGNED_SESSION_KEY);
     if (signed) {
       sessionCookie = `nt.sid=${signed}`;
+      console.log('🔐 [RESTORE] signedFromStorage:', !!signed);
+      console.log('🔐 [RESTORE] sessionCookie set to:', sessionCookie ? sessionCookie.substring(0, 30) + '...' : 'NULL');
       return;
     }
     const sid = await AsyncStorage.getItem(SESSION_KEY);
     if (sid) sessionCookie = `nt.sid=${sid}`;
     else sessionCookie = null;
+    console.log('🔐 [RESTORE] signedFromStorage:', !!signed);
+    console.log('🔐 [RESTORE] sessionCookie set to:', sessionCookie ? sessionCookie.substring(0, 30) + '...' : 'NULL');
   } catch (e) {
     sessionCookie = null;
+    console.log('🔐 [RESTORE] error:', e?.message || String(e));
   }
 };
 
@@ -121,6 +126,10 @@ const api = {
     const d = await r.json().catch(() => ({}));
     if (!r.ok) throw new Error(d.message || 'Login failed');
 
+    console.log('🔐 [LOGIN] Response keys:', Object.keys(d));
+    console.log('🔐 [LOGIN] Has signedSessionCookie:', !!d.signedSessionCookie);
+    console.log('🔐 [LOGIN] Has sessionId:', !!d.sessionId);
+
     // React Native: server returns sessionId (raw) AND signedSessionCookie
     // (s:RAW.SIGNATURE) in body. Prefer the signed value — express-session
     // validates the signature, which is required for WebView Cookie-header
@@ -139,6 +148,8 @@ const api = {
         await AsyncStorage.setItem(SESSION_KEY, d.sessionId);
       } catch (e) {}
     }
+
+    console.log('🔐 [LOGIN] sessionCookie set to:', sessionCookie ? sessionCookie.substring(0, 30) + '...' : 'NULL');
 
     if (d.user) {
       await offlineStorage.cacheProfile(d.user);

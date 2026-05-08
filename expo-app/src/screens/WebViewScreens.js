@@ -60,6 +60,8 @@ function pathWithNativeIOS(path) {
 function webViewSource(path, cookieOverride) {
   const uri = `${BASE_URL}${pathWithNativeIOS(path)}`;
   const cookie = cookieOverride || api.getSessionCookie();
+  console.log('🍪 [WEBVIEW] Cookie header being sent:', cookie ? cookie.substring(0, 30) + '...' : 'NONE');
+  console.log('🍪 [WEBVIEW] URL:', uri);
   if (cookie) {
     // Native iOS RNCWebViewImpl.m expects lowercase "cookie" key (line 849)
     return { uri, headers: { cookie } };
@@ -109,6 +111,9 @@ function WebViewWithChrome({ path, navigation }) {
   const [headerProfileImage, setHeaderProfileImage] = useState(null);
   const [canGoBackWeb, setCanGoBackWeb] = useState(false);
   const [sessionReady, setSessionReady] = useState(false);
+  // Diagnostic state for the temporary debug overlay (build 11). Tracks the
+  // last HTTP status from the WebView's navigation. Remove after Alt E confirmed.
+  const [lastHttpStatus, setLastHttpStatus] = useState(null);
   const webViewRef = useRef(null);
   const displayUser = authUser || user;
   const source = useMemo(() => webViewSource(path, sessionCookie), [path, sessionCookie]);
@@ -228,7 +233,12 @@ function WebViewWithChrome({ path, navigation }) {
     const isConnectionError = desc.includes('connect') || desc.includes('network') || desc.includes('offline') || desc.includes('internet') || desc.includes('err_connection') || desc.includes('nsurlerrordomain');
     setError(isConnectionError ? 'Can\'t connect to server. Please check your internet connection and try again.' : (e.nativeEvent?.description || 'Failed to load page'));
   }, []);
-  const onHttpError = useCallback((e) => { setError(e.nativeEvent?.statusCode ? `Error ${e.nativeEvent.statusCode}` : 'Request failed'); }, []);
+  const onHttpError = useCallback((e) => {
+    const status = e.nativeEvent?.statusCode;
+    setLastHttpStatus(status || 'err');
+    console.log('🌐 [WEBVIEW] HTTP error', status, 'url:', e.nativeEvent?.url);
+    setError(status ? `Error ${status}` : 'Request failed');
+  }, []);
   const onRetry = useCallback(() => { setError(null); setLoading(true); webViewRef.current?.reload(); }, []);
   const onRefresh = useCallback(() => { setRefreshing(true); setError(null); webViewRef.current?.reload(); }, []);
   const onShouldStartLoadWithRequest = useCallback((req) => {
@@ -475,6 +485,33 @@ true;
         )}
       />
       )}
+      {/* DIAG OVERLAY (build 11) — shows what's happening with auth.
+          Cookie should start with "nt.sid=s:" if Alt E is working.
+          If cookie shows "nt.sid=" without "s:", we stored raw sessionId.
+          status=401 means server rejected the cookie.
+          Remove this overlay once Alt E confirmed in production. */}
+      <View pointerEvents="none" style={{
+        position: 'absolute',
+        top: 60,
+        right: 6,
+        zIndex: 9999,
+        backgroundColor: 'rgba(0,0,0,0.78)',
+        paddingHorizontal: 6,
+        paddingVertical: 4,
+        borderRadius: 6,
+        maxWidth: 220,
+      }}>
+        <Text style={{ color: '#FFD700', fontSize: 9, fontWeight: '700' }}>DIAG b11</Text>
+        <Text style={{ color: '#FFFFFF', fontSize: 8 }} numberOfLines={2}>
+          c: {api.getSessionCookie() ? api.getSessionCookie().substring(0, 30) + '…' : 'NULL'}
+        </Text>
+        <Text style={{ color: '#FFFFFF', fontSize: 8 }} numberOfLines={1}>
+          u: {(effectiveSource?.uri || 'no source').replace(BASE_URL, '') || '/'}
+        </Text>
+        <Text style={{ color: '#FFFFFF', fontSize: 8 }}>
+          status: {lastHttpStatus == null ? '?' : String(lastHttpStatus)}
+        </Text>
+      </View>
     </SafeAreaView>
   );
 }
