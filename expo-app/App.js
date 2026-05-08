@@ -8,14 +8,6 @@ import * as Device from 'expo-device';
 import Constants from 'expo-constants';
 import api from './src/services/api';
 
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: true,
-  }),
-});
-
 function PushTokenRegistrar() {
   const { user } = useAuth();
 
@@ -46,6 +38,25 @@ function PushTokenRegistrar() {
 }
 
 export default function App() {
+  // Defer setNotificationHandler until after React mounts AND native bridges
+  // are ready. Top-level calls race with native init on TestFlight cold launch
+  // and can throw silently before any UI renders. SDK 54 also replaced the
+  // deprecated shouldShowAlert with shouldShowBanner + shouldShowList.
+  useEffect(() => {
+    try {
+      Notifications.setNotificationHandler({
+        handleNotification: async () => ({
+          shouldShowBanner: true,
+          shouldShowList: true,
+          shouldPlaySound: true,
+          shouldSetBadge: true,
+        }),
+      });
+    } catch (e) {
+      console.warn('Failed to set notification handler:', e);
+    }
+  }, []);
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
