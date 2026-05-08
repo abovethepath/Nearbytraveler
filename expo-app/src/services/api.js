@@ -3,6 +3,7 @@ import offlineStorage from './offlineStorage';
 import { BASE_URL } from '../config';
 
 const SESSION_KEY = 'nt_session_id';
+const SIGNED_SESSION_KEY = 'nt_signed_session_cookie';
 
 const CONNECTION_ERROR_MSG = 'Can\'t connect to server. Please check your internet connection and try again.';
 
@@ -27,6 +28,13 @@ let sessionCookie = null;
 /** Restore session id from storage (call on app load so subsequent requests send Cookie). */
 const restoreSession = async () => {
   try {
+    // Prefer the signed cookie value (works for WebView auth via Cookie header).
+    // Fallback to raw sessionId for older app installs that pre-date Alt E.
+    const signed = await AsyncStorage.getItem(SIGNED_SESSION_KEY);
+    if (signed) {
+      sessionCookie = `nt.sid=${signed}`;
+      return;
+    }
     const sid = await AsyncStorage.getItem(SESSION_KEY);
     if (sid) sessionCookie = `nt.sid=${sid}`;
     else sessionCookie = null;
@@ -113,8 +121,19 @@ const api = {
     const d = await r.json().catch(() => ({}));
     if (!r.ok) throw new Error(d.message || 'Login failed');
 
-    // React Native: server returns sessionId in body; persist and send as Cookie on future requests
-    if (d.sessionId) {
+    // React Native: server returns sessionId (raw) AND signedSessionCookie
+    // (s:RAW.SIGNATURE) in body. Prefer the signed value — express-session
+    // validates the signature, which is required for WebView Cookie-header
+    // auth (httpOnly blocks JS document.cookie writes).
+    if (d.signedSessionCookie) {
+      sessionCookie = `nt.sid=${d.signedSessionCookie}`;
+      try {
+        await AsyncStorage.setItem(SIGNED_SESSION_KEY, d.signedSessionCookie);
+        if (d.sessionId) await AsyncStorage.setItem(SESSION_KEY, d.sessionId);
+      } catch (e) {}
+    } else if (d.sessionId) {
+      // Fallback for older server builds — native fetches still work, but
+      // WebView pages will get 401 (server rejects unsigned cookie).
       sessionCookie = `nt.sid=${d.sessionId}`;
       try {
         await AsyncStorage.setItem(SESSION_KEY, d.sessionId);
@@ -139,6 +158,7 @@ const api = {
         if (r.status === 401) {
           sessionCookie = null;
           try { await AsyncStorage.removeItem(SESSION_KEY); } catch (e) {}
+          try { await AsyncStorage.removeItem(SIGNED_SESSION_KEY); } catch (e) {}
           await offlineStorage.clearProfileCache();
           return null;
         }
@@ -162,6 +182,7 @@ const api = {
     sessionCookie = null;
     try {
       await AsyncStorage.removeItem(SESSION_KEY);
+      await AsyncStorage.removeItem(SIGNED_SESSION_KEY);
     } catch (e) {}
     await offlineStorage.clearCache();
   },
@@ -171,12 +192,21 @@ const api = {
   async ensureSessionReady() {
     await restoreSession();
   },
-  /** Store session from WebView signup so Messages/API work in native tabs. */
-  async setSessionFromSignup(sessionId) {
-    if (!sessionId) return;
+  /** Store session from WebView signup so Messages/API work in native tabs.
+   *  Accepts an optional signedSessionCookie (preferred for WebView auth).
+   *  Until the WebView signup flow exposes the signed value via postMessage,
+   *  callers may still pass only sessionId (works for native API fetches). */
+  async setSessionFromSignup(sessionId, signedSessionCookie) {
+    if (!sessionId && !signedSessionCookie) return;
     try {
-      await AsyncStorage.setItem(SESSION_KEY, sessionId);
-      sessionCookie = `nt.sid=${sessionId}`;
+      if (signedSessionCookie) {
+        await AsyncStorage.setItem(SIGNED_SESSION_KEY, signedSessionCookie);
+        sessionCookie = `nt.sid=${signedSessionCookie}`;
+        if (sessionId) await AsyncStorage.setItem(SESSION_KEY, sessionId);
+      } else if (sessionId) {
+        await AsyncStorage.setItem(SESSION_KEY, sessionId);
+        sessionCookie = `nt.sid=${sessionId}`;
+      }
     } catch (e) {}
   },
   /** For WebView: pass this as Cookie header so the site sees the user as logged in. */
@@ -192,7 +222,13 @@ const api = {
     extractCookie(r);
     const d = await r.json().catch(() => ({}));
     if (!r.ok) throw new Error(d.message || 'Registration failed');
-    if (d.sessionId) {
+    if (d.signedSessionCookie) {
+      sessionCookie = `nt.sid=${d.signedSessionCookie}`;
+      try {
+        await AsyncStorage.setItem(SIGNED_SESSION_KEY, d.signedSessionCookie);
+        if (d.sessionId) await AsyncStorage.setItem(SESSION_KEY, d.sessionId);
+      } catch (e) {}
+    } else if (d.sessionId) {
       sessionCookie = `nt.sid=${d.sessionId}`;
       try {
         await AsyncStorage.setItem(SESSION_KEY, d.sessionId);
@@ -219,7 +255,13 @@ const api = {
     extractCookie(r);
     const d = await r.json().catch(() => ({}));
     if (!r.ok) throw new Error(d.message || 'Apple sign-in failed');
-    if (d.sessionId) {
+    if (d.signedSessionCookie) {
+      sessionCookie = `nt.sid=${d.signedSessionCookie}`;
+      try {
+        await AsyncStorage.setItem(SIGNED_SESSION_KEY, d.signedSessionCookie);
+        if (d.sessionId) await AsyncStorage.setItem(SESSION_KEY, d.sessionId);
+      } catch (e) {}
+    } else if (d.sessionId) {
       sessionCookie = `nt.sid=${d.sessionId}`;
       try {
         await AsyncStorage.setItem(SESSION_KEY, d.sessionId);

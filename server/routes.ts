@@ -1,5 +1,6 @@
 import type { Express, Request, Response } from "express";
 import bcrypt from "bcryptjs";
+import { sign as signCookie } from "cookie-signature";
 import multer from "multer";
 
 // Extend session interface to include user property and Sign in with Apple pending data
@@ -1457,6 +1458,16 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
   });
 
   // Real login endpoint with credentials
+  // Native iOS WebView auth: produces the on-the-wire signed cookie value
+  // for a session ID. JS document.cookie cannot set httpOnly cookies, so the
+  // native app sends this string as the Cookie header on WebView initial
+  // requests; express-session validates the signature and then plants a
+  // proper Set-Cookie response (rolling: true keeps the WebView in sync).
+  const SESSION_SECRET_FOR_SIGNING = process.env.SESSION_SECRET || "nearby-traveler-secret-key-dev";
+  function getSignedSessionCookieValue(sessionId: string): string {
+    return `s:${signCookie(sessionId, SESSION_SECRET_FOR_SIGNING)}`;
+  }
+
   app.post("/api/auth/login", async (req, res) => {
     try {
       const { email, password } = req.body || {};
@@ -1530,7 +1541,11 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           email: user.email,
           profileImageUrl: (user as any).profileImage
         };
-        if (isMobile && (req as any).sessionID) body.sessionId = (req as any).sessionID;
+        if (isMobile && (req as any).sessionID) {
+          const sid = (req as any).sessionID;
+          body.sessionId = sid;
+          body.signedSessionCookie = getSignedSessionCookieValue(sid);
+        }
         console.log("🔐 Saving session for user:", user.id);
 
         return freshSess.save((err: any) => {
@@ -1594,10 +1609,17 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
             });
           });
         }
-        return res.status(200).json({
+        const isMobileApple = req.get?.("X-Client") === "ReactNative";
+        const appleSid = (req as any).sessionID;
+        const appleResponseBody: Record<string, unknown> = {
           ok: true,
           user: { id: existingUser.id, username: existingUser.username },
-        });
+        };
+        if (isMobileApple && appleSid) {
+          appleResponseBody.sessionId = appleSid;
+          appleResponseBody.signedSessionCookie = getSignedSessionCookieValue(appleSid);
+        }
+        return res.status(200).json(appleResponseBody);
       }
       const name = appleFullName
         ? [appleFullName.givenName, appleFullName.familyName].filter(Boolean).join(" ").trim() || undefined
@@ -6338,7 +6360,9 @@ Questions? Just reply here — I read every message.
         redirectTo: "/welcome"
       };
       if (isReactNative && (req as any).sessionID) {
-        responsePayload.sessionId = (req as any).sessionID;
+        const sid = (req as any).sessionID;
+        responsePayload.sessionId = sid;
+        responsePayload.signedSessionCookie = getSignedSessionCookieValue(sid);
       }
 
       // Send success response - session is already persisted

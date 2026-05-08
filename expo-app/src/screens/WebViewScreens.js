@@ -421,27 +421,24 @@ function WebViewWithChrome({ path, navigation }) {
         ref={webViewRef}
         source={effectiveSource}
         style={[styles.webview, { backgroundColor: loadingBg }]}
-        injectedJavaScriptBeforeContentLoaded={
-          displayUser
-            ? NATIVE_INJECT_JS + `
+        injectedJavaScriptBeforeContentLoaded={NATIVE_INJECT_JS + (displayUser ? `
 (function() {
   try {
+    // Cookie auth happens via the Cookie header on webViewSource()'s initial
+    // request — express-session validates the signed value and the server's
+    // Set-Cookie response (rolling: true) plants the cookie in WKHTTPCookieStore.
+    // JS document.cookie cannot set httpOnly cookies, so we don't try here.
+    // We do plant user data in localStorage so the page renders fast.
     var u = ${JSON.stringify(displayUser)};
     localStorage.setItem('user', JSON.stringify(u));
     localStorage.setItem('userData', JSON.stringify(u));
     localStorage.setItem('travelconnect_user', JSON.stringify(u));
     localStorage.setItem('auth_token', 'authenticated');
-    ${sessionId ? `
-    // CRITICAL: Set session cookie so fetch(credentials:'include') sends it - WebView does not persist Cookie from initial request
-    document.cookie = 'nt.sid=' + ${JSON.stringify(sessionId)} + '; path=/; max-age=2592000; SameSite=Lax' + (location.protocol === 'https:' ? '; Secure' : '');
-    ` : ''}
-    console.log('[NearbyTraveler Native] Auth injection fired - user and session cookie set');
+    console.log('[NearbyTraveler Native] User injection fired');
   } catch(e) {}
 })();
 true;
-`
-            : NATIVE_INJECT_JS
-        }
+` : '')}
         onLoadStart={onLoadStart}
         onLoadEnd={onLoadEnd}
         onError={onError}
