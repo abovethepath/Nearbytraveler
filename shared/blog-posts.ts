@@ -827,6 +827,77 @@ But solo dining isn't a consolation prize. It's a different experience. Sometime
 The goal isn't to love eating alone. The goal is to stop letting the fear of it dictate where you eat and what you experience. To walk into a good restaurant, ask for a table for one, and not feel like you're doing something wrong.
 
 Because you're not. You're just hungry, in a new city, wanting a good meal. That's reason enough.`
+  },
+  {
+    title: "Alone at Night in a New City? Here's What Actually Works",
+    date: "2026-05-11",
+    slug: "solo-travel-evenings-not-in-a-hostel",
+    description: "Staying at a hotel and not sure what to do alone at night traveling? Here's the honest playbook for filling solo evenings with real connection.",
+    body: `You check in, drop your bag, and the room is nice. Quiet. Clean. A real bed, your own bathroom, no one borrowing your shampoo.
+
+And then it's 7pm and you have no idea what to do with yourself.
+
+The hostel crowd has a built-in solution — the common room, the bar crawl, the person in the bunk above you who happens to be going out. Hotel guests don't get any of that. You get a minibar and a television and a view of a city you came here to actually experience.
+
+This is the gap nobody talks about honestly. Solo travel in 2026 skews older than it used to — more 30s, 40s, 50s travelers booking real hotels and expecting a real trip — but the playbook for meeting people was written for 22-year-olds in dorm beds. If that's not you, you're on your own to figure it out.
+
+Here's what actually works.
+
+## The Hotel Lobby Is More Useful Than You Think
+
+Most hotel guests treat the lobby as a corridor. Walk through, press the button, disappear into their floor. That's a mistake.
+
+Lobbies with bars — and most decent hotels have them — are one of the genuinely underrated spots for solo travelers. The dynamic is different from a street-level bar. Everyone there is already away from home. The social permission to talk to a stranger is built into the context.
+
+Sit at the bar, not a table. Order something you'll take your time with. Don't stare at your phone. These three things alone will put you in more conversations than an evening of scrolling through event listings.
+
+The bartender is also your best asset. A good hotel bartender knows the neighborhood, knows which restaurants actually deliver, and — if the place is any good — will introduce you to someone else sitting alone if you give them half a reason to.
+
+## Get Out Before You Get Comfortable
+
+This is the hard one. After a travel day — the airport, the transit, the check-in process — your room feels like a reward. And it is. But if you stay in it, the evening disappears and you wake up the next morning having seen nothing but your ceiling.
+
+The specific window that matters is the first hour after you've settled. Don't sit down on the bed. Don't open the laptop. Change your shoes and go out while you still have momentum.
+
+It doesn't need to be a plan. Walk toward the part of the neighborhood that looks like it has some life. Find a place to eat that isn't the hotel restaurant. The goal of this first outing isn't connection — it's just breaking the gravity of the room. Once you've been out once, going out again gets easier.
+
+On the topic of eating alone: that first dinner is its own small skill. [How to Eat Alone While Traveling (Without the Awkwardness)](/blog/eating-alone-while-traveling) is worth reading before your next trip — the bar seat advice applies here too, and it covers the specific restaurant mechanics that make solo dining feel normal rather than sad.
+
+## The Problem With Scheduled Events
+
+Meetup.com exists. Facebook groups exist. Walking tours happen every morning at 10am. These are fine options with a real downside: they're designed for planning, not for the evening you're actually in.
+
+You landed today. It's Tuesday. The interesting thing on Meetup is Saturday. The walking tour is tomorrow. Tonight you have nothing.
+
+This is why real-time connection matters more than event calendars for hotel solo travelers. [Nearby Traveler](https://nearbytraveler.org) solves this specific problem — it shows you locals and travelers who are free to meet right now, not at a scheduled thing later in the week. Open it, see who's around tonight, reach out. That's the whole mechanism, and it works in a way that a Thursday event listing simply can't when you're trying to fill a Tuesday evening.
+
+For a broader look at what's worth downloading before a solo trip, [Best Apps for Solo Travelers in 2026](/blog/best-apps-for-solo-travelers) covers the full toolkit — but if you only add one thing for the evening problem specifically, the real-time angle is what you're looking for.
+
+## Find the Neighborhood Bar, Not the Tourist Bar
+
+Every city has the bar that appears on every "best bars" list and every city has the bar where people who actually live there go on a Wednesday. These are rarely the same place.
+
+The tourist bar is easy to find and usually fine. The neighborhood bar is where you'll have the conversation that actually stays with you.
+
+How to find it: ask someone at your hotel who isn't at the front desk. Ask your taxi or rideshare driver. Ask the person at the coffee shop near your hotel in the morning. People who live in cities know exactly which places are real and which ones are performed, and they'll tell you if you ask directly.
+
+Connecting with locals rather than other tourists is what separates a trip you remember from a trip you document. [How to Meet Locals When Traveling (Not Just Tourists)](/blog/meet-locals-when-traveling) goes deeper on this if you want the full strategy — the short version is that locals are accessible, they just require a different approach than finding other travelers.
+
+## Go Back to the Same Place Twice
+
+If you have more than one night in a city, use this: return to somewhere you went the first evening. The second time, you're a familiar face. The bartender recognizes you. The person who was at the corner table might be back. Familiarity compresses fast when you're both in the same place two nights running.
+
+This feels counterintuitive — you came to see a new city, not to repeat yourself — but connection requires at least some repetition. Two visits to the same place can do more for your evening than five visits to five different spots.
+
+## What to Do When the Evening Is Just Quiet
+
+Some nights won't produce a story. You'll have a good meal, walk around, go back to the room, and that's it. This is going to happen even when you do everything right, and it's worth making peace with it in advance rather than treating it as failure.
+
+The trap is spending a quiet evening in a state of low-grade anxiety about having a quiet evening. That mental loop is worse than the solitude itself. A book, a walk that doesn't go anywhere in particular, a long dinner at the bar with no agenda — these are actually fine. The problem isn't occasional alone time. The problem is when every evening goes that way.
+
+**The goal isn't to eliminate solo evenings. It's to make sure they're a choice, not a default.**
+
+The hotel solo traveler has fewer accidental connections than the hostel solo traveler. That's just true. The fix is being slightly more deliberate — getting out early, finding the right bar, using tools that work in real time, and giving yourself a reason to talk to someone before the evening closes. It's not complicated. It just requires showing up with a little more intention than the algorithm can manage for you.`
   }
 ];
 
