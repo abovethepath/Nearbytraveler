@@ -21,11 +21,11 @@ const DARK = {
 
 const EXTERNAL_HOSTNAMES = ['lu.ma', 'www.lu.ma', 'partiful.com', 'www.partiful.com', 'eventbrite.com', 'www.eventbrite.com', 'wa.me', 'twitter.com', 'x.com', 'facebook.com', 'www.facebook.com', 'instagram.com', 'www.instagram.com'];
 
-// Build 12 diagnostic — runs AFTER the page's JS has loaded. Pings native with:
-//   1) document.readyState + key localStorage flags (hasUser, nt_session_verified)
-//   2) result of fetch('/api/auth/user', credentials:'include') — the same call
-//      AuthContext makes. This is the load-bearing question: does the in-page
-//      fetch include the nt.sid cookie that the initial nav was sent with?
+// Build 13 diagnostic — runs AFTER the page's JS has loaded. Pings native with:
+//   1) DIAG_LOAD: document.readyState + key localStorage flags
+//   2) DIAG_AUTH: result of fetch('/api/auth/user', credentials:'include')
+//   3) DIAG_DOM:  what React actually rendered (or didn't) — distinguishes
+//      Hypothesis A (invalid flag), B (rendered but hidden), C (never mounted).
 // Posts back via window.ReactNativeWebView.postMessage; native onMessage updates
 // the overlay so we can see what's happening without a Mac/dev menu.
 const POST_LOAD_DIAG_JS = `
@@ -48,6 +48,32 @@ const POST_LOAD_DIAG_JS = `
         docCookie: (document.cookie || '(empty)').substring(0, 60)
       });
     } catch (e) {}
+    // DOM probe — what React actually rendered.
+    // Runs ~150ms after load so React has had a tick to mount and re-render
+    // post-checkServerAuth (which fires synchronously in useEffect).
+    setTimeout(function () {
+      try {
+        var root = document.querySelector('#root');
+        var main = document.querySelector('main');
+        var h1 = document.querySelector('h1');
+        var bodyHtml = document.body ? document.body.innerHTML : '';
+        send({
+          type: 'DIAG_DOM',
+          bodyChildren: document.body ? document.body.children.length : -1,
+          rootChildren: root ? root.children.length : -1,
+          rootFirstChildClass: (root && root.firstElementChild)
+            ? String(root.firstElementChild.className || '').substring(0, 60)
+            : 'none',
+          h1Text: (h1 && h1.textContent || 'no-h1').substring(0, 40),
+          invalidFlag: localStorage.getItem('nt_session_invalid') || 'null',
+          bodyOverflow: getComputedStyle(document.body).overflow,
+          mainHeight: main ? getComputedStyle(main).height : 'no-main',
+          hasLoadingShell: bodyHtml.indexOf('Loading\\u2026') !== -1 || bodyHtml.indexOf('Loading…') !== -1
+        });
+      } catch (e) {
+        send({ type: 'DIAG_DOM', error: String(e).substring(0, 80) });
+      }
+    }, 150);
     var t0 = Date.now();
     try {
       fetch('/api/auth/user', { credentials: 'include', headers: { Accept: 'application/json' } })
@@ -180,6 +206,7 @@ function WebViewWithChrome({ path, navigation }) {
   const [lastHttpStatus, setLastHttpStatus] = useState(null);
   const [diagLoad, setDiagLoad] = useState(null); // { readyState, hasUser, ntVerified, docCookie }
   const [diagAuth, setDiagAuth] = useState(null); // { status, ms, body | error }
+  const [diagDom, setDiagDom] = useState(null);   // { bodyChildren, rootChildren, rootFirstChildClass, h1Text, invalidFlag, bodyOverflow, mainHeight, hasLoadingShell }
   const webViewRef = useRef(null);
   const displayUser = authUser || user;
   const source = useMemo(() => webViewSource(path, sessionCookie), [path, sessionCookie]);
@@ -341,6 +368,11 @@ function WebViewWithChrome({ path, navigation }) {
       if (data.type === 'DIAG_AUTH') {
         console.log('🩺 [DIAG_AUTH]', data);
         setDiagAuth(data);
+        return;
+      }
+      if (data.type === 'DIAG_DOM') {
+        console.log('🩺 [DIAG_DOM]', data);
+        setDiagDom(data);
         return;
       }
       if (data.type === 'START_SPEECH_RECOGNITION') {
@@ -562,7 +594,7 @@ true;
         )}
       />
       )}
-      {/* DIAG OVERLAY (build 12) — shows what's happening with auth.
+      {/* DIAG OVERLAY (build 13) — shows what's happening with auth + DOM.
           c:        cookie sent on initial nav (should start with "nt.sid=s:")
           u:        the URL the WebView loaded
           nav:      "?" means no onHttpError fired (initial nav was 2xx)
@@ -572,6 +604,10 @@ true;
                     -1 = network error, -2 = JS exception, 401 = cookie missing
           body:     first 80 chars of /api/auth/user response
           jsCookie: document.cookie visible to JS (httpOnly cookies excluded)
+          r:        #root.children.length — 0 = React never mounted (Hypothesis C)
+          h:        document.querySelector('h1').textContent — "Settings" means rendered
+          inv:      localStorage.nt_session_invalid — "1" means Hypothesis A
+          load:     true if "Loading…" shell still in DOM (main.tsx didn't take over)
           Remove this overlay once auth confirmed in production. */}
       <View pointerEvents="none" style={{
         position: 'absolute',
@@ -584,7 +620,7 @@ true;
         borderRadius: 6,
         maxWidth: 260,
       }}>
-        <Text style={{ color: '#FFD700', fontSize: 9, fontWeight: '700' }}>DIAG b12</Text>
+        <Text style={{ color: '#FFD700', fontSize: 9, fontWeight: '700' }}>DIAG b13</Text>
         <Text style={{ color: '#FFFFFF', fontSize: 8 }} numberOfLines={2}>
           c: {api.getSessionCookie() ? api.getSessionCookie().substring(0, 30) + '…' : 'NULL'}
         </Text>
@@ -605,6 +641,12 @@ true;
         </Text>
         <Text style={{ color: '#FFFFFF', fontSize: 8 }} numberOfLines={2}>
           jsCookie: {diagLoad?.docCookie || '…'}
+        </Text>
+        <Text style={{ color: diagDom?.rootChildren > 0 ? '#7CFC7C' : '#FF8080', fontSize: 8 }} numberOfLines={1}>
+          r: {diagDom?.rootChildren ?? '…'}  inv: {diagDom?.invalidFlag || '…'}  load: {diagDom?.hasLoadingShell == null ? '…' : (diagDom.hasLoadingShell ? 'YES' : 'no')}
+        </Text>
+        <Text style={{ color: '#FFFFFF', fontSize: 8 }} numberOfLines={1}>
+          h: {(diagDom?.h1Text || '…').substring(0, 20)}
         </Text>
       </View>
     </SafeAreaView>
