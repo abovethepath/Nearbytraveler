@@ -21,112 +21,6 @@ const DARK = {
 
 const EXTERNAL_HOSTNAMES = ['lu.ma', 'www.lu.ma', 'partiful.com', 'www.partiful.com', 'eventbrite.com', 'www.eventbrite.com', 'wa.me', 'twitter.com', 'x.com', 'facebook.com', 'www.facebook.com', 'instagram.com', 'www.instagram.com'];
 
-// Build 14 diagnostic — dual-timing DOM probe to distinguish a render race
-// (Settings flashes through FullPageSkeleton → LandingStreamlined → Settings
-// during the auth handoff) from a genuinely stuck page.
-//   1) DIAG_LOAD: document.readyState + key localStorage flags
-//   2) DIAG_AUTH: result of fetch('/api/auth/user', credentials:'include')
-//   3) DIAG_DOM (when:'early', t=+150ms):  what's on screen during transition
-//   4) DIAG_DOM (when:'late',  t=+1500ms): what's on screen after settle
-// Both probes capture pathname, root/main structure, h1/h2/h3 text, computed
-// styles on <main>, and a body innerText sample so we can see what's there.
-// Posts back via window.ReactNativeWebView.postMessage; native onMessage routes
-// 'early' vs 'late' to separate state slots displayed as two overlay rows.
-const POST_LOAD_DIAG_JS = `
-(function() {
-  function send(payload) {
-    try {
-      if (window.ReactNativeWebView && window.ReactNativeWebView.postMessage) {
-        window.ReactNativeWebView.postMessage(JSON.stringify(payload));
-      }
-    } catch (e) {}
-  }
-  function probe(label) {
-    try {
-      var root = document.querySelector('#root');
-      var main = document.querySelector('main');
-      var h1 = document.querySelector('h1');
-      var h2 = document.querySelector('h2');
-      var h3 = document.querySelector('h3');
-      var mainStyle = main ? getComputedStyle(main) : null;
-      var bodyHtml = document.body ? document.body.innerHTML : '';
-      var bodyInnerText = document.body ? document.body.innerText : '';
-      send({
-        type: 'DIAG_DOM',
-        when: label,
-        pathname: window.location.pathname,
-        rootChildren: root ? root.children.length : -1,
-        rootFirstChildClass: (root && root.firstElementChild)
-          ? String(root.firstElementChild.className || '').substring(0, 60)
-          : 'none',
-        h1Text: ((h1 && h1.textContent) || 'no-h1').substring(0, 40),
-        h2Text: ((h2 && h2.textContent) || 'no-h2').substring(0, 40),
-        h3Text: ((h3 && h3.textContent) || 'no-h3').substring(0, 40),
-        mainChildren: main ? main.children.length : -1,
-        mainHtml: main ? main.innerHTML.replace(/\\s+/g, ' ').substring(0, 200) : 'no-main',
-        mainDisplay: mainStyle ? mainStyle.display : 'no-main',
-        mainVisibility: mainStyle ? mainStyle.visibility : 'no-main',
-        bodyTextLen: bodyInnerText.length,
-        bodyTextSample: bodyInnerText.replace(/\\s+/g, ' ').substring(0, 120),
-        invalidFlag: localStorage.getItem('nt_session_invalid') || 'null',
-        bodyOverflow: getComputedStyle(document.body).overflow,
-        hasLoadingShell: bodyHtml.indexOf('Loading\\u2026') !== -1 || bodyHtml.indexOf('Loading…') !== -1
-      });
-    } catch (e) {
-      send({ type: 'DIAG_DOM', when: label, error: String(e).substring(0, 80) });
-    }
-  }
-  function runDiag() {
-    try {
-      send({
-        type: 'DIAG_LOAD',
-        readyState: document.readyState,
-        title: (document.title || '').substring(0, 40),
-        hasUser: !!localStorage.getItem('user'),
-        ntVerified: localStorage.getItem('nt_session_verified') || 'null',
-        docCookie: (document.cookie || '(empty)').substring(0, 60)
-      });
-    } catch (e) {}
-    // Early probe — catches the auth-handoff transition state.
-    setTimeout(function () { probe('early'); }, 150);
-    // Late probe — well past auth completion + React render settle. If the page
-    // is truly stuck, this is the state the user is staring at.
-    setTimeout(function () { probe('late'); }, 1500);
-    var t0 = Date.now();
-    try {
-      fetch('/api/auth/user', { credentials: 'include', headers: { Accept: 'application/json' } })
-        .then(function (r) {
-          var status = r.status;
-          return r.text().then(function (body) {
-            send({
-              type: 'DIAG_AUTH',
-              status: status,
-              ms: Date.now() - t0,
-              body: (body || '').substring(0, 80)
-            });
-          });
-        })
-        .catch(function (e) {
-          send({
-            type: 'DIAG_AUTH',
-            status: -1,
-            ms: Date.now() - t0,
-            error: String(e && e.message || e).substring(0, 60)
-          });
-        });
-    } catch (e) {
-      send({ type: 'DIAG_AUTH', status: -2, error: String(e).substring(0, 60) });
-    }
-  }
-  if (document.readyState === 'complete') {
-    runDiag();
-  } else {
-    window.addEventListener('load', runDiag);
-  }
-})();
-true;
-`;
-
 const NATIVE_INJECT_JS = `
   window.NearbyTravelerNative = true;
   window.__NEARBY_NATIVE_IOS__ = true;
@@ -217,17 +111,6 @@ function WebViewWithChrome({ path, navigation }) {
   const [headerProfileImage, setHeaderProfileImage] = useState(null);
   const [canGoBackWeb, setCanGoBackWeb] = useState(false);
   const [sessionReady, setSessionReady] = useState(false);
-  // Diagnostic state for the temporary debug overlay (build 12). Tracks the
-  // last HTTP status from the WebView's navigation, plus what the in-page
-  // /api/auth/user fetch returns (load-bearing for AuthContext). Remove after
-  // Alt E confirmed in production.
-  const [lastHttpStatus, setLastHttpStatus] = useState(null);
-  const [diagLoad, setDiagLoad] = useState(null); // { readyState, hasUser, ntVerified, docCookie }
-  const [diagAuth, setDiagAuth] = useState(null); // { status, ms, body | error }
-  // Build 14: dual-timing DOM probe — early (150ms) shows transition state,
-  // late (1500ms) shows settled state. If early≠late we've got a render race.
-  const [diagDomEarly, setDiagDomEarly] = useState(null);
-  const [diagDomLate, setDiagDomLate] = useState(null);
   const webViewRef = useRef(null);
   const displayUser = authUser || user;
   const source = useMemo(() => webViewSource(path, sessionCookie), [path, sessionCookie]);
@@ -349,8 +232,6 @@ function WebViewWithChrome({ path, navigation }) {
   }, []);
   const onHttpError = useCallback((e) => {
     const status = e.nativeEvent?.statusCode;
-    setLastHttpStatus(status || 'err');
-    console.log('🌐 [WEBVIEW] HTTP error', status, 'url:', e.nativeEvent?.url);
     setError(status ? `Error ${status}` : 'Request failed');
   }, []);
   const onRetry = useCallback(() => { setError(null); setLoading(true); webViewRef.current?.reload(); }, []);
@@ -381,22 +262,6 @@ function WebViewWithChrome({ path, navigation }) {
   const onMessage = useCallback((event) => {
     try {
       const data = JSON.parse(event.nativeEvent?.data || '{}');
-      if (data.type === 'DIAG_LOAD') {
-        console.log('🩺 [DIAG_LOAD]', data);
-        setDiagLoad(data);
-        return;
-      }
-      if (data.type === 'DIAG_AUTH') {
-        console.log('🩺 [DIAG_AUTH]', data);
-        setDiagAuth(data);
-        return;
-      }
-      if (data.type === 'DIAG_DOM') {
-        console.log('🩺 [DIAG_DOM]', data.when || '(unkown)', data);
-        if (data.when === 'late') setDiagDomLate(data);
-        else setDiagDomEarly(data);
-        return;
-      }
       if (data.type === 'START_SPEECH_RECOGNITION') {
         const sendError = (err) => {
           try {
@@ -579,7 +444,6 @@ function WebViewWithChrome({ path, navigation }) {
 })();
 true;
 ` : '')}
-        injectedJavaScript={POST_LOAD_DIAG_JS}
         onLoadStart={onLoadStart}
         onLoadEnd={onLoadEnd}
         onError={onError}
@@ -616,64 +480,6 @@ true;
         )}
       />
       )}
-      {/* DIAG OVERLAY (build 14) — dual-timing DOM probe + auth/nav summary.
-          c:        cookie sent on initial nav (should start with "nt.sid=s:")
-          u:        the URL the WebView loaded
-          nav:      "?" means no onHttpError fired (initial nav was 2xx)
-          ntVer:    localStorage.nt_session_verified
-          auth:     in-page fetch /api/auth/user status (-1 = net err, -2 = JS err)
-          E (early, 150ms post-load):   r=root.children, h=h1 text, inv=invalidFlag
-                                        — catches mid-handoff render (LandingStreamlined flash)
-          L (late, 1500ms post-load):   same fields, settled state
-                                        — if h="Settings" here, b13 just probed too early
-          txt(E/L): body.innerText sample so we see WHAT is actually on screen
-          Remove this overlay once auth confirmed in production. */}
-      <View pointerEvents="none" style={{
-        position: 'absolute',
-        top: 60,
-        right: 6,
-        zIndex: 9999,
-        backgroundColor: 'rgba(0,0,0,0.82)',
-        paddingHorizontal: 6,
-        paddingVertical: 4,
-        borderRadius: 6,
-        maxWidth: 260,
-      }}>
-        <Text style={{ color: '#FFD700', fontSize: 9, fontWeight: '700' }}>DIAG b14</Text>
-        <Text style={{ color: '#FFFFFF', fontSize: 8 }} numberOfLines={2}>
-          c: {api.getSessionCookie() ? api.getSessionCookie().substring(0, 30) + '…' : 'NULL'}
-        </Text>
-        <Text style={{ color: '#FFFFFF', fontSize: 8 }} numberOfLines={1}>
-          u: {(effectiveSource?.uri || 'no source').replace(BASE_URL, '') || '/'}
-        </Text>
-        <Text style={{ color: '#FFFFFF', fontSize: 8 }}>
-          nav: {lastHttpStatus == null ? '?' : String(lastHttpStatus)}
-        </Text>
-        <Text style={{ color: '#9CDCFE', fontSize: 8 }} numberOfLines={1}>
-          ready: {diagLoad?.readyState || '…'}  ntVer: {diagLoad?.ntVerified || '…'}
-        </Text>
-        <Text style={{ color: diagAuth?.status === 200 ? '#7CFC7C' : '#FF8080', fontSize: 8 }}>
-          auth: {diagAuth == null ? '…' : `${diagAuth.status} (${diagAuth.ms ?? '?'}ms)`}
-        </Text>
-        <Text style={{ color: '#FFFFFF', fontSize: 8 }} numberOfLines={2}>
-          body: {diagAuth?.body || diagAuth?.error || '…'}
-        </Text>
-        <Text style={{ color: '#FFFFFF', fontSize: 8 }} numberOfLines={2}>
-          jsCookie: {diagLoad?.docCookie || '…'}
-        </Text>
-        <Text style={{ color: diagDomEarly?.rootChildren > 0 ? '#FFCC66' : '#FF8080', fontSize: 8 }} numberOfLines={1}>
-          E r:{diagDomEarly?.rootChildren ?? '…'} h:{(diagDomEarly?.h1Text || '…').substring(0, 14)} inv:{diagDomEarly?.invalidFlag || '…'}
-        </Text>
-        <Text style={{ color: '#FFCC66', fontSize: 8 }} numberOfLines={2}>
-          E txt: {(diagDomEarly?.bodyTextSample || '…').substring(0, 80)}
-        </Text>
-        <Text style={{ color: diagDomLate?.h1Text === 'Settings' || diagDomLate?.h1Text === 'no-h1' && diagDomLate?.rootChildren > 0 ? '#7CFC7C' : (diagDomLate ? '#FF8080' : '#FFFFFF'), fontSize: 8 }} numberOfLines={1}>
-          L r:{diagDomLate?.rootChildren ?? '…'} h:{(diagDomLate?.h1Text || '…').substring(0, 14)} disp:{(diagDomLate?.mainDisplay || '…').substring(0, 6)}
-        </Text>
-        <Text style={{ color: '#7CFC7C', fontSize: 8 }} numberOfLines={2}>
-          L txt: {(diagDomLate?.bodyTextSample || '…').substring(0, 80)}
-        </Text>
-      </View>
     </SafeAreaView>
   );
 }
