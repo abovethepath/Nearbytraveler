@@ -24,22 +24,14 @@ export default function LandingStreamlined() {
       if (ref) sessionStorage.setItem('referralCode', ref);
     } catch {}
   });
-  const [currentVideo, setCurrentVideo] = useState(0);
   const [showFloatingCTA, setShowFloatingCTA] = useState(false);
   const heroRef = useRef<HTMLElement | null>(null);
 
-  // NOTE: Some clips in the current rotation may read ambiguously (e.g., two people
-  // connecting in ways that could be mistaken for romantic/dating content).
-  // Aaron will re-cut specific clips and replace files at the same paths.
-  // Do not edit the video files in this task.
-  // Rotating hero videos with custom durations (in milliseconds)
-  const heroVideos = [
-    { src: "/hiker_LA_clip_1.mp4", duration: 15000 }, // 15 seconds
-    { src: "/hiker_LA_clip_1.mp4", duration: 15000 }, // 15 seconds
-    { src: "/hiker_LA_clip_1.mp4", duration: 15000 }, // 15 seconds
-    { src: "/hiker_LA_clip_1.mp4", duration: 10000 }, // 10 seconds
-    { src: "/hiker_LA_clip_1.mp4", duration: 8000 }   // 8 seconds
-  ];
+  // Single looping hero video. Previously cycled 5 elements with identical src —
+  // mobile browsers throttle off-screen <video opacity-0> elements, so each
+  // 8-15s rotation surfaced a 100-400ms freeze frame as the next video resumed.
+  // Visually identical to the old rotation (all 5 used /hiker_LA_clip_1.mp4)
+  // but 5x less mobile bandwidth and no blink.
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
@@ -49,22 +41,6 @@ export default function LandingStreamlined() {
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
-
-  // Rotate videos with custom durations for each video
-  useEffect(() => {
-    const currentDuration = heroVideos[currentVideo].duration;
-    console.log(`🎬 Video ${currentVideo + 1} playing for ${currentDuration/1000} seconds`);
-
-    const videoTimeout = setTimeout(() => {
-      setCurrentVideo(prev => {
-        const nextVideo = (prev + 1) % heroVideos.length;
-        console.log(`🔄 Switching from video ${prev + 1} to video ${nextVideo + 1}`);
-        return nextVideo;
-      });
-    }, currentDuration);
-
-    return () => clearTimeout(videoTimeout);
-  }, [currentVideo]);
   // On mount: clear any stuck body scroll-lock states left over from Radix UI
   // dialogs/sheets in the authenticated app, then scroll to top.
   useEffect(() => {
@@ -174,24 +150,18 @@ export default function LandingStreamlined() {
 
       <div className="w-full">
 
-        {/* HERO SECTION - Full Video Background with Rotation */}
+        {/* HERO SECTION - Full Video Background (single looping clip, atmospheric only) */}
         <section ref={heroRef} className="relative w-full overflow-hidden bg-[#0b1020] min-h-[80vh] md:min-h-[88vh] lg:min-h-[92vh] flex items-center">
-          {/* Rotating Video Backgrounds with Crossfade — atmospheric only */}
-          {heroVideos.map((video, index) => (
-            <video
-              key={index}
-              src={video.src}
-              className={`absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out pointer-events-none ${
-                index === currentVideo ? 'opacity-100' : 'opacity-0'
-              }`}
-              autoPlay
-              loop
-              muted
-              playsInline
-            >
-              Your browser does not support the video tag.
-            </video>
-          ))}
+          <video
+            src="/hiker_LA_clip_1.mp4"
+            className="absolute top-0 left-0 w-full h-full object-cover pointer-events-none"
+            autoPlay
+            loop
+            muted
+            playsInline
+          >
+            Your browser does not support the video tag.
+          </video>
 
           {/* Layered overlay — lighter so the video breathes, warm tint preserved below */}
           <div className="absolute inset-0 z-[1] bg-gradient-to-b from-[#05070f]/60 via-[#070a14]/45 to-[#05070f]/78 pointer-events-none"></div>
