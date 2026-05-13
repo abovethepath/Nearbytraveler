@@ -383,6 +383,14 @@ function Router() {
   // Auth init/verification gates to prevent landing/login flashes during nav.
   const [authInitialized, setAuthInitialized] = useState(skipGate);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
+  // Tracks whether the server-side session check has completed (success OR
+  // failure). On `/` we use this to gate LandingStreamlined: a returning
+  // logged-in user with cleared localStorage (private browsing, browser
+  // eviction) starts with user=null but has a valid httpOnly cookie. Without
+  // this gate they flash LandingStreamlined for ~200-500ms before
+  // checkServerAuth/sync-on-focus eventually sets user → Home. Initialized
+  // from cachedUser so returning users skip the gate entirely.
+  const [serverAuthChecked, setServerAuthChecked] = useState(!!cachedUser);
   const loginSucceededAtRef = React.useRef<number>(0);
   const pageLoadTimeRef = React.useRef<number>(Date.now());
   const LOGIN_PENDING_KEY = "nt_login_pending";
@@ -865,16 +873,29 @@ function Router() {
   }, [syncAuthFromServer]);
 
   useEffect(() => {
-    // Skip auth check entirely for logged-out users on public/landing/signup routes.
-    // These pages don't need auth — rendering them immediately avoids all loading flashes.
-    // Root "/" is included: if no session cache exists, the user is logged out, so show
-    // the landing page instantly instead of gating behind a server round-trip.
-    if (isSignupRoute || isLandingPage) {
+    // Skip auth check entirely for logged-out users on signup routes — they
+    // definitely don't need an auth check.
+    if (isSignupRoute) {
       setIsLoading(false);
       setAuthInitialized(true);
       setAuthLoading(false);
-      // If we have a cached session, still do a background auth check to hydrate user data.
-      if (!readSessionCache()) return;
+      setServerAuthChecked(true);
+      return;
+    }
+    // Landing/public routes (other than `/`) keep the optimization: if there
+    // is no cached session, skip the server round-trip and render immediately.
+    // EXCEPTION: `/` always runs checkServerAuth, because a returning logged-in
+    // user may have a valid httpOnly cookie but no localStorage cache (private
+    // browsing, cleared storage). Without the server check we'd flash
+    // LandingStreamlined before sync-on-focus eventually routes them to Home.
+    if (isLandingPage) {
+      setIsLoading(false);
+      setAuthInitialized(true);
+      setAuthLoading(false);
+      if (location !== '/' && !readSessionCache()) {
+        setServerAuthChecked(true);
+        return;
+      }
     }
 
     // For protected routes without a cached session, set the loading gate.
@@ -990,6 +1011,7 @@ function Router() {
 
     checkServerAuth().finally(() => {
       setAuthLoading(false);
+      setServerAuthChecked(true);
     });
   }, []);
 
@@ -1533,9 +1555,19 @@ function Router() {
         return <LandingStreamlined />;
       }
 
-      // Show appropriate page for root path based on authentication
+      // Show appropriate page for root path based on authentication.
+      // While auth is still hydrating, render a skeleton instead of flashing
+      // LandingStreamlined — a returning logged-in user with cleared
+      // localStorage (private browsing, browser eviction) starts with
+      // user=null even though their cookie is valid, and without this gate
+      // they'd see Landing briefly before checkServerAuth → Home. Returning
+      // users with a cachedUser bypass this entirely (isActuallyAuthenticated
+      // is true on first render, so we never enter the !auth block above).
       if (location === '/') {
-        return isActuallyAuthenticated ? <Home /> : <LandingStreamlined />;
+        if (loginPending || isAuthenticating || authLoading || !authInitialized || !serverAuthChecked) {
+          return <FullPageSkeleton />;
+        }
+        return <LandingStreamlined />;
       }
       // QR code signup route - handled by early return above
       // Allow access to legal pages without authentication
