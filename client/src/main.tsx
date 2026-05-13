@@ -50,7 +50,13 @@ if (rootEl) {
   // Hydrate only when this exact path was prerendered, so the served HTML matches
   // what React is about to render. Otherwise fall back to a fresh client render.
   const p = window.location.pathname;
-  const hasSessionHint = !!sessionStorage.getItem('nt_session_verified');
+  // localStorage, NOT sessionStorage — App.tsx's markSessionVerified writes
+  // this key to localStorage so it persists across PWA launches and browser
+  // restarts. Reading sessionStorage made this hint always false, which forced
+  // hydrateRoot against the prerendered LandingStreamlined HTML for every
+  // user including returning logged-in ones (causing a ~200ms Landing flash
+  // before React's tree took over with Home).
+  const hasSessionHint = !!localStorage.getItem('nt_session_verified');
   const shouldHydrate = isPrerenderedPath(p) && !hasSessionHint;
 
   // For any path we won't hydrate, replace the served HTML with a neutral loading

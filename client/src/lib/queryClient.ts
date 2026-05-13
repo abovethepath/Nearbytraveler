@@ -70,7 +70,9 @@ export function stopSessionRefresh() {
 
 function hasVerifiedSession(): boolean {
   try {
-    return sessionStorage.getItem("nt_session_verified") === "1";
+    // localStorage, NOT sessionStorage — App.tsx writes the flag to
+    // localStorage so it persists across PWA launches and tab restarts.
+    return localStorage.getItem("nt_session_verified") === "1";
   } catch {
     return false;
   }
