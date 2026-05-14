@@ -56,7 +56,13 @@ if (rootEl) {
   // hydrateRoot against the prerendered LandingStreamlined HTML for every
   // user including returning logged-in ones (causing a ~200ms Landing flash
   // before React's tree took over with Home).
-  const hasSessionHint = !!localStorage.getItem('nt_session_verified');
+  //
+  // Also check the nt.has_session companion cookie: iOS WebKit ITP sometimes
+  // evicts localStorage while the auth cookies survive. Without this fallback
+  // a logged-in PWA user sees the Landing flash whenever ITP cleared storage.
+  const hasSessionHint =
+    !!localStorage.getItem('nt_session_verified') ||
+    document.cookie.includes('nt.has_session=1');
   const shouldHydrate = isPrerenderedPath(p) && !hasSessionHint;
 
   // For any path we won't hydrate, replace the served HTML with a neutral loading

@@ -670,6 +670,30 @@ app.use((req, _res, next) => {
   next();
 });
 
+// Backfill the nt.has_session companion cookie for already-authenticated
+// requests whose original login predates this cookie. Fresh login/registration
+// paths set this cookie explicitly at the session.user assignment site; this
+// middleware catches every other authenticated request so legacy sessions
+// converge without needing the user to log out and back in.
+app.use((req, res, next) => {
+  try {
+    const hasUser = !!(req as any)?.session?.user?.id;
+    const cookieHeader = typeof req.headers.cookie === "string" ? req.headers.cookie : "";
+    if (hasUser && !cookieHeader.includes("nt.has_session=1")) {
+      res.cookie("nt.has_session", "1", {
+        httpOnly: false,
+        secure: true,
+        sameSite: "lax",
+        maxAge: 30 * 24 * 60 * 60 * 1000,
+        path: "/",
+      });
+    }
+  } catch {
+    // ignore
+  }
+  next();
+});
+
 // Stripe webhook needs raw body for signature verification — capture BEFORE json parser
 app.use((req: any, res: any, next: any) => {
   if (req.path === '/api/stripe/support/webhook') {
