@@ -49,7 +49,7 @@ export default function JoinNowWidgetNew({ darkBackground }: JoinNowWidgetNewPro
       type: "traveler",
       icon: Plane,
       title: "Nearby Traveler",
-      subtitle: "I'm traveling & want to connect",
+      subtitle: "Currently traveling & want to connect",
       darkOverlayClass: "join-dark-overlay-traveler",
     },
     {
