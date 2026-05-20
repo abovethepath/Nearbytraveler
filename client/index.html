@@ -32,6 +32,42 @@
         document.documentElement.classList.add(resolved);
       })();
     </script>
+    <!-- Pre-hydration paint guard: SPA fallback serves the prerendered landing
+         HTML for non-prerendered routes (e.g. /join, /auth, /profile). Without
+         this guard the browser paints LandingStreamlined before main.tsx can
+         swap #root to the loading shell, causing a visible blink. Hide #root
+         until main.tsx finishes its initial render/hydrate (which then removes
+         this <style> by id). Keep this list in sync with PRERENDERED_PATHS in
+         src/main.tsx. -->
+    <script>
+      (function () {
+        var P = {
+          "/": 1, "/about": 1, "/blog": 1,
+          "/blog/how-to-meet-people-when-traveling-alone": 1,
+          "/blog/solo-female-travel-safety-tips": 1,
+          "/blog/how-to-find-travel-buddies": 1,
+          "/blog/best-apps-for-solo-travelers": 1,
+          "/blog/meet-locals-when-traveling": 1,
+          "/blog/lessons-from-solo-travel-meeting-people": 1,
+          "/blog/solo-travel-los-angeles": 1,
+          "/blog/whats-happening-los-angeles": 1,
+          "/blog/arriving-in-los-angeles-guide": 1,
+          "/blog/curing-travel-loneliness": 1,
+          "/blog/eating-alone-while-traveling": 1,
+          "/city/Los Angeles Metro": 1, "/city/New York Metro": 1,
+          "/city/San Francisco Bay Area": 1, "/city/Orange County Metro": 1,
+          "/city/Chicago Metro": 1
+        };
+        var path = window.location.pathname;
+        try { path = decodeURIComponent(path); } catch (e) {}
+        if (!P[path]) {
+          var s = document.createElement('style');
+          s.id = 'nt-pre-hydration-hide';
+          s.textContent = '#root{visibility:hidden!important}';
+          document.head.appendChild(s);
+        }
+      })();
+    </script>
     <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content" />
     <title>Nearby Traveler — Meet Travelers & Locals in Real Time | Free Social Travel App</title>
     

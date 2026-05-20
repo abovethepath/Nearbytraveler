@@ -108,4 +108,9 @@ if (rootEl) {
   } else {
     createRoot(rootEl).render(app);
   }
+
+  // Pre-hydration paint guard installed by index.html — remove it now that
+  // either the shell or the React tree owns #root. No-op on prerendered paths
+  // where the guard script skipped style injection.
+  document.getElementById('nt-pre-hydration-hide')?.remove();
 }
