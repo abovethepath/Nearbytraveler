@@ -383,6 +383,17 @@ function Router() {
   // Auth init/verification gates to prevent landing/login flashes during nav.
   const [authInitialized, setAuthInitialized] = useState(skipGate);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
+  // Gate the `/` Landing render only for users whose nt.has_session cookie
+  // says they're logged in but client state is empty (Safari ITP evicted
+  // localStorage, private browsing, fresh PWA launch). Logged-out users
+  // (no cookie) and cached users start TRUE → bypass the gate entirely.
+  // Targeted version of the reverted 070cdfcd gate — same mechanism, but
+  // only ITP-evicted-logged-in users see the skeleton.
+  const [serverAuthChecked, setServerAuthChecked] = useState(() => {
+    if (typeof document === 'undefined') return true;
+    if (cachedUser) return true;
+    return !document.cookie.includes('nt.has_session=1');
+  });
   const loginSucceededAtRef = React.useRef<number>(0);
   const pageLoadTimeRef = React.useRef<number>(Date.now());
   const LOGIN_PENDING_KEY = "nt_login_pending";
@@ -785,6 +796,7 @@ function Router() {
         console.warn("Auth sync failed (" + reason + "):", e);
       } finally {
         authSyncInFlightRef.current = false;
+        setServerAuthChecked(true);
       }
     },
     [
@@ -990,6 +1002,7 @@ function Router() {
 
     checkServerAuth().finally(() => {
       setAuthLoading(false);
+      setServerAuthChecked(true);
     });
   }, []);
 
@@ -1533,9 +1546,15 @@ function Router() {
         return <LandingStreamlined />;
       }
 
-      // Show appropriate page for root path based on authentication
+      // Show appropriate page for root path based on authentication.
+      // Cookie-gated skeleton: when nt.has_session=1 is set but client state
+      // hasn't hydrated yet (ITP eviction, fresh PWA launch), hide Landing
+      // until syncAuthFromServer resolves. Logged-out users (no cookie)
+      // initialized serverAuthChecked=true and fall straight to Landing.
       if (location === '/') {
-        return isActuallyAuthenticated ? <Home /> : <LandingStreamlined />;
+        if (isActuallyAuthenticated) return <Home />;
+        if (!serverAuthChecked) return <FullPageSkeleton />;
+        return <LandingStreamlined />;
       }
       // QR code signup route - handled by early return above
       // Allow access to legal pages without authentication
