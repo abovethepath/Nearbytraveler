@@ -45,7 +45,7 @@ export default function LandingNavbar() {
           <div className="hidden lg:flex items-center space-x-3 flex-shrink-0">
             <ThemeToggle />
             <button
-              onClick={() => setLocation('/signin')}
+              onClick={() => setLocation('/auth')}
               className="text-gray-700 dark:text-white text-sm font-medium px-3 py-2 hover:text-orange-600 transition-colors"
             >
               Sign In
@@ -62,7 +62,7 @@ export default function LandingNavbar() {
           {/* Mobile: Sign In button + hamburger menu */}
           <div className="flex items-center lg:hidden gap-0.5">
             <button
-              onClick={() => setLocation('/signin')}
+              onClick={() => setLocation('/auth')}
               className="text-orange-600 dark:text-orange-400 text-sm font-semibold px-2 py-1.5 rounded-lg hover:bg-orange-50 dark:hover:bg-orange-900/20 active:bg-orange-100 transition-colors"
               style={{ minHeight: '36px', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
             >
@@ -116,10 +116,10 @@ export default function LandingNavbar() {
             ))}
           </div>
           <div className="pt-2 pb-4 border-t border-gray-200 dark:border-gray-700 px-3 space-y-2">
-            <button 
+            <button
               onClick={() => {
                 setMobileMenuOpen(false);
-                setLocation('/signin');
+                setLocation('/auth');
               }}
               className="w-full text-center px-4 py-3 rounded-xl text-[15px] font-medium text-gray-900 dark:text-white border-2 border-gray-400 dark:border-gray-500 transition-all active:scale-[0.98]"
               style={{ minHeight: '44px', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}

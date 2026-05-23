@@ -612,6 +612,9 @@ function Router() {
 
     // Auth entry
     if (normalizedPath === "/auth") return true;
+    // /signin is an alias that the effect at line ~600 redirects to /auth; mark it
+    // public so the protected-route bouncer doesn't race the redirect and bounce to /.
+    if (normalizedPath === "/signin") return true;
 
     // Marketing / public landing routes
     // These are linked from the public landing header/navbar and must not trigger auth redirects.
@@ -1242,7 +1245,12 @@ function Router() {
       const next = localStorage.getItem("postAuthRedirect");
       if (next) {
         localStorage.removeItem("postAuthRedirect");
-        setLocation(next);
+        // Stale "/signin" left over from the pre-fix navbar bouncer would
+        // redirect a successful login straight back through the alias.
+        // Same for "/auth" — never honor an auth route as a post-auth target.
+        if (next !== "/signin" && next !== "/auth") {
+          setLocation(next);
+        }
       }
     } catch {
       // ignore storage errors
