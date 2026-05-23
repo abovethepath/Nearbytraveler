@@ -150,15 +150,14 @@ export default function LandingStreamlined() {
 
       <div className="w-full">
 
-        {/* HERO SECTION - Full Video Background (single looping clip, atmospheric only)
-            Poster image is painted via background-image as an immediate fallback so the
-            hero never shows bare dark navy behind the text while the video downloads.
-            The <video> poster attribute is the same image — it covers the video element
-            until the first frame paints, eliminating the late-pop blink. */}
+        {/* HERO SECTION - Full Video Background (single looping clip, atmospheric only).
+            The <video> poster attribute paints the first-frame image until the video
+            decodes, eliminating the late-pop blink. The video element covers the entire
+            section (absolute inset-0 + object-cover), so no separate background-image is
+            needed — a duplicate caused split video/poster layers. */}
         <section
           ref={heroRef}
-          className="relative w-full overflow-hidden bg-[#0b1020] min-h-[80vh] md:min-h-[88vh] lg:min-h-[92vh] flex items-center bg-cover bg-center"
-          style={{ backgroundImage: 'url(/hiker_LA_clip_1_poster.jpg)' }}
+          className="relative w-full overflow-hidden bg-[#0b1020] min-h-[80vh] md:min-h-[88vh] lg:min-h-[92vh] flex items-center"
         >
           <video
             src="/hiker_LA_clip_1.mp4"
