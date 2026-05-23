@@ -32,12 +32,16 @@
         document.documentElement.classList.add(resolved);
       })();
     </script>
-    <!-- Pre-hydration paint guard: SPA fallback serves the prerendered landing
-         HTML for non-prerendered routes (e.g. /join, /auth, /profile). Without
-         this guard the browser paints LandingStreamlined before main.tsx can
-         swap #root to the loading shell, causing a visible blink. Hide #root
-         until main.tsx finishes its initial render/hydrate (which then removes
-         this <style> by id). Keep this list in sync with PRERENDERED_PATHS in
+    <!-- Pre-hydration paint guard: hide #root before any paint when either
+         (a) the path is non-prerendered (SPA fallback served the prerendered
+             landing HTML for /join, /auth, /profile, etc. — we must hide it
+             before main.tsx swaps to the loading shell), or
+         (b) the path is "/" AND the nt.has_session=1 cookie is set (user is
+             logged in — the prerendered Landing must not flash before App
+             routes to Home). Logged-out users on "/" still skip this (no
+             cookie), so they see Landing in a single frame, unchanged.
+         main.tsx removes this <style> by id after its first render/hydrate.
+         Keep the prerendered-path list in sync with PRERENDERED_PATHS in
          src/main.tsx. -->
     <script>
       (function () {
@@ -60,7 +64,8 @@
         };
         var path = window.location.pathname;
         try { path = decodeURIComponent(path); } catch (e) {}
-        if (!P[path]) {
+        var hasSession = document.cookie.indexOf('nt.has_session=1') !== -1;
+        if (!P[path] || (path === '/' && hasSession)) {
           var s = document.createElement('style');
           s.id = 'nt-pre-hydration-hide';
           s.textContent = '#root{visibility:hidden!important}';
