@@ -1,4 +1,4 @@
-name: Auto-blog (generate post & open PR)
+name: Auto-blog (generate post & auto-merge)
 
 on:
   # Runs at 13:00 UTC (6am Pacific) on the 1st, 11th, and 21st of each month.
@@ -10,7 +10,7 @@ on:
 
 permissions:
   contents: write       # to push the new branch
-  pull-requests: write  # to open the PR via gh CLI
+  pull-requests: write  # to open and merge the PR via gh CLI
 
 jobs:
   generate:
@@ -36,3 +36,20 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # used by gh CLI for `gh pr create`
         run: npx tsx scripts/auto-blog/generate.ts
+
+      - name: Auto-merge the generated PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # The generator opens a PR with head ref `auto-blog/<slug>`. Find the
+        # newest open one (this run just created it) and squash-merge it
+        # immediately so the post publishes without manual approval. The
+        # notify-search workflow then fires on the resulting push to main.
+        run: |
+          PR_NUMBER=$(gh pr list --state open --json number,headRefName --limit 50 \
+            --jq '[.[] | select(.headRefName | startswith("auto-blog/"))] | sort_by(.number) | last | .number')
+          if [ -z "$PR_NUMBER" ] || [ "$PR_NUMBER" = "null" ]; then
+            echo "::error::No auto-blog/* PR found to merge"
+            exit 1
+          fi
+          echo "Merging PR #$PR_NUMBER"
+          gh pr merge "$PR_NUMBER" --squash --delete-branch
