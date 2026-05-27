@@ -354,6 +354,13 @@ const writeSessionCache = (u: User | null) => {
   } catch {}
 };
 
+// 401 retry schedule for /api/auth/user and /api/auth/recover-session.
+// Tolerates Upstash Redis reconnect flaps (Render logs show occasional
+// "Connection closed → Connected" cycles ~1s long): a single 401 during
+// that window must not wipe a valid session. Total budget ~10.7s before
+// we conclude the session is genuinely gone.
+const AUTH_RETRY_DELAYS_MS = [200, 500, 1000, 3000, 6000];
+
 function Router() {
   // Instantly hydrate from localStorage so the UI renders with no blank loading screen.
   const cachedUser = readSessionCache();
@@ -899,6 +906,11 @@ function Router() {
     const checkServerAuth = async () => {
       try {
         console.log('🔍 Checking server-side authentication...');
+        // Hold the Landing render until the full retry chain completes — so a
+        // cached user whose session is mid-flap sees Home (still authenticated)
+        // → FullPageSkeleton → Landing, rather than getting bounced straight
+        // from Home to Landing on the first transient 401.
+        setServerAuthChecked(false);
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 8000); // 8s timeout
         const doCheck = async () =>
@@ -912,10 +924,12 @@ function Router() {
         clearTimeout(timeoutId);
 
         // Cookie propagation can lag on cold start (iOS WebView, mobile PWA after
-        // browser close, Render cold boot). Retry before concluding session is missing.
-        // This does NOT trust localStorage as auth — only the server cookie/session.
+        // browser close, Render cold boot). Same retry path also rides out
+        // Upstash Redis reconnect flaps so a 401 mid-flap doesn't wipe a valid
+        // session. This does NOT trust localStorage as auth — only the server
+        // cookie/session.
         if (response.status === 401) {
-          for (const delayMs of [200, 500, 1000]) {
+          for (const delayMs of AUTH_RETRY_DELAYS_MS) {
             await new Promise((r) => setTimeout(r, delayMs));
             response = await doCheck();
             if (response.ok) break;
@@ -958,16 +972,29 @@ function Router() {
             if (cachedCreds?.id && (cachedCreds?.email || cachedCreds?.username)) {
               try {
                 console.log('🔄 Auth 401 — attempting session recovery for user', cachedCreds.username);
-                const recoveryRes = await fetch(`${getApiBaseUrl()}/api/auth/recover-session`, {
-                  method: 'POST',
-                  credentials: 'include',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({
-                    userId: cachedCreds.id,
-                    email: cachedCreds.email,
-                    username: cachedCreds.username,
-                  }),
-                });
+                const doRecover = async () =>
+                  fetch(`${getApiBaseUrl()}/api/auth/recover-session`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      userId: cachedCreds.id,
+                      email: cachedCreds.email,
+                      username: cachedCreds.username,
+                    }),
+                  });
+                let recoveryRes = await doRecover();
+                // Same Redis-flap tolerance as the /api/auth/user check: if
+                // recovery hits the server mid-flap it will also 401, and we
+                // must not wipe the local session until the full retry budget
+                // is exhausted.
+                if (!recoveryRes.ok) {
+                  for (const delayMs of AUTH_RETRY_DELAYS_MS) {
+                    await new Promise((r) => setTimeout(r, delayMs));
+                    recoveryRes = await doRecover();
+                    if (recoveryRes.ok) break;
+                  }
+                }
                 if (recoveryRes.ok) {
                   const recoveredUser = await recoveryRes.json();
                   console.log('✅ Session recovered for:', recoveredUser.username);
