@@ -24,7 +24,8 @@ import { GenericWebViewScreen, BusinessSignupWebViewScreen } from '../screens/We
 import ForgotPasswordScreen from '../screens/ForgotPasswordScreen';
 import MessagesScreen from '../screens/MessagesScreen';
 import ChatScreen from '../screens/ChatScreen';
-import ProfileScreen from '../screens/ProfileScreen';
+// Path B step 1: Profile tab is now a WebView pointing at /profile.
+// Native ProfileScreen kept on disk for Path A reference but no longer routed.
 import ExploreScreen from '../screens/ExploreScreen';
 import DiscoverScreen from '../screens/DiscoverScreen';
 import UserProfileScreen from '../screens/UserProfileScreen';
@@ -67,20 +68,6 @@ function MessagesStack() {
     <Stack.Navigator screenOptions={{ headerShown: false, gestureEnabled: true }}>
       <Stack.Screen name="MessagesList" component={MessagesScreen} />
       <Stack.Screen name="Chat" component={ChatScreen} />
-    </Stack.Navigator>
-  );
-}
-
-// Native Profile tab. ProfileScreen menu items navigate to EditProfile/Connections/Settings,
-// which fall back to the existing web pages via GenericWebViewScreen until native equivalents
-// land. Keeps menu taps functional without modifying ProfileScreen itself.
-function ProfileStack() {
-  return (
-    <Stack.Navigator screenOptions={{ headerShown: false, gestureEnabled: true }}>
-      <Stack.Screen name="ProfileMain" component={ProfileScreen} />
-      <Stack.Screen name="EditProfile" component={GenericWebViewScreen} initialParams={{ path: '/settings' }} />
-      <Stack.Screen name="Connections" component={GenericWebViewScreen} initialParams={{ path: '/connections' }} />
-      <Stack.Screen name="Settings" component={GenericWebViewScreen} initialParams={{ path: '/settings' }} />
     </Stack.Navigator>
   );
 }
@@ -237,7 +224,8 @@ function MainTabs() {
       />
       <Tab.Screen
         name="Profile"
-        component={ProfileStack}
+        component={GenericWebViewScreen}
+        initialParams={{ path: '/profile' }}
         options={{
           tabBarIcon: ({ focused }) => <TabIcon emoji="👤" focused={focused} />,
           unmountOnBlur: false,

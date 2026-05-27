@@ -1,5 +1,5 @@
 // Nearby Traveler PWA Service Worker - v8
-const CACHE_NAME = 'nt-pwa-v8';
+const CACHE_NAME = 'nt-pwa-v9';
 const CORE_ASSETS = [
   '/',
   '/manifest.json',

@@ -648,6 +648,12 @@ export default function Home() {
       if (a.id === currentUserId) return -1;
       if (b.id === currentUserId) return 1;
 
+      // Seeded users (aura=99) always demoted to bottom, regardless of sortBy.
+      // Mirrors the server-side demote in /api/users so real users surface first.
+      const aSeed = a?.aura === 99 ? 1 : 0;
+      const bSeed = b?.aura === 99 ? 1 : 0;
+      if (aSeed !== bSeed) return aSeed - bSeed;
+
       // Then apply the selected sorting
       switch (sortBy) {
         case 'available_now': {

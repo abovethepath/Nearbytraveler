@@ -354,6 +354,13 @@ const writeSessionCache = (u: User | null) => {
   } catch {}
 };
 
+// 401 retry schedule for /api/auth/user and /api/auth/recover-session.
+// Tolerates Upstash Redis reconnect flaps (Render logs show occasional
+// "Connection closed → Connected" cycles ~1s long): a single 401 during
+// that window must not wipe a valid session. Total budget ~10.7s before
+// we conclude the session is genuinely gone.
+const AUTH_RETRY_DELAYS_MS = [200, 500, 1000, 3000, 6000];
+
 function Router() {
   // Instantly hydrate from localStorage so the UI renders with no blank loading screen.
   const cachedUser = readSessionCache();
@@ -383,6 +390,17 @@ function Router() {
   // Auth init/verification gates to prevent landing/login flashes during nav.
   const [authInitialized, setAuthInitialized] = useState(skipGate);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
+  // Gate the `/` Landing render only for users whose nt.has_session cookie
+  // says they're logged in but client state is empty (Safari ITP evicted
+  // localStorage, private browsing, fresh PWA launch). Logged-out users
+  // (no cookie) and cached users start TRUE → bypass the gate entirely.
+  // Targeted version of the reverted 070cdfcd gate — same mechanism, but
+  // only ITP-evicted-logged-in users see the skeleton.
+  const [serverAuthChecked, setServerAuthChecked] = useState(() => {
+    if (typeof document === 'undefined') return true;
+    if (cachedUser) return true;
+    return !document.cookie.includes('nt.has_session=1');
+  });
   const loginSucceededAtRef = React.useRef<number>(0);
   const pageLoadTimeRef = React.useRef<number>(Date.now());
   const LOGIN_PENDING_KEY = "nt_login_pending";
@@ -601,6 +619,9 @@ function Router() {
 
     // Auth entry
     if (normalizedPath === "/auth") return true;
+    // /signin is an alias that the effect at line ~600 redirects to /auth; mark it
+    // public so the protected-route bouncer doesn't race the redirect and bounce to /.
+    if (normalizedPath === "/signin") return true;
 
     // Marketing / public landing routes
     // These are linked from the public landing header/navbar and must not trigger auth redirects.
@@ -785,6 +806,7 @@ function Router() {
         console.warn("Auth sync failed (" + reason + "):", e);
       } finally {
         authSyncInFlightRef.current = false;
+        setServerAuthChecked(true);
       }
     },
     [
@@ -884,6 +906,11 @@ function Router() {
     const checkServerAuth = async () => {
       try {
         console.log('🔍 Checking server-side authentication...');
+        // Hold the Landing render until the full retry chain completes — so a
+        // cached user whose session is mid-flap sees Home (still authenticated)
+        // → FullPageSkeleton → Landing, rather than getting bounced straight
+        // from Home to Landing on the first transient 401.
+        setServerAuthChecked(false);
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 8000); // 8s timeout
         const doCheck = async () =>
@@ -897,10 +924,12 @@ function Router() {
         clearTimeout(timeoutId);
 
         // Cookie propagation can lag on cold start (iOS WebView, mobile PWA after
-        // browser close, Render cold boot). Retry before concluding session is missing.
-        // This does NOT trust localStorage as auth — only the server cookie/session.
+        // browser close, Render cold boot). Same retry path also rides out
+        // Upstash Redis reconnect flaps so a 401 mid-flap doesn't wipe a valid
+        // session. This does NOT trust localStorage as auth — only the server
+        // cookie/session.
         if (response.status === 401) {
-          for (const delayMs of [200, 500, 1000]) {
+          for (const delayMs of AUTH_RETRY_DELAYS_MS) {
             await new Promise((r) => setTimeout(r, delayMs));
             response = await doCheck();
             if (response.ok) break;
@@ -943,16 +972,29 @@ function Router() {
             if (cachedCreds?.id && (cachedCreds?.email || cachedCreds?.username)) {
               try {
                 console.log('🔄 Auth 401 — attempting session recovery for user', cachedCreds.username);
-                const recoveryRes = await fetch(`${getApiBaseUrl()}/api/auth/recover-session`, {
-                  method: 'POST',
-                  credentials: 'include',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({
-                    userId: cachedCreds.id,
-                    email: cachedCreds.email,
-                    username: cachedCreds.username,
-                  }),
-                });
+                const doRecover = async () =>
+                  fetch(`${getApiBaseUrl()}/api/auth/recover-session`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      userId: cachedCreds.id,
+                      email: cachedCreds.email,
+                      username: cachedCreds.username,
+                    }),
+                  });
+                let recoveryRes = await doRecover();
+                // Same Redis-flap tolerance as the /api/auth/user check: if
+                // recovery hits the server mid-flap it will also 401, and we
+                // must not wipe the local session until the full retry budget
+                // is exhausted.
+                if (!recoveryRes.ok) {
+                  for (const delayMs of AUTH_RETRY_DELAYS_MS) {
+                    await new Promise((r) => setTimeout(r, delayMs));
+                    recoveryRes = await doRecover();
+                    if (recoveryRes.ok) break;
+                  }
+                }
                 if (recoveryRes.ok) {
                   const recoveredUser = await recoveryRes.json();
                   console.log('✅ Session recovered for:', recoveredUser.username);
@@ -990,6 +1032,7 @@ function Router() {
 
     checkServerAuth().finally(() => {
       setAuthLoading(false);
+      setServerAuthChecked(true);
     });
   }, []);
 
@@ -1229,7 +1272,12 @@ function Router() {
       const next = localStorage.getItem("postAuthRedirect");
       if (next) {
         localStorage.removeItem("postAuthRedirect");
-        setLocation(next);
+        // Stale "/signin" left over from the pre-fix navbar bouncer would
+        // redirect a successful login straight back through the alias.
+        // Same for "/auth" — never honor an auth route as a post-auth target.
+        if (next !== "/signin" && next !== "/auth") {
+          setLocation(next);
+        }
       }
     } catch {
       // ignore storage errors
@@ -1533,9 +1581,15 @@ function Router() {
         return <LandingStreamlined />;
       }
 
-      // Show appropriate page for root path based on authentication
+      // Show appropriate page for root path based on authentication.
+      // Cookie-gated skeleton: when nt.has_session=1 is set but client state
+      // hasn't hydrated yet (ITP eviction, fresh PWA launch), hide Landing
+      // until syncAuthFromServer resolves. Logged-out users (no cookie)
+      // initialized serverAuthChecked=true and fall straight to Landing.
       if (location === '/') {
-        return isActuallyAuthenticated ? <Home /> : <LandingStreamlined />;
+        if (isActuallyAuthenticated) return <Home />;
+        if (!serverAuthChecked) return <FullPageSkeleton />;
+        return <LandingStreamlined />;
       }
       // QR code signup route - handled by early return above
       // Allow access to legal pages without authentication

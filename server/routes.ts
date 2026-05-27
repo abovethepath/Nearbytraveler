@@ -859,6 +859,24 @@ async function sendWeeklyDigestEmails() {
   }
 }
 
+// Non-httpOnly companion cookie to the express-session "nt.sid" cookie.
+// Lets the client-side bootstrap detect a logged-in user even when iOS
+// WebKit ITP has evicted localStorage but kept cookies — avoids the
+// prerendered Landing flash on PWA launch.
+const HAS_SESSION_COOKIE_OPTS = {
+  httpOnly: false,
+  secure: true,
+  sameSite: "lax" as const,
+  maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days, matches nt.sid
+  path: "/",
+};
+function setHasSessionCookie(res: Response) {
+  res.cookie("nt.has_session", "1", HAS_SESSION_COOKIE_OPTS);
+}
+function clearHasSessionCookie(res: Response) {
+  res.clearCookie("nt.has_session", { path: "/", sameSite: "lax", secure: true });
+}
+
 export async function registerRoutes(app: Express, httpServer?: Server): Promise<Server> {
   if (process.env.NODE_ENV === 'development') console.log("Starting routes registration...");
 
@@ -1665,7 +1683,8 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
     
     res.clearCookie("nt.sid", cookieOpts);
     res.clearCookie("connect.sid", cookieOpts);
-    
+    clearHasSessionCookie(res);
+
     (req as any).session?.destroy((err: any) => {
       if (err) {
         console.error("Session destroy error:", err);
@@ -1694,7 +1713,8 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
     
     // Always clear the cookie first
     res.clearCookie("nt.sid", cookieOpts);
-    
+    clearHasSessionCookie(res);
+
     if (!(req as any).session) {
       console.log("✅ No session to destroy, cookie cleared");
       return res.status(200).json({ ok: true, message: "Logged out (no session)" });
@@ -1798,6 +1818,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
 
       // Re-establish the session
       (req as any).session.user = { id: user.id, username: user.username };
+      setHasSessionCookie(res);
       (req as any).session.save((err: any) => {
         if (err) {
           console.error("Session save error during recovery:", err);
@@ -4690,6 +4711,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         email: user.email,
         profileImageUrl: user.profileImage
       };
+      setHasSessionCookie(res);
 
       // Save session
       (req as any).session.save((err: any) => {
@@ -6322,7 +6344,8 @@ Questions? Just reply here — I read every message.
         email: user.email,
         userType: user.userType
       };
-      
+      setHasSessionCookie(res);
+
       // Session cookie is always persistent (30 days) — configured in session middleware
 
       // CRITICAL FIX: Explicitly save session BEFORE sending response
@@ -9988,6 +10011,7 @@ Questions? Just reply to this message. Welcome aboard!
           if (userData && userData.id) {
             console.log('🔄 Refreshing session with user data from header:', userData.id);
             (req as any).session.user = userData;
+            setHasSessionCookie(res);
             userId = userData.id;
             // Save session asynchronously - don't wait for it
             (req as any).session.save((err: any) => {
@@ -31060,7 +31084,8 @@ Questions? Just reply to this message. Welcome aboard!
     
     // Always clear the cookie first
     res.clearCookie('nt.sid', cookieOpts);
-    
+    clearHasSessionCookie(res);
+
     if (!req.session) {
       console.log('✅ No session to destroy, cookie cleared');
       return res.json({ ok: true, message: "Logged out (no session)" });

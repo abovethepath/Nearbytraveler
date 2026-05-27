@@ -39,6 +39,7 @@ import {
   quickMeetups,
   quickDeals,
   travelPlans,
+  availableNow,
 } from "../shared/schema";
 import { TravelStatusService } from "./services/travel-status-service";
 import {
@@ -663,6 +664,30 @@ app.use((req, _res, next) => {
       delete (req.headers as any)["x-user-id"];
       delete (req.headers as any)["x-user-data"];
       delete (req.headers as any)["x-user-type"];
+    }
+  } catch {
+    // ignore
+  }
+  next();
+});
+
+// Backfill the nt.has_session companion cookie for already-authenticated
+// requests whose original login predates this cookie. Fresh login/registration
+// paths set this cookie explicitly at the session.user assignment site; this
+// middleware catches every other authenticated request so legacy sessions
+// converge without needing the user to log out and back in.
+app.use((req, res, next) => {
+  try {
+    const hasUser = !!(req as any)?.session?.user?.id;
+    const cookieHeader = typeof req.headers.cookie === "string" ? req.headers.cookie : "";
+    if (hasUser && !cookieHeader.includes("nt.has_session=1")) {
+      res.cookie("nt.has_session", "1", {
+        httpOnly: false,
+        secure: true,
+        sameSite: "lax",
+        maxAge: 30 * 24 * 60 * 60 * 1000,
+        path: "/",
+      });
     }
   } catch {
     // ignore
@@ -1307,6 +1332,65 @@ app.use((req, res, next) => {
             console.error("⚠️ [cron] Seed user creation failed:", error);
           }
         }, { timezone: "UTC" });
+
+        // Auto-toggle nearbytrav (user id=2) Available Now from 9am-9pm Pacific daily.
+        // Mirrors the DB writes of POST /api/available-now (deactivate-then-insert)
+        // so the row surfaces in every widget that filters on
+        // isAvailable=true AND expiresAt > NOW(). Skips the push/activity-log
+        // side effects from the manual endpoint — daily blasts to everyone in
+        // the city would be spam.
+        cron.schedule("0 9 * * *", async () => {
+          console.log("🟢 [cron] Auto-toggle nearbytrav (id=2) Available Now ON...");
+          try {
+            const [u] = await db
+              .select({
+                hometownCity: users.hometownCity,
+                hometownState: users.hometownState,
+                hometownCountry: users.hometownCountry,
+              })
+              .from(users)
+              .where(eq(users.id, 2));
+            if (!u || !u.hometownCity || !u.hometownCountry) {
+              console.warn("⚠️ [cron] nearbytrav ON skipped: missing hometown city/country on user id=2");
+              return;
+            }
+            await db
+              .update(availableNow)
+              .set({ isAvailable: false })
+              .where(and(eq(availableNow.userId, 2), eq(availableNow.isAvailable, true)));
+            // +12h safety expiry; the 9pm OFF cron is the real terminator.
+            const expiresAt = new Date(Date.now() + 12 * 60 * 60 * 1000);
+            const city = u.hometownCity.split(",")[0].trim();
+            await db.insert(availableNow).values({
+              userId: 2,
+              isAvailable: true,
+              activities: [],
+              customNote: null,
+              city,
+              state: u.hometownState || null,
+              country: u.hometownCountry,
+              expiresAt,
+              openJoin: false,
+            });
+            console.log(`✅ [cron] nearbytrav ON in ${city} until ${expiresAt.toISOString()}`);
+          } catch (error) {
+            console.error("⚠️ [cron] nearbytrav ON failed:", error);
+          }
+        }, { timezone: "America/Los_Angeles" });
+
+        cron.schedule("0 21 * * *", async () => {
+          console.log("🔴 [cron] Auto-toggle nearbytrav (id=2) Available Now OFF...");
+          try {
+            const result = await db
+              .update(availableNow)
+              .set({ isAvailable: false })
+              .where(and(eq(availableNow.userId, 2), eq(availableNow.isAvailable, true)))
+              .returning({ id: availableNow.id });
+            console.log(`✅ [cron] nearbytrav OFF — deactivated ${result.length} row(s)`);
+          } catch (error) {
+            console.error("⚠️ [cron] nearbytrav OFF failed:", error);
+          }
+        }, { timezone: "America/Los_Angeles" });
 
         // Event reminders: run every 30 minutes. Sends 24h and 1h-before emails, each only once per user per event.
         const EVENT_REMINDER_INTERVAL = 30 * 60 * 1000;
