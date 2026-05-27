@@ -827,6 +827,87 @@ But solo dining isn't a consolation prize. It's a different experience. Sometime
 The goal isn't to love eating alone. The goal is to stop letting the fear of it dictate where you eat and what you experience. To walk into a good restaurant, ask for a table for one, and not feel like you're doing something wrong.
 
 Because you're not. You're just hungry, in a new city, wanting a good meal. That's reason enough.`
+  },
+  {
+    title: "Solo Travel for Introverts: How to Meet People on Your Terms",
+    date: "2026-05-21",
+    slug: "solo-travel-for-introverts-meeting-people",
+    description: "Introverted solo traveler? Here's how to meet locals and fellow travelers without hostels, forced small talk, or draining your social battery.",
+    body: `Most guides about meeting people while traveling solo read like they were written for someone who considers chatting up strangers at a bar a fun activity. Walk up to that group. Strike up a conversation in the hostel common room. Just put yourself out there.
+
+For a lot of solo travelers, that advice lands somewhere between unhelpful and genuinely anxiety-inducing.
+
+If you're introverted, or you travel with social anxiety, or you just know that draining yourself socially on day one means you'll spend day two recovering in your room — you need different strategies. The good news is that the connections you want are absolutely available to you. You just need approaches that give you control over the timing, the intensity, and the exit.
+
+## Why Most "Meet People" Advice Doesn't Work for Introverts
+
+The standard playbook for solo travel socialization assumes something that isn't true for everyone: that being around people automatically creates energy. For introverts, the opposite is often true. Social interaction costs something, and the bill comes due eventually.
+
+This doesn't mean introverts don't want connection. Most do, sometimes badly. It means the *way* connection happens matters. Loud common rooms, pressure to stay out late, conversations that have no natural ending point — these are fine for some travelers and exhausting for others.
+
+The strategies that actually work for introverted solo travelers share a few things in common: they're **opt-in**, they have a clear endpoint built in, and they don't require you to approach a stranger cold with no context.
+
+[How to Meet People When Traveling Alone](/blog/how-to-meet-people-when-traveling-alone) covers the general landscape well, but this is specifically for those of us who need to protect our energy while still building real connections on the road.
+
+## The Opt-In Principle
+
+The single biggest thing that separates low-pressure connection from draining connection is whether you chose to engage or whether you were put on the spot.
+
+Opt-in means: you initiate when you're ready, at the pace you want, with as much information as you want upfront. Cold approaches — walking up to someone, being approached by someone, being voluntold into a group activity — strip that control away.
+
+Practically speaking, this means favoring tools and situations where you can signal availability without being forced to perform immediately. Digital tools that let you browse before you commit. Activities where shared focus takes the conversational pressure off. Connections that form slowly around a shared interest rather than needing to spark from scratch.
+
+## Low-Pressure Ways to Actually Connect
+
+### Choose Activities Where the Activity Does the Work
+
+Free walking tours, cooking classes, day hikes with a local guide — these work well for introverts because the structure does the socializing heavy lifting. You don't need to manufacture conversation. Something is happening. You can participate at whatever level feels right, and by the end of a few hours, you've spent real time with people without it costing what an hour of open-ended mingling would.
+
+Museum visits, local markets, and long train journeys create the same conditions. The environment gives you both something to talk about when you want to talk, and something to look at when you don't.
+
+### Use Tools That Let You Signal, Not Perform
+
+There's a real difference between putting yourself out there and broadcasting that you're available. The second one is much more manageable.
+
+[Nearby Traveler](https://nearbytraveler.org) works well for introverts specifically because it's asynchronous and opt-in. You mark yourself available when you're actually ready to meet someone — not when you've just arrived exhausted, not when you've already hit your social ceiling for the day. Locals who are open to meeting travelers can see you're around, and you can see who's available nearby. Nobody is cold-approaching anyone. The context is already established before you ever speak.
+
+That pre-established context is worth more than people realize. Knowing someone is a local who has chosen to be open to meeting travelers, knowing they're nearby, knowing what kind of meetup they're open to — all of that removes the ambiguity that makes cold interaction so draining.
+
+### Eat at the Bar, Not the Table
+
+This one sounds small but it changes a lot. Sitting at a restaurant bar by yourself creates the possibility of conversation without demanding it. You're not at a table alone, which can feel isolating. You're also not expected to perform. The bartender will talk to you if you want. The person next to you might. Or you eat your meal in peace. The option is there; the obligation isn't.
+
+[How to Eat Alone While Traveling (Without the Awkwardness)](/blog/eating-alone-while-traveling) has more on this — including how to pick restaurants where solo dining actually works in your favor.
+
+### Go to the Same Place Twice
+
+A coffee shop on day one is just a coffee shop. The same coffee shop on day three is starting to feel like a neighborhood. The staff recognize you. The regulars notice you. You don't have to introduce yourself as a traveler or explain yourself. You're just someone who comes here.
+
+Repetition builds familiarity without any of the work of active socialization. Introverts often find this kind of slow-burn connection far more natural than trying to compress a friendship into a single big night out.
+
+### Online Communities Before You Land
+
+Doing the legwork digitally — before you're physically in the place — is one of the most underused strategies for introverted travelers. City-specific subreddits, Facebook groups for expats and travelers, interest-specific communities (hiking groups, language exchange meetups, board game nights) — all of these let you research and reach out from the comfort of wherever you already are.
+
+By the time you show up to something, you're not a stranger walking in cold. You're someone who mentioned they'd be there. That's a fundamentally different social situation.
+
+## Managing Your Battery, Not Ignoring It
+
+Here's the thing most solo travel advice gets wrong for introverts: the goal isn't to push through the discomfort until socializing stops being hard. The goal is to structure your days so that connection happens *before* you're depleted — and so you have real recovery time built in.
+
+This means being honest with yourself about your daily rhythm. If you know you're most open to meeting people in the late morning after coffee and some solo time, don't schedule social things for evenings when you're already running low. If you need a solo afternoon after a social morning, protect it.
+
+The loneliness that hits during solo travel is real — [Curing Travel Loneliness](/blog/curing-travel-loneliness) gets into why it happens even to experienced travelers — but the answer isn't to white-knuckle through more social situations. It's to find the *right* situations at the *right* time, in small enough doses that you actually enjoy them.
+
+## What You're Actually Looking For
+
+Most introverted solo travelers aren't looking for a party. They're looking for one good conversation. One local who can point them somewhere real. One fellow traveler to share a meal with so the day doesn't feel completely solitary.
+
+That's an achievable thing, and it doesn't require the hostel common room or the pub crawl or the relentless energy of acting like an extrovert until you crash.
+
+Mark yourself available on a Tuesday afternoon when you've had your coffee and your solo museum morning. Find one local who's open to a low-key meetup. Show up, talk about the city, eat something good. Go back to your room when you're ready.
+
+That's a successful social day, and it's enough.`
   }
 ];
 
