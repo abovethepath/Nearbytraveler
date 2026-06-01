@@ -1359,7 +1359,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       // Save to database so it appears on user discovery cards
       const gradientCSS = gradientCSSMap[selectedGradient];
       if (gradientCSS) {
-        apiRequest('PATCH', '/api/user/profile', { avatarGradient: gradientCSS }).then(() => {
+        apiRequest('PATCH', `/api/users/${user.id}`, { avatarGradient: gradientCSS }).then(() => {
           // Only invalidate the specific user query, not ALL /api/users/* queries
           queryClient.invalidateQueries({ queryKey: [`/api/users/${user.id}`], exact: true });
         }).catch((err) => console.error('Failed to save gradient:', err));
