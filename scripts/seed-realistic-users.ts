@@ -335,7 +335,11 @@ function buildUserData(api: RandomUser): PreparedUser {
     createdAt,
     lastLogin,
     username,
-    picturePending: { url: api.picture.large, filename: `${username}-${Date.now()}.jpg` },
+    // Photo source: TPDNE (AI-generated portrait, unlimited unique pool).
+    // randomuser.me's 100-portrait-per-gender pool was guaranteed to collide
+    // at scale; we still use randomuser.me's API above for name/dob/email
+    // realism, but the picture field is ignored.
+    picturePending: { url: `https://thispersondoesnotexist.com/?t=${Date.now()}-${Math.random().toString(36).slice(2)}`, filename: `${username}-${Date.now()}.jpg` },
   };
 }
 

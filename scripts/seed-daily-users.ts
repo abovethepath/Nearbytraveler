@@ -6,14 +6,19 @@
 // flow so seeded users land in the same state as real signups EXCEPT for
 // aura, which is set to 99 — the primary identification marker.
 //
-// Demographic design (rewritten 2026-05):
-//   Seeded users are now drawn from 8 weighted ethnic/regional buckets, each
-//   with a coherent name + photo + hometown pool. Within a bucket, first name,
-//   last name, photo, and hometown are drawn from that bucket's pool only —
-//   no more cross-bucket mixes like "Carlos Smith with an Asian-presenting
-//   photo". Hometowns reflect the platform's international-traveler audience
-//   (Berlin, São Paulo, Tokyo, etc.); current location is heavily LA-weighted
-//   to match the launch market.
+// Demographic design (rewritten 2026-05, photo source swapped 2026-06):
+//   Seeded users are drawn from 8 weighted ethnic/regional buckets that
+//   control NAME and HOMETOWN selection only. Profile photos come from
+//   thispersondoesnotexist.com (TPDNE) — an unlimited pool of AI-generated
+//   faces — and are NOT bucket-coordinated. randomuser.me's 100-portrait-per-
+//   gender pool we previously used was guaranteed to collide at scale, and
+//   its visual ethnicity per index was never reliable anyway (~30-50% mismatch
+//   with the picked bucket), so accepting fully-random photos in exchange for
+//   true uniqueness is the right trade.
+//
+//   Hometowns reflect the platform's international-traveler audience (Berlin,
+//   São Paulo, Tokyo, etc.); current location is heavily LA-weighted to match
+//   the launch market.
 //
 //   Bucket weights:
 //     white-american    35%
@@ -90,10 +95,6 @@ interface EthnicBucket {
   maleFirstNames: string[];
   femaleFirstNames: string[];
   lastNames: string[];
-  /** randomuser.me men/{N}.jpg indices — see PHOTO_COHERENCE_NOTE below. */
-  photoIndicesMen: number[];
-  /** randomuser.me women/{N}.jpg indices — see PHOTO_COHERENCE_NOTE below. */
-  photoIndicesWomen: number[];
   hometownPool: WeightedCity[];
 }
 
@@ -101,7 +102,6 @@ export interface SeededUser {
   firstName: string;
   lastName: string;
   gender: "male" | "female";
-  photoUrl: string;
   hometown: CityEntry;
   currentLocation: CityEntry;
   isTraveler: boolean;
@@ -123,30 +123,6 @@ const LA_LOCAL_BUCKET_WEIGHTS: Record<string, number> = {
   "white-european":    2,
   "other-mixed":       2,
 };
-
-// ────────────────────────────────────────────────────────────────────────────
-// PHOTO_COHERENCE_NOTE
-// ────────────────────────────────────────────────────────────────────────────
-// randomuser.me does NOT publish ethnicity tags for the men/0..99.jpg and
-// women/0..99.jpg portrait sets, so the index ranges below are best-effort
-// partitions only — actual visual ethnicity per index has not been verified.
-// Every bucket gets a different non-overlapping slice, which guarantees photo
-// *variety* across buckets but does NOT guarantee that a given Latin-American-
-// bucket pick will produce a Latin-presenting portrait. Mismatches will occur.
-//
-// TODO(photo-coherence): replace these arbitrary index ranges with a curated,
-// visually-verified mapping. Suggested approach: download all 200 portraits
-// once, auto-classify with a face-attribute model, hand-correct edge cases,
-// and persist the mapping as a JSON asset under content/seed-photo-tags.json.
-// Until then, expect ~30-50% of seeded portraits to visually conflict with
-// the picked bucket — we accept this trade-off per the rebuild spec.
-// ────────────────────────────────────────────────────────────────────────────
-
-function range(start: number, endInclusive: number): number[] {
-  const out: number[] = [];
-  for (let i = start; i <= endInclusive; i++) out.push(i);
-  return out;
-}
 
 // ────────────────────────────────────────────────────────────────────────────
 // Current location pool — for the 15% "other US" slot in pickCurrentLocation.
@@ -194,8 +170,6 @@ const WHITE_AMERICAN: EthnicBucket = {
     "Young", "Allen", "King", "Wright", "Scott", "Hill", "Green", "Adams",
     "Nelson", "Baker", "Hall", "Campbell", "Mitchell", "Carter", "Roberts",
   ],
-  photoIndicesMen: range(0, 19),
-  photoIndicesWomen: range(0, 19),
   hometownPool: [
     { city: "Los Angeles",   state: "California",  country: "United States", region: "us", weight: 15, metroExpand: "Los Angeles Metro" },
     { city: "New York",      state: "New York",    country: "United States", region: "us", weight: 15 },
@@ -250,8 +224,6 @@ const WHITE_EUROPEAN: EthnicBucket = {
     "Novák", "Svoboda",                              // Czech
     "Silva", "Ferreira",                             // Portuguese
   ],
-  photoIndicesMen: range(20, 39),
-  photoIndicesWomen: range(20, 39),
   hometownPool: [
     // Germany 25%
     { city: "Berlin",  state: null, country: "Germany", region: "europe", nativeLanguage: "German",  weight: 8.5 },
@@ -301,8 +273,6 @@ const LATIN_AMERICAN: EthnicBucket = {
     "Souza", "Costa", "Oliveira", "Santos", "Pereira", "Lima", "Fernández",
     "Díaz", "Ramos",
   ],
-  photoIndicesMen: range(40, 54),
-  photoIndicesWomen: range(40, 54),
   hometownPool: [
     // Brazil 30%
     { city: "São Paulo",      state: null, country: "Brazil",    region: "latam", nativeLanguage: "Portuguese", weight: 15 },
@@ -350,8 +320,6 @@ const ASIAN: EthnicBucket = {
     "Wang", "Chen", "Lin", "Wu", "Liu", "Zhang",                     // Chinese / Taiwanese
     "Nguyễn", "Trần", "Lê",                                          // Vietnamese
   ],
-  photoIndicesMen: range(55, 69),
-  photoIndicesWomen: range(55, 69),
   hometownPool: [
     // Japan 30%
     { city: "Tokyo", state: null, country: "Japan",       region: "asia", nativeLanguage: "Japanese", weight: 13 },
@@ -392,8 +360,6 @@ const WHITE_AU_NZ: EthnicBucket = {
     "Jackson", "Martin", "Walker", "Mitchell", "Campbell", "McGrath", "Murphy",
     "Harris", "King", "Stewart",
   ],
-  photoIndicesMen: range(70, 79),
-  photoIndicesWomen: range(70, 79),
   hometownPool: [
     { city: "Sydney",     state: null, country: "Australia",   region: "oceania", weight: 30 },
     { city: "Melbourne",  state: null, country: "Australia",   region: "oceania", weight: 25 },
@@ -419,8 +385,6 @@ const MIDDLE_EASTERN: EthnicBucket = {
     "Cohen", "Levi", "Mizrahi", "Karimi", "Tabrizi", "Yılmaz", "Demir",
     "Habibi", "Saleh",
   ],
-  photoIndicesMen: range(80, 89),
-  photoIndicesWomen: range(80, 89),
   hometownPool: [
     { city: "Tel Aviv", state: null, country: "Israel",  region: "middle-east", nativeLanguage: "Hebrew",  weight: 25 },
     { city: "Istanbul", state: null, country: "Turkey",  region: "middle-east", nativeLanguage: "Turkish", weight: 25 },
@@ -446,8 +410,6 @@ const BLACK_AMERICAN: EthnicBucket = {
     "Harris", "Lewis", "Walker", "Young", "Allen", "King", "Scott", "Carter",
     "Simmons", "Mitchell", "Washington", "Jefferson",
   ],
-  photoIndicesMen: range(90, 94),
-  photoIndicesWomen: range(90, 94),
   hometownPool: [
     { city: "Atlanta",   state: "Georgia",        country: "United States", region: "us", weight: 18 },
     { city: "New York",  state: "New York",       country: "United States", region: "us", weight: 18 },
@@ -473,8 +435,6 @@ const OTHER_MIXED: EthnicBucket = {
     "Patel", "García", "Lee", "Khan", "Martínez", "Cohen", "Singh", "Nguyễn",
     "Williams", "Silva", "Tanaka",
   ],
-  photoIndicesMen: range(95, 99),
-  photoIndicesWomen: range(95, 99),
   hometownPool: [
     { city: "Toronto",   state: null, country: "Canada",       region: "other", weight: 25 },
     { city: "Cape Town", state: null, country: "South Africa", region: "africa", weight: 20 },
@@ -645,12 +605,6 @@ function pickCurrentLocation(): CityEntry {
   return pick(US_OTHER_CITIES);
 }
 
-function pickPhotoUrl(bucket: EthnicBucket, gender: "male" | "female"): string {
-  const indices = gender === "male" ? bucket.photoIndicesMen : bucket.photoIndicesWomen;
-  const idx = pick(indices);
-  return `https://randomuser.me/api/portraits/${gender === "male" ? "men" : "women"}/${idx}.jpg`;
-}
-
 /**
  * Path-1 helper: picks an ethnic bucket using the LA-demographics weights
  * (LA_LOCAL_BUCKET_WEIGHTS), not the global BUCKETS weights.
@@ -759,13 +713,11 @@ export function pickSeededUser(): SeededUser {
   const gender: "male" | "female" = Math.random() < 0.5 ? "male" : "female";
   const firstName = pick(gender === "male" ? bucket.maleFirstNames : bucket.femaleFirstNames);
   const lastName = pick(bucket.lastNames);
-  const photoUrl = pickPhotoUrl(bucket, gender);
 
   return {
     firstName,
     lastName,
     gender,
-    photoUrl,
     hometown,
     currentLocation,
     isTraveler,
@@ -891,7 +843,7 @@ async function generateOneUser(): Promise<void> {
   const { storage } = await import("../server/storage");
 
   const seeded = pickSeededUser();
-  const { firstName: first, lastName: last, gender, photoUrl, hometown: home, currentLocation: current, isTraveler } = seeded;
+  const { firstName: first, lastName: last, gender, hometown: home, currentLocation: current, isTraveler } = seeded;
 
   const username = await buildSeedUsername(first, last);
   const email = `seed+${username}@nearbytraveler.org`;
@@ -917,7 +869,10 @@ async function generateOneUser(): Promise<void> {
     travelEndDate = new Date(Date.now() + randInt(3, 21) * DAY);
   }
 
-  const profileImage = await uploadCloudinaryPhoto(photoUrl, `${username}-${Date.now()}.jpg`);
+  // TPDNE = unlimited unique AI-generated portraits. Cache-buster guards
+  // against intermediate proxies; each request server-side regenerates.
+  const tpdneUrl = `https://thispersondoesnotexist.com/?t=${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  const profileImage = await uploadCloudinaryPhoto(tpdneUrl, `${username}-${Date.now()}.jpg`);
 
   const userData: any = {
     username,
@@ -1122,7 +1077,8 @@ function runDryRun(count: number): void {
         `${String(i + 1).padStart(2)}. ${u.bucketKey.padEnd(16)} ${u.gender.padEnd(7)} ${(u.firstName + " " + u.lastName).padEnd(30)}` +
           ` from ${home.padEnd(32)} → ${current.padEnd(28)}  ${status}  [${u.path}]`,
       );
-      console.log(`    photo: ${u.photoUrl}`);
+      // Photo source omitted — TPDNE produces a fresh AI-generated portrait
+      // per user at upload time; there is no deterministic per-pick URL.
     });
     console.log("─".repeat(150));
   } else {
