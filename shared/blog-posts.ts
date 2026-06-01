@@ -1046,6 +1046,93 @@ That's an achievable thing, and it doesn't require the hostel common room or the
 Mark yourself available on a Tuesday afternoon when you've had your coffee and your solo museum morning. Find one local who's open to a low-key meetup. Show up, talk about the city, eat something good. Go back to your room when you're ready.
 
 That's a successful social day, and it's enough.`
+  },
+  {
+    title: "Solo Travel in Your 40s: How to Actually Meet People",
+    date: "2026-06-01",
+    slug: "solo-travel-in-your-40s-how-to-meet-people",
+    description: "Solo travel in your 40s is booming — but hostel advice doesn't apply. Here's the real social playbook for meeting people when you're staying somewhere nicer.",
+    body: `Solo travel in your 40s is having a moment. Women over 40 now make up the fastest-growing segment of solo travelers globally — 39% of all solo travelers in 2026. That's not a niche anymore. That's a movement.
+
+And yet almost every article about meeting people while traveling alone eventually lands on the same advice: stay in a hostel. Get a dorm bed. Hang out in the common room.
+
+For most people in their 40s, that advice lands somewhere between irrelevant and insulting. You've earned the hotel room. You sleep better alone. You're not going back.
+
+So the real question is: how do you actually meet people when you're staying somewhere quieter and the built-in social infrastructure of hostel life isn't part of the plan?
+
+## Why the Standard Advice Fails This Group
+
+Hostel advice works because hostels solve a specific problem: they concentrate solo travelers in shared physical space and give them something to talk about. The dorm, the common room, the communal breakfast. Connection almost happens by accident.
+
+When you're staying in a hotel or an apartment rental, none of that scaffolding exists. Your room is comfortable and private and completely isolated. The lobby isn't designed for lingering. Other guests aren't there to socialize — they're there on business trips or family vacations or romantic getaways.
+
+This isn't a personal failure. It's a structural problem. And once you see it that way, you can start solving it differently.
+
+## Rethink Where You Spend Time
+
+The hotel room itself is not the problem. Where you spend your time outside it is.
+
+People in their 40s traveling solo often default to restaurants, museums, and organized tours. All fine choices. But none of them are optimized for conversation with strangers. Restaurants seat you and leave you alone. Museums are quiet by social convention. Tours give you 90 minutes with a rotating group of people who scatter immediately after.
+
+The places where connection actually tends to happen at this stage are more specific: small wine bars with communal seating, cooking classes, fitness studios with drop-in schedules, local markets with vendors who actually talk to you, coffee shops where the barista has a reason to chat.
+
+**The pattern is proximity plus a shared context.** Not just standing near people, but having a reason to interact. A cooking class gives you that. A museum does not.
+
+## Use Structure to Your Advantage
+
+One thing that genuinely works better in your 40s than it did earlier: structured social activities attract people at a similar life stage.
+
+A wine tasting in Lisbon. A pottery class in Oaxaca. A literary walking tour in Edinburgh. A yoga retreat in Bali. These don't just give you something to do — they filter the room. The people who sign up for them tend to be curious, solvent, traveling intentionally. Often solo, or at least open to conversation.
+
+The more specific the activity, the better the filtering. A general city tour attracts everyone. A street food tour attracts a narrower, usually more interesting crowd. A half-day foraging class in the countryside attracts someone worth knowing.
+
+[How to Find Travel Buddies in Any City](/blog/how-to-find-travel-buddies) covers this well — the core insight is that people find each other most easily when they're doing something, not when they're searching for connection directly.
+
+## The Regulars Strategy
+
+This sounds almost too simple but it keeps working: pick one place and go back.
+
+Find a wine bar, a cafe, a morning market stall you like. Go on day one. Go again on day two. By the second visit, the bartender knows your face. Other regulars notice. The person who was also sitting alone the previous evening recognizes you.
+
+This compresses weeks of familiarity into two days. It works because regulars are already a social network — they know each other, they're relaxed, and a new face who keeps showing up gets absorbed into that network faster than you'd expect.
+
+Solo travel over 40 often involves staying somewhere for longer stretches, not racing between cities. If that's your style, the regulars strategy pays out disproportionately.
+
+## Locals Over Fellow Travelers
+
+One shift worth making: stop thinking about meeting other travelers and start thinking about meeting people who actually live there.
+
+Locals have context. They know where to eat, what's happening this weekend, which neighborhood is worth your time. More importantly, they have existing social lives that you can briefly plug into — the bar they go to on Friday, the friend group having dinner Saturday.
+
+The best way in is to ask the right question. Not "what should I see here" — that gets you a tourist answer. Try: "What would you do this weekend if you had a free day?" Or: "Is there anywhere locals actually go on Tuesday nights?" People love being asked for the real version.
+
+[How to Meet Locals When Traveling (Not Just Tourists)](/blog/meet-locals-when-traveling) goes deeper on this — including which situations make locals most likely to actually invite you somewhere, not just give you directions.
+
+## Real-Time Connection Tools
+
+There's a practical problem that most solo travelers over 40 haven't fully solved: how to signal that you're available to meet people right now, without standing in a hostel common room hoping someone talks to you.
+
+This is where apps have gotten genuinely useful. [Nearby Traveler](https://nearbytraveler.org) is built specifically for this situation — open it in any city, mark yourself as available, and see locals and other travelers who are free right now. It removes the cold-approach awkwardness because everyone using it is there for the same reason. You're not intruding. You're both opting in.
+
+For evenings especially, this matters. [Alone at Night in a New City? Here's What Actually Works](/blog/solo-travel-evenings-not-in-a-hostel) lays out the full picture — but having a real-time layer where you can see who's around solves the specific problem of the solo hotel evening with no obvious next step.
+
+## On Safety and Judgment
+
+Meeting strangers while traveling alone carries real considerations, and it's worth being honest about that rather than glossing over it.
+
+The good news is that by your 40s, you've developed social judgment that's actually useful here. You've met enough people to read situations reasonably well. Trust that. And keep the obvious basics in play: meet in public first, tell someone where you're going, don't override your gut because you want company badly enough.
+
+For women especially, solo female travel in 2026 has better resources and a better community than it's ever had. The social infrastructure has caught up with the demand.
+
+## The Mindset That Makes All of This Work
+
+Every strategy above fails if you're waiting for connection to come to you.
+
+The honest truth about meeting people in your 40s — traveling or otherwise — is that you have to initiate more than feels comfortable. Not aggressively. Not desperately. Just: be the person who says something. Ask the question. Suggest continuing the conversation over a glass of wine.
+
+People who are also traveling solo are often waiting for exactly this. They want company. They just don't want to be the one to ask. Be the one to ask.
+
+Book the cooking class, go back to the wine bar on the second evening, mark yourself available, and then actually talk to the person who shows up.`
   }
 ];
 
