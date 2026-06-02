@@ -2765,6 +2765,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
       authStorage.setUser(updatedUser);
       if (setAuthUser && isOwnProfile) setAuthUser(updatedUser);
       queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${effectiveUserId}/profile-bundle`] });
       queryClient.invalidateQueries({ queryKey: ["/api/users"] });
       window.dispatchEvent(new CustomEvent('userDataUpdated', { detail: updatedUser }));
       toast({ title: "Success", description: "Avatar updated successfully!" });
@@ -4347,7 +4348,7 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
               onClick={() => setLocation('/plan-trip')}
               variant="outline"
               size="sm"
-              className="bg-white/10 hover:bg-white/20 text-white border-white/30"
+              className="bg-white text-gray-900 hover:bg-white/90 border-transparent"
               data-testid="button-plan-trip"
             >
               <Plane className="w-4 h-4 mr-2" />

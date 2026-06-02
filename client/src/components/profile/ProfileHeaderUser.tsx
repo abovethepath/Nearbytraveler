@@ -495,12 +495,12 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
 
             {/* Plan a Trip CTA — inside the hero gradient, above the in-hero tab strip */}
             {isOwnProfile && (
-              <div className="w-full mt-4 flex justify-center">
+              <div className="w-full mt-4 flex justify-start lg:pl-[23rem]">
                 <Button
                   onClick={() => setLocation('/plan-trip')}
                   variant="outline"
                   size="sm"
-                  className="bg-white/10 hover:bg-white/20 text-white border-white/30"
+                  className="bg-white text-gray-900 hover:bg-white/90 border-transparent"
                   data-testid="button-plan-trip"
                 >
                   <Plane className="w-4 h-4 mr-2" />
