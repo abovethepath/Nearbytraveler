@@ -1074,7 +1074,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         const eventRows = await db
           .select({ id: events.id, updatedAt: events.createdAt })
           .from(events)
-          .where(eq(events.isPublished, true))
+          .where(and(eq(events.isPublic, true), eq(events.isActive, true)))
           .orderBy(desc(events.createdAt))
           .limit(5000);
         for (const row of eventRows) {
