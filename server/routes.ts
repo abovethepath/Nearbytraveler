@@ -3428,7 +3428,8 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
           u.hometown_country AS "hometownCountry",
           tp2.destination_city AS "sharedCity",
           GREATEST(tp1.start_date, tp2.start_date) AS "overlapStart",
-          LEAST(tp1.end_date, tp2.end_date) AS "overlapEnd"
+          LEAST(tp1.end_date, tp2.end_date) AS "overlapEnd",
+          (CASE WHEN u.aura = 99 THEN 1 ELSE 0 END) AS "auraRank"
         FROM travel_plans tp1
         JOIN travel_plans tp2
           ON LOWER(tp1.destination_city) = LOWER(tp2.destination_city)
@@ -3442,7 +3443,7 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         WHERE tp1.user_id = ${uid}
           AND c.id IS NULL
           AND u.is_active = true
-        ORDER BY (CASE WHEN u.aura = 99 THEN 1 ELSE 0 END) ASC,
+        ORDER BY "auraRank" ASC,
                  "overlapStart" DESC
         LIMIT 15
       `);
