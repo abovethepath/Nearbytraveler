@@ -248,7 +248,7 @@ interface PreparedUser {
   createdAt: Date;
   lastLogin: Date;
   username: string;
-  picturePending: { url: string; filename: string };
+  picturePending: { filename: string };
 }
 
 function buildUserData(api: RandomUser): PreparedUser {
@@ -335,11 +335,11 @@ function buildUserData(api: RandomUser): PreparedUser {
     createdAt,
     lastLogin,
     username,
-    // Photo source: TPDNE (AI-generated portrait, unlimited unique pool).
-    // randomuser.me's 100-portrait-per-gender pool was guaranteed to collide
-    // at scale; we still use randomuser.me's API above for name/dob/email
-    // realism, but the picture field is ignored.
-    picturePending: { url: `https://thispersondoesnotexist.com/?t=${Date.now()}-${Math.random().toString(36).slice(2)}`, filename: `${username}-${Date.now()}.jpg` },
+    // Photo source: TPDNE (AI-generated portrait, unlimited unique pool),
+    // pulled + validated for adult age + gender match at upload time inside
+    // uploadValidatedTpdne(). randomuser.me is still used above for realistic
+    // name/dob/email; its picture field is ignored.
+    picturePending: { filename: `${username}-${Date.now()}.jpg` },
   };
 }
 
@@ -355,13 +355,13 @@ async function getDb(): Promise<{ db: typeof DbType; users: any; eq: any; sql: a
   const { eq, sql } = await import("drizzle-orm");
   return { db, users, eq, sql };
 }
-async function uploadCloudinaryPhoto(url: string, filename: string): Promise<string> {
+async function uploadValidatedTpdne(expectedGender: "male" | "female", filename: string): Promise<string> {
   // Mandatory per §9.7 — throw on failure.
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`photo download failed: ${res.status}`);
-  const arr = await res.arrayBuffer();
-  const buf = Buffer.from(arr);
+  // Pulls TPDNE faces and validates adult + gender match via face-api.js.
+  // Retries up to 10x; throws if validation can't pass within the budget.
+  const { fetchAndValidateTpdne } = await import("./lib/portrait-validation.js");
   const { uploadImage } = await import("../server/services/cloudinary");
+  const buf = await fetchAndValidateTpdne(expectedGender, 10);
   const { url: secureUrl } = await uploadImage(buf, filename);
   return secureUrl;
 }
@@ -370,7 +370,9 @@ async function createOneSeedUserLive(prep: PreparedUser): Promise<void> {
   const { insertData, isTraveler, destination, travelStartDate, travelEndDate, createdAt, lastLogin, picturePending } = prep;
 
   // Spec §9.7: Cloudinary photo for EVERY user, no exceptions. If upload fails, skip user.
-  const profileImage = await uploadCloudinaryPhoto(picturePending.url, picturePending.filename);
+  // Source: validated TPDNE (adult + gender match). insertData.gender was set
+  // by buildUserData from the randomuser.me API result.
+  const profileImage = await uploadValidatedTpdne(insertData.gender, picturePending.filename);
   insertData.profileImage = profileImage;
 
   const storage = await getStorage();
@@ -478,7 +480,7 @@ export async function seedRealisticUsers(opts: { count?: number; dryRun?: boolea
           `8. storage.updateUser(id, { aura: ${prep.isTraveler ? 2 : 1} })`,
           `9. db.update(users).set({ createdAt: ${prep.createdAt.toISOString()}, lastLogin: ${prep.lastLogin.toISOString()} })`,
         ],
-        cloudinary: { source: prep.picturePending.url, filename: prep.picturePending.filename, mode: "uploaded pre-create (mandatory)" },
+        cloudinary: { source: `TPDNE (validated adult + gender=${prep.insertData.gender}, ≤10 retries)`, filename: prep.picturePending.filename, mode: "uploaded pre-create (mandatory)" },
         userData: prep.insertData,
       };
       console.log(`\n--- sample ${i + 1}/${sampleN} ---`);

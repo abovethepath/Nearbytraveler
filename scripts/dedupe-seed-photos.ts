@@ -12,12 +12,16 @@
 // detected by sha256-hashing the actual image bytes fetched from each
 // profileImage URL and grouping users whose hashes collide.
 //
-// Source = TPDNE (no buckets, no pool exhaustion)
-// ───────────────────────────────────────────────
-// TPDNE returns a fresh StyleGAN portrait on every request, so the per-bucket
-// index logic the previous version of this script enforced is gone — the new
-// pool is effectively infinite and we just retry on the (vanishingly unlikely)
-// case of a hash collision with an already-seen seed photo.
+// Source = TPDNE + face-api.js validation
+// ────────────────────────────────────────
+// TPDNE returns a fresh StyleGAN portrait on every request. Each candidate
+// is validated by scripts/lib/portrait-validation.ts (adult age + gender
+// match via face-api.js TinyFaceDetector + AgeGenderNet) before upload.
+// Hash collision against already-seen seed photos is a separate retry layer
+// on top of the validator's own retry budget.
+//
+// Users whose stored gender isn't "male" or "female" are skipped (the
+// validator needs an expected gender; we won't guess).
 //
 // CLI
 // ───
@@ -30,8 +34,7 @@ import type { db as DbType } from "../server/db";
 
 // ───────────── helpers ─────────────
 
-const TPDNE_URL = "https://thispersondoesnotexist.com/";
-const MAX_TPDNE_RETRIES = 5;
+const MAX_COLLISION_RETRIES = 5;
 
 async function fetchBytes(url: string): Promise<Buffer> {
   const res = await fetch(url);
@@ -46,11 +49,6 @@ function sha256(buf: Buffer): string {
 
 async function hashUrl(url: string): Promise<string> {
   return sha256(await fetchBytes(url));
-}
-
-/** Fetch a fresh TPDNE portrait. Cache-buster guards against intermediate proxies. */
-async function fetchTpdneBytes(): Promise<Buffer> {
-  return fetchBytes(`${TPDNE_URL}?t=${Date.now()}-${Math.random().toString(36).slice(2)}`);
 }
 
 // ───────────── lazy imports (live mode) ─────────────
@@ -160,7 +158,16 @@ function planSwaps(hashed: UserHashed[]): {
     group.sort((a, b) => a.id - b.id);
     kept.push(group[0]);
     seenHashes.add(group[0].hash!);
-    for (let i = 1; i < group.length; i++) swaps.push({ user: group[i] });
+    for (let i = 1; i < group.length; i++) {
+      const candidate = group[i];
+      // Validator needs an expected gender. If we don't have one, the swap
+      // can't proceed safely — list for manual handling.
+      if (candidate.gender !== "male" && candidate.gender !== "female") {
+        skips.push({ user: candidate, reason: `gender='${candidate.gender ?? "(null)"}' — validator needs male|female` });
+        continue;
+      }
+      swaps.push({ user: candidate });
+    }
   }
   return { swaps, skips, kept, seenHashes };
 }
@@ -169,20 +176,27 @@ function planSwaps(hashed: UserHashed[]): {
 
 async function applySwap(entry: SwapPlanEntry, seenHashes: Set<string>): Promise<void> {
   const { user } = entry;
+  // Validator-guarded gender narrowed in planSwaps; assert for TS.
+  const expectedGender = user.gender as "male" | "female";
+  const { fetchAndValidateTpdne } = await import("./lib/portrait-validation.js");
+
+  // Outer loop: TPDNE may produce a (vanishingly unlikely) hash collision
+  // with an already-seen seed photo. fetchAndValidateTpdne handles its own
+  // age/gender retries inside; this layer only re-rolls on dup-hash hits.
   let buf: Buffer | null = null;
   let hash = "";
-  for (let attempt = 1; attempt <= MAX_TPDNE_RETRIES; attempt++) {
-    const candidate = await fetchTpdneBytes();
+  for (let attempt = 1; attempt <= MAX_COLLISION_RETRIES; attempt++) {
+    const candidate = await fetchAndValidateTpdne(expectedGender, 10);
     const candidateHash = sha256(candidate);
     if (!seenHashes.has(candidateHash)) {
       buf = candidate;
       hash = candidateHash;
       break;
     }
-    console.warn(`  ⚠️ #${user.id} TPDNE collision on attempt ${attempt}, retrying...`);
+    console.warn(`  ⚠️ #${user.id} TPDNE hash collision on attempt ${attempt}, retrying...`);
   }
   if (!buf) {
-    throw new Error(`failed to get a non-colliding TPDNE photo after ${MAX_TPDNE_RETRIES} attempts`);
+    throw new Error(`failed to get a non-colliding validated TPDNE photo after ${MAX_COLLISION_RETRIES} attempts`);
   }
 
   const filename = `${user.username}-${Date.now()}.jpg`;
@@ -190,7 +204,7 @@ async function applySwap(entry: SwapPlanEntry, seenHashes: Set<string>): Promise
   const { db, users, eq } = await getDb();
   await db.update(users).set({ profileImage: newProfileImage }).where(eq(users.id, user.id));
   seenHashes.add(hash);
-  console.log(`  ✓ #${user.id} @${user.username} → fresh TPDNE portrait`);
+  console.log(`  ✓ #${user.id} @${user.username} → fresh validated TPDNE portrait (${expectedGender})`);
 }
 
 // ───────────── reporting ─────────────

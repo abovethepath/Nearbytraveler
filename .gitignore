@@ -10,3 +10,4 @@ vite.config.ts.*
 .env.production
 *.backup.tsx
 *.backup.jsx
+scripts/lib/face-models/
