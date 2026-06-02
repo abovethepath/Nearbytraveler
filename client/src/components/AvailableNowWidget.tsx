@@ -143,6 +143,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
   const homeCountry = currentUser?.hometownCountry || currentUser?.country || "USA";
   const hasDestination = isTraveling && !!destCity && destCity.toLowerCase() !== homeCity.toLowerCase();
   const [availCity, setAvailCity] = useState<'home' | 'trip'>('home');
+  const availCityInitializedRef = useRef(false);
   // Store the RAW city (not metro name) — the server's metro detection handles grouping.
   // Storing "Los Angeles Metro" breaks ilike matching since it's not in the metro city list.
   const userCity    = (availCity === 'trip' && hasDestination) ? destCity!    : homeCity;
@@ -161,6 +162,31 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
     queryKey: ["/api/available-now/my-status"],
     enabled: !!currentUser?.id,
   });
+
+  // Initialize availCity once per mount, after we know whether the user is
+  // already live (myStatus has settled) and whether they have an active trip.
+  // Priority: match existing live broadcast city → traveler default to 'trip'
+  // → otherwise 'home'. After init, any manual toggle is preserved.
+  useEffect(() => {
+    if (availCityInitializedRef.current) return;
+    if (myStatus === undefined) return; // wait for query to settle (null is fine)
+
+    const liveCity = (((myStatus as any)?.city as string | null | undefined) || '').toLowerCase();
+    const homeLc = (homeCity || '').toLowerCase();
+    const destLc = (destCity || '').toLowerCase();
+
+    if (liveCity && destLc && liveCity === destLc) {
+      setAvailCity('trip');
+    } else if (liveCity && homeLc && liveCity === homeLc) {
+      setAvailCity('home');
+    } else if (hasDestination) {
+      setAvailCity('trip');
+    } else {
+      setAvailCity('home');
+    }
+
+    availCityInitializedRef.current = true;
+  }, [myStatus, hasDestination, destCity, homeCity]);
 
   const { data: availableUsers, refetch: refetchAvailableUsers } = useQuery<AvailableEntry[]>({
     queryKey: ["/api/available-now", userCity],
@@ -1241,7 +1267,7 @@ export function AvailableNowWidget({ currentUser, onSortByAvailableNow }: Availa
             {hasDestination ? (
               <div>
                 <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5 block">
-                  Where are you right now?
+                  I'm currently in:
                 </label>
                 <div className="flex gap-1 p-1 rounded-lg bg-gray-100 dark:bg-gray-800 text-xs font-medium">
                   <button
