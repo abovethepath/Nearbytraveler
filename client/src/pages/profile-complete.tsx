@@ -4340,6 +4340,22 @@ function ProfileContent({ userId: propUserId }: EnhancedProfileProps) {
   return (
     <div className="flex flex-col gap-4 md:gap-0">
       <ProfileHeader {...profileProps} />
+      {isOwnProfile && isNativeIOSApp() && (
+        <div className={`w-full bg-gradient-to-r ${gradientOptions[selectedGradient]} text-white px-4 py-3 border-b border-white/15`}>
+          <div className="max-w-7xl mx-auto flex justify-center">
+            <Button
+              onClick={() => setLocation('/plan-trip')}
+              variant="outline"
+              size="sm"
+              className="bg-white/10 hover:bg-white/20 text-white border-white/30"
+              data-testid="button-plan-trip"
+            >
+              <Plane className="w-4 h-4 mr-2" />
+              Plan a Trip
+            </Button>
+          </div>
+        </div>
+      )}
       <ProfileTabs {...profileProps} notificationPrefs={isOwnProfile ? <NotificationPreferencesCompact currentUserId={currentUser?.id} /> : null} referralWidget={<SilentErrorBoundary><ReferralTrackingWidget profileUserId={effectiveUserId!} /></SilentErrorBoundary>} />
       {isNearbytrav && <AdminDashboard />}
       {isNearbytrav && isOwnProfile && <ReferralLeaderboard />}

@@ -493,6 +493,22 @@ export function ProfileHeaderUser(props: ProfilePageProps) {
               </div>
             </div>
 
+            {/* Plan a Trip CTA — inside the hero gradient, above the in-hero tab strip */}
+            {isOwnProfile && (
+              <div className="w-full mt-4 flex justify-center">
+                <Button
+                  onClick={() => setLocation('/plan-trip')}
+                  variant="outline"
+                  size="sm"
+                  className="bg-white/10 hover:bg-white/20 text-white border-white/30"
+                  data-testid="button-plan-trip"
+                >
+                  <Plane className="w-4 h-4 mr-2" />
+                  Plan a Trip
+                </Button>
+              </div>
+            )}
+
             {/* Desktop: tab bar integrated at bottom of hero */}
             {!isNativeIOSApp() && (
               <div className="w-full mt-4 lg:pl-[23rem]">
