@@ -9,12 +9,16 @@
 // Demographic design (rewritten 2026-05, photo source swapped 2026-06):
 //   Seeded users are drawn from 8 weighted ethnic/regional buckets that
 //   control NAME and HOMETOWN selection only. Profile photos come from
-//   thispersondoesnotexist.com (TPDNE) — an unlimited pool of AI-generated
-//   faces — and are NOT bucket-coordinated. randomuser.me's 100-portrait-per-
-//   gender pool we previously used was guaranteed to collide at scale, and
-//   its visual ethnicity per index was never reliable anyway (~30-50% mismatch
-//   with the picked bucket), so accepting fully-random photos in exchange for
-//   true uniqueness is the right trade.
+//   randomuser.me's gender-segmented portrait CDN (/men/N.jpg, /women/N.jpg,
+//   N ∈ 0..99) — adults only and gender-matched to the seed's chosen
+//   `gender`, but NOT bucket-coordinated for ethnicity. A brief experiment
+//   with thispersondoesnotexist.com (TPDNE) gave true per-user uniqueness
+//   at the source but produced ~50% gender mismatches and occasional
+//   child faces, so we reverted. The 100-portrait-per-gender pool repeats
+//   at scale, but uploadCloudinaryPhoto re-hosts each fetch, so stored
+//   profile URLs stay unique even when the source face does. Visual
+//   ethnicity per index is unreliable (~30-50% mismatch with the picked
+//   bucket) — that's the accepted trade for gender correctness.
 //
 //   Hometowns reflect the platform's international-traveler audience (Berlin,
 //   São Paulo, Tokyo, etc.); current location is heavily LA-weighted to match
@@ -869,13 +873,16 @@ async function generateOneUser(): Promise<void> {
     travelEndDate = new Date(Date.now() + randInt(3, 21) * DAY);
   }
 
-  // TPDNE = unlimited unique AI-generated portraits. Cache-buster guards
-  // against intermediate proxies; each request server-side regenerates.
-  // NOTE: no age/gender validation in the cron path — face-api.js + tfjs
-  // were too heavy for the app build (Render `npm ci` failed). Run
-  // scripts/fix-seed-photos.ts manually to clean up bad faces.
-  const tpdneUrl = `https://thispersondoesnotexist.com/?t=${Date.now()}-${Math.random().toString(36).slice(2)}`;
-  const profileImage = await uploadCloudinaryPhoto(tpdneUrl, `${username}-${Date.now()}.jpg`);
+  // randomuser.me = free, no-API-key portrait CDN. Gender-segmented paths
+  // (/men/N.jpg, /women/N.jpg) guarantee gender match with the seed's
+  // already-chosen `gender`, and the curated pool is adults only — no need
+  // for downstream face-api.js / tfjs classification. The 100-portrait-per-
+  // gender pool will repeat at scale, but uploadCloudinaryPhoto re-hosts
+  // every fetch so stored URLs stay unique even when the source face does.
+  const portraitN = randInt(0, 99);
+  const portraitBucket = gender === "male" ? "men" : "women";
+  const sourceUrl = `https://randomuser.me/api/portraits/${portraitBucket}/${portraitN}.jpg`;
+  const profileImage = await uploadCloudinaryPhoto(sourceUrl, `${username}-${Date.now()}.jpg`);
 
   const userData: any = {
     username,
