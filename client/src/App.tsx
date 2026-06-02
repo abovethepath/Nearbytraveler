@@ -1775,6 +1775,10 @@ function Router() {
       return <MeetupChatroomChat />;
     }
 
+    if (location.startsWith('/meetup-chat/')) {
+      return <MeetupChat />;
+    }
+
     // Route alias: /event/:id → /events/:id
     if (location.startsWith('/event/') && location.split('/')[2]) {
       const rawId = location.split('/')[2] || '';

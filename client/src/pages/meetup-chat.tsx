@@ -33,9 +33,9 @@ export default function MeetupChat() {
     return (
       <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-white gap-4">
         <p className="text-lg">Invalid meetup ID</p>
-        <Button onClick={() => setLocation('/messages')} variant="outline" data-testid="button-go-home">
+        <Button onClick={() => setLocation('/meetups')} variant="outline" data-testid="button-back-to-meetups">
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Messages
+          Back to Meetups
         </Button>
       </div>
     );
@@ -45,15 +45,38 @@ export default function MeetupChat() {
     return <ChatPageSkeleton variant="dark" />;
   }
 
-  if (isError || !meetup) {
+  // queryClient throws `new Error("${status}: ${body}")` on non-ok responses
+  // (see client/src/lib/queryClient.ts), so a 404 surfaces as a message
+  // starting with "404: ". Treat that — and a successful empty response — as
+  // "meetup no longer exists." Everything else is a real network/server error.
+  const is404 = error instanceof Error && /^404\b/.test(error.message);
+  const meetupGone = (isError && is404) || (!isError && !isLoading && !meetup);
+
+  if (meetupGone) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-white gap-4">
-        <p className="text-lg">
-          {isError ? `Error loading meetup: ${error instanceof Error ? error.message : 'Unknown error'}` : 'Meetup not found'}
+      <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-white gap-4 px-6 text-center">
+        <h1 className="text-2xl font-semibold">This meetup has ended</h1>
+        <p className="text-base text-gray-300 max-w-md">
+          This meetup is no longer available — it may have ended or been removed.
         </p>
-        <Button onClick={() => setLocation('/messages')} variant="outline" data-testid="button-go-home-error">
+        <Button onClick={() => setLocation('/meetups')} variant="outline" data-testid="button-back-to-meetups-ended">
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Messages
+          Back to Meetups
+        </Button>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-white gap-4 px-6 text-center">
+        <h1 className="text-2xl font-semibold">Something went wrong</h1>
+        <p className="text-base text-gray-300 max-w-md">
+          Couldn't load this meetup. Please check your connection and try again.
+        </p>
+        <Button onClick={() => setLocation('/meetups')} variant="outline" data-testid="button-back-to-meetups-error">
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Back to Meetups
         </Button>
       </div>
     );
@@ -65,8 +88,8 @@ export default function MeetupChat() {
         chatId={meetupId}
         chatType="meetup"
         meetupId={meetupId}
-        title={meetup.title}
-        subtitle={`${meetup.participantCount} participants`}
+        title={meetup!.title}
+        subtitle={`${meetup!.participantCount} participants`}
         currentUserId={user?.id}
         onBack={() => setLocation('/messages')}
       />
