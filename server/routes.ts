@@ -4392,7 +4392,8 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         .from(users)
         .where(
           and(
-            eq(users.aura, 99),
+            sql`${users.aura} IS DISTINCT FROM 99`,
+            ne(users.id, 2),
             ne(users.userType, 'business'),
             isNotNull(users.username),
             ne(users.username, ''),
