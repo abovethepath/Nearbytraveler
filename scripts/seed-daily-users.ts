@@ -814,14 +814,6 @@ async function uploadCloudinaryPhoto(sourceUrl: string, filename: string): Promi
   return url;
 }
 
-async function uploadValidatedTpdne(expectedGender: "male" | "female", filename: string): Promise<string> {
-  const { fetchAndValidateTpdne } = await import("./lib/portrait-validation.js");
-  const { uploadImage } = await import("../server/services/cloudinary");
-  const buf = await fetchAndValidateTpdne(expectedGender, 10);
-  const { url } = await uploadImage(buf, filename);
-  return url;
-}
-
 function ageBirthDate(minAge: number, maxAge: number): Date {
   const age = randInt(minAge, maxAge);
   const d = new Date();
@@ -877,10 +869,13 @@ async function generateOneUser(): Promise<void> {
     travelEndDate = new Date(Date.now() + randInt(3, 21) * DAY);
   }
 
-  // Pull a TPDNE portrait, validate adult + gender match via face-api.js,
-  // retry up to 10x. Throws if validation can't pass — we'd rather fail
-  // the seed user than upload a misclassified or child face.
-  const profileImage = await uploadValidatedTpdne(gender, `${username}-${Date.now()}.jpg`);
+  // TPDNE = unlimited unique AI-generated portraits. Cache-buster guards
+  // against intermediate proxies; each request server-side regenerates.
+  // NOTE: no age/gender validation in the cron path — face-api.js + tfjs
+  // were too heavy for the app build (Render `npm ci` failed). Run
+  // scripts/fix-seed-photos.ts manually to clean up bad faces.
+  const tpdneUrl = `https://thispersondoesnotexist.com/?t=${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  const profileImage = await uploadCloudinaryPhoto(tpdneUrl, `${username}-${Date.now()}.jpg`);
 
   const userData: any = {
     username,

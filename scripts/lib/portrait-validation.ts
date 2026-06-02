@@ -1,14 +1,22 @@
 // scripts/lib/portrait-validation.ts
 //
-// Shared helper used by every script that pulls a fresh face from TPDNE
-// (seed-realistic-users, seed-daily-users, dedupe-seed-photos). Loads
-// face-api.js with the pure-JS tfjs backend (no native compilation needed
-// on Render), decodes the JPEG via sharp → tf.tensor3d (no `canvas` dep),
-// and runs TinyFaceDetector + AgeGenderNet in one pass.
+// MANUAL-ONLY MODULE. NOT IMPORTED BY ANY CRON OR APP-BUILD CODE.
+// ────────────────────────────────────────────────────────────────
+// @vladmandic/face-api and @tensorflow/tfjs are intentionally NOT declared
+// in package.json — they broke the Render `npm ci` build. Before running
+// any script that imports this file, install them transiently on the
+// Render shell:
 //
-// Model files are auto-downloaded from the @vladmandic/face-api GitHub
-// repo into ./face-models on first call and cached there. Total weight
-// download is ~600KB. The cache directory is .gitignored.
+//   npm install --no-save @vladmandic/face-api @tensorflow/tfjs
+//   tsx scripts/fix-seed-photos.ts --scan
+//
+// Loads face-api.js with the pure-JS tfjs backend (no native compilation
+// needed), decodes JPEG via the existing `sharp` dep → tf.tensor3d (no
+// `canvas` dep), and runs TinyFaceDetector + AgeGenderNet in one pass.
+//
+// Model files (~600KB total) auto-download from the @vladmandic/face-api
+// GitHub repo into ./face-models on first call and cache there.
+// scripts/lib/face-models/ is .gitignored.
 //
 // Contract:
 //   validatePortrait(buf, expectedGender) → { ok, gender?, age?, reason? }
@@ -16,7 +24,7 @@
 //     throws after maxRetries consecutive validation failures.
 //
 // Tunables (constants below): ADULT_MIN_AGE, GENDER_CONFIDENCE_MIN,
-// FACE_SCORE_THRESHOLD, INPUT_SIZE. Adjust if the cron output looks off.
+// FACE_SCORE_THRESHOLD, INPUT_SIZE. Adjust if the output looks off.
 
 import { fileURLToPath } from "node:url";
 import path from "node:path";
