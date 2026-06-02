@@ -24964,15 +24964,20 @@ Questions? Just reply to this message. Welcome aboard!
       if (!interestId || !userId) {
         return res.status(400).json({ error: 'Missing required fields: interestId, userId' });
       }
-      
+
+      const parsedInterestId = parseInt(interestId, 10);
+      if (!Number.isInteger(parsedInterestId) || parsedInterestId <= 0) {
+        return res.status(400).json({ error: 'Invalid interest id' });
+      }
+
       if (process.env.NODE_ENV === 'development') console.log(`💡 USER INTERESTS DELETE: Removing interest ${interestId} for user ${userId}`);
-      
+
       await db
         .update(userCityInterests)
         .set({ isActive: false })
         .where(
           and(
-            eq(userCityInterests.id, parseInt(interestId)),
+            eq(userCityInterests.id, parsedInterestId),
             eq(userCityInterests.userId, parseInt(userId as string))
           )
         );

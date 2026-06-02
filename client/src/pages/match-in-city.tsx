@@ -873,8 +873,17 @@ export default function MatchInCity({ cityName }: MatchInCityProps = {}) {
           });
           return;
         }
-        
-        
+
+        // Optimistic record (POST hasn't settled): cancel locally instead of
+        // sending DELETE with a string id the server would parseInt → NaN → 500.
+        // Worst case the in-flight POST creates an orphaned row we never reference.
+        if (typeof userActivityRecord.id === 'string' && userActivityRecord.id.startsWith('opt-')) {
+          setUserActivities(prev => prev.filter(ua => ua.id !== userActivityRecord.id));
+          fetchMatchingUsers();
+          return;
+        }
+
+
         // Remove activity using the correct user_city_interests ID
         const apiBase = getApiBaseUrl();
         const response = await fetch(`${apiBase}/api/user-city-interests/${userActivityRecord.id}`, {
