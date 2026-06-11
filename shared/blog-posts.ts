@@ -1133,6 +1133,89 @@ The honest truth about meeting people in your 40s — traveling or otherwise —
 People who are also traveling solo are often waiting for exactly this. They want company. They just don't want to be the one to ask. Be the one to ask.
 
 Book the cooking class, go back to the wine bar on the second evening, mark yourself available, and then actually talk to the person who shows up.`
+  },
+  {
+    title: "Solo Travel in Your 30s: How to Actually Meet People",
+    date: "2026-06-11",
+    slug: "solo-travel-in-your-30s-meeting-people",
+    description: "Past the hostel phase but still want real connection on the road? Here's how solo travelers in their 30s actually meet people worth knowing.",
+    body: `There's a specific kind of frustration that comes with solo travel in your 30s.
+
+You've outgrown the bunk bed. You want a real bed, a door that locks, maybe a bathroom you don't share with twelve strangers. But hostels weren't just cheap sleep — they were social infrastructure. Common rooms, bar crawls, the forced proximity that made conversation nearly inevitable.
+
+Once you trade that in for a hotel or an Airbnb, nobody tells you what replaces it.
+
+The honest answer: nothing replaces it automatically. But plenty of things can replace it intentionally, if you know what you're looking for.
+
+## The Real Problem Isn't the Accommodation
+
+Most advice for solo travelers in their 30s focuses on *where* to stay. Book a boutique hotel with a communal lobby. Try a social Airbnb. Find somewhere with a rooftop bar.
+
+This is fine as far as it goes, but it misses the point. The reason hostels worked wasn't the architecture — it was that everyone there had implicitly opted into social interaction. The shared context created a low-stakes opening. That's what you're actually trying to recreate.
+
+You can do that without a bunk bed. You just have to be more deliberate about it.
+
+## Stop Waiting for Organic Moments
+
+In your 20s, connection on the road often felt effortless. You sat in a common room and someone sat next to you and that was that.
+
+In your 30s, staying somewhere private means that effortless version mostly stops happening. The organic moments are fewer. Which means the travelers who still meet people consistently aren't the ones passively hoping — they're the ones who go looking.
+
+This sounds obvious, but the adjustment is real. If you've been traveling since your early 20s, you might not even realize you've been relying on environmental luck all along. [How to Meet People When Traveling Alone](/blog/how-to-meet-people-when-traveling-alone) covers the mindset shift well — the short version is that initiative isn't aggression, it's just deciding to go first.
+
+## The Tactics That Actually Work
+
+### Find the right kind of bar and go twice
+
+Not a nightclub, not a tourist trap with a laminated cocktail menu. A neighborhood bar with regulars, a bartender who's been there for years, and enough quiet that you can have a conversation.
+
+Go once to scout it. Go back the next night. The second visit is where it happens. The bartender already recognizes you. Someone who was there yesterday sees you again. You go from stranger to familiar face in about 36 hours, which is fast enough to matter even on a short trip.
+
+### Use classes and workshops as a pretext
+
+Cooking classes get recommended constantly and they're worth it, but they're not the only option. Language exchanges. Photography walks. Pottery. Craft beer tastings. Anything structured enough that you're doing something alongside other people rather than just standing near them.
+
+The activity gives you something to talk about that isn't "so where are you from." That small shift makes conversation feel more natural and less like a solo traveler audition.
+
+### Be honest about what you're doing
+
+This one feels counterintuitive but it consistently works. Telling someone you're traveling alone, that you just arrived, that you don't know anyone in the city — this reads as vulnerability, and people respond to it. It's specific. It's real. It gives them something concrete to respond to rather than the vague small talk that goes nowhere.
+
+The travelers who have the best connections on the road tend to be the ones willing to just say the true thing.
+
+### Use apps built for this, not apps repurposed for it
+
+Bumble BFF can work. Meetup can work. Both have the same problem: the intent is murky and the friction is high. You're not sure if someone's there to make friends, promote something, or meet a romantic partner. Events are scheduled days in advance. Half the time the person RSVPs and doesn't show.
+
+[Nearby Traveler](https://nearbytraveler.org) solves a different and more specific problem — finding locals and other travelers who are free to meet *right now*, tonight, in the city you're actually in. No scheduled events, no ambiguity about intent. It's the closest thing that exists to the hostel common room dynamic, available to people who are staying somewhere nicer. If you haven't used it, it's worth opening the first evening you arrive somewhere new.
+
+## The First Evening Problem
+
+The hardest part of solo travel in your 30s isn't the lonely Tuesday night midway through a trip. It's the first evening — you've just arrived, you don't know anyone, your hotel room is comfortable and slightly isolating, and it's tempting to just order room service and call it a night.
+
+Don't. [Your first night alone in a new city](/blog/first-night-solo-travel-new-city) sets a pattern that's genuinely hard to break. One evening in the room becomes two. Two becomes the whole trip.
+
+Force yourself out even when you're tired. Walk somewhere. Sit at a bar. Eat dinner somewhere you have to interact with a human. Nothing might happen, but the habit of leaving the room is what makes everything else possible.
+
+## Locals vs. Other Travelers
+
+Other travelers are easy to find and easy to talk to — you share the same situation and the same temporary displacement, which creates instant common ground.
+
+But the trips that actually change how you see a place are usually the ones where you connect with someone who lives there. Not a tour guide, not someone performing the city for visitors — someone who can show you where they actually eat, what they actually think about the neighborhood, what's happening this week that you'd never find in a guide.
+
+Locals are harder to reach. [Meeting locals when you travel](/blog/meet-locals-when-traveling) requires different tools and a different approach than finding other visitors. It takes more patience and more willingness to put yourself in situations where you're not already surrounded by people like you.
+
+It's also almost always worth it.
+
+## The Tradeoff Nobody Mentions
+
+Here's the honest version: traveling in your 30s without hostels gives you comfort, privacy, and sleep. It costs you the passive social luck that made earlier trips feel easy.
+
+That tradeoff is real, and pretending tactics can fully close the gap would be misleading. Sometimes you'll do everything right — go to the right bar twice, be honest, use good tools — and still spend an evening alone. That happens.
+
+But the gap is smaller than most people think. The travelers in their 30s and 40s who consistently meet people on the road aren't uniquely charismatic or unusually social. They've just accepted that connection requires more active effort than it used to, and they've built the habits to match.
+
+The bunk bed was never the point. You just have to replace what it was actually doing for you.`
   }
 ];
 
