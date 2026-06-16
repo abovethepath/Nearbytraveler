@@ -8,7 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { MapPin, Calendar, Clock, Users, User, Info, Share2, Copy, Check, ArrowLeft, Mail, Link2, MessageCircle, Camera, Upload, Loader2, Bell, Star } from "lucide-react";
 import { UniversalBackButton } from "@/components/UniversalBackButton";
-import { type Event, type EventParticipant, type User as UserType } from "@shared/schema";
+import { type EventWithOrganizer, type EventParticipantWithUser } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, getApiBaseUrl } from "@/lib/queryClient";
 import { ParticipantAvatars } from "@/components/ParticipantAvatars";
@@ -221,7 +221,7 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
   };
 
   // Fetch event details - allow access without authentication for viral sharing
-  const { data: event, isLoading: eventLoading, error: eventError } = useQuery<Event>({
+  const { data: event, isLoading: eventLoading, error: eventError } = useQuery<EventWithOrganizer>({
     queryKey: [`/api/events/${eventId}`],
     enabled: !!eventId,
     retry: 1, // Reduce retries for faster loading
@@ -239,14 +239,9 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
   });
 
   // Fetch event participants - only if user is authenticated
-  const { data: participants = [], isLoading: participantsLoading } = useQuery<EventParticipant[]>({
+  const { data: participants = [], isLoading: participantsLoading } = useQuery<EventParticipantWithUser[]>({
     queryKey: [`/api/events/${eventId}/participants`],
     enabled: !!eventId && !!currentUser?.id,
-  });
-
-  // Fetch users for participant details
-  const { data: users = [] } = useQuery<UserType[]>({
-    queryKey: ["/api/users"],
   });
 
   // Join event mutation (with status: 'interested' or 'going')
@@ -397,7 +392,7 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
   const isPrimaryOrganizer = viewAsGuest ? false : event?.organizerId === currentUser?.id;
   const isCoOrganizer = viewAsGuest ? false : participantRole === 'co-organizer';
   const isOrganizer = isPrimaryOrganizer || isCoOrganizer;
-  const organizer = users.find(u => u.id === event?.organizerId);
+  const organizerUsername = event?.organizer ?? undefined;
   
   // Separate participants by status
   const goingParticipants = participants.filter(p => p.status === 'going');
@@ -806,19 +801,10 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
                   .sort((a, b) => {
                     if (a.userId === event?.organizerId) return -1;
                     if (b.userId === event?.organizerId) return 1;
-                    const userA = users.find(u => u.id === a.userId);
-                    const userB = users.find(u => u.id === b.userId);
-                    return (userA?.username || '').localeCompare(userB?.username || '');
+                    return (a.user?.username || '').localeCompare(b.user?.username || '');
                   })
                   .slice(0, 15).map((participant) => {
-                  const user = users.find(u => u.id === participant.userId);
-                  const cityLine = deduplicateParts(
-                    [
-                      user?.hometownCity,
-                      user?.hometownState && user.hometownState !== user.hometownCity ? user.hometownState : null,
-                      user?.hometownCountry,
-                    ].filter(Boolean) as string[],
-                  );
+                  const user = participant.user;
                   return (
                     <div key={participant.id} className="flex items-start gap-3 pb-3 border-b border-gray-200 dark:border-gray-800 last:border-0 last:pb-0">
                       <Avatar
@@ -848,9 +834,6 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
                             <Badge variant="outline" className="text-xs border-purple-500 text-purple-600 dark:text-purple-400 shrink-0">Shared</Badge>
                           )}
                         </div>
-                        {cityLine && (
-                          <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{cityLine}</p>
-                        )}
                       </div>
                     </div>
                   );
@@ -871,7 +854,7 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
                       </p>
                       <div className="space-y-3">
                         {interestedParticipants.slice(0, 10).map((participant) => {
-                          const user = users.find(u => u.id === participant.userId);
+                          const user = participant.user;
                           return (
                             <div key={participant.id} className="flex items-center gap-3">
                               <Avatar
@@ -927,7 +910,7 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
               </CardHeader>
               <CardContent className="space-y-3">
                 {interestedParticipants.map((participant) => {
-                  const user = users.find(u => u.id === participant.userId);
+                  const user = participant.user;
                   const alreadyInvited = invitedUserIds.has(participant.userId);
                   return (
                     <div key={participant.id} className="flex items-center gap-3">
@@ -1034,7 +1017,7 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
                       <>
                         <p className="font-medium">Event by {event.externalOrganizerName}</p>
                         <p className="text-sm text-gray-500">
-                          Shared by {organizer?.username || 'Unknown'}
+                          Shared by {organizerUsername || 'Unknown'}
                         </p>
                       </>
                     ) : (
@@ -1044,7 +1027,7 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
                           {event.isOriginalOrganizer === false || event.sharedBy ? 'Shared by' : 'Organized by'}
                         </p>
                         <p className="text-sm text-gray-500">
-                          {organizer?.username || 'Unknown'}
+                          {organizerUsername || 'Unknown'}
                         </p>
                       </>
                     )}

@@ -1132,6 +1132,12 @@ export type InsertEvent = z.infer<typeof insertEventSchema>;
 export type EventParticipant = typeof eventParticipants.$inferSelect;
 export type InsertEventParticipant = z.infer<typeof insertEventParticipantSchema>;
 
+// Event as returned by GET /api/events/:id (adds organizer username + participant count)
+export type EventWithOrganizer = Event & {
+  organizer?: string | null;
+  participantCount?: number;
+};
+
 // EventParticipant with joined user data (as returned by getEventParticipants)
 export type EventParticipantWithUser = EventParticipant & {
   user: {
