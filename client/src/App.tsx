@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useLayoutEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect, Suspense, lazy } from "react";
 import { useLocation } from "wouter";
 import { initGA } from "@/lib/analytics";
 import { useAnalytics } from "@/hooks/use-analytics";
@@ -28,8 +28,8 @@ import EventHistory from "@/pages/event-history";
 import CalendarPage from "@/pages/calendar";
 import CreateEvent from "@/pages/create-event";
 import Create from "@/pages/create";
-import EventDetails from "@/pages/event-details";
-import ExternalEventDetails from "@/pages/external-event-details";
+const EventDetails = lazy(() => import("@/pages/event-details"));
+const ExternalEventDetails = lazy(() => import("@/pages/external-event-details"));
 import ManageEvent from "@/pages/manage-event";
 import Meetups from "@/pages/meetups";
 import QuickMeetupsPage from "@/pages/quick-meetups";
@@ -167,8 +167,8 @@ import { PitchPreview } from "@/pages/pitch-preview";
 import AdminSettings from "@/pages/admin-settings";
 import SMSTest from "@/pages/sms-test";
 import FinishingSetup from "@/pages/FinishingSetup";
-import Blog from "@/pages/blog";
-import BlogPost from "@/pages/blog-post";
+const Blog = lazy(() => import("@/pages/blog"));
+const BlogPost = lazy(() => import("@/pages/blog-post"));
 import Privacy from "@/pages/privacy";
 import Terms from "@/pages/terms";
 import Cookies from "@/pages/cookies";
@@ -184,8 +184,8 @@ import ConnectorInfo from "@/pages/connector-info";
 import GettingStarted from "@/pages/getting-started";
 
 
-import CityPage from "@/pages/city";
-import CityPublic from "@/pages/city-public";
+const CityPage = lazy(() => import("@/pages/city"));
+const CityPublic = lazy(() => import("@/pages/city-public"));
 import UsersPage from "@/pages/users";
 import AdminDashboard from "@/pages/admin-dashboard";
 import AdminReferrals from "@/pages/admin-referrals";
@@ -2354,7 +2354,9 @@ function App() {
           <Toaster />
           <NetworkStatus />
           <DarkModeSuggestionBanner />
-            <Router />
+            <Suspense fallback={<FullPageSkeleton />}>
+              <Router />
+            </Suspense>
       </ThemeProvider>
     </QueryClientProvider>
   );
