@@ -1216,6 +1216,81 @@ That tradeoff is real, and pretending tactics can fully close the gap would be m
 But the gap is smaller than most people think. The travelers in their 30s and 40s who consistently meet people on the road aren't uniquely charismatic or unusually social. They've just accepted that connection requires more active effort than it used to, and they've built the habits to match.
 
 The bunk bed was never the point. You just have to replace what it was actually doing for you.`
+  },
+  {
+    title: "Stuck on a Work Trip? How to Actually Meet People",
+    date: "2026-06-21",
+    slug: "how-to-meet-people-on-a-work-trip",
+    description: "Business travel doesn't have to mean lonely hotel evenings. Here's how to actually meet people on a work trip and make the most of your time.",
+    body: `You're in a city you've never been to. The meetings ended at six. Your hotel room has excellent Wi-Fi and a minibar and absolutely nothing else going for it.
+
+This is the part of business travel nobody puts in the brochure.
+
+The loneliness of work trips is real, and it's specific. You're not a tourist — you don't have the mental bandwidth to plan a full evening after a day of back-to-backs. You're not a solo traveler by choice — you didn't pack light and read reviews for weeks. You just landed in a new city with a few free hours, no local context, and a strong instinct to order room service and scroll your phone until you fall asleep.
+
+Most people do exactly that. It doesn't have to go that way.
+
+## Why Work Trips Feel So Isolating
+
+Business travel has a particular social texture that makes connection harder than it sounds. You're usually staying in a hotel near a conference center or corporate park, which are often not in the neighborhoods where actual city life happens. Your schedule isn't your own. Your energy is already spent by the time you're free.
+
+And unlike a hostel or a group tour, nobody around you is particularly interested in connecting. Other hotel guests are in the same boat — tired, distracted, or on calls with home. The hotel bar exists, technically, but it tends to produce the kind of conversation you forget by morning.
+
+The result is that a lot of business travelers spend their evenings alone in a way that starts feeling heavy after the second or third night. It's not dramatic — it's just quietly draining.
+
+## The Evening Hours Are the Whole Game
+
+Here's the honest reframe: you probably have more time than you think. Even a heavy travel day usually frees up by 6 or 7 pm. If you're on a multi-day trip, those evening hours add up fast. Two or three evenings in a new city is actually enough time to have a genuinely good experience — if you use them.
+
+The people who do this well treat the evenings like a separate trip. Work is work. But from 6 pm onward, you're a traveler in a city you've never spent time in before. That's worth something.
+
+The mistake is waiting until you're already tired and hungry to figure out what to do. **Decide before the day starts.** A five-minute decision at breakfast — "I'm going to find a good restaurant in the actual neighborhood tonight, not the hotel" — changes the whole evening.
+
+## What Actually Works for Meeting People
+
+### Get Out of the Hotel Neighborhood
+
+Conference districts and business hotel zones are designed for productivity, not for living. Most cities have neighborhoods with real bars, real restaurants, and real locals — they're just not where your hotel is.
+
+Look up where people who actually live in the city go. Ask the hotel concierge, but push past the first answer (which will be a tourist recommendation). Ask a local colleague if you have one. Spend ten minutes reading a city-specific guide rather than a generic travel site.
+
+Getting into a real neighborhood changes the whole energy. You stop feeling like someone passing through and start feeling like someone actually in the city. That shift matters more than it sounds.
+
+### Eat at the Bar
+
+This is the simplest, most reliable advice for solo evenings that almost nobody follows consistently. Sit at the bar at a good restaurant, not at a table. Bartenders talk to you. Other solo diners talk to you. The whole dynamic is different.
+
+If eating alone still feels awkward, [this post on dining solo while traveling](/blog/eating-alone-while-traveling) covers the mindset side of it well — but honestly, once you do it a few times, it stops feeling like anything at all.
+
+### Find People Who Are Also Available
+
+The specific problem with work trips is that you don't have the setup that solo travel usually provides — hostels, group tours, the natural social infrastructure of traveling light. You're staying somewhere nice and arriving alone, which means you have to be a bit more intentional.
+
+[Nearby Traveler](https://nearbytraveler.org) is built for exactly this situation. Open it when your meetings end and you can see locals who are available to meet right now, in the city you're currently in. Not a dating app, not a tour guide service — just people who live there and are open to showing a traveler around, grabbing a drink, or pointing you somewhere worth going.
+
+You can also see other travelers who just arrived. On a work trip, that second option matters: someone else who's also free for the evening and doesn't want to sit in their hotel room is remarkably easy to find a plan with.
+
+### Say Yes to the After-Work Thing
+
+If you're traveling with colleagues or have local contacts through work, say yes to the post-meeting drinks or dinner more often than feels convenient. These invitations feel easy to decline — you're tired, you'd rather decompress, it might run long — but they're also the most direct path to real local knowledge and actual human contact.
+
+The best version of a work trip usually involves at least one evening where someone local shows you somewhere you wouldn't have found on your own. That doesn't happen if you always default to the hotel.
+
+## The Bleisure Move Worth Making
+
+If there's any flexibility in your travel dates, adding a day on either end of a work trip is one of the highest-return decisions you can make. Arriving a day early or leaving a day late turns a draining obligation into something closer to an actual trip.
+
+With a full free day, the social calculus shifts. You have time to actually explore, time to be spontaneous, time to meet people without the pressure of an early morning call the next day. The strategies in [how to meet people when traveling alone](/blog/how-to-meet-people-when-traveling-alone) become a lot more applicable when you're not racing the clock.
+
+Even half a day makes a difference. A Saturday morning in a new city before flying home beats a rushed Sunday morning at the airport every time.
+
+## The Honest Part
+
+None of this requires a lot of energy. The hardest part of a lonely work trip evening is the first fifteen minutes — the moment when you could either open your laptop or put on shoes and go find something. Everything after that tends to take care of itself.
+
+The city is there. People who live in it are there. The evening is yours.
+
+Put on shoes.`
   }
 ];
 
