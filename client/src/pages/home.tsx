@@ -615,6 +615,75 @@ export default function Home() {
     enabled: !!effectiveUser,
   });
 
+  // Community-created upcoming events shown in the discovery area (cap 4).
+  const communityUpcoming = useMemo(() => {
+    return (userPriorityEvents as any[])
+      .filter((e: any) => !e.isAIGenerated && !e.source && e.organizerId)
+      .slice(0, 4);
+  }, [userPriorityEvents]);
+
+  // Fill the empty slots with the most recent PAST community events. Query
+  // only fires when fewer than 4 upcoming community events exist, so users
+  // with a full upcoming feed pay no extra request.
+  const needPastFill = communityUpcoming.length < 4;
+  const { data: pastCommunityEvents = [] } = useQuery<any[]>({
+    queryKey: [
+      '/api/events/history/discovery',
+      effectiveUser?.hometownCity,
+      effectiveUser?.travelDestination,
+      effectiveUser?.isCurrentlyTraveling,
+      travelPlans?.map((p: any) => p.id).join(','),
+    ],
+    queryFn: async () => {
+      const citySet = new Set<string>();
+      const addMetro = (rawCity: string) => {
+        const metro = getMetroContext(rawCity).queryCity || rawCity;
+        if (metro) citySet.add(metro);
+      };
+      if (effectiveUser?.hometownCity) addMetro(effectiveUser.hometownCity);
+      const currentTravelDestination = getCurrentTravelDestination(
+        Array.isArray(travelPlans) ? travelPlans : []
+      );
+      if (currentTravelDestination) {
+        const travelCity = currentTravelDestination.split(',')[0].trim();
+        if (travelCity) addMetro(travelCity);
+      }
+      if (effectiveUser?.isCurrentlyTraveling && effectiveUser?.travelDestination) {
+        const travelCity = effectiveUser.travelDestination.split(',')[0].trim();
+        if (travelCity) addMetro(travelCity);
+      }
+      const cities = citySet.size > 0
+        ? Array.from(citySet)
+        : [getMetroContext('Culver City').queryCity || 'Los Angeles'];
+
+      const collected: any[] = [];
+      for (const city of cities) {
+        try {
+          const res = await fetch(
+            `${getApiBaseUrl()}/api/events/history?city=${encodeURIComponent(city)}&limit=4`
+          );
+          if (!res.ok) continue;
+          const json = await res.json();
+          if (Array.isArray(json?.events)) collected.push(...json.events);
+        } catch {
+          /* non-fatal — past fill is best-effort */
+        }
+      }
+
+      const seen = new Set<number>();
+      const unique = collected.filter((e: any) => {
+        if (seen.has(e.id)) return false;
+        seen.add(e.id);
+        return true;
+      });
+      return unique
+        .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime())
+        .slice(0, 4);
+    },
+    enabled: !!effectiveUser && needPastFill,
+    staleTime: 60_000,
+  });
+
   // Function to sort users based on selected sorting option
   const getSortedUsers = (users: any[]) => {
     if (!users) return [];
@@ -2214,22 +2283,48 @@ export default function Home() {
                     <Users className="w-5 h-5 mr-2 text-green-500" />
                     Created by Community Members
                   </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 min-w-0">  {/* MOBILE FIX: min-w-0 - do not remove */}
-                    {userPriorityEvents
-                      ?.filter((event: any) => !event.isAIGenerated && !event.source && event.organizerId)
-                      ?.slice(0, 4)
-                      ?.map((event: any) => (
-                        <EventCard 
-                          key={event.id}
-                          event={event}
-                        />
-                      )) || (
-                        <div className="col-span-full text-center py-8 text-gray-500 dark:text-gray-400">
+                  {(() => {
+                    const pastFillCount = Math.max(0, 4 - communityUpcoming.length);
+                    const pastToShow = (pastCommunityEvents as any[]).slice(0, pastFillCount);
+                    const hasUpcoming = communityUpcoming.length > 0;
+                    const hasPast = pastToShow.length > 0;
+
+                    if (!hasUpcoming && !hasPast) {
+                      return (
+                        <div className="text-center py-8 text-gray-500 dark:text-gray-400">
                           <Users className="w-12 h-12 mx-auto mb-4 text-gray-300" />
                           <p>No community events yet. Be the first to create one!</p>
                         </div>
-                      )}
-                  </div>
+                      );
+                    }
+
+                    return (
+                      <>
+                        {hasUpcoming && (
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 min-w-0">  {/* MOBILE FIX: min-w-0 - do not remove */}
+                            {communityUpcoming.map((event: any) => (
+                              <EventCard key={event.id} event={event} />
+                            ))}
+                          </div>
+                        )}
+                        {hasPast && (
+                          <>
+                            <div className={`flex items-center gap-3 ${hasUpcoming ? 'mt-6' : ''} mb-4`}>
+                              <h4 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide whitespace-nowrap">
+                                Past events
+                              </h4>
+                              <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 min-w-0">  {/* MOBILE FIX: min-w-0 - do not remove */}
+                              {pastToShow.map((event: any) => (
+                                <EventCard key={event.id} event={event} />
+                              ))}
+                            </div>
+                          </>
+                        )}
+                      </>
+                    );
+                  })()}
                 </div>
 
                 {/* API-Pulled Events */}
