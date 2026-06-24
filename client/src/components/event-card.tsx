@@ -92,6 +92,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
   const joinEventMutation = useMutation({
     mutationFn: async ({ eventId, status }: { eventId: number; status: 'interested' | 'going' }) => {
       if (!currentUser?.id) throw new Error("User not authenticated");
+      const ref = new URLSearchParams(window.location.search).get('ref') || undefined;
       const response = await fetch(`${getApiBaseUrl()}/api/events/${eventId}/join`, {
         method: 'POST',
         headers: {
@@ -99,7 +100,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
           'x-user-id': currentUser.id.toString(),
         },
         credentials: 'include',
-        body: JSON.stringify({ userId: currentUser.id, status }),
+        body: JSON.stringify({ userId: currentUser.id, status, ref }),
       });
       if (!response.ok) {
         const errData = await response.json().catch(() => ({}));

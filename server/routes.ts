@@ -94,7 +94,7 @@ import {
   notifications,
 } from "../shared/schema";
 import { sql, eq, or, count, and, ne, desc, gte, lte, lt, isNotNull, inArray, asc, ilike, like, isNull, gt } from "drizzle-orm";
-import { waitlistLeads, availableNow, availableNowRequests, meetupChatrooms, meetupChatroomMessages, liveLocationShares, liveShareReactions, microExperiences, microExperienceParticipants, activityTemplates, meetupShareCards, communityTags, userCommunityTags, communityPosts, communityPostLikes, communityPostReplies, eventIntegrations, externalEvents, activityLog, savedTravelers, chatroomInviteTokens, chatroomModerationRecords, chatroomBlocks, hostingOffers, cityPosts, cityPostReplies, cityPostLikes, referralEvents } from "../shared/schema";
+import { waitlistLeads, availableNow, availableNowRequests, meetupChatrooms, meetupChatroomMessages, liveLocationShares, liveShareReactions, microExperiences, microExperienceParticipants, activityTemplates, meetupShareCards, communityTags, userCommunityTags, communityPosts, communityPostLikes, communityPostReplies, eventIntegrations, externalEvents, activityLog, savedTravelers, chatroomInviteTokens, chatroomModerationRecords, chatroomBlocks, hostingOffers, cityPosts, cityPostReplies, cityPostLikes, referralEvents, shareRsvpRewards } from "../shared/schema";
 import { writeActivityLog } from "./services/activityLogService";
 import { alias } from "drizzle-orm/pg-core";
 
@@ -15401,6 +15401,46 @@ Questions? Just reply to this message. Welcome aboard!
         }
       } catch (chatMemberError: any) {
         if (process.env.NODE_ENV === 'development') console.error(`⚠️ EVENT-CHAT: Failed to add user to event chatroom:`, chatMemberError.message);
+      }
+
+      // SHARE-RSVP ATTRIBUTION: when an existing member joins via a sharer's ?ref= link,
+      // award +1 aura to the sharer. Caps: max 10 rewards per sharer per rolling 24h, and
+      // once per (sharer, joiner, event) tuple — enforced by the unique constraint.
+      // Non-fatal: any failure here must NOT fail the join.
+      try {
+        const ref = (req.body?.ref || '').toString().trim();
+        if (ref && userId) {
+          const [sharer] = await db
+            .select({ id: users.id })
+            .from(users)
+            .where(eq(users.referralCode, ref))
+            .limit(1);
+
+          if (sharer && sharer.id !== userId) {
+            const [{ count: dayCount }] = await db
+              .select({ count: sql<number>`count(*)::int` })
+              .from(shareRsvpRewards)
+              .where(and(
+                eq(shareRsvpRewards.sharerId, sharer.id),
+                gte(shareRsvpRewards.awardedAt, sql`NOW() - INTERVAL '24 hours'`)
+              ));
+
+            if ((dayCount ?? 0) < 10) {
+              const inserted = await db
+                .insert(shareRsvpRewards)
+                .values({ sharerId: sharer.id, joinerId: userId, eventId, points: 1 })
+                .onConflictDoNothing()
+                .returning({ id: shareRsvpRewards.id });
+
+              if (inserted.length > 0) {
+                await awardAuraPoints(sharer.id, 1, 'share-rsvp');
+                console.log(`✅ SHARE-RSVP: +1 aura to user ${sharer.id} for user ${userId} joining event ${eventId}`);
+              }
+            }
+          }
+        }
+      } catch (shareRsvpErr: any) {
+        console.warn('⚠️ SHARE-RSVP attribution failed (non-fatal):', shareRsvpErr?.message);
       }
 
       // AUTO-ADD EVENT TO ITINERARY when user marks as "going"

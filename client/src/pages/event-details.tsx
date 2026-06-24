@@ -250,6 +250,7 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
       const resolvedEventId = event?.id ?? parseInt(eventId);
       if (!currentUser?.id || !resolvedEventId) throw new Error("Missing user or event ID");
 
+      const ref = new URLSearchParams(window.location.search).get('ref') || undefined;
       const response = await fetch(`${getApiBaseUrl()}/api/events/${resolvedEventId}/join`, {
         method: 'POST',
         headers: {
@@ -260,7 +261,8 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
         body: JSON.stringify({
           userId: currentUser.id,
           notes: status === 'going' ? "Looking forward to attending!" : "Interested in this event",
-          status
+          status,
+          ref,
         }),
       });
       if (!response.ok) {

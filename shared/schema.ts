@@ -3038,6 +3038,21 @@ export const referralEvents = pgTable("referral_events", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Share-RSVP reward log: +1 aura to the sharer when an existing member joins
+// an event they opened via the sharer's ?ref= link. Unique constraint enforces
+// once-per-friend-per-event; the index supports the daily-cap count query.
+export const shareRsvpRewards = pgTable("share_rsvp_rewards", {
+  id: serial("id").primaryKey(),
+  sharerId: integer("sharer_id").notNull().references(() => users.id),
+  joinerId: integer("joiner_id").notNull().references(() => users.id),
+  eventId: integer("event_id").notNull().references(() => events.id),
+  points: integer("points").notNull().default(1),
+  awardedAt: timestamp("awarded_at").defaultNow(),
+}, (table) => ({
+  uniqueShareRsvp: unique().on(table.sharerId, table.joinerId, table.eventId),
+  sharerAwardedIdx: index("idx_share_rsvp_sharer_awarded").on(table.sharerId, table.awardedAt),
+}));
+
 export const cityPostLikes = pgTable("city_post_likes", {
   id: serial("id").primaryKey(),
   postId: integer("post_id").notNull().references(() => cityPosts.id, { onDelete: "cascade" }),
