@@ -75,6 +75,23 @@ export default defineConfig(async ({ command }) => {
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        manualChunks(id: string) {
+          if (!id.includes("node_modules")) return;
+          if (id.includes("/@radix-ui/")) return "radix-vendor";
+          if (id.includes("/@tanstack/react-query")) return "query-vendor";
+          if (id.includes("/lucide-react/")) return "icons-vendor";
+          if (
+            id.includes("/react-dom/") ||
+            id.includes("/scheduler/") ||
+            id.includes("/react/")
+          ) {
+            return "react-vendor";
+          }
+        },
+      },
+    },
   },
 
     server: {
