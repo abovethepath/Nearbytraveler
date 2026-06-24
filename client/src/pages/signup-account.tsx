@@ -377,7 +377,7 @@ export default function SignupAccount() {
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <Label htmlFor="firstName" className="text-base font-medium text-gray-900 dark:text-white">
-                      First name or nickname *
+                      First name *
                     </Label>
                     <Input
                       id="firstName"
