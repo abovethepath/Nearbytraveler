@@ -665,6 +665,10 @@ function Router() {
     if (normalizedPath.startsWith("/landing")) return true;
     if (normalizedPath.startsWith("/blog")) return true;
 
+    // Additional public routes rendered by renderPage() for unauthenticated visitors
+    // but previously missing from this matcher → were still firing /api/auth/user.
+    if (["/events", "/business", "/login", "/community-guidelines", "/support"].includes(normalizedPath)) return true;
+
     // Signup flows
     if (normalizedPath === "/signup" || normalizedPath.startsWith("/signup/")) return true;
 
