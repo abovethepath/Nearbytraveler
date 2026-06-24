@@ -37,7 +37,7 @@ export default defineConfig(async ({ command }) => {
     plugins.push((await import("@replit/vite-plugin-cartographer")).default());
   }
 
-  if (command === "build") {
+  if (command === "build" && !process.env.NT_SKIP_PRERENDER) {
     console.log("[vite.config] Adding prerenderer plugin for", PRERENDER_ROUTES.length, "routes");
     const { default: Prerenderer } = await import("@prerenderer/rollup-plugin");
     const { default: PuppeteerRenderer } = await import("@prerenderer/renderer-puppeteer");

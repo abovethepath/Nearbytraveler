@@ -15231,28 +15231,39 @@ Questions? Just reply to this message. Welcome aboard!
 
   // CRITICAL: Get event details by ID
   app.get("/api/events/:id", async (req, res) => {
+    const tHandler = Date.now();
+    const startTs = (req as any)._startTs as number | undefined;
+    const sessionMs = (req as any)._sessionMs as number | undefined;
+    const preHandlerMs = startTs ? tHandler - startTs : undefined;
     try {
       const eventId = parseInt(req.params.id, 10);
       if (isNaN(eventId) || eventId <= 0) {
         return res.status(404).json({ message: "Event not found" });
       }
       if (process.env.NODE_ENV === 'development') console.log(`🎪 EVENT DETAILS: Getting event ${eventId}`);
-      
+
+      const tGetEvent = Date.now();
       const event = await storage.getEvent(eventId);
+      const getEventMs = Date.now() - tGetEvent;
       if (!event) {
         return res.status(404).json({ message: "Event not found" });
       }
 
       // Add participant count and organizer information
+      const tCount = Date.now();
       const result = await db
         .select({ count: sql<number>`count(*)` })
         .from(eventParticipants)
         .where(eq(eventParticipants.eventId, eventId));
-      
+      const countMs = Date.now() - tCount;
+
       let organizer = null;
+      let getUserMs = 0;
       // Only fetch organizer info for user-created events (organizerId > 0)
       if (event.organizerId && event.organizerId > 0) {
+        const tGetUser = Date.now();
         const organizerUser = await storage.getUser(event.organizerId);
+        getUserMs = Date.now() - tGetUser;
         if (organizerUser) {
           // Check if this is an API-generated event by specific organizer usernames
           if (organizerUser.username === 'nearbytravlr' || organizerUser.username === 'api_events' || organizerUser.username === 'ai_events') {
@@ -15262,17 +15273,21 @@ Questions? Just reply to this message. Welcome aboard!
           }
         }
       }
-      
+
       const eventWithCountAndOrganizer = {
         ...event,
         participantCount: result[0]?.count || 0,
         organizer: organizer // Add organizer username for display
       };
 
-      if (process.env.NODE_ENV === 'development') console.log(`🎪 EVENT DETAILS: Found event ${event.title} with ${eventWithCountAndOrganizer.participantCount} participants, organizer: ${organizer}`);
+      const handlerMs = Date.now() - tHandler;
+      const totalMs = startTs ? Date.now() - startTs : handlerMs;
+      const dbMs = getEventMs + countMs + getUserMs;
+      console.log(`⏱️ GET /api/events/${eventId} total=${totalMs}ms preHandler=${preHandlerMs ?? '-'}ms session=${sessionMs ?? '-'}ms handler=${handlerMs}ms db=${dbMs}ms (getEvent=${getEventMs} count=${countMs} getUser=${getUserMs})`);
       return res.json(eventWithCountAndOrganizer);
     } catch (error: any) {
-      if (process.env.NODE_ENV === 'development') console.error("Error fetching event details:", error);
+      const totalMs = startTs ? Date.now() - startTs : Date.now() - tHandler;
+      console.error(`⏱️ GET /api/events/:id ERROR total=${totalMs}ms session=${sessionMs ?? '-'}ms`, error?.message);
       return res.status(500).json({ message: "Failed to fetch event details" });
     }
   });
