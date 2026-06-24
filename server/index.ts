@@ -124,7 +124,6 @@ app.set("trust proxy", 1);
 const SLOW_REQUEST_THRESHOLD_MS = 2000;
 app.use((req, res, next) => {
   const start = Date.now();
-  (req as any)._startTs = start;
   res.on("finish", () => {
     const duration = Date.now() - start;
     if (duration > SLOW_REQUEST_THRESHOLD_MS && req.path.startsWith("/api")) {
@@ -638,28 +637,23 @@ const sessionStore = (() => {
   return undefined;
 })();
 
-const sessionMiddleware = session({
-  store: sessionStore,
-  secret: process.env.SESSION_SECRET || "nearby-traveler-secret-key-dev",
-  resave: false,
-  saveUninitialized: false,
-  rolling: true,
-  cookie: {
-    secure: true,
-    httpOnly: true,
-    sameSite: "lax" as const,
-    maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-    path: "/",
-  },
-  name: "nt.sid",
-});
-app.use((req, res, next) => {
-  const t = Date.now();
-  sessionMiddleware(req, res, (err) => {
-    (req as any)._sessionMs = Date.now() - t;
-    next(err);
-  });
-});
+app.use(
+  session({
+    store: sessionStore,
+    secret: process.env.SESSION_SECRET || "nearby-traveler-secret-key-dev",
+    resave: false,
+    saveUninitialized: false,
+    rolling: true,
+    cookie: {
+      secure: true,
+      httpOnly: true,
+      sameSite: "lax" as const,
+      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+      path: "/",
+    },
+    name: "nt.sid",
+  }),
+);
 
 // Security hardening: never accept header-based identity without a real session user.
 // This prevents stale client storage (incl. incognito) from implicitly authenticating API calls.
