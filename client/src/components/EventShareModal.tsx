@@ -1,9 +1,12 @@
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Copy, Check, Share2, Send, Facebook, Twitter, Mail, MessageCircle, Download, Instagram } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { SITE_URL } from "@/lib/constants";
+import { useAuth } from "@/App";
+import { getApiBaseUrl } from "@/lib/queryClient";
 import {
   ShareEventLike,
   getEmailShareUrl,
@@ -47,15 +50,34 @@ function ShareButton({ onClick, icon, label, sublabel, bgClass, disabled }: Shar
 
 export function EventShareModal({ event, trigger }: Props) {
   const { toast } = useToast();
+  const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
   const [copiedCaption, setCopiedCaption] = useState(false);
   const [generatingImage, setGeneratingImage] = useState(false);
 
+  // Fetch the sharer's referral code so shared event links carry ?ref=
+  // and the sharer gets credit when the recipient signs up. Logged-out
+  // visitors skip the fetch and fall back to a plain URL.
+  const { data: refStats } = useQuery<{ referralCode?: string | null }>({
+    queryKey: ["/api/referrals/my-stats", user?.id],
+    queryFn: async () => {
+      const res = await fetch(`${getApiBaseUrl()}/api/referrals/my-stats`, {
+        credentials: "include",
+        headers: user?.id ? { "x-user-id": String(user.id) } : {},
+      });
+      if (!res.ok) return { referralCode: null };
+      return res.json();
+    },
+    enabled: !!user?.id,
+    staleTime: 60_000,
+  });
+  const referralCode = refStats?.referralCode || undefined;
+
   const origin = typeof window !== "undefined" ? window.location.origin : SITE_URL;
-  const eventUrl = typeof window !== "undefined" ? getEventUrl(event.id, origin) : `${SITE_URL}/events/${event.id}`;
-  const shareText = typeof window !== "undefined" ? getEventShareMessage(event, origin) : `Check out this event: ${event.title}`;
-  const igCaption = typeof window !== "undefined" ? getInstagramCaption(event, origin) : shareText;
+  const eventUrl = typeof window !== "undefined" ? getEventUrl(event.id, origin, referralCode) : `${SITE_URL}/events/${event.id}`;
+  const shareText = typeof window !== "undefined" ? getEventShareMessage(event, origin, referralCode) : `Check out this event: ${event.title}`;
+  const igCaption = typeof window !== "undefined" ? getInstagramCaption(event, origin, referralCode) : shareText;
 
   const openUrl = (url: string) => window.open(url, "_blank", "noopener,noreferrer");
 

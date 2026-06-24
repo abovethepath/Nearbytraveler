@@ -431,8 +431,29 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
     };
   }, [event]);
 
+  // Fetch the sharer's referral code so the top Share button's URL
+  // carries ?ref= (matching EventShareModal). Logged-out visitors skip
+  // the fetch and the URL stays plain.
+  const { data: refStats } = useQuery<{ referralCode?: string | null }>({
+    queryKey: ["/api/referrals/my-stats", authedUser?.id],
+    queryFn: async () => {
+      const res = await fetch(`${getApiBaseUrl()}/api/referrals/my-stats`, {
+        credentials: "include",
+        headers: authedUser?.id ? { "x-user-id": String(authedUser.id) } : {},
+      });
+      if (!res.ok) return { referralCode: null };
+      return res.json();
+    },
+    enabled: !!authedUser?.id,
+    staleTime: 60_000,
+  });
+  const referralCode = refStats?.referralCode || undefined;
+
   // Get event URL for sharing
-  const getEventUrl = () => `${window.location.origin}/events/${eventId}`;
+  const getEventUrl = () => {
+    const base = `${window.location.origin}/events/${eventId}`;
+    return referralCode ? `${base}?ref=${encodeURIComponent(referralCode)}` : base;
+  };
   
   // Get formatted event details for sharing
   const getShareMessage = () => {

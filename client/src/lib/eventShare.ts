@@ -13,20 +13,21 @@ export type ShareEventLike = {
   category?: string | null;
 };
 
-export function getEventUrl(eventId: number | string, origin = window.location.origin) {
-  return `${origin}/events/${eventId}`;
+export function getEventUrl(eventId: number | string, origin = window.location.origin, referralCode?: string | null) {
+  const base = `${origin}/events/${eventId}`;
+  return referralCode ? `${base}?ref=${encodeURIComponent(referralCode)}` : base;
 }
 
-export function getEventShareMessage(event: ShareEventLike, origin = window.location.origin) {
+export function getEventShareMessage(event: ShareEventLike, origin = window.location.origin, referralCode?: string | null) {
   const dateObj = new Date(event.date);
   const eventDateStr = dateObj.toLocaleDateString([], { weekday: "short", month: "short", day: "numeric" });
   const eventTimeStr = dateObj.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
   const location = event.city ? ` in ${event.city}` : "";
-  const url = getEventUrl(event.id, origin);
+  const url = getEventUrl(event.id, origin, referralCode);
   return `Hey! Check out this event: "${event.title}"${location} on ${eventDateStr} at ${eventTimeStr}. Join me! ${url}`;
 }
 
-export function getInstagramCaption(event: ShareEventLike, origin = window.location.origin) {
+export function getInstagramCaption(event: ShareEventLike, origin = window.location.origin, referralCode?: string | null) {
   const dateObj = new Date(event.date);
   const eventDate = dateObj.toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
   const time = event.startTime ? ` at ${event.startTime}` : "";
@@ -34,7 +35,7 @@ export function getInstagramCaption(event: ShareEventLike, origin = window.locat
   const location = [venue, event.city, event.state].filter(Boolean).join(", ");
   const desc = (event.description || "Join us for this amazing event!").trim();
   const shortDesc = desc.slice(0, 200) + (desc.length > 200 ? "..." : "");
-  const url = getEventUrl(event.id, origin);
+  const url = getEventUrl(event.id, origin, referralCode);
   const cityTag = event.city ? `#${String(event.city).replace(/\s+/g, "")}Events` : "";
   const stateTag = event.state ? `#${String(event.state).replace(/\s+/g, "")}Events` : "";
   const categoryTag = event.category ? `#${String(event.category).replace(/\s+/g, "")}` : "";
