@@ -26,6 +26,20 @@ export default function LandingStreamlined() {
   });
   const [showFloatingCTA, setShowFloatingCTA] = useState(false);
   const heroRef = useRef<HTMLElement | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  // Trigger video playback only after React mounts the Landing component.
+  // Why: the prerendered / HTML is also served as the SPA fallback for
+  // /events/:id (and other non-prerendered routes). With autoPlay in the JSX
+  // every shared-link visitor downloaded the 4.5 MB clip before React swapped
+  // in the real page. Calling play() from useEffect ensures the download only
+  // starts when the Landing component is actually rendered.
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    const p = v.play();
+    if (p && typeof p.catch === "function") p.catch(() => {});
+  }, []);
 
   // Single looping hero video. Previously cycled 5 elements with identical src —
   // mobile browsers throttle off-screen <video opacity-0> elements, so each
@@ -160,11 +174,11 @@ export default function LandingStreamlined() {
           className="relative w-full overflow-hidden bg-[#0b1020] min-h-[80vh] md:min-h-[88vh] lg:min-h-[92vh] flex items-center"
         >
           <video
+            ref={videoRef}
             src="/hiker_LA_clip_1.mp4"
             poster="/hiker_LA_clip_1_poster.jpg"
             preload="none"
             className="absolute top-0 left-0 w-full h-full object-cover pointer-events-none"
-            autoPlay
             loop
             muted
             playsInline

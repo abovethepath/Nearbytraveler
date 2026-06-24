@@ -736,6 +736,15 @@ function Router() {
       const reason = opts?.reason || "sync";
       const force = !!opts?.force || loginPending || isAuthenticating;
 
+      // Public route + no in-memory user + no session cookie → nothing to verify.
+      // Stops shared-link visitors from hitting /api/auth/user on navigation/focus.
+      if (!force && isPublicRoute && !user) {
+        const hasSessionCookie =
+          typeof document !== "undefined" &&
+          document.cookie.includes("nt.has_session=1");
+        if (!hasSessionCookie) return;
+      }
+
       // Throttle: at most once every 60 s for background navigation checks.
       // Force-mode AND visibility/focus events bypass this — critical for mobile
       // app-switch scenarios where the session needs immediate verification.
@@ -836,6 +845,14 @@ function Router() {
     if (isNativeIOSApp()) return;
     if (isSignupRoute) return;
     if (location.startsWith("/api/")) return;
+
+    // Skip scheduling for logged-out visitors on public routes — no session to verify.
+    if (isPublicRoute && !user) {
+      const hasSessionCookie =
+        typeof document !== "undefined" &&
+        document.cookie.includes("nt.has_session=1");
+      if (!hasSessionCookie) return;
+    }
 
     if (navSyncTimerRef.current) window.clearTimeout(navSyncTimerRef.current);
     navSyncTimerRef.current = window.setTimeout(() => {
