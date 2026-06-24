@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, MapPin, Users, Check, Phone, MessageCircle } from "lucide-react";
+import { Calendar, MapPin, Users, Check, Phone, MessageCircle, Share2 } from "lucide-react";
 import { useLocation } from "wouter";
 import type { Event } from "@shared/schema";
 import ConnectionCelebration from "./connection-celebration";
@@ -10,6 +10,7 @@ import { apiRequest, queryClient, getApiBaseUrl } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import ImageLoader from "./ImageLoader";
 import { SimpleAvatar } from "./simple-avatar";
+import { EventShareModal } from "@/components/EventShareModal";
 
 function deduplicateParts(parts: string[]): string {
   const seen = new Set<string>();
@@ -422,16 +423,34 @@ export default function EventCard({ event, compact = false, featured = false }: 
           {/* Action buttons — always at bottom */}
           <div className="flex flex-col gap-2 pt-2 mt-auto w-full min-w-0" onClick={(e) => e.stopPropagation()}>
             {isOrganizer ? (
-              // Organizer: View Event + Open Chat
+              // Organizer: View Event + Share + Open Chat
               <>
-                <Button
-                  size="sm"
-                  className="w-full text-white border-0 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600"
-                  onClick={() => setLocation(`/events/${event.id}`)}
-                  data-testid="button-view"
-                >
-                  View Event
-                </Button>
+                <div className="flex gap-2 w-full">
+                  <Button
+                    size="sm"
+                    className="flex-1 text-white border-0 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600"
+                    onClick={() => setLocation(`/events/${event.id}`)}
+                    data-testid="button-view"
+                  >
+                    View Event
+                  </Button>
+                  <EventShareModal
+                    event={event as any}
+                    trigger={
+                      <Button
+                        size="icon"
+                        variant="outline"
+                        type="button"
+                        className="shrink-0 dark:bg-gray-700 dark:text-white dark:border-gray-500 dark:hover:bg-gray-600"
+                        aria-label="Share event"
+                        title="Share event"
+                        data-testid="button-share-event-card"
+                      >
+                        <Share2 className="h-4 w-4" />
+                      </Button>
+                    }
+                  />
+                </div>
                 <Button
                   size="sm"
                   className="w-full bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white border-0"
@@ -455,14 +474,32 @@ export default function EventCard({ event, compact = false, featured = false }: 
                 >
                   {leaveEventMutation.isPending ? "..." : "Leave"}
                 </Button>
-                <Button
-                  size="sm"
-                  className="w-full text-white border-0 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600"
-                  onClick={() => setLocation(`/events/${event.id}`)}
-                  data-testid="button-view"
-                >
-                  View Event
-                </Button>
+                <div className="flex gap-2 w-full">
+                  <Button
+                    size="sm"
+                    className="flex-1 text-white border-0 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600"
+                    onClick={() => setLocation(`/events/${event.id}`)}
+                    data-testid="button-view"
+                  >
+                    View Event
+                  </Button>
+                  <EventShareModal
+                    event={event as any}
+                    trigger={
+                      <Button
+                        size="icon"
+                        variant="outline"
+                        type="button"
+                        className="shrink-0 dark:bg-gray-700 dark:text-white dark:border-gray-500 dark:hover:bg-gray-600"
+                        aria-label="Share event"
+                        title="Share event"
+                        data-testid="button-share-event-card"
+                      >
+                        <Share2 className="h-4 w-4" />
+                      </Button>
+                    }
+                  />
+                </div>
                 <Button
                   size="sm"
                   className="w-full bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white border-0"
@@ -474,7 +511,7 @@ export default function EventCard({ event, compact = false, featured = false }: 
                 </Button>
               </>
             ) : (
-              // Not joined: Join + Interested + View Event
+              // Not joined: Join + Interested + View Event + Share
               <>
                 <Button
                   size="sm"
@@ -495,14 +532,32 @@ export default function EventCard({ event, compact = false, featured = false }: 
                 >
                   {joinEventMutation.isPending ? "..." : "Interested"}
                 </Button>
-                <Button
-                  size="sm"
-                  className="w-full text-white border-0 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600"
-                  onClick={() => setLocation(`/events/${event.id}`)}
-                  data-testid="button-view"
-                >
-                  View Event
-                </Button>
+                <div className="flex gap-2 w-full">
+                  <Button
+                    size="sm"
+                    className="flex-1 text-white border-0 bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600"
+                    onClick={() => setLocation(`/events/${event.id}`)}
+                    data-testid="button-view"
+                  >
+                    View Event
+                  </Button>
+                  <EventShareModal
+                    event={event as any}
+                    trigger={
+                      <Button
+                        size="icon"
+                        variant="outline"
+                        type="button"
+                        className="shrink-0 dark:bg-gray-700 dark:text-white dark:border-gray-500 dark:hover:bg-gray-600"
+                        aria-label="Share event"
+                        title="Share event"
+                        data-testid="button-share-event-card"
+                      >
+                        <Share2 className="h-4 w-4" />
+                      </Button>
+                    }
+                  />
+                </div>
               </>
             )}
           </div>
