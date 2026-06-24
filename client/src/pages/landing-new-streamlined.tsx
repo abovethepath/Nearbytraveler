@@ -162,7 +162,7 @@ export default function LandingStreamlined() {
           <video
             src="/hiker_LA_clip_1.mp4"
             poster="/hiker_LA_clip_1_poster.jpg"
-            preload="auto"
+            preload="none"
             className="absolute top-0 left-0 w-full h-full object-cover pointer-events-none"
             autoPlay
             loop

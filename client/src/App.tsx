@@ -891,7 +891,7 @@ function Router() {
     // These pages don't need auth — rendering them immediately avoids all loading flashes.
     // Root "/" is included: if no session cache exists, the user is logged out, so show
     // the landing page instantly instead of gating behind a server round-trip.
-    if (isSignupRoute || isLandingPage) {
+    if (isSignupRoute || isLandingPage || isPublicRoute) {
       setIsLoading(false);
       setAuthInitialized(true);
       setAuthLoading(false);
@@ -928,7 +928,15 @@ function Router() {
         // Upstash Redis reconnect flaps so a 401 mid-flap doesn't wipe a valid
         // session. This does NOT trust localStorage as auth — only the server
         // cookie/session.
-        if (response.status === 401) {
+        // Only retry when there is evidence a session SHOULD exist (cached user,
+        // pending login, or the nt.has_session cookie). For a truly logged-out
+        // visitor a 401 is final — don't burn ~10s of retries.
+        const hasSessionEvidence =
+          !!readSessionCache() ||
+          loginPending ||
+          isAuthenticating ||
+          (typeof document !== "undefined" && document.cookie.includes("nt.has_session=1"));
+        if (response.status === 401 && hasSessionEvidence) {
           for (const delayMs of AUTH_RETRY_DELAYS_MS) {
             await new Promise((r) => setTimeout(r, delayMs));
             response = await doCheck();
