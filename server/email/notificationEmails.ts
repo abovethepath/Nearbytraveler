@@ -323,6 +323,29 @@ function getRedisClient(): Redis | null {
 // Fallback throttle when Redis isn't available (single-instance only)
 const dmEmailThrottleMem = new Map<string, number>();
 
+// City-match email throttle: one trip-or-signup match email per recipient per hour,
+// shared key namespace so the two triggers cannot stack on the same recipient.
+const CITY_MATCH_EMAIL_THROTTLE_SECONDS = 60 * 60;
+const cityMatchEmailThrottleMem = new Map<string, number>();
+
+async function shouldThrottleCityMatchEmail(recipientId: number): Promise<boolean> {
+  const key = `nt:city_match_email:${recipientId}`;
+  const redis = getRedisClient();
+  if (redis) {
+    try {
+      const res = await redis.set(key, String(Date.now()), "NX", "EX", CITY_MATCH_EMAIL_THROTTLE_SECONDS);
+      return !res;
+    } catch {
+      // Fall through to in-memory fallback
+    }
+  }
+  const now = Date.now();
+  const last = cityMatchEmailThrottleMem.get(key);
+  if (last && now - last < CITY_MATCH_EMAIL_THROTTLE_SECONDS * 1000) return true;
+  cityMatchEmailThrottleMem.set(key, now);
+  return false;
+}
+
 async function shouldThrottleDmEmail(recipientId: number, senderId: number): Promise<boolean> {
   const key = `nt:dm_email:${recipientId}:${senderId}`;
   const redis = getRedisClient();
@@ -1097,6 +1120,183 @@ export async function sendMeetupJoinEmail(organizerId: number, joinerName: strin
     return { success: true, messageId: result.messageId };
   } catch (error: any) {
     console.error("❌ Failed to send meetup join email:", error);
+    return { success: false, reason: error.message };
+  }
+}
+
+// Sent to a recipient whose hometown metro matches an incoming trip's destination.
+// Pref-gated on emailNotifications && cityActivityAlerts, throttled to one
+// city-match email (trip or signup) per recipient per hour.
+export async function sendTripIncomingEmail(
+  recipientId: number,
+  travelerDisplayName: string,
+  travelerUsername: string,
+  destinationCity: string,
+  startDateStr: string,
+  endDateStr: string,
+): Promise<EmailResult> {
+  try {
+    const prefs = await getUserEmailPreferences(recipientId);
+    if (!prefs.emailNotifications || !prefs.cityActivityAlerts) {
+      return { success: true, skipped: true, reason: "User disabled city activity alerts" };
+    }
+    if (await shouldThrottleCityMatchEmail(recipientId)) {
+      return { success: true, skipped: true, reason: "Throttled (one city-match email per hour)" };
+    }
+
+    const user = await db.select().from(users).where(eq(users.id, recipientId)).then(rows => rows[0]);
+    if (!user || !user.email) return { success: false, reason: "User not found or no email" };
+
+    const displayName = user.name?.split(" ")[0] || user.username;
+    const ctaUrl = `${APP_URL}/profile/${travelerUsername}`;
+    const subject = `✈️ @${travelerUsername} is heading to ${destinationCity}`;
+    const textContent = `Hi ${displayName}!\n\n${travelerDisplayName} (@${travelerUsername}) is planning a trip to ${destinationCity} from ${startDateStr} to ${endDateStr}.\n\nSay hi or share local tips: ${ctaUrl}\n\n— Nearby Traveler`;
+
+    const htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f5f5f5;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f5f5; padding: 40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+          <tr>
+            <td style="background: linear-gradient(135deg, #2563eb 0%, #ec4899 100%); padding: 30px; text-align: center;">
+              <h1 style="color: #ffffff; margin: 0; font-size: 24px;">✈️ Someone's visiting ${destinationCity}</h1>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 40px;">
+              <p style="font-size: 18px; color: #333333; margin: 0 0 20px;">Hi ${displayName}!</p>
+              <p style="font-size: 16px; color: #555555; line-height: 1.6; margin: 0 0 20px;">
+                <strong>${travelerDisplayName}</strong> (@${travelerUsername}) is planning a trip to <strong>${destinationCity}</strong>:
+              </p>
+              <div style="background-color: #eff6ff; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #2563eb;">
+                <p style="margin: 0; color: #1e3a8a; font-size: 15px;">${startDateStr} – ${endDateStr}</p>
+              </div>
+              <p style="font-size: 16px; color: #555555; line-height: 1.6; margin: 0 0 30px;">
+                You're a local in their destination metro. Say hi or share a tip before they arrive.
+              </p>
+              <div style="text-align: center; margin: 30px 0;">
+                <a href="${ctaUrl}" style="display: inline-block; background: linear-gradient(135deg, #2563eb 0%, #ec4899 100%); color: #ffffff; text-decoration: none; padding: 14px 40px; border-radius: 8px; font-size: 16px; font-weight: 600;">View Their Profile</a>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td style="background-color: #f8f9fa; padding: 20px; text-align: center;">
+              <p style="font-size: 12px; color: #888888; margin: 0;">
+                <a href="${APP_URL}/settings" style="color: #2563eb;">Manage email preferences</a>
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+
+    const result = await sendBrevoEmail({
+      toEmail: user.email,
+      subject,
+      textContent,
+      htmlContent,
+    });
+
+    return { success: true, messageId: result.messageId };
+  } catch (error: any) {
+    console.error("❌ Failed to send trip-incoming email:", error);
+    return { success: false, reason: error.message };
+  }
+}
+
+// Sent to existing members in a metro when a new user signs up with a matching
+// hometown. Pref-gated on emailNotifications && cityActivityAlerts, shares the
+// same once-per-hour city-match throttle as sendTripIncomingEmail.
+export async function sendNewLocalJoinedEmail(
+  recipientId: number,
+  newUserDisplayName: string,
+  newUserUsername: string,
+  cityName: string,
+  newUserType: string,
+): Promise<EmailResult> {
+  try {
+    const prefs = await getUserEmailPreferences(recipientId);
+    if (!prefs.emailNotifications || !prefs.cityActivityAlerts) {
+      return { success: true, skipped: true, reason: "User disabled city activity alerts" };
+    }
+    if (await shouldThrottleCityMatchEmail(recipientId)) {
+      return { success: true, skipped: true, reason: "Throttled (one city-match email per hour)" };
+    }
+
+    const user = await db.select().from(users).where(eq(users.id, recipientId)).then(rows => rows[0]);
+    if (!user || !user.email) return { success: false, reason: "User not found or no email" };
+
+    const displayName = user.name?.split(" ")[0] || user.username;
+    const ctaUrl = `${APP_URL}/profile/${newUserUsername}`;
+    const typeLabel = newUserType === 'local' ? 'local' : newUserType === 'traveler' ? 'traveler' : 'member';
+    const subject = `🎉 New ${typeLabel} in ${cityName}: @${newUserUsername}`;
+    const textContent = `Hi ${displayName}!\n\n${newUserDisplayName} (@${newUserUsername}) just joined Nearby Traveler from ${cityName}.\n\nSay hello and welcome them: ${ctaUrl}\n\n— Nearby Traveler`;
+
+    const htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f5f5f5;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f5f5; padding: 40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+          <tr>
+            <td style="background: linear-gradient(135deg, #ec4899 0%, #be185d 100%); padding: 30px; text-align: center;">
+              <h1 style="color: #ffffff; margin: 0; font-size: 24px;">🎉 New ${typeLabel} in ${cityName}</h1>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 40px;">
+              <p style="font-size: 18px; color: #333333; margin: 0 0 20px;">Hi ${displayName}!</p>
+              <p style="font-size: 16px; color: #555555; line-height: 1.6; margin: 0 0 20px;">
+                <strong>${newUserDisplayName}</strong> (@${newUserUsername}) just joined Nearby Traveler from <strong>${cityName}</strong>.
+              </p>
+              <p style="font-size: 16px; color: #555555; line-height: 1.6; margin: 0 0 30px;">
+                You're a local in the same metro — stop by and welcome them.
+              </p>
+              <div style="text-align: center; margin: 30px 0;">
+                <a href="${ctaUrl}" style="display: inline-block; background: linear-gradient(135deg, #ec4899 0%, #be185d 100%); color: #ffffff; text-decoration: none; padding: 14px 40px; border-radius: 8px; font-size: 16px; font-weight: 600;">Say Hello</a>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td style="background-color: #f8f9fa; padding: 20px; text-align: center;">
+              <p style="font-size: 12px; color: #888888; margin: 0;">
+                <a href="${APP_URL}/settings" style="color: #ec4899;">Manage email preferences</a>
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+
+    const result = await sendBrevoEmail({
+      toEmail: user.email,
+      subject,
+      textContent,
+      htmlContent,
+    });
+
+    return { success: true, messageId: result.messageId };
+  } catch (error: any) {
+    console.error("❌ Failed to send new-local-joined email:", error);
     return { success: false, reason: error.message };
   }
 }

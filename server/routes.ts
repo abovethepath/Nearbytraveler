@@ -693,7 +693,10 @@ async function generateCityContent(location: string, topic: string): Promise<str
   }
 }
 
-// Location-based notification function - sends notifications to EXISTING users about NEW user
+// Location-based notification function - sends notifications to EXISTING users about NEW user.
+// Metro-aware: matches users whose hometown maps to the same metro as the new user's hometown.
+// In-app + email together, gated by emailNotifications && cityActivityAlerts and the shared
+// city-match throttle (one trip-or-signup email per recipient per hour).
 async function sendLocationMatchNotifications(newUser: any) {
   try {
     if (!newUser.hometownCity) {
@@ -701,21 +704,33 @@ async function sendLocationMatchNotifications(newUser: any) {
       return;
     }
 
-    // Find existing users in the same city (excluding the new user)
-    const sameLocationUsers = await storage.getUsersByCity(newUser.hometownCity);
-    const existingUsers = sameLocationUsers.filter(user => user.id !== newUser.id);
+    const newUserMetro = getMetroAreaName(newUser.hometownCity.trim());
 
-    console.log(`🌍 Found ${existingUsers.length} existing users in ${newUser.hometownCity} to notify about new user @${newUser.username}`);
+    // Metro-aware lookup: fetch all users with a hometown then filter by metro equality.
+    // TODO: add recipient cap when metros exceed ~200 users.
+    const candidateUsers = await db
+      .select({ id: users.id, email: users.email, hometownCity: users.hometownCity })
+      .from(users)
+      .where(and(
+        ne(users.id, newUser.id),
+        isNotNull(users.hometownCity)
+      ));
+    const existingUsers = candidateUsers.filter(u =>
+      u.hometownCity && getMetroAreaName(u.hometownCity.trim()) === newUserMetro
+    );
+
+    console.log(`🌍 SIGNUP-MATCH: Found ${existingUsers.length} existing users in metro ${newUserMetro} to notify about @${newUser.username}`);
 
     if (existingUsers.length === 0) {
-      console.log(`📭 No existing users in ${newUser.hometownCity} to notify`);
+      console.log(`📭 SIGNUP-MATCH: No metro matches for ${newUser.hometownCity}`);
       return;
     }
 
+    const { sendNewLocalJoinedEmail } = await import('./email/notificationEmails');
+    const newUserDisplayName = newUser.firstName || (newUser.name ? newUser.name.split(' ')[0] : null) || newUser.username;
+
     // Send notifications to existing users about the new user
     for (const existingUser of existingUsers) {
-      if (!existingUser.email) continue;
-
       try {
         // Create in-app notification for existing user
         await storage.createNotification({
@@ -733,13 +748,25 @@ async function sendLocationMatchNotifications(newUser: any) {
           })
         });
 
-        // Email notifications for location/city match are disabled (in-app only).
+        if (existingUser.email) {
+          try {
+            await sendNewLocalJoinedEmail(
+              existingUser.id,
+              newUserDisplayName,
+              newUser.username,
+              newUser.hometownCity,
+              newUser.userType || 'user'
+            );
+          } catch (emailErr) {
+            console.error(`⚠️ SIGNUP-MATCH EMAIL: send failed for recipient ${existingUser.id}:`, emailErr);
+          }
+        }
       } catch (notificationError) {
-        console.error(`❌ Failed to send notification to ${existingUser.email}:`, notificationError);
+        console.error(`❌ SIGNUP-MATCH: in-app notification failed for ${existingUser.email}:`, notificationError);
       }
     }
 
-    console.log(`🎉 Successfully notified ${existingUsers.length} existing users in ${newUser.hometownCity} about new user @${newUser.username}`);
+    console.log(`🎉 SIGNUP-MATCH: Notified ${existingUsers.length} existing users in metro ${newUserMetro} about @${newUser.username}`);
   } catch (error) {
     console.error("Error in sendLocationMatchNotifications:", error);
   }
@@ -6414,6 +6441,13 @@ Questions? Just reply here — I read every message.
           console.error('❌ BACKGROUND: Failed to send welcome email:', error);
         }
 
+        // 0a. Notify same-metro existing users about the new signup (in-app + email)
+        try {
+          await sendLocationMatchNotifications(user);
+        } catch (error) {
+          console.error('❌ BACKGROUND: Failed to send location-match notifications:', error);
+        }
+
         // 1. Create city infrastructure for HOMETOWN
         try {
           if (user.hometownCity && user.hometownCountry) {
@@ -10968,7 +11002,7 @@ Questions? Just reply to this message. Welcome aboard!
           if (!destCity) return;
           const metro = getMetroAreaName(destCity);
 
-          const [traveler] = await db.select({ username: users.username }).from(users).where(eq(users.id, travelPlanData.userId));
+          const [traveler] = await db.select({ username: users.username, name: users.name, firstName: users.firstName }).from(users).where(eq(users.id, travelPlanData.userId));
           if (!traveler?.username) return;
 
           const startDate = newTravelPlan.startDate ? new Date(newTravelPlan.startDate) : null;
@@ -11072,6 +11106,48 @@ Questions? Just reply to this message. Welcome aboard!
               }
             }
             console.log(`🌍 OVERLAP: Notified ${sameMetroOverlaps.length} users with overlapping trips to ${destCity}`);
+          }
+
+          // Trigger 4: EMAIL same-metro locals about incoming traveler.
+          // Pref-gated (emailNotifications && cityActivityAlerts) and throttled
+          // to one city-match email per recipient per hour inside the helper.
+          // TODO: add recipient cap when metros exceed ~200 users.
+          if (startDate && endDate) {
+            try {
+              const usersWithCity = await db
+                .select({ id: users.id, hometownCity: users.hometownCity })
+                .from(users)
+                .where(and(
+                  ne(users.id, travelPlanData.userId),
+                  isNotNull(users.hometownCity)
+                ));
+              const emailRecipients = usersWithCity.filter(u =>
+                u.hometownCity && getMetroAreaName(u.hometownCity.trim()) === metro
+              );
+              if (emailRecipients.length > 0) {
+                const { sendTripIncomingEmail } = await import('./email/notificationEmails');
+                const travelerDisplay = traveler.firstName || (traveler.name?.split(' ')[0]) || traveler.username;
+                const startStr = fmtDate(startDate);
+                const endStr = fmtDate(endDate);
+                for (const r of emailRecipients) {
+                  try {
+                    await sendTripIncomingEmail(
+                      r.id,
+                      travelerDisplay,
+                      traveler.username,
+                      destCity,
+                      startStr,
+                      endStr
+                    );
+                  } catch (sendErr) {
+                    console.warn(`⚠️ TRIP EMAIL: send failed for recipient ${r.id}:`, sendErr);
+                  }
+                }
+                console.log(`📧 TRIP EMAIL: dispatched ${emailRecipients.length} city-match emails for @${traveler.username} → ${destCity}`);
+              }
+            } catch (emailFanoutErr) {
+              console.warn('⚠️ TRIP EMAIL: fanout failed (non-fatal):', emailFanoutErr);
+            }
           }
         } catch (err) {
           console.error('⚠️ NEARBY/OVERLAP: Failed to send travel notifications:', err);
