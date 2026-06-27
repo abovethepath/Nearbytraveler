@@ -502,6 +502,11 @@ export const events = pgTable("events", {
   endDate: timestamp("end_date"), // Optional end time for events
   category: text("category").notNull(),
   imageUrl: text("image_url"),
+  // Manual focal point for the event photo, as integer percentages 0-100
+  // (x = horizontal, y = vertical). NULL = never positioned, so og:image keeps
+  // Cloudinary g_auto as the fallback; only crop to the focal point once set.
+  imageFocalX: integer("image_focal_x"),
+  imageFocalY: integer("image_focal_y"),
   organizerId: integer("organizer_id").notNull(),
   maxParticipants: integer("max_participants"), // null = unlimited
   isActive: boolean("is_active").default(true),
