@@ -2,6 +2,7 @@ import type { Express, Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import { sign as signCookie } from "cookie-signature";
 import multer from "multer";
+import { cloudinaryOgImage } from "./ogImage";
 
 // Extend session interface to include user property and Sign in with Apple pending data
 declare module 'express-session' {
@@ -1232,18 +1233,23 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
       const host = req.headers.host || 'nearbytraveler.org';
       const baseUrl = `${protocol}://${host}`;
       
-      // Get event image - ensure it's an absolute URL (not base64)
-      // Using landscape logo (16:9) for better social sharing on mobile
-      // Use static /og-image.png for reliable social previews
+      // Get event image - prefer the event's OWN photo (Cloudinary https URL),
+      // and only fall back to the static logo when the event has no usable image.
+      // Never use base64 data URIs — social crawlers reject them.
       let imageUrl = `https://nearbytraveler.org/og-image.png`;
+      let imageAlt = 'Nearby Traveler logo';
       if (event.imageUrl && !event.imageUrl.startsWith('data:')) {
-        // Only use if it's a real URL, not a base64 data URI
         if (event.imageUrl.startsWith('http')) {
-          imageUrl = event.imageUrl;
+          imageUrl = event.imageUrl; // absolute https URL (Cloudinary)
+          imageAlt = event.title;
         } else if (event.imageUrl.startsWith('/')) {
-          imageUrl = `${baseUrl}${event.imageUrl}`;
+          imageUrl = `${baseUrl}${event.imageUrl}`; // make relative path absolute
+          imageAlt = event.title;
         }
       }
+      // Serve Cloudinary event photos as a true 1200x630 social card (matches the
+      // declared og:image dimensions); the logo fallback passes through unchanged.
+      imageUrl = cloudinaryOgImage(imageUrl);
       const fullUrl = `${protocol}://${host}/events/${eventId}`;
       
       // Serve HTML with dynamic OG tags
@@ -1260,6 +1266,8 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
   <meta property="og:title" content="${event.title} | Nearby Traveler" />
   <meta property="og:description" content="${description.replace(/"/g, '&quot;')}" />
   <meta property="og:image" content="${imageUrl}" />
+  <meta property="og:image:secure_url" content="${imageUrl}" />
+  <meta property="og:image:alt" content="${imageAlt.replace(/"/g, '&quot;')}" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <meta property="og:site_name" content="Nearby Traveler" />
@@ -1270,7 +1278,8 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
   <meta name="twitter:title" content="${event.title} | Nearby Traveler" />
   <meta name="twitter:description" content="${description.replace(/"/g, '&quot;')}" />
   <meta name="twitter:image" content="${imageUrl}" />
-  
+  <meta name="twitter:image:alt" content="${imageAlt.replace(/"/g, '&quot;')}" />
+
   <!-- Event specific meta -->
   <meta property="event:start_date" content="${event.eventDate || ''}" />
   <meta property="event:location" content="${event.city || ''}" />

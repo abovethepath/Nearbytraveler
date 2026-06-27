@@ -64,6 +64,7 @@ import {
 import cron from "node-cron";
 import passwordResetRouter from "./routes/passwordReset";
 import { registerRoutes } from "./routes";
+import { cloudinaryOgImage } from "./ogImage";
 
 process.on("uncaughtException", (error) => {
   console.error("Uncaught Exception:", error);
@@ -1062,9 +1063,13 @@ app.use((req, res, next) => {
 
       const ogTitle = `${event.title} | Nearby Traveler`;
       const ogDesc = `Join ${hostName} for ${event.title} in ${event.city} on ${dateStr} at ${timeStr}`;
-      const ogImage = (event.imageUrl && event.imageUrl.trim())
-        ? event.imageUrl
-        : "https://nearbytraveler.org/og-image.png";
+      const hasEventImage = !!(event.imageUrl && event.imageUrl.trim());
+      // Cloudinary event photos are served as a true 1200x630 social card so the
+      // declared og:image dimensions match; the logo fallback passes through.
+      const ogImage = cloudinaryOgImage(
+        hasEventImage ? event.imageUrl! : "https://nearbytraveler.org/og-image.png"
+      );
+      const ogImageAlt = hasEventImage ? event.title : "Nearby Traveler logo";
       const ogUrl = `https://nearbytraveler.org/events/${eventId}`;
 
       // Determine index.html path (prod vs dev)
@@ -1090,6 +1095,8 @@ app.use((req, res, next) => {
       const extraMeta = [
         `  <meta property="og:url" content="${escapeHtml(ogUrl)}" />`,
         `  <meta property="og:type" content="website" />`,
+        `  <meta property="og:image:secure_url" content="${escapeHtml(ogImage)}" />`,
+        `  <meta property="og:image:alt" content="${escapeHtml(ogImageAlt)}" />`,
         `  <meta name="twitter:card" content="summary_large_image" />`,
       ].join("\n");
       template = template.replace("</head>", `${extraMeta}\n  </head>`);
