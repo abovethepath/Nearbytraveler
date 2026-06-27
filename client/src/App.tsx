@@ -2249,7 +2249,7 @@ function Router() {
               ) : (
                 /* Regular pages — normal scrollable layout */
                 <div className="min-h-screen w-full max-w-full bg-background text-foreground overflow-x-hidden">
-                  <main className={`w-full max-w-full overflow-x-hidden main-with-bottom-nav ${isNativeIOSApp() ? 'pt-0 pb-0' : 'pt-[56px] pb-[88px] md:pt-0 md:pb-20'}`}>
+                  <main className={`w-full max-w-full overflow-x-hidden main-with-bottom-nav ${isNativeIOSApp() ? 'pt-0 pb-0' : 'pt-[calc(56px+env(safe-area-inset-top))] pb-[88px] md:pt-0 md:pb-20'}`}>
                     <div className="w-full max-w-full overflow-x-hidden">
                       {renderPage()}
                     </div>
