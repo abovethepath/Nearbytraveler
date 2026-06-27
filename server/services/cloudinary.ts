@@ -37,15 +37,16 @@ export async function deleteAudio(publicId: string): Promise<void> {
   await cloudinary.uploader.destroy(publicId, { resource_type: "raw" });
 }
 
-/** Upload an image buffer (profile photo, gallery) to Cloudinary. */
+/** Upload an image buffer (profile photo, event cover, gallery) to Cloudinary. */
 export async function uploadImage(
   buffer: Buffer,
   filename: string,
+  folder: string = "profile-images",
 ): Promise<{ url: string; publicId: string }> {
   return new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
       {
-        folder: "profile-images",
+        folder,
         resource_type: "image",
         public_id: filename.replace(/\.[^.]+$/, ""),
       },

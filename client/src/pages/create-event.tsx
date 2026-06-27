@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "wouter";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, getApiBaseUrl } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { insertEventSchema, type InsertEvent } from "@shared/schema";
 import { z } from "zod";
@@ -103,6 +103,7 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
   const [availableStates, setAvailableStates] = useState<string[]>([]);
   const [availableCities, setAvailableCities] = useState<string[]>([]);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [useBusinessAddress, setUseBusinessAddress] = useState(false);
   const [isRecurring, setIsRecurring] = useState(false);
   const [recurrenceType, setRecurrenceType] = useState("");
@@ -1799,21 +1800,51 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
                   <div className="space-y-4">
                     <div className="text-gray-500 dark:text-gray-300">
                       <ImageIcon className="w-12 h-12 mx-auto mb-2" />
-                      <p className="text-sm">Upload an event photo to attract more participants</p>
+                      <p className="text-sm">
+                        {uploadingImage ? "Uploading photo…" : "Upload an event photo to attract more participants"}
+                      </p>
                     </div>
                     <Input
                       type="file"
                       accept="image/*"
-                      onChange={(e) => {
+                      disabled={uploadingImage}
+                      onChange={async (e) => {
                         const file = e.target.files?.[0];
-                        if (file) {
-                          const reader = new FileReader();
-                          reader.onload = (e) => {
-                            const result = e.target?.result as string;
-                            setImagePreview(result);
-                            setValue("imageUrl", result);
-                          };
-                          reader.readAsDataURL(file);
+                        if (!file) return;
+                        if (file.size > 10 * 1024 * 1024) {
+                          toast({ title: "File too large", description: "Please select an image under 10MB.", variant: "destructive" });
+                          e.target.value = "";
+                          return;
+                        }
+                        setUploadingImage(true);
+                        try {
+                          // Upload to Cloudinary and store the returned https URL —
+                          // NEVER base64 (data: URLs break Open Graph / social sharing).
+                          const formData = new FormData();
+                          formData.append("image", file, file.name);
+                          const res = await fetch(`${getApiBaseUrl()}/api/upload/image`, {
+                            method: "POST",
+                            headers: currentUser?.id ? { "x-user-id": String(currentUser.id) } : undefined,
+                            credentials: "include",
+                            body: formData,
+                          });
+                          if (!res.ok) throw new Error(`Upload failed (${res.status})`);
+                          const data = await res.json();
+                          if (!data?.url) throw new Error("Upload returned no URL");
+                          setValue("imageUrl", data.url, { shouldValidate: true, shouldDirty: true });
+                          setImagePreview(data.url);
+                        } catch (err) {
+                          // Do NOT fall back to base64 — leave the image empty.
+                          setImagePreview(null);
+                          setValue("imageUrl", "");
+                          toast({
+                            title: "Image upload failed",
+                            description: err instanceof Error ? err.message : "Please try again.",
+                            variant: "destructive",
+                          });
+                        } finally {
+                          setUploadingImage(false);
+                          e.target.value = "";
                         }
                       }}
                       className="max-w-xs mx-auto"

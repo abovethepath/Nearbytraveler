@@ -431,27 +431,21 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
   // Image upload mutation
   const uploadImageMutation = useMutation({
     mutationFn: async (file: File): Promise<string> => {
-      console.log('🖼️ UPLOAD START: Converting file to base64', { 
-        fileName: file.name, 
-        fileSize: file.size,
-        fileType: file.type 
+      // Upload to Cloudinary and return the https secure_url — NEVER base64
+      // (data: URLs break Open Graph / social sharing).
+      const formData = new FormData();
+      formData.append("image", file, file.name);
+      const res = await fetch(`${getApiBaseUrl()}/api/upload/image`, {
+        method: "POST",
+        headers: user?.id ? { "x-user-id": String(user.id) } : undefined,
+        credentials: "include",
+        body: formData,
       });
-      const reader = new FileReader();
-      return new Promise<string>((resolve, reject) => {
-        reader.onload = () => {
-          const result = reader.result as string;
-          console.log('🖼️ UPLOAD SUCCESS: File converted to base64', { 
-            resultLength: result.length,
-            preview: result.substring(0, 50) + '...'
-          });
-          resolve(result);
-        };
-        reader.onerror = (error) => {
-          console.error('🖼️ UPLOAD ERROR: FileReader failed', error);
-          reject(error);
-        };
-        reader.readAsDataURL(file);
-      });
+      if (!res.ok) throw new Error(`Upload failed (${res.status})`);
+      const data = await res.json();
+      if (!data?.url) throw new Error("Upload returned no URL");
+      console.log('🖼️ UPLOAD SUCCESS: Cloudinary URL', data.url);
+      return data.url;
     },
     onSuccess: async (imageData: string) => {
       console.log('🖼️ UPLOAD MUTATION SUCCESS: Starting image save process', {
@@ -515,14 +509,14 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
       fileName: file.name,
       fileSize: file.size,
       fileType: file.type,
-      maxSize: 5 * 1024 * 1024
+      maxSize: 10 * 1024 * 1024
     });
-    
-    if (file.size > 5 * 1024 * 1024) { // 5MB limit
+
+    if (file.size > 10 * 1024 * 1024) { // 10MB limit (matches server)
       console.log('🖼️ UPLOAD REJECTED: File too large', { fileSize: file.size });
       toast({
         title: "File Too Large",
-        description: "Please select an image under 5MB.",
+        description: "Please select an image under 10MB.",
         variant: "destructive",
       });
       return;

@@ -21270,6 +21270,29 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // Generic image upload → Cloudinary. Used by the event create/edit photo
+  // pickers so event covers are stored as real https secure_urls (shareable via
+  // Open Graph) instead of base64 data: URLs. Mirrors the voice-upload route.
+  const imageUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } }); // 10MB max
+
+  app.post("/api/upload/image", uploadLimit, imageUpload.single("image"), async (req: any, res) => {
+    try {
+      const userId = req.session?.user?.id || parseInt(req.headers['x-user-id'] as string || '0');
+      if (!userId) return res.status(401).json({ error: "Not authenticated" });
+      if (!req.file) return res.status(400).json({ error: "No image file" });
+
+      const { uploadImage } = await import("./services/cloudinary");
+      const filename = `event_${userId}_${Date.now()}`;
+      const { url, publicId } = await uploadImage(req.file.buffer, filename, "events");
+
+      console.log(`🖼️ IMAGE: Uploaded ${filename} for user ${userId} → ${url}`);
+      res.json({ url, publicId });
+    } catch (error: any) {
+      console.error("Image upload error:", error?.message?.slice(0, 100));
+      res.status(500).json({ error: "Failed to upload image" });
+    }
+  });
+
   // Voice message cleanup — call from cron or scheduled task
   app.post("/api/voice-messages/cleanup", async (req, res) => {
     try {
