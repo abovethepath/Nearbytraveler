@@ -5,6 +5,7 @@ import { SimpleAvatar } from "@/components/simple-avatar";
 import { getApiBaseUrl } from "@/lib/queryClient";
 import { useAuth } from "@/App";
 import { getMetroAreaName } from "@shared/metro-areas";
+import { focalObjectPosition } from "@/lib/eventFocal";
 
 interface TonightEvent {
   id: number;
@@ -141,7 +142,7 @@ export function TonightWidget({ city }: Props) {
                 >
                   <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-orange-50 dark:bg-orange-900/20 flex items-center justify-center overflow-hidden">
                     {ev.imageUrl ? (
-                      <img src={ev.imageUrl} alt="" className="w-full h-full object-cover rounded-lg" />
+                      <img src={ev.imageUrl} alt="" className="w-full h-full object-cover rounded-lg" style={{ objectPosition: focalObjectPosition((ev as any).imageFocalX, (ev as any).imageFocalY) }} />
                     ) : (
                       <Calendar className="w-4 h-4 text-orange-400" />
                     )}

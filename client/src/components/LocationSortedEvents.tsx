@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Calendar, MapPin, Clock, Users, Star, ExternalLink, Heart, Share2 } from 'lucide-react';
 import { isLAMetroCity, getMetroCities } from '@shared/constants';
+import { focalObjectPosition } from '@/lib/eventFocal';
 
 interface Event {
   id: number;
@@ -155,10 +156,11 @@ export default function LocationSortedEvents({
       {/* Photo on top */}
       {event.eventImage && (
         <div className="w-full h-32 overflow-hidden">
-          <img 
-            src={event.eventImage} 
+          <img
+            src={event.eventImage}
             alt={event.title}
             className="w-full h-full object-cover"
+            style={{ objectPosition: focalObjectPosition((event as any).imageFocalX, (event as any).imageFocalY) }}
           />
         </div>
       )}

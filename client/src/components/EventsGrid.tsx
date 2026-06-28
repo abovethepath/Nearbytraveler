@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, MapPin, Users } from "lucide-react";
 import { parseISO, format } from "date-fns";
+import { focalObjectPosition } from "@/lib/eventFocal";
 
 interface EventsGridProps {
   location?: string;
@@ -204,10 +205,11 @@ const EventsGrid = ({
               {/* Large Event Photo - Like Business Cards */}
               <div className="relative h-40 bg-slate-700 overflow-hidden">
                 {event.imageUrl ? (
-                  <img 
-                    src={event.imageUrl} 
+                  <img
+                    src={event.imageUrl}
                     alt={eventTitle}
                     className="w-full h-full object-cover"
+                    style={{ objectPosition: focalObjectPosition((event as any).imageFocalX, (event as any).imageFocalY) }}
                   />
                 ) : (
                   // Default placeholder with category-based gradient

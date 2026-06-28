@@ -1067,7 +1067,9 @@ app.use((req, res, next) => {
       // Cloudinary event photos are served as a true 1200x630 social card so the
       // declared og:image dimensions match; the logo fallback passes through.
       const ogImage = cloudinaryOgImage(
-        hasEventImage ? event.imageUrl! : "https://nearbytraveler.org/og-image.png"
+        hasEventImage ? event.imageUrl! : "https://nearbytraveler.org/og-image.png",
+        (event as any).imageFocalX,
+        (event as any).imageFocalY
       );
       const ogImageAlt = hasEventImage ? event.title : "Nearby Traveler logo";
       const ogUrl = `https://nearbytraveler.org/events/${eventId}`;

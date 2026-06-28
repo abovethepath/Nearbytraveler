@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Star, MapPin, Clock, Calendar, Users, Sparkles } from 'lucide-react';
+import { focalBackgroundPosition } from '@/lib/eventFocal';
 
 interface ContextualFactor {
   locationMatch: number;
@@ -176,7 +177,7 @@ export function ContextualEventRecommendations({ userId, limit = 8 }: Contextual
                 style={{
                   backgroundImage: event.imageUrl ? `url('${event.imageUrl}')` : `url('https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400&h=300&fit=crop')`,
                   backgroundSize: 'cover',
-                  backgroundPosition: 'center'
+                  backgroundPosition: event.imageUrl ? focalBackgroundPosition((event as any).imageFocalX, (event as any).imageFocalY) : 'center'
                 }}
               >
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>

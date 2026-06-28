@@ -13,6 +13,8 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest, getApiBaseUrl } from "@/lib/queryClient";
 import { ParticipantAvatars } from "@/components/ParticipantAvatars";
 import { InstagramShare } from "@/components/InstagramShare";
+import { PhotoFocalPicker } from "@/components/PhotoFocalPicker";
+import { focalObjectPosition } from "@/lib/eventFocal";
 import { EventShareModal } from "@/components/EventShareModal";
 import { useAuth } from "@/App";
 import { FullPageSkeleton } from "@/components/FullPageSkeleton";
@@ -152,6 +154,7 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
   const [copied, setCopied] = useState(false);
   const [viewAsGuest, setViewAsGuest] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [showFocalPicker, setShowFocalPicker] = useState(false);
   const [invitedUserIds, setInvitedUserIds] = useState<Set<number>>(new Set());
   
   // Auth is cookie/session based (source of truth is AuthContext, not localStorage).
@@ -163,20 +166,27 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
   const uploadPhotoMutation = useMutation({
     mutationFn: async (file: File) => {
       setUploadingImage(true);
-      
-      // Convert file to base64
-      return new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
+
+      // Upload to Cloudinary and return the https secure_url — NEVER base64
+      // (data: URLs break Open Graph / social sharing).
+      const formData = new FormData();
+      formData.append("image", file, file.name);
+      const res = await fetch(`${getApiBaseUrl()}/api/upload/image`, {
+        method: "POST",
+        headers: currentUser?.id ? { "x-user-id": String(currentUser.id) } : undefined,
+        credentials: "include",
+        body: formData,
       });
+      if (!res.ok) throw new Error(`Upload failed (${res.status})`);
+      const data = await res.json();
+      if (!data?.url) throw new Error("Upload returned no URL");
+      return data.url as string;
     },
     onSuccess: async (imageData: string) => {
       try {
-        // Upload to server
+        // Persist the Cloudinary URL on the event
         const response = await apiRequest("POST", `/api/events/${eventId}/image`, { imageUrl: imageData });
-        
+
         toast({
           title: "Photo uploaded!",
           description: "Your event photo has been added.",
@@ -603,10 +613,11 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
       {/* Event Image */}
       {event.imageUrl ? (
         <div className="mb-4 sm:mb-6 md:mb-8 w-full overflow-hidden rounded-xl shadow-lg relative group">
-          <img 
-            src={event.imageUrl} 
+          <img
+            src={event.imageUrl}
             alt={event.title}
             className="w-full h-48 sm:h-56 md:h-64 lg:h-80 object-cover"
+            style={{ objectPosition: focalObjectPosition((event as any).imageFocalX, (event as any).imageFocalY) }}
           />
           {/* Replace photo button for organizers */}
           {isOrganizer && !viewAsGuest && (
@@ -632,6 +643,16 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
                 )}
               </div>
             </label>
+          )}
+          {/* Reposition button for organizers */}
+          {isOrganizer && !viewAsGuest && (
+            <button
+              type="button"
+              onClick={() => setShowFocalPicker(true)}
+              className="absolute bottom-3 left-3 flex items-center gap-2 px-3 py-2 bg-black/70 hover:bg-black/90 text-white text-sm rounded-lg transition-colors"
+            >
+              Reposition
+            </button>
           )}
         </div>
       ) : isOrganizer && !viewAsGuest ? (
@@ -665,6 +686,39 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
           </label>
         </div>
       ) : null}
+
+      {showFocalPicker && event?.imageUrl && (
+        <PhotoFocalPicker
+          imageUrl={event.imageUrl}
+          initialX={(event as any).imageFocalX}
+          initialY={(event as any).imageFocalY}
+          onClose={() => setShowFocalPicker(false)}
+          onSave={async (x, y) => {
+            try {
+              const r = await fetch(`${getApiBaseUrl()}/api/events/${event.id}`, {
+                method: "PUT",
+                headers: {
+                  "Content-Type": "application/json",
+                  ...(currentUser?.id ? { "x-user-id": String(currentUser.id) } : {}),
+                },
+                credentials: "include",
+                body: JSON.stringify({ imageFocalX: x, imageFocalY: y }),
+              });
+              if (!r.ok) throw new Error(`Save failed (${r.status})`);
+              queryClient.invalidateQueries({ queryKey: [`/api/events/${eventId}`] });
+              toast({ title: "Position saved", description: "Your event photo position was updated." });
+            } catch (err) {
+              toast({
+                title: "Failed to save position",
+                description: err instanceof Error ? err.message : "Please try again.",
+                variant: "destructive",
+              });
+            } finally {
+              setShowFocalPicker(false);
+            }
+          }}
+        />
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Sidebar - Going List on LEFT like Couchsurfing */}

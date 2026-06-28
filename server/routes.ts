@@ -1248,8 +1248,9 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         }
       }
       // Serve Cloudinary event photos as a true 1200x630 social card (matches the
-      // declared og:image dimensions); the logo fallback passes through unchanged.
-      imageUrl = cloudinaryOgImage(imageUrl);
+      // declared og:image dimensions), cropped to the organizer's chosen focal
+      // point when set (else g_auto); the logo fallback passes through unchanged.
+      imageUrl = cloudinaryOgImage(imageUrl, (event as any).imageFocalX, (event as any).imageFocalY);
       const fullUrl = `${protocol}://${host}/events/${eventId}`;
       
       // Serve HTML with dynamic OG tags
@@ -16419,6 +16420,9 @@ Questions? Just reply to this message. Welcome aboard!
       if (eventData.venueName) cleanEventData.venueName = eventData.venueName;
       if (body.endDate) cleanEventData.endDate = safeDate(body.endDate);
       if (eventData.imageUrl) cleanEventData.imageUrl = eventData.imageUrl;
+      // Manual photo focal point (integer percentages 0-100); allow 0, skip null/undefined
+      if (eventData.imageFocalX !== undefined && eventData.imageFocalX !== null) cleanEventData.imageFocalX = eventData.imageFocalX;
+      if (eventData.imageFocalY !== undefined && eventData.imageFocalY !== null) cleanEventData.imageFocalY = eventData.imageFocalY;
       if (eventData.maxParticipants) cleanEventData.maxParticipants = eventData.maxParticipants;
       if (eventData.tags && eventData.tags.length > 0) cleanEventData.tags = eventData.tags;
       if (eventData.requirements) cleanEventData.requirements = eventData.requirements;
@@ -16719,6 +16723,9 @@ Questions? Just reply to this message. Welcome aboard!
       if ((req.body as any).isPublic !== undefined) updateData.isPublic = (req.body as any).isPublic;
       if ((req.body as any).showInterestedPublicly !== undefined) updateData.showInterestedPublicly = (req.body as any).showInterestedPublicly;
       if ((req.body as any).imageUrl !== undefined && (req.body as any).imageUrl !== null) updateData.imageUrl = (req.body as any).imageUrl;
+      // Manual photo focal point (integer percentages 0-100); allow 0, skip null/undefined
+      if ((req.body as any).imageFocalX !== undefined && (req.body as any).imageFocalX !== null) updateData.imageFocalX = (req.body as any).imageFocalX;
+      if ((req.body as any).imageFocalY !== undefined && (req.body as any).imageFocalY !== null) updateData.imageFocalY = (req.body as any).imageFocalY;
 
       if (process.env.NODE_ENV === 'development') console.log(`🎪 EVENT UPDATE: Cleaned update data:`, updateData);
       

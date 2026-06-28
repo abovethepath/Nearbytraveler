@@ -7,6 +7,7 @@ import { Calendar, Users, MapPin } from "lucide-react";
 import { formatDateForDisplay } from "@/lib/dateUtils";
 import { getApiBaseUrl } from "@/lib/queryClient";
 import { getMetroContext } from "@shared/metro-areas";
+import { focalObjectPosition } from "@/lib/eventFocal";
 
 interface EventsWidgetProps {
   userId: number | undefined;
@@ -230,6 +231,7 @@ function EventsWidget({ userId }: EventsWidgetProps) {
                     src={event.imageUrl}
                     alt={event.title}
                     className="w-full h-full object-cover"
+                    style={{ objectPosition: focalObjectPosition((event as any).imageFocalX, (event as any).imageFocalY) }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
                 </div>

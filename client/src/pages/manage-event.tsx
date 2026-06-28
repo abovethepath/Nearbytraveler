@@ -27,6 +27,7 @@ import SmartLocationInput from "@/components/SmartLocationInput";
 import { Search } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { EventShareModal } from "@/components/EventShareModal";
+import { PhotoFocalPicker } from "@/components/PhotoFocalPicker";
 
 // Custom hook to update page meta tags for better sharing
 const useEventMeta = (event: any) => {
@@ -99,6 +100,8 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
   const [newTag, setNewTag] = useState("");
   const [imagePreview, setImagePreview] = useState<string>("");
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [imageFocal, setImageFocal] = useState<{ x: number; y: number } | null>(null);
+  const [showFocalPicker, setShowFocalPicker] = useState(false);
   
   const [coOrgSearchTerm, setCoOrgSearchTerm] = useState("");
   const [coOrgSearchResults, setCoOrgSearchResults] = useState<any[]>([]);
@@ -199,6 +202,10 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
         setImagePreview(event.imageUrl);
         console.log('Setting image preview from event:', event.imageUrl.substring(0, 50) + '...');
       }
+      // Load the stored focal point (null = never positioned → centered)
+      const fx = (event as any).imageFocalX;
+      const fy = (event as any).imageFocalY;
+      setImageFocal((fx !== null && fx !== undefined && fy !== null && fy !== undefined) ? { x: fx, y: fy } : null);
     }
   }, [event]);
 
@@ -456,7 +463,8 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
       
       setImagePreview(imageData);
       setFormData(prev => ({ ...prev, imageUrl: imageData }));
-      
+      setImageFocal(null); // new photo → reset focal to center
+
       // If event exists, upload image immediately
       if (event?.id) {
         try {
@@ -699,6 +707,9 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
       tags: formData.tags,
       isPublic: formData.isPublic,
       imageUrl: formData.imageUrl || null,
+      // Manual photo focal point (integer percentages 0-100); null = never positioned
+      imageFocalX: imageFocal ? imageFocal.x : null,
+      imageFocalY: imageFocal ? imageFocal.y : null,
       // Private event settings
       womenOnly: !!(formData as any).womenOnly,
       menOnly: !!(formData as any).menOnly,
@@ -784,6 +795,7 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
                       src={imagePreview || event?.imageUrl || ""}
                       alt="Event preview"
                       className="w-full max-w-md h-48 object-cover rounded-lg"
+                      style={{ objectPosition: `${imageFocal?.x ?? 50}% ${imageFocal?.y ?? 50}%` }}
                     />
                     <Button
                       type="button"
@@ -793,9 +805,19 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
                       onClick={() => {
                         setImagePreview("");
                         setFormData(prev => ({ ...prev, imageUrl: "" }));
+                        setImageFocal(null);
                       }}
                     >
                       <X className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      size="sm"
+                      className="absolute bottom-2 left-2"
+                      onClick={() => setShowFocalPicker(true)}
+                    >
+                      Reposition
                     </Button>
                   </div>
                 ) : (
@@ -825,6 +847,16 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
                   <Upload className="w-4 h-4" />
                   {uploadingImage ? "Uploading..." : (imagePreview || event?.imageUrl) ? "Change Photo" : "Upload Photo"}
                 </Button>
+
+                {showFocalPicker && (imagePreview || event?.imageUrl) && (
+                  <PhotoFocalPicker
+                    imageUrl={imagePreview || event?.imageUrl || ""}
+                    initialX={imageFocal?.x}
+                    initialY={imageFocal?.y}
+                    onSave={(x, y) => { setImageFocal({ x, y }); setShowFocalPicker(false); }}
+                    onClose={() => setShowFocalPicker(false)}
+                  />
+                )}
               </div>
             </CardContent>
           </Card>

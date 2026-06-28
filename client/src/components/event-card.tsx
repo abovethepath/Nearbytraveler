@@ -9,6 +9,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest, queryClient, getApiBaseUrl } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import ImageLoader from "./ImageLoader";
+import { focalObjectPosition } from "@/lib/eventFocal";
 import { SimpleAvatar } from "./simple-avatar";
 import { EventShareModal } from "@/components/EventShareModal";
 
@@ -303,7 +304,8 @@ export default function EventCard({ event, compact = false, featured = false }: 
             <ImageLoader
               src={event.imageUrl}
               alt={event.title}
-              className="w-12 h-12 rounded-lg object-cover object-center ml-3 flex-shrink-0"
+              className="w-12 h-12 rounded-lg object-cover ml-3 flex-shrink-0"
+              style={{ objectPosition: focalObjectPosition((event as any).imageFocalX, (event as any).imageFocalY) }}
               loading="lazy"
             />
           )}
@@ -321,7 +323,8 @@ export default function EventCard({ event, compact = false, featured = false }: 
             <img
               src={event.imageUrl}
               alt={event.title}
-              className="w-full h-full object-cover object-center"
+              className="w-full h-full object-cover"
+              style={{ objectPosition: focalObjectPosition((event as any).imageFocalX, (event as any).imageFocalY) }}
               loading="lazy"
             />
           </div>

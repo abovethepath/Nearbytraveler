@@ -22,6 +22,7 @@ import { Badge } from "@/components/ui/badge";
 import { SmartLocationInput } from "@/components/SmartLocationInput";
 import { authStorage } from "@/lib/auth";
 import { AIQuickCreateEvent } from "@/components/AIQuickCreateEvent";
+import { PhotoFocalPicker } from "@/components/PhotoFocalPicker";
 import { isNativeIOSApp } from "@/lib/nativeApp";
 
 // Categories removed - users can describe their event in the description field!
@@ -104,6 +105,8 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
   const [availableCities, setAvailableCities] = useState<string[]>([]);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [imageFocal, setImageFocal] = useState<{ x: number; y: number } | null>(null);
+  const [showFocalPicker, setShowFocalPicker] = useState(false);
   const [useBusinessAddress, setUseBusinessAddress] = useState(false);
   const [isRecurring, setIsRecurring] = useState(false);
   const [recurrenceType, setRecurrenceType] = useState("");
@@ -589,6 +592,7 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
       
       reset();
       setImagePreview(null);
+      setImageFocal(null);
       setUseBusinessAddress(false);
       setSelectedCountry("");
       setSelectedState("");
@@ -723,6 +727,9 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
         tags: [],
         requirements: data.requirements || '',
         imageUrl: data.imageUrl || null,
+        // Manual photo focal point (integer percentages 0-100); null = never positioned
+        imageFocalX: imageFocal ? imageFocal.x : null,
+        imageFocalY: imageFocal ? imageFocal.y : null,
         // Recurring event fields
         isRecurring: data.isRecurring || false,
         recurrenceType: data.recurrenceType || null,
@@ -1782,12 +1789,14 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
                         src={imagePreview}
                         alt="Event preview"
                         className="max-w-full h-48 object-cover rounded-lg mx-auto"
+                        style={{ objectPosition: `${imageFocal?.x ?? 50}% ${imageFocal?.y ?? 50}%` }}
                       />
                       <button
                         type="button"
                         onClick={() => {
                           setImagePreview(null);
                           setValue("imageUrl", "");
+                          setImageFocal(null);
                         }}
                         className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1.5 shadow-lg transition-colors"
                         aria-label="Remove image"
@@ -1795,6 +1804,15 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
                         <X className="w-4 h-4" />
                       </button>
                     </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowFocalPicker(true)}
+                      className="mx-auto"
+                    >
+                      Reposition photo
+                    </Button>
                   </div>
                 ) : (
                   <div className="space-y-4">
@@ -1833,10 +1851,12 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
                           if (!data?.url) throw new Error("Upload returned no URL");
                           setValue("imageUrl", data.url, { shouldValidate: true, shouldDirty: true });
                           setImagePreview(data.url);
+                          setImageFocal(null); // new photo → reset focal to center
                         } catch (err) {
                           // Do NOT fall back to base64 — leave the image empty.
                           setImagePreview(null);
                           setValue("imageUrl", "");
+                          setImageFocal(null);
                           toast({
                             title: "Image upload failed",
                             description: err instanceof Error ? err.message : "Please try again.",
@@ -1852,6 +1872,16 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
                   </div>
                 )}
               </div>
+
+              {showFocalPicker && imagePreview && (
+                <PhotoFocalPicker
+                  imageUrl={imagePreview}
+                  initialX={imageFocal?.x}
+                  initialY={imageFocal?.y}
+                  onSave={(x, y) => { setImageFocal({ x, y }); setShowFocalPicker(false); }}
+                  onClose={() => setShowFocalPicker(false)}
+                />
+              )}
             </div>
 
             {/* Recurring Event Options */}
