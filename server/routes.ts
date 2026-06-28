@@ -1320,7 +1320,12 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
 </body>
 </html>`;
       
-      res.type('text/html').send(html);
+      res.set({
+        'Content-Type': 'text/html; charset=utf-8',
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Vary': 'User-Agent'
+      });
+      res.send(html);
     } catch (error) {
       console.error('OG meta tag error for event:', error);
       next();

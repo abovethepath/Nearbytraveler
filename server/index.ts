@@ -1103,7 +1103,11 @@ app.use((req, res, next) => {
       ].join("\n");
       template = template.replace("</head>", `${extraMeta}\n  </head>`);
 
-      res.status(200).set("Content-Type", "text/html").end(template);
+      res.status(200).set({
+        "Content-Type": "text/html; charset=utf-8",
+        "Cache-Control": "no-cache, no-store, must-revalidate",
+        "Vary": "User-Agent"
+      }).end(template);
     } catch (e) {
       console.error("OG meta injection error for event", eventId, e);
       return next();
