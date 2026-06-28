@@ -970,7 +970,14 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
                             </div>
                           )}
                           <span>{participant.user?.firstName || participant.user?.name?.split(' ')[0] || participant.user?.username}</span>
-                          <Badge variant="outline" className="text-xs bg-transparent text-gray-700 dark:bg-gray-700 dark:text-gray-100 border-gray-300 dark:border-gray-600">
+                          <Badge
+                            variant="outline"
+                            className={`text-xs ${
+                              participant.status === 'going'
+                                ? 'bg-green-100 text-green-800 border-green-300 dark:bg-green-900/60 dark:text-green-200 dark:border-green-700'
+                                : 'bg-amber-100 text-amber-800 border-amber-300 dark:bg-amber-900/60 dark:text-amber-200 dark:border-amber-700'
+                            }`}
+                          >
                             {participant.status === 'going' ? 'Going' : 'Interested'}
                           </Badge>
                         </div>
