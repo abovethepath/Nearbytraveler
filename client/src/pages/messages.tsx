@@ -24,6 +24,7 @@ import TypingIndicator from '@/components/instant-messaging/TypingIndicator';
 import { apiRequest, getApiBaseUrl } from '@/lib/queryClient';
 import { queryClient } from '@/lib/queryClient';
 import { SimpleAvatar, getProfileImageUrl } from '@/components/simple-avatar';
+import { focalObjectPosition } from '@/lib/eventFocal';
 import websocketService from '@/services/websocketService';
 import { useLocation } from 'wouter';
 import { useToast } from '@/hooks/use-toast';
@@ -1057,6 +1058,8 @@ export default function Messages() {
                     })
                     .map((mc: any) => {
                       const isSelected = selectedMeetupChat === mc.id;
+                      // Avatar: host's avatar → Users icon (quick meets have no photo of their own)
+                      const meetHostAvatar = mc.hostAvatar ? (getProfileImageUrl({ profileImage: mc.hostAvatar }) || null) : null;
                       return (
                         <div
                           key={`mc-${mc.id}`}
@@ -1082,11 +1085,14 @@ export default function Messages() {
                           }}
                         >
                           <div className="flex items-start gap-3">
-                            <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${
-                              isSelected ? 'bg-white/20' : 'bg-orange-100 dark:bg-orange-900/40'
-                            }`}>
-                              <Users className={`w-5 h-5 ${isSelected ? 'text-white' : 'text-orange-600 dark:text-orange-400'}`} />
-                            </div>
+                            <Avatar className="w-10 h-10 shrink-0 mt-0.5">
+                              {meetHostAvatar && (
+                                <AvatarImage src={meetHostAvatar} alt={mc.hostName || 'Host'} className="object-cover" />
+                              )}
+                              <AvatarFallback className={isSelected ? 'bg-white/20' : 'bg-orange-100 dark:bg-orange-900/40'}>
+                                <Users className={`w-5 h-5 ${isSelected ? 'text-white' : 'text-orange-600 dark:text-orange-400'}`} />
+                              </AvatarFallback>
+                            </Avatar>
                             <div className="flex-1 min-w-0">
                               <h3 className={`text-sm leading-snug flex items-center gap-1.5 ${
                                 isSelected ? 'text-white font-semibold' : mc.unreadCount > 0 ? 'text-gray-900 dark:text-white font-extrabold' : 'text-gray-900 dark:text-white font-semibold'
@@ -1229,6 +1235,10 @@ export default function Messages() {
                     .map((mc: any) => {
                       const isSelected = selectedMeetupChat === mc.id;
                       const eventDisplayName = (mc.chatroomName || 'Event Chat').replace(/ - Group Chat$/i, '');
+                      // Avatar: event photo (with focal) → host avatar → Calendar icon
+                      const eventPhoto = mc.eventImageUrl || null;
+                      const eventHostAvatar = mc.hostAvatar ? (getProfileImageUrl({ profileImage: mc.hostAvatar }) || null) : null;
+                      const eventAvatarSrc = eventPhoto || eventHostAvatar;
                       return (
                         <div
                           key={`mc-${mc.id}`}
@@ -1254,11 +1264,19 @@ export default function Messages() {
                           }}
                         >
                           <div className="flex items-center gap-3">
-                            <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
-                              isSelected ? 'bg-white/20' : 'bg-blue-100 dark:bg-blue-900/40'
-                            }`}>
-                              <Calendar className={`w-5 h-5 ${isSelected ? 'text-white' : 'text-blue-600 dark:text-blue-400'}`} />
-                            </div>
+                            <Avatar className="w-10 h-10 shrink-0">
+                              {eventAvatarSrc && (
+                                <AvatarImage
+                                  src={eventAvatarSrc}
+                                  alt={eventDisplayName}
+                                  className="object-cover"
+                                  style={eventPhoto ? { objectPosition: focalObjectPosition(mc.eventImageFocalX, mc.eventImageFocalY) } : undefined}
+                                />
+                              )}
+                              <AvatarFallback className={isSelected ? 'bg-white/20' : 'bg-blue-100 dark:bg-blue-900/40'}>
+                                <Calendar className={`w-5 h-5 ${isSelected ? 'text-white' : 'text-blue-600 dark:text-blue-400'}`} />
+                              </AvatarFallback>
+                            </Avatar>
                             <div className="flex-1 min-w-0 overflow-hidden">
                               <div className="flex items-center gap-1.5 min-w-0">
                                 <h3 className={`text-sm flex-1 min-w-0 truncate ${

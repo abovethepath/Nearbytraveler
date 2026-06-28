@@ -28015,11 +28015,52 @@ Questions? Just reply to this message. Welcome aboard!
       }
 
       const anSessionCache: Record<number, { expiresAt: Date; isAvailable: boolean } | null> = {};
+      const anUserMap: Record<number, number> = {}; // availableNowId → host userId
       const anIds = chatrooms.filter(c => c.availableNowId).map(c => c.availableNowId!);
       if (anIds.length > 0) {
-        const sessions = await db.select({ id: availableNow.id, expiresAt: availableNow.expiresAt, isAvailable: availableNow.isAvailable })
+        const sessions = await db.select({ id: availableNow.id, expiresAt: availableNow.expiresAt, isAvailable: availableNow.isAvailable, userId: availableNow.userId })
           .from(availableNow).where(inArray(availableNow.id, anIds));
-        for (const s of sessions) anSessionCache[s.id] = s;
+        for (const s of sessions) {
+          anSessionCache[s.id] = { expiresAt: s.expiresAt, isAvailable: s.isAvailable };
+          if (s.userId) anUserMap[s.id] = s.userId;
+        }
+      }
+
+      // ── Batch-fetch avatar/image data for event + quick-meet rows (type-targeted) ──
+      // Reuses the same batched approach as latestMessages/unread above — NO per-row queries.
+      const eventIds = Array.from(new Set(chatrooms.filter(c => c.eventId).map(c => c.eventId!)));
+      const meetupIds = Array.from(new Set(chatrooms.filter(c => c.meetupId).map(c => c.meetupId!)));
+
+      const eventMap: Record<number, { imageUrl: string | null; imageFocalX: number | null; imageFocalY: number | null; organizerId: number | null }> = {};
+      if (eventIds.length > 0) {
+        const evRows = await db.select({
+          id: events.id,
+          imageUrl: events.imageUrl,
+          imageFocalX: events.imageFocalX,
+          imageFocalY: events.imageFocalY,
+          organizerId: events.organizerId,
+        }).from(events).where(inArray(events.id, eventIds));
+        for (const e of evRows) eventMap[e.id] = e;
+      }
+
+      const meetupOrganizerMap: Record<number, number> = {}; // meetupId → host userId
+      if (meetupIds.length > 0) {
+        const mRows = await db.select({ id: quickMeetups.id, organizerId: quickMeetups.organizerId })
+          .from(quickMeetups).where(inArray(quickMeetups.id, meetupIds));
+        for (const m of mRows) meetupOrganizerMap[m.id] = m.organizerId;
+      }
+
+      // Collect every host user id across the three types, then batch-fetch users ONCE.
+      const hostUserIds = new Set<number>();
+      for (const e of Object.values(eventMap)) if (e.organizerId) hostUserIds.add(e.organizerId);
+      for (const oid of Object.values(meetupOrganizerMap)) if (oid) hostUserIds.add(oid);
+      for (const uid2 of Object.values(anUserMap)) if (uid2) hostUserIds.add(uid2);
+
+      const userMap: Record<number, { profileImage: string | null; name: string | null; username: string | null }> = {};
+      if (hostUserIds.size > 0) {
+        const uRows = await db.select({ id: users.id, profileImage: users.profileImage, name: users.name, username: users.username })
+          .from(users).where(inArray(users.id, Array.from(hostUserIds)));
+        for (const u of uRows) userMap[u.id] = u;
       }
 
       const result: any[] = [];
@@ -28059,6 +28100,35 @@ Questions? Just reply to this message. Welcome aboard!
           }
         }
         const latest = latestMessages[c.id];
+
+        // Type-targeted avatar/image enrichment. Precedence mirrors the chatType
+        // ternary below. group_dm and plain DM rows get NOTHING — only event rows
+        // get event image fields, only quick-meet/available-now rows get hostAvatar.
+        let eventImageUrl: string | null = null;
+        let eventImageFocalX: number | null = null;
+        let eventImageFocalY: number | null = null;
+        let hostAvatar: string | null = null;
+        let hostName: string | null = null;
+        if (c.groupType !== 'group_dm') {
+          if (c.availableNowId) {
+            const host = userMap[anUserMap[c.availableNowId]!];
+            hostAvatar = host?.profileImage ?? null;
+            hostName = host?.name ?? host?.username ?? null;
+          } else if (c.meetupId) {
+            const host = userMap[meetupOrganizerMap[c.meetupId]!];
+            hostAvatar = host?.profileImage ?? null;
+            hostName = host?.name ?? host?.username ?? null;
+          } else if (c.eventId) {
+            const ev = eventMap[c.eventId];
+            eventImageUrl = ev?.imageUrl ?? null;
+            eventImageFocalX = ev?.imageFocalX ?? null;
+            eventImageFocalY = ev?.imageFocalY ?? null;
+            const host = ev?.organizerId ? userMap[ev.organizerId] : undefined;
+            hostAvatar = host?.profileImage ?? null;
+            hostName = host?.name ?? host?.username ?? null;
+          }
+        }
+
         result.push({
           ...c,
           isExpired: lifecycleState === "readonly" || lifecycleState === "grace",
@@ -28070,6 +28140,12 @@ Questions? Just reply to this message. Welcome aboard!
           lastMessageTime: latest?.sentAt || c.createdAt,
           lastMessageType: latest?.messageType || null,
           unreadCount: unreadByRoom[c.id] ?? 0,
+          // Avatar/image enrichment (null unless applicable for this row's type)
+          eventImageUrl,
+          eventImageFocalX,
+          eventImageFocalY,
+          hostAvatar,
+          hostName,
         });
       }
 
