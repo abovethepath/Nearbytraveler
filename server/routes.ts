@@ -905,6 +905,155 @@ function clearHasSessionCookie(res: Response) {
   res.clearCookie("nt.has_session", { path: "/", sameSite: "lax", secure: true });
 }
 
+// Scrape a public Meetup event page into our event-field shape. Shared by both
+// GET /api/scrape-meetup (legacy direct endpoint) and POST /api/events/import-url
+// (the unified import box). Uses JSON-LD structured data first (most reliable),
+// with DOM/text fallbacks. NOTE: Meetup blocks requests without a browser
+// User-Agent, so one is always sent.
+async function scrapeMeetup(url: string): Promise<any> {
+  const response = await fetch(url, {
+    headers: {
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+    }
+  });
+  if (!response.ok) {
+    throw new Error(`Failed to fetch Meetup page: ${response.status}`);
+  }
+
+  const html = await response.text();
+  const $ = cheerio.load(html);
+  const eventData: any = {};
+
+  // Title
+  eventData.title = $('h1[data-event-label="event-title"]').first().text().trim() ||
+                    $('h1').first().text().trim() ||
+                    $('meta[property="og:title"]').attr('content') || '';
+
+  // Description
+  eventData.description = $('div[data-event-label="event-description"]').first().text().trim() ||
+                          $('meta[property="og:description"]').attr('content') || '';
+
+  // Venue name
+  eventData.venueName = $('span[data-element-name="address-name"]').first().text().trim() ||
+                        $('div[data-testid="location-info"] span').first().text().trim() || '';
+
+  // Structured data (JSON-LD) — most reliable for date/time, location, organizer, image
+  $('script[type="application/ld+json"]').each((_, el) => {
+    try {
+      const jsonData = JSON.parse($(el).html() || '{}');
+      // Meetup uses Event subtypes (SocialEvent, FoodEvent, MusicEvent, …)
+      const eventType = jsonData['@type'];
+      if (!eventType || (!String(eventType).includes('Event') && eventType !== 'Event')) return;
+
+      // START date/time — preserve the event's local date/time from the ISO string
+      if (jsonData.startDate) {
+        const isoString: string = jsonData.startDate;
+        const tIndex = isoString.indexOf('T');
+        if (tIndex !== -1) {
+          eventData.date = isoString.substring(0, tIndex);
+          const timeMatch = isoString.substring(tIndex + 1).match(/^(\d{2}):(\d{2})/);
+          if (timeMatch) eventData.startTime = `${timeMatch[1]}:${timeMatch[2]}`;
+        } else {
+          eventData.date = isoString;
+        }
+      }
+
+      // END date/time
+      if (jsonData.endDate) {
+        const isoString: string = jsonData.endDate;
+        const tIndex = isoString.indexOf('T');
+        if (tIndex !== -1) {
+          eventData.endDate = isoString.substring(0, tIndex);
+          const timeMatch = isoString.substring(tIndex + 1).match(/^(\d{2}):(\d{2})/);
+          if (timeMatch) eventData.endTime = `${timeMatch[1]}:${timeMatch[2]}`;
+        } else {
+          eventData.endDate = isoString;
+        }
+      }
+
+      // Location (venue name + address)
+      if (jsonData.location) {
+        if (jsonData.location.name) eventData.venueName = jsonData.location.name;
+        const addr = jsonData.location.address;
+        if (addr) {
+          if (addr.streetAddress) eventData.street = addr.streetAddress;
+          if (addr.addressLocality) eventData.city = addr.addressLocality;
+          if (addr.addressRegion) eventData.state = addr.addressRegion;
+          if (addr.postalCode) eventData.zipcode = addr.postalCode;
+          if (addr.addressCountry) eventData.country = addr.addressCountry;
+        }
+      }
+
+      // Organizer (group/host name)
+      if (!eventData.organizer) {
+        const org = jsonData.organizer;
+        eventData.organizer = (typeof org === 'string' ? org : org?.name) || jsonData.author?.name || '';
+      }
+
+      // Cover image
+      if (!eventData.imageUrl && jsonData.image) {
+        eventData.imageUrl = Array.isArray(jsonData.image) ? jsonData.image[0] : jsonData.image;
+      }
+    } catch {
+      // Skip invalid JSON-LD blocks
+    }
+  });
+
+  // Cover image fallback (Meetup always sets og:image)
+  if (!eventData.imageUrl) {
+    eventData.imageUrl = $('meta[property="og:image"]').attr('content') || '';
+  }
+
+  // Address text fallback when structured data didn't provide it
+  if (!eventData.street || !eventData.city) {
+    const addressParts = $('div[data-testid="location-info"]').text().trim();
+    if (addressParts) {
+      const addressLines = addressParts.split('\n').map(line => line.trim()).filter(line => line);
+      if (addressLines.length > 0 && !eventData.street) eventData.street = addressLines[0];
+      if (addressLines.length > 1 && !eventData.city) {
+        const parts = addressLines[1].split(',').map(p => p.trim());
+        if (parts.length >= 2) {
+          eventData.city = parts[0];
+          const stateZipParts = parts[1].split(' ').filter(p => p.trim());
+          if (stateZipParts.length > 0) eventData.state = stateZipParts[0];
+          if (stateZipParts.length > 1) eventData.zipcode = stateZipParts[stateZipParts.length - 1];
+        } else if (parts.length === 1) {
+          const cityStateParts = parts[0].split(' ').filter(p => p.trim());
+          if (cityStateParts.length >= 2) {
+            eventData.state = cityStateParts[cityStateParts.length - 1];
+            eventData.city = cityStateParts.slice(0, -1).join(' ');
+          }
+        }
+      }
+    }
+  }
+
+  // Smart country detection — only default to US when we have a valid US state code
+  if (!eventData.country) {
+    const US_STATES = ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY','DC'];
+    if (eventData.state && US_STATES.includes(String(eventData.state).toUpperCase())) {
+      eventData.country = 'United States';
+    } else {
+      const cityLower = (eventData.city || '').toLowerCase();
+      const CITY_COUNTRY_MAP: Record<string, string> = {
+        'berlin': 'Germany', 'london': 'United Kingdom', 'paris': 'France', 'tokyo': 'Japan',
+        'toronto': 'Canada', 'sydney': 'Australia', 'melbourne': 'Australia', 'barcelona': 'Spain',
+        'madrid': 'Spain', 'rome': 'Italy', 'milan': 'Italy', 'amsterdam': 'Netherlands',
+        'brussels': 'Belgium', 'zurich': 'Switzerland', 'geneva': 'Switzerland', 'vienna': 'Austria',
+        'prague': 'Czech Republic', 'dublin': 'Ireland', 'vancouver': 'Canada', 'montreal': 'Canada',
+        'singapore': 'Singapore', 'hong kong': 'Hong Kong', 'mumbai': 'India', 'bangalore': 'India',
+        'delhi': 'India', 'mexico city': 'Mexico', 'são paulo': 'Brazil', 'rio de janeiro': 'Brazil',
+        'buenos aires': 'Argentina'
+      };
+      eventData.country = CITY_COUNTRY_MAP[cityLower] || '';
+    }
+  }
+
+  eventData.sourceUrl = url;
+  eventData.source = 'Meetup';
+  return eventData;
+}
+
 export async function registerRoutes(app: Express, httpServer?: Server): Promise<Server> {
   if (process.env.NODE_ENV === 'development') console.log("Starting routes registration...");
 
@@ -1967,268 +2116,8 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
 
       if (process.env.NODE_ENV === 'development') console.log(`🔍 MEETUP: Scraping event from ${url}`);
 
-      // Import cheerio for HTML parsing
-      const cheerio = await import('cheerio');
-
-      // Fetch the Meetup event page
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`Failed to fetch Meetup page: ${response.status}`);
-      }
-
-      const html = await response.text();
-      const $ = cheerio.load(html);
-
-      // Extract event data from the HTML
-      const eventData: any = {};
-
-      // Try to find event title - multiple possible selectors
-      eventData.title = $('h1[data-event-label="event-title"]').first().text().trim() ||
-                       $('h1').first().text().trim() ||
-                       $('meta[property="og:title"]').attr('content') ||
-                       '';
-
-      // Try to find description
-      eventData.description = $('div[data-event-label="event-description"]').first().text().trim() ||
-                             $('meta[property="og:description"]').attr('content') ||
-                             '';
-
-      // Try to find venue name
-      eventData.venueName = $('span[data-element-name="address-name"]').first().text().trim() ||
-                           $('div[data-testid="location-info"] span').first().text().trim() ||
-                           '';
-
-      // Try to find date and time - look for ISO date in structured data FIRST (most reliable)
-      const scriptTags = $('script[type="application/ld+json"]');
-      let foundStructuredData = false;
-      let foundEventData = false;
-      
-      scriptTags.each((_, el) => {
-        try {
-          const jsonText = $(el).html() || '{}';
-          const jsonData = JSON.parse(jsonText);
-          
-          // Skip if not an Event type (Meetup uses FoodEvent, SocialEvent, MusicEvent, etc.)
-          // All these are subtypes of Event in schema.org
-          const eventType = jsonData['@type'];
-          if (!eventType || (!eventType.includes('Event') && eventType !== 'Event')) {
-            return; // Continue to next script tag
-          }
-          
-          foundEventData = true;
-          foundStructuredData = true;
-          
-          if (process.env.NODE_ENV === 'development') {
-            console.log(`📊 MEETUP: Found ${eventType} JSON-LD data`);
-          }
-          
-          // Parse START date and time from ISO format - preserve local timezone!
-          if (jsonData.startDate) {
-            // Parse the ISO string directly to preserve the event's local date/time
-            // Handles: "2025-05-10T19:00:00-07:00", "2025-05-10T19:00:00Z", "2025-05-10T19:00:00.123+02:00"
-            const isoString = jsonData.startDate;
-            
-            // Extract date part (YYYY-MM-DD) - everything before 'T' or the whole string if no 'T'
-            const tIndex = isoString.indexOf('T');
-            if (tIndex !== -1) {
-              eventData.date = isoString.substring(0, tIndex);
-              
-              // Extract time part (HH:MM) from after 'T'
-              // Need to handle: "19:00:00", "19:00:00.123", "19:00:00Z", "19:00:00+02:00"
-              const afterT = isoString.substring(tIndex + 1);
-              // Match HH:MM pattern at the start
-              const timeMatch = afterT.match(/^(\d{2}):(\d{2})/);
-              if (timeMatch) {
-                eventData.startTime = `${timeMatch[1]}:${timeMatch[2]}`;
-              } else if (process.env.NODE_ENV === 'development') {
-                console.log(`⚠️ MEETUP: Could not parse start time from: ${afterT}`);
-              }
-            } else {
-              // Date-only format (no time)
-              eventData.date = isoString;
-              if (process.env.NODE_ENV === 'development') {
-                console.log(`⚠️ MEETUP: Date-only format (no time): ${isoString}`);
-              }
-            }
-            
-            if (process.env.NODE_ENV === 'development') {
-              console.log(`📅 MEETUP: Parsed start date=${eventData.date}, time=${eventData.startTime || '(not set)'} from ${isoString}`);
-            }
-          }
-          
-          // Parse END date and time from ISO format - preserve local timezone!
-          if (jsonData.endDate) {
-            const isoString = jsonData.endDate;
-            
-            // Extract date part (YYYY-MM-DD)
-            const tIndex = isoString.indexOf('T');
-            if (tIndex !== -1) {
-              eventData.endDate = isoString.substring(0, tIndex);
-              
-              // Extract time part (HH:MM) from after 'T'
-              const afterT = isoString.substring(tIndex + 1);
-              const timeMatch = afterT.match(/^(\d{2}):(\d{2})/);
-              if (timeMatch) {
-                eventData.endTime = `${timeMatch[1]}:${timeMatch[2]}`;
-              } else if (process.env.NODE_ENV === 'development') {
-                console.log(`⚠️ MEETUP: Could not parse end time from: ${afterT}`);
-              }
-            } else {
-              // Date-only format (no time)
-              eventData.endDate = isoString;
-            }
-            
-            if (process.env.NODE_ENV === 'development') {
-              console.log(`📅 MEETUP: Parsed end date=${eventData.endDate}, time=${eventData.endTime || '(not set)'} from ${isoString}`);
-            }
-          }
-          
-          // Get location data from structured data (most reliable)
-          if (jsonData.location) {
-            if (jsonData.location.name) {
-              eventData.venueName = jsonData.location.name;
-            }
-            if (jsonData.location.address) {
-              const addr = jsonData.location.address;
-              if (addr.streetAddress) eventData.street = addr.streetAddress;
-              if (addr.addressLocality) eventData.city = addr.addressLocality;
-              if (addr.addressRegion) eventData.state = addr.addressRegion;
-              if (addr.postalCode) eventData.zipcode = addr.postalCode;
-              if (addr.addressCountry) eventData.country = addr.addressCountry;
-              
-              if (process.env.NODE_ENV === 'development') {
-                console.log(`📍 MEETUP: Found structured address:`, {
-                  street: addr.streetAddress,
-                  city: addr.addressLocality,
-                  state: addr.addressRegion,
-                  zip: addr.postalCode,
-                  country: addr.addressCountry
-                });
-              }
-            }
-          }
-        } catch (e) {
-          // Skip invalid JSON
-          if (process.env.NODE_ENV === 'development') {
-            console.log(`⚠️ MEETUP: Error parsing JSON-LD:`, e);
-          }
-        }
-      });
-
-      // Fallback: Try to parse address from visible text if structured data didn't provide it
-      if (!eventData.street || !eventData.city) {
-        const addressParts = $('div[data-testid="location-info"]').text().trim();
-        if (addressParts) {
-          const addressLines = addressParts.split('\n').map(line => line.trim()).filter(line => line);
-          if (process.env.NODE_ENV === 'development') {
-            console.log(`📍 MEETUP: Found address text lines:`, addressLines);
-          }
-          
-          if (addressLines.length > 0 && !eventData.street) {
-            // First line is usually street address
-            eventData.street = addressLines[0];
-          }
-          
-          if (addressLines.length > 1 && !eventData.city) {
-            // Second line often contains "City, State Zip" or "City, State"
-            const cityStateZip = addressLines[1];
-            const parts = cityStateZip.split(',').map(p => p.trim());
-            
-            if (parts.length >= 2) {
-              eventData.city = parts[0];
-              // Try to parse "State Zip" or just "State"
-              const stateZipParts = parts[1].split(' ').filter(p => p.trim());
-              if (stateZipParts.length > 0) {
-                eventData.state = stateZipParts[0];
-              }
-              if (stateZipParts.length > 1) {
-                // Last part is likely zip code
-                eventData.zipcode = stateZipParts[stateZipParts.length - 1];
-              }
-            } else if (parts.length === 1) {
-              // Sometimes it's just "City State" without comma
-              const cityStateParts = parts[0].split(' ').filter(p => p.trim());
-              if (cityStateParts.length >= 2) {
-                // Last item is probably state
-                eventData.state = cityStateParts[cityStateParts.length - 1];
-                // Everything before is city
-                eventData.city = cityStateParts.slice(0, -1).join(' ');
-              }
-            }
-          }
-        }
-      }
-
-      // Smart country detection - only default to US if we have a US state code
-      if (!eventData.country) {
-        // List of US state codes/abbreviations
-        const US_STATES = ['AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA', 
-                          'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD', 
-                          'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 
-                          'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 
-                          'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY', 'DC'];
-        
-        // Only default to United States if we have a valid US state
-        if (eventData.state && US_STATES.includes(eventData.state.toUpperCase())) {
-          eventData.country = 'United States';
-        } else {
-          // Try to infer country from city name for common international cities
-          const cityLower = (eventData.city || '').toLowerCase();
-          const CITY_COUNTRY_MAP: Record<string, string> = {
-            'berlin': 'Germany',
-            'london': 'United Kingdom',
-            'paris': 'France',
-            'tokyo': 'Japan',
-            'toronto': 'Canada',
-            'sydney': 'Australia',
-            'melbourne': 'Australia',
-            'barcelona': 'Spain',
-            'madrid': 'Spain',
-            'rome': 'Italy',
-            'milan': 'Italy',
-            'amsterdam': 'Netherlands',
-            'brussels': 'Belgium',
-            'zurich': 'Switzerland',
-            'geneva': 'Switzerland',
-            'vienna': 'Austria',
-            'prague': 'Czech Republic',
-            'dublin': 'Ireland',
-            'vancouver': 'Canada',
-            'montreal': 'Canada',
-            'singapore': 'Singapore',
-            'hong kong': 'Hong Kong',
-            'mumbai': 'India',
-            'bangalore': 'India',
-            'delhi': 'India',
-            'mexico city': 'Mexico',
-            'são paulo': 'Brazil',
-            'rio de janeiro': 'Brazil',
-            'buenos aires': 'Argentina'
-          };
-          
-          if (cityLower && CITY_COUNTRY_MAP[cityLower]) {
-            eventData.country = CITY_COUNTRY_MAP[cityLower];
-          } else {
-            // Last resort: leave it blank and let the user fill it in
-            eventData.country = '';
-          }
-        }
-      }
-
-      if (process.env.NODE_ENV === 'development') {
-        console.log(`✅ MEETUP: Final extracted event data:`);
-        console.log(`   Title: ${eventData.title || '(not found)'}`);
-        console.log(`   Description: ${eventData.description ? eventData.description.substring(0, 100) + '...' : '(not found)'}`);
-        console.log(`   Venue: ${eventData.venueName || '(not found)'}`);
-        console.log(`   Street: ${eventData.street || '(not found)'}`);
-        console.log(`   City: ${eventData.city || '(not found)'}`);
-        console.log(`   State: ${eventData.state || '(not found)'}`);
-        console.log(`   Zip: ${eventData.zipcode || '(not found)'}`);
-        console.log(`   Country: ${eventData.country || '(not found)'}`);
-        console.log(`   Date: ${eventData.date || '(not found)'}`);
-        console.log(`   Time: ${eventData.startTime || '(not found)'}`);
-      }
-
+      // Delegate to the shared parser (also used by /api/events/import-url)
+      const eventData = await scrapeMeetup(url);
       return res.json(eventData);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') {
@@ -16233,10 +16122,23 @@ Questions? Just reply to this message. Welcome aboard!
           });
         }
       }
-      // Can add more platforms here (Meetup, Eventbrite, etc.)
+      // Meetup: delegate to the shared scrapeMeetup() parser (JSON-LD + fallbacks)
+      else if (url.includes('meetup.com')) {
+        try {
+          eventData = await scrapeMeetup(url);
+        } catch (parseError: any) {
+          if (process.env.NODE_ENV === 'development') {
+            console.error('🔗 IMPORT: Meetup parse error:', parseError.message);
+          }
+          return res.status(422).json({
+            message: `Failed to parse Meetup event data: ${parseError.message}. Meetup may be blocking automated access or changed its page structure.`
+          });
+        }
+      }
+      // Can add more platforms here (Eventbrite, etc.)
       else {
-        return res.status(400).json({ 
-          message: "Unsupported URL. Currently supports Couchsurfing events." 
+        return res.status(400).json({
+          message: "Unsupported URL. Currently supports Couchsurfing and Meetup events."
         });
       }
 
