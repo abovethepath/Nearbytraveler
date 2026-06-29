@@ -1551,13 +1551,13 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
                           <option key={m} value={m}>{m}</option>
                         ))}
                       </select>
-                      <div className="flex rounded-md border border-gray-300 dark:border-gray-600 overflow-hidden">
+                      <div className="flex w-[104px] shrink-0 rounded-lg border border-gray-200 dark:border-gray-700 divide-x divide-gray-200 dark:divide-gray-700 overflow-hidden">
                         <button
                           type="button"
-                          className={`px-2 py-2 text-sm font-medium transition-colors ${
+                          className={`flex-1 py-1.5 text-xs font-semibold transition-colors ${
                             !watch("startTime") || parseInt(watch("startTime").split(':')[0]) < 12
                               ? 'bg-orange-500 text-white'
-                              : 'bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700'
+                              : 'bg-gray-100 dark:bg-gray-700/40 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'
                           }`}
                           onClick={() => {
                             const currentTime = watch("startTime");
@@ -1577,10 +1577,10 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
                         </button>
                         <button
                           type="button"
-                          className={`px-2 py-2 text-sm font-medium transition-colors ${
+                          className={`flex-1 py-1.5 text-xs font-semibold transition-colors ${
                             watch("startTime") && parseInt(watch("startTime").split(':')[0]) >= 12
                               ? 'bg-orange-500 text-white'
-                              : 'bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700'
+                              : 'bg-gray-100 dark:bg-gray-700/40 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'
                           }`}
                           onClick={() => {
                             const currentTime = watch("startTime");
@@ -1669,13 +1669,13 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
                               <option key={m} value={m}>{m}</option>
                             ))}
                           </select>
-                          <div className="flex rounded-md border border-gray-300 dark:border-gray-600 overflow-hidden">
+                          <div className="flex w-[104px] shrink-0 rounded-lg border border-gray-200 dark:border-gray-700 divide-x divide-gray-200 dark:divide-gray-700 overflow-hidden">
                             <button
                               type="button"
-                              className={`px-2 py-2 text-sm font-medium transition-colors ${
+                              className={`flex-1 py-1.5 text-xs font-semibold transition-colors ${
                                 !watch("endTime") || parseInt(watch("endTime")?.split(':')[0] || '0') < 12
                                   ? 'bg-orange-500 text-white'
-                                  : 'bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700'
+                                  : 'bg-gray-100 dark:bg-gray-700/40 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'
                               }`}
                               onClick={() => {
                                 const currentTime = watch("endTime");
@@ -1695,10 +1695,10 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
                             </button>
                             <button
                               type="button"
-                              className={`px-2 py-2 text-sm font-medium transition-colors ${
+                              className={`flex-1 py-1.5 text-xs font-semibold transition-colors ${
                                 watch("endTime") && parseInt(watch("endTime")?.split(':')[0] || '0') >= 12
                                   ? 'bg-orange-500 text-white'
-                                  : 'bg-white dark:bg-gray-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700'
+                                  : 'bg-gray-100 dark:bg-gray-700/40 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'
                               }`}
                               onClick={() => {
                                 const currentTime = watch("endTime");
