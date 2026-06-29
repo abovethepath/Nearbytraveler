@@ -24,14 +24,19 @@ interface PhotoFocalPickerProps {
 export function PhotoFocalPicker({ imageUrl, initialX, initialY, onSave, onClose }: PhotoFocalPickerProps) {
   const [fx, setFx] = useState<number>(initialX ?? 50);
   const [fy, setFy] = useState<number>(initialY ?? 50);
-  const imgWrapRef = useRef<HTMLDivElement>(null);
+  const imgRef = useRef<HTMLImageElement>(null);
   const dragging = useRef(false);
 
-  const clamp = (v: number) => Math.min(100, Math.max(0, v));
+  // Clamp to 1..99 so edge values (0/100) — which Cloudinary reads as pixels and
+  // which look like the photo "snapping" to an edge — can never be produced.
+  const clamp = (v: number) => Math.min(99, Math.max(1, v));
 
-  // Map a pointer position to focal percentages relative to the image box.
+  // Map a pointer position to focal percentages relative to the PAINTED IMAGE.
+  // Measure the <img> itself (not a wrapper) so X and Y both map to the real
+  // rendered image box — otherwise a wrapper taller/shorter than the image skews
+  // the axis and the fraction overflows.
   const setFromPointer = (clientX: number, clientY: number) => {
-    const rect = imgWrapRef.current?.getBoundingClientRect();
+    const rect = imgRef.current?.getBoundingClientRect();
     if (!rect || rect.width === 0 || rect.height === 0) return;
     setFx(clamp(((clientX - rect.left) / rect.width) * 100));
     setFy(clamp(((clientY - rect.top) / rect.height) * 100));
@@ -61,7 +66,6 @@ export function PhotoFocalPicker({ imageUrl, initialX, initialY, onSave, onClose
         {/* Full image with a draggable focal marker — both axes always work */}
         <div className="flex justify-center">
           <div
-            ref={imgWrapRef}
             className="relative inline-block max-w-full select-none cursor-crosshair"
             style={{ touchAction: "none" }}
             onPointerDown={onPointerDown}
@@ -70,6 +74,7 @@ export function PhotoFocalPicker({ imageUrl, initialX, initialY, onSave, onClose
             onPointerCancel={endDrag}
           >
             <img
+              ref={imgRef}
               src={imageUrl}
               alt="Position preview"
               draggable={false}
