@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { isActiveEvent } from "@/lib/utils";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -88,7 +89,8 @@ const EventsGrid = ({
     staleTime: 5 * 60 * 1000,
   });
 
-  const allEvents = events.length > 0 ? events : fetchedEvents;
+  // Planning surface: hide cancelled/postponed (cards/detail show them with a banner)
+  const allEvents = (events.length > 0 ? events : fetchedEvents).filter(isActiveEvent);
   
   // SORT: User-created events ALWAYS appear first, then external events
   const sortedEvents = [...allEvents].sort((a, b) => {

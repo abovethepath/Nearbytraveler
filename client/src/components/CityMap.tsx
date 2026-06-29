@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { isActiveEvent } from '@/lib/utils';
 import { InteractiveMap } from './InteractiveMap';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { MapPin, Users, Calendar, Building2 } from 'lucide-react';
@@ -190,6 +191,7 @@ export function CityMap({ city, state, country }: CityMapProps) {
       })),
     // events
     ...(mapData?.events ?? [])
+      .filter(isActiveEvent) // hide cancelled/postponed pins (planning surface)
       .filter(e => Number.isFinite(Number(e.latitude)) && Number.isFinite(Number(e.longitude)))
       .map(event => ({
         id: event.id + 10000, // Offset to avoid ID conflicts

@@ -374,6 +374,36 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
     },
   });
 
+  // Cancel / Postpone / Reactivate — sets events.status via the organizer-gated endpoint
+  const setStatusMutation = useMutation({
+    mutationFn: async (status: 'active' | 'cancelled' | 'postponed') => {
+      const resolvedEventId = event?.id ?? parseInt(eventId);
+      if (!currentUser?.id || !resolvedEventId) throw new Error("Missing user or event ID");
+      const response = await fetch(`${getApiBaseUrl()}/api/events/${resolvedEventId}/status`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-user-id': currentUser.id.toString() },
+        credentials: 'include',
+        body: JSON.stringify({ status }),
+      });
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.message || 'Failed to update event status');
+      }
+      return response.json();
+    },
+    onSuccess: (_data, status) => {
+      // Refresh lists + this detail page so the banner updates immediately
+      queryClient.invalidateQueries({ queryKey: ["/api/events"], refetchType: 'all' });
+      queryClient.invalidateQueries({ queryKey: [`/api/events/${eventId}`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/events/${eventId}/participants`] });
+      const verb: Record<string, string> = { active: 'reactivated', cancelled: 'cancelled', postponed: 'postponed' };
+      toast({ title: "Event updated", description: `Your event has been ${verb[status] ?? 'updated'}.` });
+    },
+    onError: (error: any) => {
+      toast({ title: "Error", description: error.message || "Failed to update event status", variant: "destructive" });
+    },
+  });
+
   // Invite-to-go mutation — host sends notification to an interested user
   const inviteToGoMutation = useMutation({
     mutationFn: async (interestedUserId: number) => {
@@ -407,6 +437,14 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
   const isPrimaryOrganizer = viewAsGuest ? false : event?.organizerId === currentUser?.id;
   const isCoOrganizer = viewAsGuest ? false : participantRole === 'co-organizer';
   const isOrganizer = isPrimaryOrganizer || isCoOrganizer;
+  // Cancel/Postpone lifecycle status (distinct from isActive visibility)
+  const eventStatus = (event as any)?.status as string | undefined;
+  const statusBanner =
+    eventStatus === 'cancelled'
+      ? { label: 'CANCELLED', cls: 'bg-red-600' }
+      : eventStatus === 'postponed'
+        ? { label: 'POSTPONED', cls: 'bg-amber-500' }
+        : null;
   const organizerUsername = event?.organizer ?? undefined;
   
   // Separate participants by status
@@ -612,6 +650,23 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
         </div>
         
       </div>
+
+      {/* Cancel/Postpone banner */}
+      {statusBanner && (
+        <div className={`mb-4 sm:mb-6 w-full rounded-xl py-3 text-center text-white text-lg font-bold tracking-widest shadow-lg ${statusBanner.cls}`}>
+          {statusBanner.label}
+          {eventStatus === 'postponed' && (
+            <span className="block text-xs font-normal tracking-normal opacity-90 mt-0.5">
+              This event has been postponed by the organizer.
+            </span>
+          )}
+          {eventStatus === 'cancelled' && (
+            <span className="block text-xs font-normal tracking-normal opacity-90 mt-0.5">
+              This event has been cancelled by the organizer.
+            </span>
+          )}
+        </div>
+      )}
 
       {/* Event Image */}
       {event.imageUrl ? (
@@ -825,6 +880,49 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
                 >
                   Edit Event
                 </Button>
+
+                {/* Cancel / Postpone lifecycle controls */}
+                {eventStatus !== 'cancelled' && eventStatus !== 'postponed' ? (
+                  <>
+                    <Button
+                      variant="outline"
+                      className="w-full border-red-300 text-red-600 hover:bg-red-50 dark:border-red-600 dark:text-red-400 dark:hover:bg-red-900/20"
+                      disabled={setStatusMutation.isPending}
+                      onClick={() => {
+                        if (window.confirm("Cancel this event? Attendees will see a CANCELLED banner. You can reactivate it later.")) {
+                          setStatusMutation.mutate('cancelled');
+                        }
+                      }}
+                      data-testid="host-button-cancel"
+                    >
+                      Cancel Event
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="w-full border-amber-300 text-amber-700 hover:bg-amber-50 dark:border-amber-600 dark:text-amber-400 dark:hover:bg-amber-900/20"
+                      disabled={setStatusMutation.isPending}
+                      onClick={() => {
+                        if (window.confirm("Postpone this event? Attendees will see a POSTPONED banner. You can reactivate it later.")) {
+                          setStatusMutation.mutate('postponed');
+                        }
+                      }}
+                      data-testid="host-button-postpone"
+                    >
+                      Postpone Event
+                    </Button>
+                  </>
+                ) : (
+                  <Button
+                    variant="outline"
+                    className="w-full border-green-300 text-green-700 hover:bg-green-50 dark:border-green-600 dark:text-green-400 dark:hover:bg-green-900/20"
+                    disabled={setStatusMutation.isPending}
+                    onClick={() => setStatusMutation.mutate('active')}
+                    data-testid="host-button-reactivate"
+                  >
+                    {setStatusMutation.isPending ? "Updating..." : "Reactivate Event"}
+                  </Button>
+                )}
+
                 <Button
                   variant="outline"
                   className="w-full border-red-300 text-red-600 hover:bg-red-50 dark:border-red-600 dark:text-red-400 dark:hover:bg-red-900/20"

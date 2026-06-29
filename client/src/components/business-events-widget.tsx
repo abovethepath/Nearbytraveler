@@ -78,7 +78,9 @@ export default function BusinessEventsWidget({ userId }: BusinessEventsWidgetPro
           </Button>
         </div>
 
-      {/* Events List */}
+      {/* Events List — organizer's own management list: show ALL their events,
+          including cancelled/postponed (with a status badge), so they can navigate
+          to reactivate them. This is intentionally NOT filtered like attendee surfaces. */}
       {businessEvents.length > 0 ? (
         <div className="space-y-3">
           {businessEvents.map((event: Event) => (
@@ -86,6 +88,11 @@ export default function BusinessEventsWidget({ userId }: BusinessEventsWidgetPro
               <CardContent className="p-4 min-w-0">
                 <div className="flex justify-between items-start mb-3 min-w-0">
                   <div className="flex-1 min-w-0">
+                    {((event as any).status === 'cancelled' || (event as any).status === 'postponed') && (
+                      <span className={`inline-block mb-1 px-2 py-0.5 rounded text-[10px] font-bold tracking-wide text-white ${(event as any).status === 'cancelled' ? 'bg-red-600' : 'bg-amber-500'}`}>
+                        {(event as any).status === 'cancelled' ? 'CANCELLED' : 'POSTPONED'}
+                      </span>
+                    )}
                     <h4 className="font-semibold text-black dark:text-white mb-1 line-clamp-2 break-words">{event.title}</h4>
                     <p className="text-sm text-gray-700 dark:text-gray-300 mb-2 line-clamp-2">
                       {event.description}

@@ -15712,6 +15712,62 @@ Questions? Just reply to this message. Welcome aboard!
     }
   });
 
+  // CRITICAL: Set event lifecycle status (organizer/co-organizer only) — Cancel/Postpone/Reactivate
+  app.post("/api/events/:id/status", async (req, res) => {
+    try {
+      const eventId = parseInt(req.params.id || '0');
+      const userId = req.session?.user?.id || req.headers['x-user-id'];
+      if (!userId) return res.status(401).json({ message: "Authentication required" });
+      const uid = Number(userId);
+
+      const status = (req.body as any)?.status;
+      const ALLOWED = ['active', 'cancelled', 'postponed'];
+      if (!ALLOWED.includes(status)) {
+        return res.status(400).json({ message: "Invalid status. Must be one of: active, cancelled, postponed" });
+      }
+
+      const event = await storage.getEvent(eventId);
+      if (!event) return res.status(404).json({ message: "Event not found" });
+
+      // SERVER-SIDE authorization — mirror the delete route (organizer / sharer / admin),
+      // plus co-organizers (event_participants.role='co-organizer'), matching the client's
+      // isOrganizer = isPrimaryOrganizer || isCoOrganizer. Never trust client gating.
+      let isOwner = event.organizerId === uid || event.sharedBy === uid || uid === 2;
+      if (!isOwner) {
+        const coOrg = await db.select().from(eventParticipants)
+          .where(and(
+            eq(eventParticipants.eventId, eventId),
+            eq(eventParticipants.userId, uid),
+            eq(eventParticipants.role, 'co-organizer')
+          )).limit(1);
+        isOwner = coOrg.length > 0;
+      }
+      if (!isOwner) {
+        console.log(`🚫 EVENT STATUS: Denied — user ${uid}, organizer=${event.organizerId}, sharedBy=${event.sharedBy}`);
+        return res.status(403).json({ message: "Only the event organizer can change this event's status" });
+      }
+
+      const prevStatus = (event as any).status || 'active';
+      const updatedEvent = await storage.updateEvent(eventId, { status } as any);
+      if (!updatedEvent) return res.status(404).json({ message: "Event not found" });
+
+      // Bust the events cache so lists + detail reflect the new status immediately (same as delete)
+      cache.deletePattern('events:*').catch(() => {});
+      console.log(`✅ EVENT STATUS: Event ${eventId} ${prevStatus} → ${status} by user ${uid}`);
+
+      // TODO(Stage 3): notify joiners here (event_participants where status='going').
+      //   - Transition INTO 'cancelled'/'postponed' (prevStatus !== status): in-app
+      //     notification (storage.createNotification → OneSignal push fires free) + Brevo
+      //     email (respect userNotificationSettings.emailNotifications).
+      //   - Reactivate (status==='active' && prevStatus!=='active'): notify joiners too.
+      //   Locked: cancel + postpone + reactivate ALL notify; postpone is banner-only.
+      return res.json(updatedEvent);
+    } catch (error: any) {
+      console.error("❌ EVENT STATUS ERROR:", error?.message);
+      return res.status(500).json({ message: "Failed to update event status" });
+    }
+  });
+
   // CRITICAL: Leave event
   app.delete("/api/events/:id/leave", async (req, res) => {
     try {
@@ -18699,6 +18755,7 @@ Questions? Just reply to this message. Welcome aboard!
           eventDate: events.date,
           category: events.category,
           tags: events.tags,
+          status: events.status,
           attendeeCount: sql<number>`0`.as('attendeeCount')
         })
         .from(events)
@@ -18790,6 +18847,7 @@ Questions? Just reply to this message. Welcome aboard!
           location: event.location,
           startDate: event.eventDate,
           category: event.category || 'Event',
+          status: event.status,
           price: 0,
           freeEvent: true,
           attendeeCount: event.attendeeCount,
@@ -21708,6 +21766,7 @@ Questions? Just reply to this message. Welcome aboard!
           date: events.date,
           city: events.city,
           location: events.location,
+          status: events.status,
           latitude: events.latitude,
           longitude: events.longitude
         })

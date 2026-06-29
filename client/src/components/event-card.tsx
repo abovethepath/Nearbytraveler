@@ -268,6 +268,15 @@ export default function EventCard({ event, compact = false, featured = false }: 
     .filter(Boolean)
     .slice(0, 4);
 
+  // Cancel/Postpone lifecycle banner — only shown for non-active events
+  const eventStatus = (event as any).status as string | undefined;
+  const statusBanner =
+    eventStatus === 'cancelled'
+      ? { label: 'CANCELLED', cls: 'bg-red-600' }
+      : eventStatus === 'postponed'
+        ? { label: 'POSTPONED', cls: 'bg-amber-500' }
+        : null;
+
   if (compact) {
     return (
       <div
@@ -276,6 +285,11 @@ export default function EventCard({ event, compact = false, featured = false }: 
       >
         <div className="flex items-start justify-between">
           <div className="flex-1 min-w-0">
+            {statusBanner && (
+              <span className={`inline-block mb-1 px-2 py-0.5 rounded text-[10px] font-bold tracking-wide text-white ${statusBanner.cls}`}>
+                {statusBanner.label}
+              </span>
+            )}
             <h4 className="font-medium text-gray-900 dark:text-white mb-1 text-crisp text-base line-clamp-2 break-normal">
               {event.title}
             </h4>
@@ -336,6 +350,11 @@ export default function EventCard({ event, compact = false, featured = false }: 
     <>
       <article className="event-card rounded-2xl bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 shadow-xl hover:shadow-2xl overflow-hidden transition-all duration-300 cursor-pointer text-left flex flex-col h-full w-full max-w-full min-w-0 box-border"
                onClick={() => setLocation(`/events/${event.id}`)}>
+        {statusBanner && (
+          <div className={`w-full py-1.5 text-center text-white text-sm font-bold tracking-widest ${statusBanner.cls}`}>
+            {statusBanner.label}
+          </div>
+        )}
         {event.imageUrl && (
           <div className="relative overflow-hidden h-[180px] md:h-[200px] lg:h-[220px]">
             <img

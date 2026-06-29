@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { isActiveEvent } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -184,7 +185,8 @@ export default function NearbyTravelerCalendar({ initialCity }: NearbyTravelerCa
   });
 
   const calendarEvents = useMemo(
-    () => generateRecurringInstances(rawEvents, currentYear, currentMonth),
+    // Calendar is a planning surface: only show active events (hide cancelled/postponed)
+    () => generateRecurringInstances(rawEvents.filter(isActiveEvent), currentYear, currentMonth),
     [rawEvents, currentYear, currentMonth]
   );
 

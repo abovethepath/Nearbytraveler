@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { isActiveEvent } from "@/lib/utils";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -142,7 +143,7 @@ function EventsWidget({ userId }: EventsWidgetProps) {
   // Only show upcoming events (future dates only)
   const relevantEvents = allEvents.filter((event: any) => {
     const eventDate = new Date(event.date);
-    return eventDate >= today;
+    return eventDate >= today && isActiveEvent(event); // hide cancelled/postponed from this planning widget
   })
   // Handle recurring events - only show one instance per series
   .reduce((uniqueEvents: any[], event: any) => {

@@ -1,5 +1,6 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { isActiveEvent } from '@/lib/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -63,6 +64,9 @@ export function ContextualEventRecommendations({ userId, limit = 8 }: Contextual
     retry: false,
   });
 
+  // Planning surface: hide cancelled/postponed recommendations
+  const visibleRecommendations = (data?.recommendations ?? []).filter(isActiveEvent);
+
   const getScoreColor = (score: number) => {
     if (score >= 0.8) return 'text-green-600 bg-green-100 dark:text-green-400 dark:bg-green-900/30';
     if (score >= 0.6) return 'text-blue-600 bg-blue-100 dark:text-blue-400 dark:bg-blue-900/30';
@@ -121,7 +125,7 @@ export function ContextualEventRecommendations({ userId, limit = 8 }: Contextual
     );
   }
 
-  if (error || !data || data.recommendations.length === 0) {
+  if (error || !data || visibleRecommendations.length === 0) {
     return (
       <Card>
         <CardHeader>
@@ -165,7 +169,7 @@ export function ContextualEventRecommendations({ userId, limit = 8 }: Contextual
       <CardContent>
         {/* Grid layout matching business widget */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-          {data.recommendations.map((event, index) => (
+          {visibleRecommendations.map((event, index) => (
             <Card
               key={`${event.eventId}-${index}-${event.title.substring(0, 10)}`}
               className="hover:shadow-lg transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] cursor-pointer overflow-hidden bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 min-h-[400px] flex flex-col"
