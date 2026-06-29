@@ -15849,6 +15849,14 @@ Questions? Just reply to this message. Welcome aboard!
           // CS location source is identified.
           try {
             console.log('🔍 CS-DIAG location (JSON-LD):', JSON.stringify(jsonLdData?.location ?? null));
+            // Raw date/time as the page provides them (decides Case A offset vs Case B UTC):
+            console.log('🔍 CS-DIAG raw startDate:', JSON.stringify(jsonLdData?.startDate ?? null));
+            console.log('🔍 CS-DIAG raw endDate:', JSON.stringify(jsonLdData?.endDate ?? null));
+            // Visible local date/time text on the page (and any <time datetime> attr):
+            const timeEl = $('time').first();
+            console.log('🔍 CS-DIAG <time>:', JSON.stringify({ text: timeEl.text().trim(), datetime: timeEl.attr('datetime') || null }));
+            const dtMatch = $('body').text().match(/\w{3,},?\s+\w{3}\s+\d{1,2},?\s+\d{4}[^]{0,40}?\d{1,2}:\d{2}\s*[AP]M/i);
+            console.log('🔍 CS-DIAG DOM datetime text:', dtMatch ? dtMatch[0] : '(no visible datetime match)');
             const ldTypes: string[] = [];
             $('script[type="application/ld+json"]').each((_, el) => {
               try { ldTypes.push(JSON.parse($(el).html() || '{}')['@type'] || '(no type)'); } catch {}
@@ -16185,6 +16193,9 @@ Questions? Just reply to this message. Welcome aboard!
             }
           }
           
+          // CS-DIAG: final literal values we extracted (compare to the raw ISO above)
+          console.log('🔍 CS-DIAG extracted:', JSON.stringify({ startDate, startTime, endDate, endTime }));
+
           eventData = {
             title: title,
             organizer: organizer,
