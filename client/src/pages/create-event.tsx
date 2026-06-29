@@ -114,6 +114,7 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
   const [eventUrl, setEventUrl] = useState("");
   const [isImportingEvent, setIsImportingEvent] = useState(false);
   const [importedFromUrl, setImportedFromUrl] = useState(false);
+  const [importVerified, setImportVerified] = useState(false); // imported events must be verified before publishing
   const [isOriginalOrganizer, setIsOriginalOrganizer] = useState<boolean | null>(null);
   const [importedPlatform, setImportedPlatform] = useState("");
   const [externalOrganizerName, setExternalOrganizerName] = useState("");
@@ -593,6 +594,8 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
       reset();
       setImagePreview(null);
       setImageFocal(null);
+      setImportedFromUrl(false);
+      setImportVerified(false);
       setUseBusinessAddress(false);
       setSelectedCountry("");
       setSelectedState("");
@@ -630,7 +633,17 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
       });
       return;
     }
-    
+
+    // Imported events must be verified (date/time/location double-checked) before publishing
+    if (importedFromUrl && !importVerified) {
+      toast({
+        title: "Please verify the imported details",
+        description: "Confirm the date, time, and location are correct before publishing.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       // Get user data to set organizer ID using the proper auth system
@@ -1017,6 +1030,7 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
                           // Mark as imported and track platform AND organizer
                           const sourcePlatform = eventData.source || (eventUrl.includes('couchsurfing') ? 'Couchsurfing' : 'Meetup');
                           setImportedFromUrl(true);
+                          setImportVerified(false); // require fresh verification for each import
                           setImportedPlatform(sourcePlatform);
                           setExternalOrganizerName(eventData.organizer || ''); // Store external organizer name (e.g., "Dan Cullen")
                           setIsOriginalOrganizer(null); // Reset to require user confirmation
@@ -1271,7 +1285,14 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
               {/* Event Location - Use SmartLocationInput like signup forms */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label className="text-sm font-medium dark:text-white">Event Location *</Label>
+                  <Label className="text-sm font-medium dark:text-white flex items-center gap-2">
+                    Event Location *
+                    {importedFromUrl && (
+                      <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+                        Auto-imported — verify
+                      </span>
+                    )}
+                  </Label>
                   {currentUser?.hometownCity && (
                     <Button
                       type="button"
@@ -1463,10 +1484,15 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
               <Label className="flex items-center gap-2 text-base font-semibold">
                 <CalendarIcon className="w-5 h-5" />
                 Event Schedule
+                {importedFromUrl && (
+                  <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+                    Auto-imported — verify
+                  </span>
+                )}
               </Label>
-              
+
               {/* Start + End — start on row 1, end time wraps to row 2 */}
-              <div className="border rounded-lg p-4 space-y-3 bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
+              <div className={`border rounded-lg p-4 space-y-3 bg-gray-50 dark:bg-gray-700 dark:border-gray-600 ${importedFromUrl ? 'ring-2 ring-amber-300/60 dark:ring-amber-700/60' : ''}`}>
                 <div className="flex flex-wrap items-end gap-3">
                   <div className="space-y-2 shrink-0 min-w-[170px]">
                     <Label htmlFor="startDate" className="text-sm font-medium dark:text-white">
@@ -2357,11 +2383,33 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
               </div>
             )}
 
+            {/* Imported events: require the user to verify the auto-filled details before publishing */}
+            {importedFromUrl && (
+              <div className="rounded-lg border border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-950/20 p-4">
+                <label htmlFor="importVerified" className="flex items-start gap-3 cursor-pointer">
+                  <Checkbox
+                    id="importVerified"
+                    checked={importVerified}
+                    onCheckedChange={(c) => setImportVerified(c === true)}
+                    className="mt-0.5"
+                  />
+                  <span className="text-sm">
+                    <span className="font-semibold text-amber-800 dark:text-amber-200">
+                      I've confirmed the date, time, and location are correct
+                    </span>
+                    <span className="block text-xs text-amber-700/80 dark:text-amber-300/80 mt-0.5">
+                      Imported details (especially the address and time) can be off — please double-check them before publishing.
+                    </span>
+                  </span>
+                </label>
+              </div>
+            )}
+
             {/* Submit Button - use onClick so submission always runs (fixes WebView/touch where type="submit" can be ignored) */}
             <div className="pt-4">
               <Button
                 type="button"
-                disabled={isSubmitting || createEventMutation.isPending}
+                disabled={isSubmitting || createEventMutation.isPending || (importedFromUrl && !importVerified)}
                 className="cta-gradient w-full bg-gradient-to-r from-blue-500 to-gray-600 hover:from-blue-600 hover:to-gray-700 active:scale-95 font-semibold py-4 px-6 min-h-[52px] touch-manipulation text-lg text-white"
                 style={{
                   WebkitTapHighlightColor: 'rgba(59, 130, 246, 0.1)',
