@@ -830,7 +830,7 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
       <div className={isModal ? "" : "max-w-2xl mx-auto p-6"}>
         <Card className={isModal ? "border border-gray-200 dark:border-gray-700 shadow-none" : ""}>
           {!isModal && (
-            <div className="bg-gradient-to-br from-orange-500 via-pink-500 to-blue-600 rounded-t-xl px-6 py-8 text-white">
+            <div className="bg-gradient-to-br from-orange-500 via-pink-500 to-blue-600 rounded-t-xl px-6 py-8 text-white mb-6">
               <div className="flex items-center gap-3 mb-2">
                 <div className="p-2.5 bg-white dark:bg-gray-900/20 rounded-xl backdrop-blur-sm">
                   <CalendarIcon className="w-6 h-6 text-orange-500 dark:text-white" />
@@ -843,7 +843,7 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
             </div>
           )}
         
-        <CardContent className={isModal ? undefined : "pt-6"}>
+        <CardContent>
           <form
             onSubmit={(e) => {
               console.log('🎯 Form onSubmit event triggered');
