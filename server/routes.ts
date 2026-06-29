@@ -15693,6 +15693,8 @@ Questions? Just reply to this message. Welcome aboard!
       await db.execute(sql`DELETE FROM mood_entries WHERE event_id = ${eventId}`).catch(() => {});
       await db.execute(sql`DELETE FROM passport_stamps WHERE event_id = ${eventId}`).catch(() => {});
       await db.execute(sql`DELETE FROM user_event_interests WHERE event_id = ${eventId}`).catch(() => {});
+      await db.execute(sql`DELETE FROM share_rsvp_rewards WHERE event_id = ${eventId}`).catch(() => {});
+      await db.execute(sql`DELETE FROM event_companion_participants WHERE event_id = ${eventId}`).catch(() => {});
       await db.execute(sql`DELETE FROM notifications WHERE data::text LIKE ${'%"eventId":' + eventId + '%'}`).catch(() => {});
 
       // Step 3: Delete the event itself
