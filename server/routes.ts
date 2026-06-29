@@ -7944,6 +7944,7 @@ Questions? Just reply to this message. Welcome aboard!
           organizerId: events.organizerId,
           maxParticipants: events.maxParticipants,
           isActive: events.isActive,
+          status: events.status,
           isPublic: events.isPublic,
           tags: events.tags,
           eventType: events.eventType,

@@ -1763,6 +1763,7 @@ export class DatabaseStorage implements IStorage {
         organizerId: events.organizerId,
         maxParticipants: events.maxParticipants,
         isActive: events.isActive,
+        status: events.status,
         isPublic: events.isPublic,
         tags: events.tags,
         eventType: events.eventType,
@@ -1797,6 +1798,7 @@ export class DatabaseStorage implements IStorage {
       organizerId: row.organizerId,
       maxParticipants: row.maxParticipants,
       isActive: row.isActive,
+      status: row.status,
       isPublic: row.isPublic,
       tags: row.tags,
       eventType: row.eventType,
@@ -5194,6 +5196,7 @@ export class DatabaseStorage implements IStorage {
         longitude: events.longitude,
         organizerId: events.organizerId,
         isActive: events.isActive,
+        status: events.status,
         city: events.city,
         state: events.state,
         organizer: {

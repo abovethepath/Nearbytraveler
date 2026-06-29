@@ -510,6 +510,7 @@ export const events = pgTable("events", {
   organizerId: integer("organizer_id").notNull(),
   maxParticipants: integer("max_participants"), // null = unlimited
   isActive: boolean("is_active").default(true),
+  status: text("status").notNull().default("active"), // 'active' | 'cancelled' | 'postponed' (lifecycle, distinct from isActive visibility)
   isPublic: boolean("is_public").default(true), // Public or invite-only
   tags: text("tags").array(), // Event tags for filtering
   requirements: text("requirements"), // Any requirements to join
