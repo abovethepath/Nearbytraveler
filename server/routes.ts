@@ -15844,38 +15844,6 @@ Questions? Just reply to this message. Welcome aboard!
             }
           });
 
-          // ── TEMP DIAGNOSTIC: find where Couchsurfing exposes the event address ──
-          // Not dev-gated, so it appears in Render production logs. Remove once the
-          // CS location source is identified.
-          try {
-            console.log('🔍 CS-DIAG location (JSON-LD):', JSON.stringify(jsonLdData?.location ?? null));
-            // Raw date/time as the page provides them (decides Case A offset vs Case B UTC):
-            console.log('🔍 CS-DIAG raw startDate:', JSON.stringify(jsonLdData?.startDate ?? null));
-            console.log('🔍 CS-DIAG raw endDate:', JSON.stringify(jsonLdData?.endDate ?? null));
-            // Visible local date/time text on the page (and any <time datetime> attr):
-            const timeEl = $('time').first();
-            console.log('🔍 CS-DIAG <time>:', JSON.stringify({ text: timeEl.text().trim(), datetime: timeEl.attr('datetime') || null }));
-            const dtMatch = $('body').text().match(/\w{3,},?\s+\w{3}\s+\d{1,2},?\s+\d{4}[^]{0,40}?\d{1,2}:\d{2}\s*[AP]M/i);
-            console.log('🔍 CS-DIAG DOM datetime text:', dtMatch ? dtMatch[0] : '(no visible datetime match)');
-            const ldTypes: string[] = [];
-            $('script[type="application/ld+json"]').each((_, el) => {
-              try { ldTypes.push(JSON.parse($(el).html() || '{}')['@type'] || '(no type)'); } catch {}
-            });
-            console.log('🔍 CS-DIAG JSON-LD @types:', ldTypes.join(', ') || '(none)');
-            const nextData = $('script#__NEXT_DATA__').first().html() || $('#__NEXT_DATA__').first().html() || '';
-            if (nextData) {
-              console.log(`🔍 CS-DIAG __NEXT_DATA__ present (len ${nextData.length})`);
-              for (const key of ['addressLocality', 'addressRegion', 'streetAddress', '"address"', '"city"', '"state"', '"location"', 'latitude']) {
-                const idx = nextData.indexOf(key);
-                if (idx !== -1) console.log(`🔍 CS-DIAG NEXT "${key}" @${idx}: ${nextData.substring(idx, idx + 180)}`);
-              }
-            } else {
-              console.log('🔍 CS-DIAG no __NEXT_DATA__ blob found');
-            }
-          } catch (diagErr: any) {
-            console.log('🔍 CS-DIAG error:', diagErr?.message);
-          }
-
           // Extract title from JSON-LD or DOM
           let title = jsonLdData?.name || '';
           if (!title) {
@@ -16061,53 +16029,53 @@ Questions? Just reply to this message. Welcome aboard!
             if (startDate && startTime && endTime) return false; // Found everything
           });
           
-          // If DOM parsing didn't work, fall back to JSON-LD
-          if (!startDate && jsonLdData?.startDate) {
-            const start = new Date(jsonLdData.startDate);
-            startDate = start.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-            if (process.env.NODE_ENV === 'development') console.log('⏰ JSON-LD fallback startDate:', startDate);
+          // ── Couchsurfing date/time: convert the UTC instant to the venue's LOCAL time ──
+          // CS exposes start/end only as a UTC ISO ("…Z") in JSON-LD; the local time is NOT
+          // in the fetched HTML (it's JS-rendered). Derive the venue's IANA timezone from the
+          // JSON-LD geo coordinates and convert UTC → local (Intl handles DST), so we store
+          // the date/time the page actually shows. NEVER use new Date()/toLocale* on the raw
+          // value without a timezone — that renders in the server's zone (UTC) and shifts it.
+          const geo = jsonLdData?.location?.geo;
+          let eventTz: string | null = null;
+          if (geo && typeof geo.latitude === 'number' && typeof geo.longitude === 'number') {
+            try {
+              const tzMod: any = await import('tz-lookup');
+              const tzlookup = tzMod.default || tzMod;
+              eventTz = tzlookup(geo.latitude, geo.longitude);
+            } catch (tzErr: any) {
+              console.error('🔗 IMPORT: tz-lookup failed:', tzErr?.message);
+            }
           }
-          
-          // Preserve the event's LOCAL time by slicing HH:MM out of the ISO string
-          // (mirrors scrapeMeetup). Do NOT use new Date()/toLocaleTimeString, which
-          // re-renders in the server's timezone (UTC on Render) and shifts the time.
-          const isoLocalTime = (iso: string): string => {
-            const tIndex = iso?.indexOf('T') ?? -1;
-            if (tIndex === -1) return '';
-            const m = iso.substring(tIndex + 1).match(/^(\d{2}):(\d{2})/);
-            return m ? `${m[1]}:${m[2]}` : '';
+
+          // UTC ISO → { date: 'YYYY-MM-DD', time: 'HH:MM' } in the given IANA timezone.
+          const utcToLocalParts = (isoUtc: string, tz: string): { date: string; time: string } => {
+            const p: Record<string, string> = {};
+            for (const part of new Intl.DateTimeFormat('en-CA', {
+              timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit',
+              hour: '2-digit', minute: '2-digit', hour12: false,
+            }).formatToParts(new Date(isoUtc))) {
+              p[part.type] = part.value;
+            }
+            const hour = p.hour === '24' ? '00' : p.hour; // some runtimes emit "24" at midnight
+            return { date: `${p.year}-${p.month}-${p.day}`, time: `${hour}:${p.minute}` };
           };
 
-          if (!startTime && jsonLdData?.startDate) {
-            startTime = isoLocalTime(jsonLdData.startDate);
-            if (process.env.NODE_ENV === 'development') console.log('⏰ JSON-LD fallback startTime (local):', startTime);
+          if (eventTz && jsonLdData?.startDate && (!startDate || !startTime)) {
+            const local = utcToLocalParts(jsonLdData.startDate, eventTz);
+            if (!startDate) startDate = local.date;   // e.g. "2026-07-16"
+            if (!startTime) startTime = local.time;   // e.g. "17:30"
           }
 
-          // Only use JSON-LD end time if we DIDN'T find time from DOM
-          // (DOM is more reliable than JSON-LD for Couchsurfing)
-          if (!endTime && !foundTimeInDOM && jsonLdData?.endDate) {
-            const jsonEndTime = isoLocalTime(jsonLdData.endDate);
-            // Only use end time if it's different from start time
-            if (jsonEndTime && jsonEndTime !== startTime) {
-              endTime = jsonEndTime;
-              if (process.env.NODE_ENV === 'development') console.log('⏰ JSON-LD fallback endTime (local):', endTime);
-            }
+          if (eventTz && jsonLdData?.endDate && (!endTime || !endDate)) {
+            const local = utcToLocalParts(jsonLdData.endDate, eventTz);
+            if (!endTime && !foundTimeInDOM && local.time !== startTime) endTime = local.time;
+            if (!endDate && local.date !== startDate) endDate = local.date; // multi-day only
           }
 
-          // JSON-LD fallback end DATE for multi-day events.
-          // Couchsurfing often provides an accurate endDateTime in JSON-LD even when the DOM doesn't.
-          if (!endDate && jsonLdData?.startDate && jsonLdData?.endDate) {
-            const start = new Date(jsonLdData.startDate);
-            const end = new Date(jsonLdData.endDate);
-            const isDifferentDay =
-              start.getFullYear() !== end.getFullYear() ||
-              start.getMonth() !== end.getMonth() ||
-              start.getDate() !== end.getDate();
-
-            if (isDifferentDay) {
-              endDate = end.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-              if (process.env.NODE_ENV === 'development') console.log('📅 JSON-LD fallback endDate (multi-day):', endDate);
-            }
+          // Last resort: if we still have no timezone, do NOT silently store the
+          // UTC-shifted value — leave the time blank so the user confirms it.
+          if (!eventTz && !startTime && jsonLdData?.startDate) {
+            console.warn('🔗 IMPORT: no geo/timezone for CS event — leaving time blank for user confirmation');
           }
           
           // Extract event cover image from JSON-LD or main event container
@@ -16192,9 +16160,6 @@ Questions? Just reply to this message. Welcome aboard!
               if (process.env.NODE_ENV === 'development') console.log('📅 Found multi-day event end date:', endDate, 'from description (fallback)');
             }
           }
-          
-          // CS-DIAG: final literal values we extracted (compare to the raw ISO above)
-          console.log('🔍 CS-DIAG extracted:', JSON.stringify({ startDate, startTime, endDate, endTime }));
 
           eventData = {
             title: title,
@@ -16207,6 +16172,8 @@ Questions? Just reply to this message. Welcome aboard!
             state: state,
             country: country,
             zipcode: zipcode,
+            latitude: jsonLdData?.location?.geo?.latitude ?? null,
+            longitude: jsonLdData?.location?.geo?.longitude ?? null,
             date: startDate,
             endDate: endDate, // Multi-day event end date (if found)
             startTime: startTime,

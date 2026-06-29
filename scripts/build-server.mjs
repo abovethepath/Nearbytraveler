@@ -20,6 +20,7 @@ await build({
     "bufferutil",
     "utf-8-validate",
     "pg-native",
+    "tz-lookup",
   ],
 });
 
