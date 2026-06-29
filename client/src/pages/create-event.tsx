@@ -15,7 +15,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectSeparator, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
-import { CalendarIcon, MapPin, Users, Clock, Tag, Info, ArrowLeft, X, Image as ImageIcon, ChevronDown, ChevronUp } from "lucide-react";
+import { CalendarIcon, MapPin, Users, Clock, Tag, Info, ArrowLeft, X, Image as ImageIcon, ChevronDown, ChevronUp, Check } from "lucide-react";
 import { UniversalBackButton } from "@/components/UniversalBackButton";
 import Logo from "@/components/logo";
 import { COUNTRIES, US_CITIES_BY_STATE } from "@shared/locationData";
@@ -1556,7 +1556,7 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
                           type="button"
                           className={`flex-1 py-1.5 text-xs font-semibold transition-colors ${
                             !watch("startTime") || parseInt(watch("startTime").split(':')[0]) < 12
-                              ? 'bg-orange-500 text-white'
+                              ? 'bg-orange-600 text-white shadow-inner'
                               : 'bg-gray-100 dark:bg-gray-700/40 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'
                           }`}
                           onClick={() => {
@@ -1573,13 +1573,13 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
                             }
                           }}
                         >
-                          AM
+                          {(!watch("startTime") || parseInt(watch("startTime").split(':')[0]) < 12) && <Check className="inline-block w-3 h-3 -mt-0.5 mr-0.5" strokeWidth={3} />}AM
                         </button>
                         <button
                           type="button"
                           className={`flex-1 py-1.5 text-xs font-semibold transition-colors ${
                             watch("startTime") && parseInt(watch("startTime").split(':')[0]) >= 12
-                              ? 'bg-orange-500 text-white'
+                              ? 'bg-orange-600 text-white shadow-inner'
                               : 'bg-gray-100 dark:bg-gray-700/40 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'
                           }`}
                           onClick={() => {
@@ -1596,7 +1596,7 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
                             }
                           }}
                         >
-                          PM
+                          {(watch("startTime") && parseInt(watch("startTime").split(':')[0]) >= 12) && <Check className="inline-block w-3 h-3 -mt-0.5 mr-0.5" strokeWidth={3} />}PM
                         </button>
                       </div>
                     </div>
@@ -1674,7 +1674,7 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
                               type="button"
                               className={`flex-1 py-1.5 text-xs font-semibold transition-colors ${
                                 !watch("endTime") || parseInt(watch("endTime")?.split(':')[0] || '0') < 12
-                                  ? 'bg-orange-500 text-white'
+                                  ? 'bg-orange-600 text-white shadow-inner'
                                   : 'bg-gray-100 dark:bg-gray-700/40 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'
                               }`}
                               onClick={() => {
@@ -1691,13 +1691,13 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
                                 }
                               }}
                             >
-                              AM
+                              {(!watch("endTime") || parseInt(watch("endTime")?.split(':')[0] || '0') < 12) && <Check className="inline-block w-3 h-3 -mt-0.5 mr-0.5" strokeWidth={3} />}AM
                             </button>
                             <button
                               type="button"
                               className={`flex-1 py-1.5 text-xs font-semibold transition-colors ${
                                 watch("endTime") && parseInt(watch("endTime")?.split(':')[0] || '0') >= 12
-                                  ? 'bg-orange-500 text-white'
+                                  ? 'bg-orange-600 text-white shadow-inner'
                                   : 'bg-gray-100 dark:bg-gray-700/40 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'
                               }`}
                               onClick={() => {
@@ -1714,7 +1714,7 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
                                 }
                               }}
                             >
-                              PM
+                              {(watch("endTime") && parseInt(watch("endTime")?.split(':')[0] || '0') >= 12) && <Check className="inline-block w-3 h-3 -mt-0.5 mr-0.5" strokeWidth={3} />}PM
                             </button>
                           </div>
                         </div>
