@@ -231,9 +231,27 @@ export default function EventCard({ event, compact = false, featured = false }: 
       if (diffDays < 7) {
         return eventDate.toLocaleDateString([], dateTimeOpts);
       }
-      return tz
+      // 7+ days away: previously date-only. Append the time range, using the SAME
+      // source as the View Event page (date/endDate timestamps in the event's
+      // timezone). Skip the time for date-only events stored at exactly midnight.
+      const dateStr = tz
         ? eventDate.toLocaleDateString([], { year: 'numeric', month: 'short', day: 'numeric', timeZone: tz })
         : eventDate.toLocaleDateString();
+      const timeOnly: Intl.DateTimeFormatOptions = { hour: 'numeric', minute: '2-digit', ...(tz ? { timeZone: tz } : {}) };
+      const hhmm = (d: Date) => {
+        if (tz) {
+          const p = new Intl.DateTimeFormat('en-US', { timeZone: tz, hour: '2-digit', minute: '2-digit', hour12: false }).formatToParts(d);
+          return `${p.find(x => x.type === 'hour')?.value}:${p.find(x => x.type === 'minute')?.value}`;
+        }
+        return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+      };
+      if (hhmm(eventDate) === '00:00' || hhmm(eventDate) === '24:00') return dateStr; // date-only
+      const startStr = eventDate.toLocaleTimeString([], timeOnly);
+      const endRaw = (event as any)?.endDate;
+      const endObj = endRaw ? new Date(endRaw) : null;
+      const endStr = endObj && !isNaN(endObj.getTime()) ? endObj.toLocaleTimeString([], timeOnly) : null;
+      const timeRange = endStr && endStr !== startStr ? `${startStr} – ${endStr}` : startStr;
+      return `${dateStr} · ${timeRange}`;
     }
   };
 
