@@ -1033,8 +1033,14 @@ async function scrapeMeetup(url: string): Promise<any> {
 
       // Location (venue name + address)
       if (jsonData.location) {
-        if (jsonData.location.name) eventData.venueName = jsonData.location.name;
         const addr = jsonData.location.address;
+        // Only use location.name as the VENUE when an address is present AND the name
+        // differs from the city — otherwise it's just the city; leave the venue blank.
+        const mName = (jsonData.location.name || '').trim();
+        const mCity = (addr?.addressLocality || '').trim();
+        if (mName && addr && mName !== mCity) {
+          eventData.venueName = mName;
+        }
         if (addr) {
           if (addr.streetAddress) eventData.street = addr.streetAddress;
           if (addr.addressLocality) eventData.city = addr.addressLocality;
@@ -15877,10 +15883,20 @@ Questions? Just reply to this message. Welcome aboard!
             organizer = $('a[href*="/people/"]').first().text().trim() || '';
           }
           
-          // Extract venue name and address from JSON-LD location.name (often contains full address)
-          let venueName = jsonLdData?.location?.name || '';
-          let fullAddress = venueName; // venue name often IS the full address
-          
+          // CS's JSON-LD location.name is sometimes a real venue ("Dockweiler Beach
+          // Fire Pits") and sometimes just the city ("Los Angeles") for geo-only events.
+          // A real venue has a location.address; a city-only event has just name + geo.
+          // Only use location.name as the VENUE when an address is present AND the name
+          // differs from the city — otherwise leave the venue blank (and we use the name
+          // to fill the CITY below). This stops the city landing in the Venue Name field.
+          const loc = jsonLdData?.location;
+          const locName = (loc?.name || '').trim();
+          const addrCity = (loc?.address?.addressLocality || '').trim();
+          const nameIsRealVenue = !!locName && !!loc?.address && locName !== addrCity;
+
+          let venueName = nameIsRealVenue ? locName : '';
+          let fullAddress = venueName; // real venue names sometimes carry address parts
+
           if (!venueName) {
             const venueElement = $('[data-testid="venue"]').first();
             venueName = venueElement.text().trim();
@@ -15911,7 +15927,14 @@ Questions? Just reply to this message. Welcome aboard!
               addr.addressCountry
             ].filter(Boolean).join(', ');
           }
-          
+
+          // City-only CS location: location.name is the city (no address, or name === city).
+          // Use it to fill the CITY field — never the venue — so the form isn't left blank.
+          // This is always the CS-provided city; the client overwrites any pre-filled hometown.
+          if (!city && !nameIsRealVenue && locName) {
+            city = locName;
+          }
+
           // If we got venueName but no street, parse it
           if (!street && fullAddress) {
             const parts = fullAddress.split(',').map(p => p.trim());
