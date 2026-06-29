@@ -14,6 +14,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectSeparator, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { CalendarIcon, MapPin, Users, Clock, Tag, Info, ArrowLeft, X, Image as ImageIcon, ChevronDown, ChevronUp } from "lucide-react";
 import { UniversalBackButton } from "@/components/UniversalBackButton";
 import Logo from "@/components/logo";
@@ -114,7 +115,7 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
   const [eventUrl, setEventUrl] = useState("");
   const [isImportingEvent, setIsImportingEvent] = useState(false);
   const [importedFromUrl, setImportedFromUrl] = useState(false);
-  const [importVerified, setImportVerified] = useState(false); // imported events must be verified before publishing
+  const [showImportConfirm, setShowImportConfirm] = useState(false); // confirmation popup for imported events
   const [isOriginalOrganizer, setIsOriginalOrganizer] = useState<boolean | null>(null);
   const [importedPlatform, setImportedPlatform] = useState("");
   const [externalOrganizerName, setExternalOrganizerName] = useState("");
@@ -595,7 +596,6 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
       setImagePreview(null);
       setImageFocal(null);
       setImportedFromUrl(false);
-      setImportVerified(false);
       setUseBusinessAddress(false);
       setSelectedCountry("");
       setSelectedState("");
@@ -629,16 +629,6 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
       toast({
         title: "Organizer Confirmation Required",
         description: "Please confirm whether you are the original organizer of this imported event",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    // Imported events must be verified (date/time/location double-checked) before publishing
-    if (importedFromUrl && !importVerified) {
-      toast({
-        title: "Please verify the imported details",
-        description: "Confirm the date, time, and location are correct before publishing.",
         variant: "destructive"
       });
       return;
@@ -807,7 +797,19 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
     }
   };
 
-
+  // Shared publish path. Imported events route through a confirmation popup first
+  // (Create Event button → dialog → "Confirm & publish"); manual events call this directly.
+  const onValidationError = () => {
+    toast({
+      title: "Please fix the form",
+      description: "Fill in the required fields (title, location, date, start time).",
+      variant: "destructive"
+    });
+  };
+  const handlePublish = () => {
+    if (isSubmitting || createEventMutation.isPending) return;
+    handleSubmit(onSubmit, onValidationError)();
+  };
 
   return (
     <div>
@@ -1030,7 +1032,6 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
                           // Mark as imported and track platform AND organizer
                           const sourcePlatform = eventData.source || (eventUrl.includes('couchsurfing') ? 'Couchsurfing' : 'Meetup');
                           setImportedFromUrl(true);
-                          setImportVerified(false); // require fresh verification for each import
                           setImportedPlatform(sourcePlatform);
                           setExternalOrganizerName(eventData.organizer || ''); // Store external organizer name (e.g., "Dan Cullen")
                           setIsOriginalOrganizer(null); // Reset to require user confirmation
@@ -2383,33 +2384,35 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
               </div>
             )}
 
-            {/* Imported events: require the user to verify the auto-filled details before publishing */}
-            {importedFromUrl && (
-              <div className="rounded-lg border border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-950/20 p-4">
-                <label htmlFor="importVerified" className="flex items-start gap-3 cursor-pointer">
-                  <Checkbox
-                    id="importVerified"
-                    checked={importVerified}
-                    onCheckedChange={(c) => setImportVerified(c === true)}
-                    className="mt-0.5"
-                  />
-                  <span className="text-sm">
-                    <span className="font-semibold text-amber-800 dark:text-amber-200">
-                      I've confirmed the date, time, and location are correct
-                    </span>
-                    <span className="block text-xs text-amber-700/80 dark:text-amber-300/80 mt-0.5">
-                      Imported details (especially the address and time) can be off — please double-check them before publishing.
-                    </span>
-                  </span>
-                </label>
-              </div>
-            )}
+            {/* Imported events: confirmation popup gates publishing (opened by the Create Event button) */}
+            <Dialog open={showImportConfirm} onOpenChange={setShowImportConfirm}>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Double-check the imported details</DialogTitle>
+                  <DialogDescription>
+                    Imported events can have the wrong date, time, or location. Please confirm the date, time, and address are correct before publishing.
+                  </DialogDescription>
+                </DialogHeader>
+                <DialogFooter className="gap-2 sm:gap-0">
+                  <Button type="button" variant="outline" onClick={() => setShowImportConfirm(false)}>
+                    Go back and check
+                  </Button>
+                  <Button
+                    type="button"
+                    className="bg-blue-600 hover:bg-blue-700 text-white"
+                    onClick={() => { setShowImportConfirm(false); handlePublish(); }}
+                  >
+                    Confirm &amp; publish
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
 
             {/* Submit Button - use onClick so submission always runs (fixes WebView/touch where type="submit" can be ignored) */}
             <div className="pt-4">
               <Button
                 type="button"
-                disabled={isSubmitting || createEventMutation.isPending || (importedFromUrl && !importVerified)}
+                disabled={isSubmitting || createEventMutation.isPending}
                 className="cta-gradient w-full bg-gradient-to-r from-blue-500 to-gray-600 hover:from-blue-600 hover:to-gray-700 active:scale-95 font-semibold py-4 px-6 min-h-[52px] touch-manipulation text-lg text-white"
                 style={{
                   WebkitTapHighlightColor: 'rgba(59, 130, 246, 0.1)',
@@ -2420,13 +2423,11 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
                   e.preventDefault();
                   e.stopPropagation();
                   if (isSubmitting || createEventMutation.isPending) return;
-                  handleSubmit(onSubmit, (validationErrors) => {
-                    toast({
-                      title: "Please fix the form",
-                      description: "Fill in the required fields (title, location, date, start time).",
-                      variant: "destructive"
-                    });
-                  })(e);
+                  if (importedFromUrl) {
+                    setShowImportConfirm(true); // imported → confirmation popup gates publishing
+                    return;
+                  }
+                  handlePublish(); // manual → publish directly, as today
                 }}
               >
                 {isSubmitting || createEventMutation.isPending ? "Creating Event..." : "Create Event"}
