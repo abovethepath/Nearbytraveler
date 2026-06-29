@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -57,6 +58,15 @@ export default function Events() {
   const [customCity, setCustomCity] = useState("");
   const [showCustomInput, setShowCustomInput] = useState(false);
   const [selectedTab, setSelectedTab] = useState('explore');
+  // External/discovered "Community Events" are hidden by default (member-first).
+  // Persisted per-device. Does NOT affect member-created or member-imported events.
+  const [showExternalEvents, setShowExternalEvents] = useState<boolean>(() => {
+    try { return localStorage.getItem('nt_show_external_events') === 'true'; } catch { return false; }
+  });
+  const toggleExternalEvents = (val: boolean) => {
+    setShowExternalEvents(val);
+    try { localStorage.setItem('nt_show_external_events', String(val)); } catch {}
+  };
   const [userEventInterests, setUserEventInterests] = useState<any[]>([]);
   const [cityPillFilter, setCityPillFilter] = useState<'both' | 'visiting' | 'home'>('both');
   const { toast } = useToast();
@@ -363,7 +373,8 @@ export default function Events() {
       }
       return allEvents;
     },
-    enabled: effectiveCitiesToQuery.length > 0,
+    // Only fetch external/community events when the user has opted in (default OFF)
+    enabled: effectiveCitiesToQuery.length > 0 && showExternalEvents,
     staleTime: 300000,
   });
 
@@ -1453,15 +1464,33 @@ export default function Events() {
         )}
 
 
-        {selectedTab === 'explore' && communityEvents.length > 0 && (
-          <div className="space-y-4 mt-8">
+        {/* Toggle for external/discovered "Community Events" — member-created and
+            member-imported events above are always shown; this controls ONLY the
+            external/discovered section below. Off by default (member-first). */}
+        {selectedTab === 'explore' && !isLoading && (
+          <div className="mt-8 flex items-center justify-between gap-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/40 p-3">
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-gray-900 dark:text-white">Show community events</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Farmers markets &amp; public events from outside the community (off by default)</p>
+            </div>
+            <Switch
+              checked={showExternalEvents}
+              onCheckedChange={toggleExternalEvents}
+              aria-label="Show community events"
+              className="shrink-0"
+            />
+          </div>
+        )}
+
+        {selectedTab === 'explore' && showExternalEvents && communityEvents.length > 0 && (
+          <div className="space-y-4 mt-4">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
                 <Star className="w-4 h-4 text-white" />
               </div>
               <div>
                 <h2 className="text-xl font-bold text-gray-900 dark:text-white">Community Events</h2>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Events shared by community members via Luma & Partiful</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Events shared by community members via Luma &amp; Partiful</p>
               </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
