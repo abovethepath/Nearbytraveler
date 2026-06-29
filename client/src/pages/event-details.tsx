@@ -359,8 +359,11 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
       return response.json();
     },
     onSuccess: () => {
-      // Invalidate all event queries so deleted event disappears from lists immediately
-      queryClient.invalidateQueries({ queryKey: ["/api/events"] });
+      // Invalidate all event queries so deleted event disappears from lists immediately.
+      // refetchType: 'all' forces a refetch even of the currently-inactive list query
+      // (events list uses refetchOnMount: false, so a plain invalidate would leave the
+      // deleted card on screen until a hard refresh).
+      queryClient.invalidateQueries({ queryKey: ["/api/events"], refetchType: 'all' });
       queryClient.invalidateQueries({ queryKey: [`/api/events/${eventId}`] });
       queryClient.invalidateQueries({ queryKey: [`/api/events/${eventId}/participants`] });
       toast({ title: "Event Deleted", description: "Your event has been deleted." });
