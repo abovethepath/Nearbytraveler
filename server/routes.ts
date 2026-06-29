@@ -905,6 +905,66 @@ function clearHasSessionCookie(res: Response) {
   res.clearCookie("nt.has_session", { path: "/", sameSite: "lax", secure: true });
 }
 
+// From a JSON-LD `image` value (string | string[] | ImageObject[]), pick the
+// largest by the width we can parse from each URL (Meetup ships multiple sizes).
+function pickLargestImage(image: any): string {
+  const urlOf = (entry: any): string =>
+    typeof entry === 'string' ? entry : (entry?.url || entry?.contentUrl || '');
+  const widthOf = (u: string): number => {
+    // "676x380.webp" → 676, or a "/600/" or "_600_" width segment
+    const m = u.match(/(\d{2,4})x\d{2,4}\.(?:webp|jpe?g|png)/i) || u.match(/[_\/](\d{3,4})[_\/]/);
+    return m ? parseInt(m[1], 10) : 0;
+  };
+  if (typeof image === 'string') return image;
+  if (Array.isArray(image) && image.length) {
+    let best = urlOf(image[0]);
+    let bestW = widthOf(best);
+    for (const entry of image) {
+      const u = urlOf(entry);
+      if (!u) continue;
+      const w = widthOf(u);
+      if (w > bestW) { best = u; bestW = w; }
+    }
+    return best;
+  }
+  return urlOf(image);
+}
+
+// Best-effort larger variant of an image URL by bumping a recognized
+// "WIDTHxHEIGHT.ext" size token up to ~1200px wide (same aspect). Returns null
+// when no recognized token is present, so callers fall back to the original.
+// Defensive: if the bumped size 404s, the re-host step falls back to the original.
+function largerImageUrl(url: string): string | null {
+  const m = url?.match(/\/(\d{2,4})x(\d{2,4})\.(webp|jpe?g|png)(\?|$)/i);
+  if (!m) return null;
+  const w = parseInt(m[1], 10);
+  const h = parseInt(m[2], 10);
+  if (!(w > 0 && h > 0) || w >= 1200) return null;
+  const newH = Math.round(h * (1200 / w));
+  return url.replace(`${m[1]}x${m[2]}.${m[3]}`, `1200x${newH}.${m[3]}`);
+}
+
+// Re-host a remote image on our Cloudinary (events folder) so imported covers get
+// the same focal / 1200x630 og:image treatment as device uploads and survive the
+// source deleting the image. Tries a bigger variant first, then the original;
+// returns the original URL if every Cloudinary attempt fails (never throws).
+async function rehostImportedImage(remoteUrl: string): Promise<string> {
+  if (!remoteUrl || !/^https?:\/\//i.test(remoteUrl) || remoteUrl.includes('res.cloudinary.com')) {
+    return remoteUrl;
+  }
+  const { cloudinary } = await import("./services/cloudinary");
+  const candidates = [largerImageUrl(remoteUrl), remoteUrl].filter(Boolean) as string[];
+  for (const candidate of candidates) {
+    try {
+      const result: any = await cloudinary.uploader.upload(candidate, { folder: 'events' });
+      if (result?.secure_url) return result.secure_url;
+    } catch (e: any) {
+      console.error(`🔗 IMPORT: Cloudinary re-host failed for ${candidate}: ${e?.message}`);
+    }
+  }
+  return remoteUrl; // all attempts failed — keep the original remote URL
+}
+
 // Scrape a public Meetup event page into our event-field shape. Shared by both
 // GET /api/scrape-meetup (legacy direct endpoint) and POST /api/events/import-url
 // (the unified import box). Uses JSON-LD structured data first (most reliable),
@@ -990,9 +1050,9 @@ async function scrapeMeetup(url: string): Promise<any> {
         eventData.organizer = (typeof org === 'string' ? org : org?.name) || jsonData.author?.name || '';
       }
 
-      // Cover image
+      // Cover image — pick the largest size Meetup offers (not just the first)
       if (!eventData.imageUrl && jsonData.image) {
-        eventData.imageUrl = Array.isArray(jsonData.image) ? jsonData.image[0] : jsonData.image;
+        eventData.imageUrl = pickLargestImage(jsonData.image);
       }
     } catch {
       // Skip invalid JSON-LD blocks
@@ -16142,8 +16202,16 @@ Questions? Just reply to this message. Welcome aboard!
         });
       }
 
+      // Re-host the imported cover image on our Cloudinary (both Couchsurfing and
+      // Meetup). This gives imported events the same focal/1200x630 og:image
+      // treatment as device uploads and protects against the source removing the
+      // image. Non-fatal: falls back to the original remote URL on any failure.
+      if (eventData.imageUrl) {
+        eventData.imageUrl = await rehostImportedImage(eventData.imageUrl);
+      }
+
       if (process.env.NODE_ENV === 'development') console.log(`✅ IMPORT: Extracted event data:`, eventData);
-      
+
       return res.json(eventData);
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') {
