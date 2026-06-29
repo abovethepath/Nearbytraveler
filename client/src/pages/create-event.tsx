@@ -830,8 +830,8 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
             </div>
           )}
         
-        <CardContent>
-          <form 
+        <CardContent className={isModal ? undefined : "pt-6"}>
+          <form
             onSubmit={(e) => {
               console.log('🎯 Form onSubmit event triggered');
               console.log('🎯 Form element:', e.target);
