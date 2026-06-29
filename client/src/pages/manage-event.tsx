@@ -27,7 +27,6 @@ import SmartLocationInput from "@/components/SmartLocationInput";
 import { Search } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { EventShareModal } from "@/components/EventShareModal";
-import { PhotoFocalPicker } from "@/components/PhotoFocalPicker";
 
 // Custom hook to update page meta tags for better sharing
 const useEventMeta = (event: any) => {
@@ -101,7 +100,6 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
   const [imagePreview, setImagePreview] = useState<string>("");
   const [uploadingImage, setUploadingImage] = useState(false);
   const [imageFocal, setImageFocal] = useState<{ x: number; y: number } | null>(null);
-  const [showFocalPicker, setShowFocalPicker] = useState(false);
   
   const [coOrgSearchTerm, setCoOrgSearchTerm] = useState("");
   const [coOrgSearchResults, setCoOrgSearchResults] = useState<any[]>([]);
@@ -707,9 +705,10 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
       tags: formData.tags,
       isPublic: formData.isPublic,
       imageUrl: formData.imageUrl || null,
-      // Manual photo focal point (integer percentages 0-100); null = never positioned
-      imageFocalX: imageFocal ? imageFocal.x : null,
-      imageFocalY: imageFocal ? imageFocal.y : null,
+      // NOTE: focal point (imageFocalX/Y) is intentionally NOT sent here. The
+      // dedicated reposition picker (event-details) owns it via its own PUT.
+      // Re-sending it on every full-form save would clobber a focal set there
+      // with this page's stale page-load value.
       // Private event settings
       womenOnly: !!(formData as any).womenOnly,
       menOnly: !!(formData as any).menOnly,
@@ -810,15 +809,6 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
                     >
                       <X className="w-4 h-4" />
                     </Button>
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      size="sm"
-                      className="absolute bottom-2 left-2"
-                      onClick={() => setShowFocalPicker(true)}
-                    >
-                      Reposition
-                    </Button>
                   </div>
                 ) : (
                   <div className="w-full max-w-md h-48 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center">
@@ -847,16 +837,6 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
                   <Upload className="w-4 h-4" />
                   {uploadingImage ? "Uploading..." : (imagePreview || event?.imageUrl) ? "Change Photo" : "Upload Photo"}
                 </Button>
-
-                {showFocalPicker && (imagePreview || event?.imageUrl) && (
-                  <PhotoFocalPicker
-                    imageUrl={imagePreview || event?.imageUrl || ""}
-                    initialX={imageFocal?.x}
-                    initialY={imageFocal?.y}
-                    onSave={(x, y) => { setImageFocal({ x, y }); setShowFocalPicker(false); }}
-                    onClose={() => setShowFocalPicker(false)}
-                  />
-                )}
               </div>
             </CardContent>
           </Card>
