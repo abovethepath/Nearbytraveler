@@ -913,10 +913,29 @@ export default function CreateEvent({ onEventCreated, isModal = false }: CreateE
                             if (addressParts.length > 0) setValue("street", addressParts[0], { shouldValidate: true, shouldDirty: true });
                           }
                           
-                          if (eventData.city) setValue("city", eventData.city, { shouldValidate: true, shouldDirty: true });
-                          if (eventData.state) setValue("state", eventData.state, { shouldValidate: true, shouldDirty: true });
-                          if (eventData.country) setValue("country", eventData.country, { shouldValidate: true, shouldDirty: true });
-                          if (eventData.zipcode) setValue("zipcode", eventData.zipcode, { shouldValidate: true, shouldDirty: true });
+                          // Safety net: if the import detected NO location, clear the
+                          // form's pre-filled hometown so a blank import isn't mistaken
+                          // for the event's real venue (and warn the user to add it).
+                          const importHasLocation = !!(eventData.city || eventData.state || eventData.country);
+                          if (importHasLocation) {
+                            if (eventData.city) setValue("city", eventData.city, { shouldValidate: true, shouldDirty: true });
+                            if (eventData.state) setValue("state", eventData.state, { shouldValidate: true, shouldDirty: true });
+                            if (eventData.country) setValue("country", eventData.country, { shouldValidate: true, shouldDirty: true });
+                            if (eventData.zipcode) setValue("zipcode", eventData.zipcode, { shouldValidate: true, shouldDirty: true });
+                          } else {
+                            setValue("city", "", { shouldValidate: true, shouldDirty: true });
+                            setValue("state", "", { shouldValidate: true, shouldDirty: true });
+                            setValue("country", "", { shouldValidate: true, shouldDirty: true });
+                            setValue("zipcode", "", { shouldValidate: true, shouldDirty: true });
+                            setValue("location", "", { shouldValidate: true, shouldDirty: true });
+                            setSelectedCountry("");
+                            setSelectedState("");
+                            toast({
+                              title: "Location not detected",
+                              description: "We couldn't read this event's location from the link — please add the city and venue.",
+                              variant: "destructive",
+                            });
+                          }
                           
                           // Handle date - convert to YYYY-MM-DD format
                           if (eventData.date) {

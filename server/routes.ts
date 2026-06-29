@@ -15843,7 +15843,31 @@ Questions? Just reply to this message. Welcome aboard!
               // Skip invalid JSON
             }
           });
-          
+
+          // ── TEMP DIAGNOSTIC: find where Couchsurfing exposes the event address ──
+          // Not dev-gated, so it appears in Render production logs. Remove once the
+          // CS location source is identified.
+          try {
+            console.log('🔍 CS-DIAG location (JSON-LD):', JSON.stringify(jsonLdData?.location ?? null));
+            const ldTypes: string[] = [];
+            $('script[type="application/ld+json"]').each((_, el) => {
+              try { ldTypes.push(JSON.parse($(el).html() || '{}')['@type'] || '(no type)'); } catch {}
+            });
+            console.log('🔍 CS-DIAG JSON-LD @types:', ldTypes.join(', ') || '(none)');
+            const nextData = $('script#__NEXT_DATA__').first().html() || $('#__NEXT_DATA__').first().html() || '';
+            if (nextData) {
+              console.log(`🔍 CS-DIAG __NEXT_DATA__ present (len ${nextData.length})`);
+              for (const key of ['addressLocality', 'addressRegion', 'streetAddress', '"address"', '"city"', '"state"', '"location"', 'latitude']) {
+                const idx = nextData.indexOf(key);
+                if (idx !== -1) console.log(`🔍 CS-DIAG NEXT "${key}" @${idx}: ${nextData.substring(idx, idx + 180)}`);
+              }
+            } else {
+              console.log('🔍 CS-DIAG no __NEXT_DATA__ blob found');
+            }
+          } catch (diagErr: any) {
+            console.log('🔍 CS-DIAG error:', diagErr?.message);
+          }
+
           // Extract title from JSON-LD or DOM
           let title = jsonLdData?.name || '';
           if (!title) {
@@ -16036,21 +16060,29 @@ Questions? Just reply to this message. Welcome aboard!
             if (process.env.NODE_ENV === 'development') console.log('⏰ JSON-LD fallback startDate:', startDate);
           }
           
+          // Preserve the event's LOCAL time by slicing HH:MM out of the ISO string
+          // (mirrors scrapeMeetup). Do NOT use new Date()/toLocaleTimeString, which
+          // re-renders in the server's timezone (UTC on Render) and shifts the time.
+          const isoLocalTime = (iso: string): string => {
+            const tIndex = iso?.indexOf('T') ?? -1;
+            if (tIndex === -1) return '';
+            const m = iso.substring(tIndex + 1).match(/^(\d{2}):(\d{2})/);
+            return m ? `${m[1]}:${m[2]}` : '';
+          };
+
           if (!startTime && jsonLdData?.startDate) {
-            const start = new Date(jsonLdData.startDate);
-            startTime = start.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
-            if (process.env.NODE_ENV === 'development') console.log('⏰ JSON-LD fallback startTime:', startTime);
+            startTime = isoLocalTime(jsonLdData.startDate);
+            if (process.env.NODE_ENV === 'development') console.log('⏰ JSON-LD fallback startTime (local):', startTime);
           }
-          
+
           // Only use JSON-LD end time if we DIDN'T find time from DOM
           // (DOM is more reliable than JSON-LD for Couchsurfing)
           if (!endTime && !foundTimeInDOM && jsonLdData?.endDate) {
-            const end = new Date(jsonLdData.endDate);
-            const jsonEndTime = end.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+            const jsonEndTime = isoLocalTime(jsonLdData.endDate);
             // Only use end time if it's different from start time
-            if (jsonEndTime !== startTime) {
+            if (jsonEndTime && jsonEndTime !== startTime) {
               endTime = jsonEndTime;
-              if (process.env.NODE_ENV === 'development') console.log('⏰ JSON-LD fallback endTime:', endTime);
+              if (process.env.NODE_ENV === 'development') console.log('⏰ JSON-LD fallback endTime (local):', endTime);
             }
           }
 
