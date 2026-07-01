@@ -1336,15 +1336,16 @@ app.use((req, res, next) => {
         // exactly EXCEPT aura is set to 99 — that's the primary seed identifier
         // (real users cannot reach 99 organically).
         // Cleanup query: DELETE FROM users WHERE id <> 2 AND aura = 99;
-        cron.schedule("0 */6 * * *", async () => {
-          console.log("🌱 [cron] Running 4-hourly seed user creation (2 users, aura=99)...");
-          try {
-            const { seedDailyUsers } = await import("../scripts/seed-daily-users");
-            await seedDailyUsers({ count: 2 });
-          } catch (error) {
-            console.error("⚠️ [cron] Seed user creation failed:", error);
-          }
-        }, { timezone: "UTC" });
+        // DISABLED: seed user creation cron turned off to stop generating aura=99 test users.
+        // cron.schedule("0 */6 * * *", async () => {
+        //   console.log("🌱 [cron] Running 4-hourly seed user creation (2 users, aura=99)...");
+        //   try {
+        //     const { seedDailyUsers } = await import("../scripts/seed-daily-users");
+        //     await seedDailyUsers({ count: 2 });
+        //   } catch (error) {
+        //     console.error("⚠️ [cron] Seed user creation failed:", error);
+        //   }
+        // }, { timezone: "UTC" });
 
         // Auto-toggle nearbytrav (user id=2) Available Now from 9am-9pm Pacific daily.
         // Mirrors the DB writes of POST /api/available-now (deactivate-then-insert)
