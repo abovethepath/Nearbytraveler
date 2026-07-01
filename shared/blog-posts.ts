@@ -1291,6 +1291,79 @@ None of this requires a lot of energy. The hardest part of a lonely work trip ev
 The city is there. People who live in it are there. The evening is yours.
 
 Put on shoes.`
+  },
+  {
+    title: "Solo Travel in Your 50s: How to Actually Meet People",
+    date: "2026-07-01",
+    slug: "solo-travel-in-your-50s-how-to-meet-people",
+    description: "Solo travel in your 50s is booming — but the standard advice doesn't fit. Here's how to actually meet people without hostels or apps built for 25-year-olds.",
+    body: `Solo travel in your 50s is having a moment. Go2Africa, Road Scholar, and the Solo Female Travel Survey all point to the same thing: travelers over 50 are the fastest-growing solo demographic right now. More people in this age group are taking trips alone than ever before — after kids leave home, after a career shift, after a divorce, after realizing they've been waiting for someone else to be ready and that person is never coming.
+
+The motivation to travel is there. The budget is often better than it was at 25. The confidence to navigate a new city solo? Usually well-established.
+
+What's harder is the social piece. The default advice — stay in hostels, join pub crawls, use apps with a swiping interface designed for people half your age — doesn't fit. And most travelers in their 50s know it. So they either push through awkward situations that weren't built for them, or they accept a lonelier trip than they wanted.
+
+There's a better way to think about this.
+
+## Why the Standard Advice Doesn't Apply
+
+Hostels work for meeting people because the entire structure forces proximity. Shared dorms, communal kitchens, organized bar nights. Everyone is young, everyone is broke, everyone is looking for the same thing. It's social by design.
+
+Once you're staying in a private room at a mid-range hotel — which most travelers in their 50s reasonably prefer — that built-in social scaffold disappears. Your room is comfortable and quiet and completely isolated. The hotel bar has a few other guests staring at their phones. The tour company's group trip puts you with 40 strangers on a bus, which can feel more lonely than being actually alone.
+
+The problem isn't that you're in your 50s. The problem is that most travel infrastructure was designed for a different kind of trip. [How to Meet People When Traveling Alone](/blog/how-to-meet-people-when-traveling-alone) covers the general framework well, but the 50s version has some specific wrinkles worth addressing.
+
+## What Actually Works
+
+### Skill-Based Activities Beat Pure Socializing
+
+Walking into a bar alone and hoping to meet someone is hard at any age. Walking into a pottery class, a cooking workshop, a photography tour, or a wine tasting is different — you're doing something together, the activity carries the conversation, and you're likely to be around people closer to your own age and interests.
+
+This isn't a small thing. Structured activities remove the awkward standing-around problem entirely. You have a reason to be there, a shared focus, and natural conversation built into the format. Look for half-day or full-day workshops rather than one-hour tourist experiences — longer time together is how actual connection happens.
+
+Language classes work especially well. Sign up for a week of lessons at a local school and you'll see the same people every morning. Repetition matters. Friendships don't form from a single conversation.
+
+### Slow Down the Trip
+
+One of the real advantages of traveling in your 50s — especially if you're past the phase of cramming in eight countries in two weeks — is the ability to stay somewhere long enough to actually become a regular.
+
+A cafe where the staff knows your order by day three. A neighborhood bar where you've been in twice and the bartender nods when you walk through the door. A morning run along the same path where you pass the same people. These micro-routines create the conditions for connection in a way that one-night stops never can.
+
+**Staying somewhere for a week instead of two days changes everything about how social your trip feels.** This is probably the single highest-leverage shift a solo traveler over 50 can make.
+
+### Use Apps That Are Actually Built for This
+
+Most travel apps are either logistics tools or dating apps with a thin travel veneer. Neither is what you're looking for.
+
+[Nearby Traveler](https://nearbytraveler.org) takes a different approach: locals mark themselves available to meet travelers, travelers mark themselves available to meet locals, and the app shows you who's around right now. No swiping, no matching algorithm, no profile that asks for your age and shows you people filtered by it. Just mutual availability made visible in real time. If you're sitting in a new city on a Tuesday afternoon not sure what to do with the evening, opening it and seeing who's free is a genuinely useful thing.
+
+The [best apps for solo travelers in 2026](/blog/best-apps-for-solo-travelers) covers the broader toolkit, but for the specific problem of meeting people rather than just navigating cities, real-time availability is the piece that matters most.
+
+### Talk to People in the Places You Already Are
+
+This sounds obvious and it is, but it's also consistently underused. Most solo travelers in their 50s have more social confidence than they did at 25 — they've had decades of practice talking to strangers in professional and personal settings. That skill transfers.
+
+The person sitting next to you at the wine bar. The other solo traveler at the small-group cooking class. The local at the farmers market who's clearly a regular. You already know how to start a conversation. The only thing stopping most people is deciding it's worth trying.
+
+Ask specific questions rather than generic ones. Not "do you like this city" but "what neighborhood would you actually live in if you moved here" or "is there a market I should go to that's not on any tourist list." Specific questions signal genuine curiosity and get real answers.
+
+### Consider the Right Kind of Group Travel
+
+Group tours get a bad reputation in solo travel circles, often fairly. But not all group travel is the same. A Road Scholar program, a small-group culinary tour, or a sailing trip with eight people is structurally different from a 40-person bus tour. The key variables are group size and shared interest.
+
+Small groups built around a specific activity or subject — rather than just sightseeing — tend to attract people who have something to talk about beyond where they're from. The shared interest does the work of self-selection. You don't have to like everyone, but you're more likely to find a few people you actually want to keep in touch with.
+
+This isn't a cop-out recommendation. Solo travel doesn't mean you have to be solitary the entire time. Mixing a few days of intentional group activity into an otherwise independent trip is a legitimate strategy, not a compromise.
+
+## The Loneliness Question
+
+It's worth being direct about this: solo travel in your 50s can be lonelier than expected, and that's not a personal failing. The social structures that made meeting people easier when you were younger — shared living situations, college, early career offices — are gone. You're building connection from scratch in places where you know nobody.
+
+[Curing Travel Loneliness](/blog/curing-travel-loneliness) is an honest look at why this happens even to experienced travelers and what actually helps. The short version: the fix is almost always structural rather than psychological. You're not doing something wrong emotionally — you're missing the right setup.
+
+The setup is what everything above is about. Slow down. Pick activities over sightseeing. Use tools built for connection rather than logistics. Talk to the people already around you.
+
+Solo travel in your 50s at its best isn't just tolerable — it's genuinely one of the better versions of the thing. You know what you want, you're not performing for anyone, and you have the patience to let real conversations actually develop. Book the week-long stay, sign up for the class on the first day, and open the app when you get there.`
   }
 ];
 
