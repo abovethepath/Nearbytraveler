@@ -157,6 +157,7 @@ export const users = pgTable("users", {
   // AI Generation fields
   isAIGenerated: boolean("is_ai_generated").default(false),
   aura: integer("aura").default(1), // Travel karma points from signup
+  isSeed: boolean("is_seed").default(false).notNull(), // Seed/test user marker — replaces aura=99 convention
   connectorPoints: integer("connector_points").default(0), // Connector program points
   connectorStatus: text("connector_status"), // 'active' | 'inactive' | 'revoked'; null = not enrolled
   connectorEnrolledAt: timestamp("connector_enrolled_at"), // When they became a connector
