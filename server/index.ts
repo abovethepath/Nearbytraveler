@@ -519,6 +519,8 @@ app.use(
 // Configure session middleware with Redis for production
 // CRITICAL: Sessions persist indefinitely with rolling renewal - users stay logged in forever unless they logout
 let redis: Redis | null = null;
+// One-time guard so the authoritative "store is live" log prints once, not on every Redis reconnect.
+let sessionStoreActiveLogged = false;
 
 // Debug Redis URL configuration
 console.log("🔴 Redis URL check:", {
@@ -543,7 +545,17 @@ if (process.env.REDIS_URL) {
         "✅ Redis: Connected successfully - sessions will persist across restarts",
       ),
     );
-    redis.on("ready", () => console.log("✅ Redis: Ready to accept commands"));
+    redis.on("ready", () => {
+      console.log("✅ Redis: Ready to accept commands");
+      // Authoritative store-active log: only fires once the Redis connection is
+      // actually READY (unlike "🗄️ Session store: Redis", which prints at selection
+      // time before the socket connects). If Redis is configured but unreachable,
+      // this line never appears — its absence is the signal.
+      if (!sessionStoreActiveLogged) {
+        sessionStoreActiveLogged = true;
+        console.log("✅ SESSION_STORE_ACTIVE: Redis");
+      }
+    });
     redis.on("error", (err) =>
       console.error("❌ Redis connection error:", err.message),
     );
@@ -604,7 +616,12 @@ const redisSessionClient = redis
 const sessionStore = (() => {
   if (redis) {
     console.log("🗄️ Session store: Redis");
-    return new RedisStore({ client: redisSessionClient, ttl: 365 * 24 * 60 * 60 });
+    // disableTouch: express-session calls store.touch() on EVERY request to slide the
+    // TTL — with connect-redis that is a Redis write per request. Disabling it means the
+    // only writes are real session saves (login + the once-per-hour throttle below),
+    // which is what actually cuts Upstash command volume. The sliding window is preserved
+    // by the hourly re-save in the throttle middleware.
+    return new RedisStore({ client: redisSessionClient, ttl: 365 * 24 * 60 * 60, disableTouch: true });
   }
   const dbUrl = process.env.NEON_DATABASE_URL || process.env.DATABASE_URL;
   if (dbUrl) {
@@ -622,6 +639,10 @@ const sessionStore = (() => {
     // Verify connectivity at startup so silent failures are caught immediately
     sessionPool.query("SELECT 1").then(() => {
       console.log("✅ Session store PostgreSQL connection verified");
+      if (!sessionStoreActiveLogged) {
+        sessionStoreActiveLogged = true;
+        console.log("✅ SESSION_STORE_ACTIVE: PostgreSQL");
+      }
     }).catch((err: any) => {
       console.error("🔴 Session store PostgreSQL connection FAILED:", err.message);
     });
@@ -631,10 +652,12 @@ const sessionStore = (() => {
       createTableIfMissing: true,
       ttl: 30 * 24 * 60 * 60, // 30 days in seconds
       pruneSessionInterval: 60 * 15, // prune expired sessions every 15 minutes
+      disableTouch: true, // same rationale as Redis: no per-request touch write; the hourly throttle re-saves
     });
     return store;
   }
   console.log("⚠️ Session store: Memory (sessions lost on restart)");
+  console.log("✅ SESSION_STORE_ACTIVE: Memory");
   return undefined;
 })();
 
@@ -644,7 +667,9 @@ app.use(
     secret: process.env.SESSION_SECRET || "nearby-traveler-secret-key-dev",
     resave: false,
     saveUninitialized: false,
-    rolling: true,
+    // rolling disabled: we no longer resave/re-send the session on every request.
+    // The throttle middleware below slides the 30-day window at most once per hour.
+    rolling: false,
     cookie: {
       secure: true,
       httpOnly: true,
@@ -655,6 +680,44 @@ app.use(
     name: "nt.sid",
   }),
 );
+
+// ── Session-write throttling ───────────────────────────────────────────────
+// With rolling:false + disableTouch on the store, an unmodified session is NOT
+// written on each request. This middleware slides the 30-day window by re-saving
+// at most ONCE PER HOUR per logged-in user: it stamps `lastTouched` (which marks
+// the session modified, so express-session persists it once at end-of-request and
+// re-sends the cookie) and calls touch() to reset the cookie to a fresh 30 days.
+// Within the hour it does nothing, so there is zero store write on the hot path.
+// Login is unaffected: the throttle only acts once req.session.user exists, which
+// the login handler sets and saves immediately.
+const SESSION_TOUCH_INTERVAL_MS = 60 * 60 * 1000; // 1 hour
+app.use((req: any, _res, next) => {
+  try {
+    const sess = req.session;
+    // Only slide authenticated sessions; anonymous sessions are never persisted.
+    if (sess && sess.user && sess.user.id) {
+      const now = Date.now();
+      const last = typeof sess.lastTouched === "number" ? sess.lastTouched : 0;
+      if (now - last > SESSION_TOUCH_INTERVAL_MS) {
+        sess.lastTouched = now;                 // marks modified → single store.set + cookie resend
+        if (typeof sess.touch === "function") sess.touch(); // reset cookie to a fresh 30 days
+        // Surface write failures (Upstash quota / connection) as a greppable line.
+        // express-session auto-saves at end-of-request; wrap save so its error is logged.
+        const boundSave = sess.save.bind(sess);
+        sess.save = function (cb?: (err?: any) => void) {
+          return boundSave((err: any) => {
+            if (err) console.error("❌ SESSION_SAVE_FAILED:", err?.message || err);
+            if (typeof cb === "function") cb(err);
+          });
+        };
+      }
+    }
+  } catch (err: any) {
+    console.error("❌ SESSION_THROTTLE_ERROR:", err?.message || err);
+  }
+  next();
+});
+// ───────────────────────────────────────────────────────────────────────────
 
 // Security hardening: never accept header-based identity without a real session user.
 // This prevents stale client storage (incl. incognito) from implicitly authenticating API calls.

@@ -1711,20 +1711,29 @@ export async function registerRoutes(app: Express, httpServer?: Server): Promise
         return res.status(401).json({ message: "No active session" });
       }
       const thirtyDays = 30 * 24 * 60 * 60 * 1000;
-      if (sess?.cookie) {
-        sess.cookie.maxAge = thirtyDays;
-      }
-      if (typeof sess?.touch === 'function') sess.touch();
-      await new Promise<void>((resolve) => {
-        if (typeof sess?.save === 'function') {
-          sess.save((err: any) => {
-            if (err) console.error("Session refresh save error:", err);
-            resolve();
-          });
-        } else {
-          resolve();
+      const SESSION_TOUCH_INTERVAL_MS = 60 * 60 * 1000; // 1 hour — mirrors the throttle in server/index.ts
+      const now = Date.now();
+      const last = typeof sess?.lastTouched === "number" ? sess.lastTouched : 0;
+      // Throttle: the sliding window only needs refreshing once per hour. Within the
+      // hour the session is already fresh, so skip the store write entirely. The
+      // response contract ({ ok, expiresIn }) is identical in both branches.
+      if (now - last > SESSION_TOUCH_INTERVAL_MS) {
+        if (sess?.cookie) {
+          sess.cookie.maxAge = thirtyDays;
         }
-      });
+        sess.lastTouched = now;
+        if (typeof sess?.touch === 'function') sess.touch();
+        await new Promise<void>((resolve) => {
+          if (typeof sess?.save === 'function') {
+            sess.save((err: any) => {
+              if (err) console.error("❌ SESSION_SAVE_FAILED:", err?.message || err);
+              resolve();
+            });
+          } else {
+            resolve();
+          }
+        });
+      }
       return res.json({ ok: true, expiresIn: thirtyDays });
     } catch (error) {
       console.error("Session refresh error:", error);
