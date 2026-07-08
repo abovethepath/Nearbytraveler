@@ -94,6 +94,11 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
     singlePeopleOnly: false,
     veteransOnly: false,
     familiesOnly: false,
+    // Recurring event settings
+    isRecurring: false,
+    recurrenceType: "",
+    recurrenceEnd: "",
+    recurrencePattern: null as any,
   });
   
   const [newTag, setNewTag] = useState("");
@@ -193,6 +198,11 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
         singlePeopleOnly: !!(event as any).singlePeopleOnly,
         veteransOnly: !!(event as any).veteransOnly,
         familiesOnly: !!(event as any).familiesOnly,
+        // Recurring event settings — pre-fill from current values
+        isRecurring: !!(event as any).isRecurring,
+        recurrenceType: (event as any).recurrenceType || "",
+        recurrenceEnd: (event as any).recurrenceEnd ? new Date((event as any).recurrenceEnd).toISOString().split('T')[0] : "",
+        recurrencePattern: (event as any).recurrencePattern ?? null,
       });
       
       // CRITICAL: Always set image preview when event has imageUrl
@@ -415,6 +425,10 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
           requirements: data.requirements || "",
           tags: data.tags || [],
           isPublic: data.isPublic ?? true,
+          isRecurring: !!data.isRecurring,
+          recurrenceType: data.recurrenceType || "",
+          recurrenceEnd: data.recurrenceEnd ? new Date(data.recurrenceEnd).toISOString().split('T')[0] : "",
+          recurrencePattern: data.recurrencePattern ?? null,
         }));
       }
       
@@ -716,6 +730,11 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
       singlePeopleOnly: !!(formData as any).singlePeopleOnly,
       veteransOnly: !!(formData as any).veteransOnly,
       familiesOnly: !!(formData as any).familiesOnly,
+      // Recurring event settings — when the toggle is off, fully clear recurrence
+      isRecurring: !!(formData as any).isRecurring,
+      recurrenceType: (formData as any).isRecurring ? ((formData as any).recurrenceType || null) : null,
+      recurrencePattern: (formData as any).isRecurring ? ((formData as any).recurrencePattern ?? null) : null,
+      recurrenceEnd: (formData as any).isRecurring ? ((formData as any).recurrenceEnd || null) : null,
     };
 
     console.log('Update data being sent:', updateData);
@@ -1247,6 +1266,93 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
                 >
                   Make this event public
                 </button>
+              </div>
+
+              {/* Recurring event settings — mirrors create-event.tsx */}
+              <div className="border rounded-lg p-4 space-y-4 bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
+                <div className="flex items-center gap-3 py-2 px-2 bg-purple-50 dark:bg-purple-900/30 rounded-lg border border-purple-200 dark:border-purple-700">
+                  <Checkbox
+                    id="edit-isRecurring"
+                    checked={!!(formData as any).isRecurring}
+                    onCheckedChange={(checked) => {
+                      setFormData(prev => ({
+                        ...prev,
+                        isRecurring: !!checked,
+                        // Turning it off clears the dependent fields in the UI
+                        recurrenceType: checked ? (prev as any).recurrenceType : "",
+                        recurrenceEnd: checked ? (prev as any).recurrenceEnd : "",
+                        recurrencePattern: checked ? (prev as any).recurrencePattern : null,
+                      }));
+                    }}
+                    className="h-5 w-5 border-2 border-purple-500 dark:border-purple-400 data-[state=checked]:bg-purple-600 data-[state=checked]:border-purple-600"
+                  />
+                  <Label htmlFor="edit-isRecurring" className="text-sm font-medium text-gray-800 dark:text-white cursor-pointer">
+                    Make this a recurring event
+                  </Label>
+                </div>
+
+                {!!(formData as any).isRecurring && (
+                  <div className="space-y-4 pt-2 border-t border-gray-300 dark:border-gray-600">
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium text-gray-700 dark:text-white">
+                        How often should this event repeat? *
+                      </Label>
+                      <Select
+                        value={(formData as any).recurrenceType || ""}
+                        onValueChange={(value) => setFormData(prev => ({ ...prev, recurrenceType: value }))}
+                      >
+                        <SelectTrigger
+                          className="w-full bg-white dark:bg-gray-800 text-black dark:text-white border-gray-300 dark:border-gray-600"
+                          data-testid="select-edit-recurrence-type"
+                        >
+                          <SelectValue placeholder="Choose repeat frequency" />
+                        </SelectTrigger>
+                        <SelectContent
+                          className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100"
+                          position="popper"
+                          sideOffset={8}
+                          style={{ zIndex: 999999 }}
+                        >
+                          <SelectItem value="daily" className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 focus:bg-gray-100 dark:bg-gray-800 dark:focus:bg-gray-700">Every Day</SelectItem>
+                          <SelectItem value="weekly" className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 focus:bg-gray-100 dark:bg-gray-800 dark:focus:bg-gray-700">Every Week (same day)</SelectItem>
+                          <SelectItem value="biweekly" className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 focus:bg-gray-100 dark:bg-gray-800 dark:focus:bg-gray-700">Every 2 Weeks</SelectItem>
+                          <SelectItem value="monthly" className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 focus:bg-gray-100 dark:bg-gray-800 dark:focus:bg-gray-700">Every Month (same date)</SelectItem>
+                          <SelectItem value="monthly_weekday" className="text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 focus:bg-gray-100 dark:bg-gray-800 dark:focus:bg-gray-700">Every Month (same weekday)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {!!(formData as any).recurrenceType && (
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium text-gray-700 dark:text-white">
+                          When should the recurring events end? *
+                        </Label>
+                        <Input
+                          type="date"
+                          value={(formData as any).recurrenceEnd || ""}
+                          onChange={(e) => setFormData(prev => ({ ...prev, recurrenceEnd: e.target.value }))}
+                          min={new Date().toISOString().split('T')[0]}
+                          max="9999-12-31"
+                          className="w-full bg-white dark:bg-gray-800 text-black dark:text-white border-gray-300 dark:border-gray-600"
+                          style={{ colorScheme: 'light dark' }}
+                        />
+                      </div>
+                    )}
+
+                    {!!(formData as any).recurrenceType && (
+                      <div className="text-sm text-blue-600 bg-blue-50 border border-blue-200 rounded-md p-3 dark:bg-blue-900/20 dark:border-blue-500 dark:text-blue-300">
+                        <strong>Preview:</strong> {
+                          (formData as any).recurrenceType === 'daily' ? 'Your event will repeat every day until the end date.' :
+                          (formData as any).recurrenceType === 'weekly' ? 'Your event will repeat every week on the same day until the end date.' :
+                          (formData as any).recurrenceType === 'biweekly' ? 'Your event will repeat every 2 weeks on the same day until the end date.' :
+                          (formData as any).recurrenceType === 'monthly' ? 'Your event will repeat monthly on the same date until the end date.' :
+                          (formData as any).recurrenceType === 'monthly_weekday' ? 'Your event will repeat monthly on the same weekday until the end date.' :
+                          'Select a repeat frequency to see preview.'
+                        }
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>

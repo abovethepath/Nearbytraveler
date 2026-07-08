@@ -16803,6 +16803,13 @@ Questions? Just reply to this message. Welcome aboard!
       if ((req.body as any).imageFocalX !== undefined && (req.body as any).imageFocalX !== null) updateData.imageFocalX = (req.body as any).imageFocalX;
       if ((req.body as any).imageFocalY !== undefined && (req.body as any).imageFocalY !== null) updateData.imageFocalY = (req.body as any).imageFocalY;
 
+      // Recurring event fields — mirror the create endpoint so recurrence can be edited/cleared.
+      // Client sends is_recurring=false + nulls to fully turn recurrence off.
+      if ((req.body as any).isRecurring !== undefined) updateData.isRecurring = (req.body as any).isRecurring || false;
+      if ((req.body as any).recurrenceType !== undefined) updateData.recurrenceType = (req.body as any).recurrenceType || null;
+      if ((req.body as any).recurrencePattern !== undefined) updateData.recurrencePattern = (req.body as any).recurrencePattern || null;
+      if ((req.body as any).recurrenceEnd !== undefined) updateData.recurrenceEnd = (req.body as any).recurrenceEnd ? new Date((req.body as any).recurrenceEnd) : null;
+
       if (process.env.NODE_ENV === 'development') console.log(`🎪 EVENT UPDATE: Cleaned update data:`, updateData);
       
       const updatedEvent = await storage.updateEvent(eventId, updateData);
