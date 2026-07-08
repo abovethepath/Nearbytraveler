@@ -447,6 +447,83 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
     },
   });
 
+  // Copy (duplicate) event mutation — clones fields into a brand-new event via the
+  // normal create endpoint, minus recurrence, attendees/RSVPs, and the chatroom.
+  const copyEventMutation = useMutation({
+    mutationFn: async () => {
+      if (!event) throw new Error("Event not loaded yet");
+      const copyPayload = {
+        title: `${event.title} (Copy)`,
+        description: event.description || "",
+        venueName: event.venueName || "",
+        street: event.street || "",
+        city: event.city,
+        state: event.state || "",
+        country: event.country || "United States",
+        zipcode: event.zipcode || "",
+        location: event.location || "",
+        // Same date as the original — the user edits it on the copy's Manage page next
+        date: event.date,
+        endDate: (event as any).endDate || null,
+        startTime: (event as any).startTime || null,
+        endTime: (event as any).endTime || null,
+        timeZone: (event as any).timeZone || null,
+        category: event.category || "General",
+        organizerId: event.organizerId,
+        maxParticipants: event.maxParticipants ?? null,
+        isPublic: event.isPublic !== false,
+        showInterestedPublicly: (event as any).showInterestedPublicly === true,
+        tags: event.tags || [],
+        requirements: event.requirements || "",
+        imageUrl: event.imageUrl || null,
+        imageFocalX: (event as any).imageFocalX ?? null,
+        imageFocalY: (event as any).imageFocalY ?? null,
+        // Do NOT copy recurrence — the copy is a single, non-recurring event
+        isRecurring: false,
+        recurrenceType: null,
+        recurrencePattern: null,
+        recurrenceEnd: null,
+        // Audience / private visibility settings
+        genderRestriction: (event as any).genderRestriction || null,
+        sexualOrientationRestriction: (event as any).sexualOrientationRestriction || null,
+        lgbtqiaOnly: !!(event as any).lgbtqiaOnly,
+        veteransOnly: !!(event as any).veteransOnly,
+        activeDutyOnly: !!(event as any).activeDutyOnly,
+        womenOnly: !!(event as any).womenOnly,
+        menOnly: !!(event as any).menOnly,
+        singlePeopleOnly: !!(event as any).singlePeopleOnly,
+        familiesOnly: !!(event as any).familiesOnly,
+        ageRestrictionMin: (event as any).ageRestrictionMin ?? null,
+        ageRestrictionMax: (event as any).ageRestrictionMax ?? null,
+        privateNotes: (event as any).privateNotes || null,
+        customRestriction: (event as any).customRestriction || null,
+        // Attendees, RSVPs, and the chatroom are intentionally NOT copied — a new event starts fresh
+      };
+      const response = await apiRequest("POST", "/api/events", copyPayload);
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to copy event: ${response.status} ${errorText}`);
+      }
+      return response.json();
+    },
+    onSuccess: (newEvent) => {
+      toast({
+        title: "Event copied",
+        description: "Now edit the copy's date and details, then save.",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/events'] });
+      // Redirect to the new event's Manage page so the date can be changed immediately
+      setLocation(`/events/${newEvent.id}/manage`);
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Copy failed",
+        description: error.message || "Could not copy this event. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
   // Image upload mutation
   const uploadImageMutation = useMutation({
     mutationFn: async (file: File): Promise<string> => {
@@ -1636,28 +1713,12 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
                       </DropdownMenuItem>
                     }
                   />
-                  <DropdownMenuItem onClick={() => {
-                    // Navigate to create new event with current event as template
-                    const templateData = {
-                      venueName: formData.venueName,
-                      street: formData.street,
-                      city: formData.city,
-                      state: formData.state,
-                      country: formData.country,
-                      category: formData.category,
-                      tags: formData.tags,
-                      requirements: formData.requirements,
-                      maxParticipants: formData.maxParticipants
-                    };
-                    localStorage.setItem('eventTemplate', JSON.stringify(templateData));
-                    setLocation('/create-event');
-                    toast({ 
-                      title: "Template saved!", 
-                      description: "Create a new event using this one as a template"
-                    });
-                  }}>
+                  <DropdownMenuItem
+                    onClick={() => copyEventMutation.mutate()}
+                    disabled={copyEventMutation.isPending}
+                  >
                     <Copy className="w-4 h-4 mr-2" />
-                    Duplicate Event
+                    {copyEventMutation.isPending ? "Copying…" : "Copy this event"}
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem 
