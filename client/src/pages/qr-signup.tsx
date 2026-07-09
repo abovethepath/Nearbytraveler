@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { UserPlus, QrCode, ArrowRight, CheckCircle, Loader2, Link } from "lucide-react";
-import Navbar from "@/components/navbar";
+import Navbar from "@/components/Navbar";
 import { apiRequest, getApiBaseUrl } from "@/lib/queryClient";
 
 interface Referrer {

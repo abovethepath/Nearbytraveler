@@ -13,7 +13,7 @@ import { getApiBaseUrl } from "@/lib/queryClient";
 
 import { MapPin, Calendar, ExternalLink, Percent, DollarSign, Gift, Clock, Phone, Globe, User, Plus, TrendingUp, BarChart3, Eye, Edit, Trash2, Building } from "lucide-react";
 
-import Navbar from "@/components/navbar";
+import Navbar from "@/components/Navbar";
 import QuickDealsDiscovery from "@/components/QuickDealsDiscovery";
 // MobileNav removed - using global mobile navigation
 

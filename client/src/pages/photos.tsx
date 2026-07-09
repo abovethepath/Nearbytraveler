@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import SmartPhotoGallery from "@/components/smart-photo-gallery";
 import { PhotoAlbumWidget } from "@/components/photo-album-widget";
-import Navbar from "@/components/navbar";
+import Navbar from "@/components/Navbar";
 import { X, ArrowLeft, FolderOpen, Images } from "lucide-react";
 import { useLocation } from "wouter";
 import { authStorage } from "@/lib/auth";

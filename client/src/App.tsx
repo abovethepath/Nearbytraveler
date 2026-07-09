@@ -213,7 +213,7 @@ import LandingStreamlined from "@/pages/landing-new-streamlined";
 import ComingSoon from "@/pages/coming-soon";
 
 
-import Navbar from "@/components/navbar";
+import Navbar from "@/components/Navbar";
 import LandingNavbar from "@/components/landing-navbar";
 import LandingHeader, { LandingHeaderSpacer } from "@/components/LandingHeader";
 import { isNativeIOSApp } from "@/lib/nativeApp";

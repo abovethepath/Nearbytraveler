@@ -1,5 +1,5 @@
 import HiddenGemsDiscovery from "@/components/hidden-gems-discovery";
-import Navbar from "@/components/navbar";
+import Navbar from "@/components/Navbar";
 import Footer from "@/components/footer";
 
 export default function HiddenGemsPage() {

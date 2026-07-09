@@ -22,7 +22,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useCopyEventMutation } from "@/hooks/use-copy-event";
 import { apiRequest, getApiBaseUrl, queryClient } from "@/lib/queryClient";
 import Logo from "@/components/logo";
-import Navbar from "@/components/navbar";
+import Navbar from "@/components/Navbar";
 import type { Event } from "@shared/schema";
 import SmartLocationInput from "@/components/SmartLocationInput";
 import { Search } from "lucide-react";
