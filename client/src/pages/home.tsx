@@ -601,15 +601,9 @@ export default function Home() {
         .filter((event: any, index: number, arr: any[]) => arr.findIndex((e: any) => e.id === event.id) === index); // Remove duplicates
       
       return userCreatedEvents.sort((a, b) => {
-        // USER CREATED EVENTS PRIORITY BY USER
-        const aIsUserCreated = a.createdBy === effectiveUser?.id || a.userId === effectiveUser?.id;
-        const bIsUserCreated = b.createdBy === effectiveUser?.id || b.userId === effectiveUser?.id;
-        
-        if (aIsUserCreated && !bIsUserCreated) return -1;
-        if (!aIsUserCreated && bIsUserCreated) return 1;
-        
-        // Then by date
-        return new Date(b.startDate || b.createdAt).getTime() - new Date(a.startDate || a.createdAt).getTime();
+        // Soonest first — nearest upcoming event date at the top, furthest out at the bottom.
+        // Use the event's actual date field (matching the filter above), not createdAt.
+        return new Date(a.date || a.startDate).getTime() - new Date(b.date || b.startDate).getTime();
       });
     },
     enabled: !!effectiveUser,
