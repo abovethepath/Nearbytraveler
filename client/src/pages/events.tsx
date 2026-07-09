@@ -459,6 +459,90 @@ export default function Events() {
     },
   });
 
+  // Copy event mutation — mirrors the copy logic on the Manage page.
+  // List rows can carry partial event data, so we fetch the full event by id
+  // first, then POST a fresh copy and jump to the new event's Manage page.
+  const copyEventMutation = useMutation({
+    mutationFn: async (eventId: number) => {
+      const eventRes = await apiRequest("GET", `/api/events/${eventId}`);
+      if (!eventRes.ok) {
+        throw new Error(`Could not load event ${eventId} to copy`);
+      }
+      const event = await eventRes.json();
+
+      const copyPayload = {
+        title: `${event.title} (Copy)`,
+        description: event.description || "",
+        venueName: event.venueName || "",
+        street: event.street || "",
+        city: event.city,
+        state: event.state || "",
+        country: event.country || "United States",
+        zipcode: event.zipcode || "",
+        location: event.location || "",
+        // Same date as the original — the user edits it on the copy's Manage page next
+        date: event.date,
+        endDate: event.endDate || null,
+        startTime: event.startTime || null,
+        endTime: event.endTime || null,
+        timeZone: event.timeZone || null,
+        category: event.category || "General",
+        organizerId: event.organizerId,
+        maxParticipants: event.maxParticipants ?? null,
+        isPublic: event.isPublic !== false,
+        showInterestedPublicly: event.showInterestedPublicly === true,
+        tags: event.tags || [],
+        requirements: event.requirements || "",
+        imageUrl: event.imageUrl || null,
+        imageFocalX: event.imageFocalX ?? null,
+        imageFocalY: event.imageFocalY ?? null,
+        // Do NOT copy recurrence — the copy is a single, non-recurring event
+        isRecurring: false,
+        recurrenceType: null,
+        recurrencePattern: null,
+        recurrenceEnd: null,
+        // Audience / private visibility settings
+        genderRestriction: event.genderRestriction || null,
+        sexualOrientationRestriction: event.sexualOrientationRestriction || null,
+        lgbtqiaOnly: !!event.lgbtqiaOnly,
+        veteransOnly: !!event.veteransOnly,
+        activeDutyOnly: !!event.activeDutyOnly,
+        womenOnly: !!event.womenOnly,
+        menOnly: !!event.menOnly,
+        singlePeopleOnly: !!event.singlePeopleOnly,
+        familiesOnly: !!event.familiesOnly,
+        ageRestrictionMin: event.ageRestrictionMin ?? null,
+        ageRestrictionMax: event.ageRestrictionMax ?? null,
+        privateNotes: event.privateNotes || null,
+        customRestriction: event.customRestriction || null,
+        // Attendees, RSVPs, and the chatroom are intentionally NOT copied — a new event starts fresh
+      };
+
+      const response = await apiRequest("POST", "/api/events", copyPayload);
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to copy event: ${response.status} ${errorText}`);
+      }
+      return response.json();
+    },
+    onSuccess: (newEvent) => {
+      toast({
+        title: "Event copied",
+        description: "Now edit the copy's date and details, then save.",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/events'] });
+      // Redirect to the NEW event's Manage page — never the original, never /edit
+      setLocation(`/events/${newEvent.id}/manage`);
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Copy failed",
+        description: error.message || "Could not copy this event. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
   // Separate events into upcoming and past
   const now = new Date();
   const upcomingEvents = events.filter(event => {
@@ -1095,17 +1179,18 @@ export default function Events() {
                                     >
                                       Edit
                                     </Button>
-                                    <Button 
-                                      variant="outline" 
-                                      size="sm" 
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
                                       className="flex-1 border-green-200 text-green-700 hover:bg-green-50 dark:border-green-700 dark:text-green-300 dark:hover:bg-green-900/20"
+                                      disabled={copyEventMutation.isPending}
                                       onClick={(e) => {
                                         e.stopPropagation();
-                                        console.log('Copy event:', event.id);
+                                        copyEventMutation.mutate(event.id);
                                       }}
                                       data-testid={`button-copy-${event.id}`}
                                     >
-                                      Copy
+                                      {copyEventMutation.isPending ? "Copying…" : "Copy"}
                                     </Button>
                                   </div>
                                 </div>
