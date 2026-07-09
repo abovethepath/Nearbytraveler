@@ -531,8 +531,8 @@ export default function Events() {
         description: "Now edit the copy's date and details, then save.",
       });
       queryClient.invalidateQueries({ queryKey: ['/api/events'] });
-      // Redirect to the NEW event's Manage page — never the original, never /edit
-      setLocation(`/events/${newEvent.id}/manage`);
+      // Redirect to the NEW event's Manage page — canonical route is /manage-event/:id
+      setLocation(`/manage-event/${newEvent.id}`);
     },
     onError: (error: Error) => {
       toast({

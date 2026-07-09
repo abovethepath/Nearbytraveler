@@ -513,7 +513,8 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
       });
       queryClient.invalidateQueries({ queryKey: ['/api/events'] });
       // Redirect to the new event's Manage page so the date can be changed immediately
-      setLocation(`/events/${newEvent.id}/manage`);
+      // Canonical route is /manage-event/:id
+      setLocation(`/manage-event/${newEvent.id}`);
     },
     onError: (error: Error) => {
       toast({
