@@ -10,6 +10,7 @@ import { MapPin, Calendar, Clock, Users, User, Info, Share2, Copy, Check, ArrowL
 import { UniversalBackButton } from "@/components/UniversalBackButton";
 import { type EventWithOrganizer, type EventParticipantWithUser } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
+import { useCopyEventMutation } from "@/hooks/use-copy-event";
 import { apiRequest, getApiBaseUrl } from "@/lib/queryClient";
 import { ParticipantAvatars } from "@/components/ParticipantAvatars";
 import { InstagramShare } from "@/components/InstagramShare";
@@ -151,6 +152,7 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const copyEventMutation = useCopyEventMutation();
   const [copied, setCopied] = useState(false);
   const [viewAsGuest, setViewAsGuest] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
@@ -879,6 +881,16 @@ export default function EventDetails({ eventId }: EventDetailsProps) {
                   data-testid="host-button-edit"
                 >
                   Edit Event
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full border-green-300 text-green-700 hover:bg-green-50 dark:border-green-600 dark:text-green-400 dark:hover:bg-green-900/20"
+                  disabled={copyEventMutation.isPending}
+                  onClick={() => copyEventMutation.mutate(Number(event?.id ?? eventId))}
+                  data-testid="host-button-copy"
+                >
+                  <Copy className="w-4 h-4 mr-2" />
+                  {copyEventMutation.isPending ? "Copying…" : "Copy Event"}
                 </Button>
 
                 {/* Cancel / Postpone lifecycle controls */}
