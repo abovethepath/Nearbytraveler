@@ -378,8 +378,13 @@ export default function ManageEvent({ eventId }: ManageEventProps) {
   const updateEventMutation = useMutation({
     mutationFn: async (updateData: Partial<Event>) => {
       console.log('Starting API request to update event');
+      // Drop the copy marker on first save: strip a trailing " (Copy)" from the
+      // title (only when it's at the very end) so copied events lose the suffix.
+      const payload = typeof updateData.title === 'string'
+        ? { ...updateData, title: updateData.title.replace(/ \(Copy\)$/, '') }
+        : updateData;
       try {
-        const response = await apiRequest("PUT", `/api/events/${eventId}`, updateData);
+        const response = await apiRequest("PUT", `/api/events/${eventId}`, payload);
         console.log('API response received:', response);
         
         if (!response.ok) {
