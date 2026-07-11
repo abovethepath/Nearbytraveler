@@ -1364,6 +1364,81 @@ It's worth being direct about this: solo travel in your 50s can be lonelier than
 The setup is what everything above is about. Slow down. Pick activities over sightseeing. Use tools built for connection rather than logistics. Talk to the people already around you.
 
 Solo travel in your 50s at its best isn't just tolerable — it's genuinely one of the better versions of the thing. You know what you want, you're not performing for anyone, and you have the patience to let real conversations actually develop. Book the week-long stay, sign up for the class on the first day, and open the app when you get there.`
+  },
+  {
+    title: "Solo Travel in Your 60s: How to Actually Meet People",
+    date: "2026-07-11",
+    slug: "solo-travel-in-your-60s-how-to-meet-people",
+    description: "Solo travel in your 60s is booming — but hostel tips don't apply. Here's the real playbook for meeting people when you travel alone over 60.",
+    body: `Solo travel in your 60s is growing faster than most travel brands have caught up with. Baby Boomers and older travelers are hitting the road in record numbers in 2026, and a significant portion are going alone — by choice, not circumstance. They want the freedom. They've earned the good hotel. They have no interest in sharing a dorm with a 24-year-old backpacker.
+
+And yet the articles keep recommending hostels. Or group tours with matching lanyards and a 7am departure. Or Facebook groups where you post "anyone want to meet up in Seville?" into the void.
+
+None of that fits how most people in their 60s actually want to travel. So here's what does.
+
+## Why the Standard Advice Misses the Mark
+
+Most solo travel advice is written with a single reader in mind: someone in their 20s with a budget, a flexible schedule, and no real preference for where they sleep. The social infrastructure of budget travel, especially hostels, is genuinely built for that person. Common rooms, shared kitchens, communal breakfast tables — they create accidental connection because everyone is physically in the same space with nothing much else to do.
+
+By your 60s, you've likely got more options and more preferences. You're staying somewhere comfortable. You're eating at actual restaurants. You're moving at your own pace. That's not a problem to overcome — it's a completely reasonable way to travel. The issue is that traveling this way removes the accidental-collision model entirely. You have to build connection more intentionally, which turns out to be something people in their 60s are often quite good at, once they stop waiting for it to happen on its own.
+
+## Slow Down More Than Feels Necessary
+
+The single biggest structural advantage available to solo travelers over 60 is time. Many are retired, or semi-retired, or simply done with the five-cities-in-eight-days model. That's worth leaning into hard.
+
+Spending a week in one place instead of two or three changes everything socially. You become a recognizable face. The café where you had coffee on Monday remembers you by Wednesday. The bookshop owner has a reason to actually talk to you. The woman who was also eating alone at the wine bar on Tuesday notices you're back on Thursday.
+
+**Familiarity is social currency**, and you accumulate it faster than you'd think when you slow down. Travelers racing through a city never get this. It's one of the genuine rewards of traveling the way your 60s allow you to.
+
+## Pick Activities That Filter the Room
+
+Not all activities are equally good for meeting people, and the difference matters more than most travel articles admit.
+
+A large city bus tour concentrates a lot of strangers for 90 minutes and then releases them back into the city before anyone has said more than two sentences. It feels social but rarely produces actual connection. A half-day bread-baking class with eight people, or a small-group olive oil tasting in Tuscany, or a garden tour led by a local horticulturalist — these are different. The group is small, the shared context runs deeper, and there's time to actually talk.
+
+The specificity of the activity does useful filtering work. People who sign up for a literary walking tour of Dublin, or a foraging morning in the Dordogne, or a natural wine tasting in a producer's cellar tend to be curious, intentional travelers with something to say. The more niche the activity, the more you can assume about the people in the room with you.
+
+[How to Find Travel Buddies in Any City](/blog/how-to-find-travel-buddies) makes this point well — connection happens most naturally when people are doing something together, not when they're actively trying to find it.
+
+## The Regulars Strategy Still Works
+
+This is simple enough to sound insufficient, but it keeps being true: find one place you like and go back.
+
+A neighborhood wine bar. A morning market. A café that doesn't feel like a tourist operation. Go on day one, go again on day two. By the third visit, you're not a stranger anymore. Bartenders introduce you to their other regulars. People who saw you yesterday recognize you today. The social warmth of a place — which you can't manufacture on a single visit — starts to extend to you.
+
+This works especially well for solo travelers over 60 because you're often staying longer and moving slower. A week in one neighborhood gives you enough time to become a recognizable face in two or three places. That's more social traction than most people manage in a month of rushing.
+
+## Locals Are the Better Target
+
+There's a mental shift worth making early in the trip: stop thinking primarily about meeting other travelers, and start thinking about meeting people who actually live there.
+
+Locals carry the real texture of a place. They know what's happening this weekend, which market is worth the bus ride, where the neighborhood goes to eat on a weekday night. More usefully, they have actual social lives you can briefly step into — a friend group having drinks Friday, a weekly market where everyone knows each other.
+
+The right question opens this up. "What would you do this weekend if you had nowhere to be?" gets you something real. "Is there a neighborhood market the tourists don't find?" gives someone a reason to be genuinely helpful rather than just polite. People enjoy being asked for the local version. Most travelers never think to ask.
+
+[How to Meet Locals When Traveling (Not Just Tourists)](/blog/meet-locals-when-traveling) covers the specifics of which situations make locals most likely to actually invite you somewhere rather than just point you at a landmark.
+
+## Solving the Evenings Problem
+
+The part of solo travel that most people find hardest, regardless of age, is the evening. The day fills itself — museums, walking, markets, a long lunch. Evenings feel more exposed. Restaurants seat you at a small table for one. Hotels offer a bed and a television.
+
+This is a structural problem, not a personal one, and it has practical solutions.
+
+Some of it is venue choice: a restaurant with counter seating or communal tables is meaningfully different from one with separate two-tops. A wine bar where the staff actually talks to customers is different from a formal dining room. Choosing where to spend evenings with connection in mind makes a concrete difference.
+
+For the real-time version of this problem — being in an unfamiliar city at 7pm, wanting company, not knowing where to find it — [Nearby Traveler](https://nearbytraveler.org) is worth knowing about. You open it, mark yourself as available, and see other travelers and locals nearby who are free right now. Everyone using it is there for the same reason, which removes most of the awkwardness of approaching strangers. It's particularly useful in that window after dinner when the evening could go either way.
+
+[Alone at Night in a New City? Here's What Actually Works](/blog/solo-travel-evenings-not-in-a-hostel) lays out the full picture for solo hotel evenings — venue strategy, timing, and how to turn what feels like an empty night into something worth having.
+
+## On Energy and Honest Tradeoffs
+
+Traveling in your 60s sometimes means having less social energy than you did at 35, or needing more recovery time after a big day, or simply not wanting to stay out until midnight just to have company. That's real and worth honoring rather than pushing past.
+
+The good news is that the tactics above don't require performing extroversion. Going back to the same wine bar twice is low-effort. Booking a small cooking class is a single decision. Asking a café owner one genuine question is 30 seconds of courage. **You don't need to be the life of the room. You just need to show up twice and say something once.**
+
+The people who travel alone in their 60s and consistently meet people worth knowing aren't especially outgoing. They're consistent. They pick a place, they return, and they're the one who speaks first.
+
+Book the cooking class before you leave home, find the wine bar on your first evening, and go back the next night.`
   }
 ];
 
