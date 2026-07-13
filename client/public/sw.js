@@ -1,74 +1,31 @@
-// Nearby Traveler PWA Service Worker - v8
-const CACHE_NAME = 'nt-pwa-v9';
-const CORE_ASSETS = [
-  '/',
-  '/manifest.json',
-];
+// Nearby Traveler Service Worker - v10 (push-only; no fetch/cache handling)
+// All fetch interception and app-shell caching were removed to stop serving a
+// stale shell on iOS Safari. This worker now ONLY handles web push. Existing
+// clients still running the old caching worker replace it on next load (version
+// bumped below), and the activate handler purges every cache they left behind.
+const SW_VERSION = 'nt-sw-v10';
 
-// Install: cache core assets, clear old caches
+// Install: take over immediately, no asset pre-caching
 self.addEventListener('install', function(event) {
-  console.log('SW: Installing v8');
+  console.log('SW: Installing ' + SW_VERSION + ' (push-only)');
+  self.skipWaiting();
+});
+
+// Activate: delete ALL old caches (purges the stale app shell) and claim clients
+self.addEventListener('activate', function(event) {
+  console.log('SW: Activating ' + SW_VERSION);
   event.waitUntil(
     caches.keys().then(function(names) {
-      return Promise.all(
-        names.filter(function(n) { return n !== CACHE_NAME; }).map(function(n) { return caches.delete(n); })
-      );
+      return Promise.all(names.map(function(n) { return caches.delete(n); }));
     }).then(function() {
-      return caches.open(CACHE_NAME).then(function(cache) {
-        return cache.addAll(CORE_ASSETS).catch(function() {});
-      });
-    }).then(function() {
-      return self.skipWaiting();
+      return self.clients.claim();
     })
   );
 });
 
-// Activate: claim all clients
-self.addEventListener('activate', function(event) {
-  console.log('SW: Activating v8');
-  event.waitUntil(self.clients.claim());
-});
-
-// Fetch: network-first with cache fallback for navigations and static assets
-self.addEventListener('fetch', function(event) {
-  var request = event.request;
-
-  // Skip non-GET, API calls, and WebSocket upgrades
-  if (request.method !== 'GET') return;
-  var url = request.url;
-  if (url.includes('/api/') || url.includes('/ws') || url.includes('socket')) return;
-
-  // For navigation requests (HTML pages): network first, fall back to cached /
-  if (request.mode === 'navigate') {
-    event.respondWith(
-      fetch(request).then(function(response) {
-        // Cache the latest HTML
-        var clone = response.clone();
-        caches.open(CACHE_NAME).then(function(cache) { cache.put(request, clone); });
-        return response;
-      }).catch(function() {
-        return caches.match(request).then(function(cached) {
-          return cached || caches.match('/');
-        });
-      })
-    );
-    return;
-  }
-
-  // For static assets (JS, CSS, images): network first, cache fallback
-  if (url.match(/\.(js|css|png|jpg|jpeg|svg|woff2?|ttf|ico)(\?|$)/)) {
-    event.respondWith(
-      fetch(request).then(function(response) {
-        var clone = response.clone();
-        caches.open(CACHE_NAME).then(function(cache) { cache.put(request, clone); });
-        return response;
-      }).catch(function() {
-        return caches.match(request);
-      })
-    );
-    return;
-  }
-});
+// NOTE: intentionally NO 'fetch' listener. Without one, this worker never
+// intercepts navigations or assets, so the network/HTTP cache serves pages
+// normally and the stale app shell can no longer be served.
 
 // Push: show notification when a push message is received
 self.addEventListener('push', function(event) {

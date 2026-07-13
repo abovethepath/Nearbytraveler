@@ -371,18 +371,8 @@ export class NotificationManager {
   }
 
   async init() {
-    if ('serviceWorker' in navigator) {
-      try {
-        // Skip if OneSignal's service worker is already registered (avoid conflict)
-        const registrations = await navigator.serviceWorker.getRegistrations();
-        const hasOneSignalSW = registrations.some(r => r.active?.scriptURL?.includes('OneSignalSDK'));
-        if (!hasOneSignalSW) {
-          await navigator.serviceWorker.register('/sw.js');
-        }
-      } catch (error) {
-        console.error('Service Worker registration failed:', error);
-      }
-    }
+    // Service Worker registration removed: /sw.js is now push-only and is never
+    // registered by app code. Web push runs through OneSignal's own worker.
 
     // Initialize audio context for sound notifications
     this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
