@@ -1577,6 +1577,83 @@ The 2026 "Connections IRL" framing is mostly marketing, but it's pointing at som
 That version of travel almost always involves other people. And other people, when you're moving through the world alone, usually start as strangers.
 
 The next time you've got a gate delay and the person next to you has one earbud out, say something about the board. See what happens.`
+  },
+  {
+    title: "Group Tours for Solo Travelers: How to Actually Make Friends",
+    date: "2026-08-11",
+    slug: "group-tours-for-solo-travelers-how-to-make-friends",
+    description: "Solo travelers now dominate small group tours. Here's how to choose the right format, build real friendships on the road, and stay connected after.",
+    body: `Solo travelers now account for nearly half of all small group tour bookings — and in some formats, significantly more. That number has been climbing for years, and in 2026, major operators have started building entire product lines around it. G Adventures launched dedicated 'solo-ish' departures. Intrepid has long-running solo-only small groups. The format has changed.
+
+But here's what hasn't changed: most people who book a group tour alone are hoping for more than a guided walk through ancient ruins. They want to come home with people they actually liked. That part is not guaranteed. The tour operator won't do it for you. Here's how to make it happen yourself.
+
+## Choosing the Right Tour Format
+
+This is where most solo travelers make their first mistake. Not all group tours are equally social.
+
+Large coach tours — 30, 40, 50 people rotating through sights on a fixed schedule — are the hardest environment for genuine connection. The group is too big to find your people, and the structure works against spontaneity. You can have a good time. You're unlikely to make close friends.
+
+**Small group tours, capped at 12 to 16 people, are a fundamentally different experience.** You eat together, navigate problems together, get delayed together. The shared inconveniences matter as much as the shared highlights. Look for tours where the maximum group size is stated explicitly — operators who care about this will say so.
+
+Activity-led formats also outperform sightseeing-led ones. Hiking tours, cycling trips, cooking-focused itineraries, overland journeys — anything where participants are *doing* something physical together creates faster connection than standing in front of the same monument. The effort becomes shared, which accelerates trust.
+
+Solo-specific departures are worth considering, but they have a tradeoff: the social pressure can be higher. Everyone knows why they booked, which removes some of the organic nature of meeting people. Standard small groups with a high solo traveler percentage often feel more natural.
+
+Before booking, ask the operator directly: what percentage of your passengers on this route typically travel solo? A good operator knows this number. If they don't, that tells you something.
+
+## What to Do During the Tour
+
+The mistake is treating the structured parts of the tour as the main event and the unstructured parts as downtime.
+
+Flip that. The meals, the free afternoons, the lobby waits, the bus rides — that's where friendships form. Guides move you from place to place. Connection happens in between.
+
+Specifically:
+
+**Sit next to different people every day.** On a bus, at a dinner table, on a boat. The people you clicked with on day one are not necessarily the people you'll like most by the end. Give yourself exposure to the whole group before the dynamic sets.
+
+**Propose things.** Don't wait for someone else to organize the post-dinner drink or the optional sunrise hike. Be the one who floats the idea in the group chat and invites everyone. You don't have to be extroverted to do this — a simple text to the group costs nothing. The people who create micro-moments for the group are always the ones people remember and want to stay in touch with.
+
+**Don't disappear at night.** This sounds obvious, but the exhaustion is real on a packed itinerary. Some nights you need to recharge alone, and that's fine. But if you consistently retreat to your room after dinner, the group will stop expecting you, and you'll miss the conversations that matter. Staying out for one drink — even for 45 minutes — is almost always worth it. For more on keeping your social momentum up during solo evenings, [Alone at Night in a New City? Here's What Actually Works](/blog/solo-travel-evenings-not-in-a-hostel) is worth reading before you go.
+
+And the obvious thing: put your phone away during the actual activities. Not as a philosophical statement — just because you can't be present and documenting simultaneously, and the people you're with will notice which one you chose.
+
+## What Happens When the Tour Ends
+
+This is where most travel friendships quietly die. The tour ends, everyone disperses, there's a round of hugs at the final dinner, and six months later you're Instagram followers who occasionally like each other's photos.
+
+It doesn't have to go that way, but you have to act during the tour, not after.
+
+**Before the last day, make a real plan with at least one or two people.** Not a vague 'we should meet up someday' — an actual plan. A specific city, a rough window, a commitment. Even if the plan changes later, making it while you're still together is what separates the friendships that continue from the ones that fade.
+
+Share contact information properly. Not just Instagram. Phone numbers, WhatsApp, Signal — whatever people actually check. A group chat works for keeping the collective memory alive, but individual friendships need individual contact.
+
+If your itineraries overlap after the tour, use that. Overlapping by even one day in the same city, without the tour structure, is when you find out whether the friendship is real or just situational. The ones that survive a day of just figuring out where to eat lunch together are the ones worth keeping.
+
+## Staying Connected After You're Back Home
+
+The first few weeks after a tour, the group chat is usually active. Then it slows. Then it's birthday wishes and occasional travel photos. This is normal. But some connections from group tours become lasting ones, and they typically share one pattern: someone made the first move to keep it going.
+
+That move can be simple. A message that references something specific — an inside joke, a shared moment — shows you were actually paying attention. It's different from a mass check-in, and people respond to it differently.
+
+If you travel frequently, [How to Find Travel Buddies in Any City](/blog/how-to-find-travel-buddies) has useful strategies for maintaining a network of travel contacts you can reach out to when your routes cross. People you met on a tour two years ago are often genuinely excited to hear from you when you're heading to their city.
+
+For the gaps between trips, the connections you want to maintain are worth a small amount of intentional effort. Not pressure — just occasional, specific contact. That's all most friendships need to stay warm.
+
+## The Real-Time Gap Small Group Tours Leave
+
+Small group tours solve a lot of the solo travel loneliness problem, but they have a specific structural gap: before the tour starts and after it ends, you're on your own again. Arrival day in a new city before your group assembles. A free day at the end when everyone has already flown home. These windows can feel isolating in a way that's almost worse than standard solo travel, because you've just had days of constant company.
+
+This is exactly the window where [Nearby Traveler](https://nearbytraveler.org) is useful — open it in that city and see travelers and locals who are available to meet right now, so arrival day is a starting point rather than a holding pattern.
+
+For solo travelers who want the full picture on building connection across a trip — not just during structured tour time — [How to Meet People When Traveling Alone](/blog/how-to-meet-people-when-traveling-alone) covers the broader toolkit that works alongside any format you choose.
+
+## The Last Dinner Isn't the Endpoint
+
+The friends you make on a small group tour can be some of the most durable travel connections you'll have, because you built them under unusual conditions — real time, real situations, no performance required. But they don't maintain themselves.
+
+Book the right size tour. Stay present during the unstructured hours. Make a specific plan before the last day. Send the message that proves you were paying attention.
+
+The tour gives you the room. You still have to walk through the door.`
   }
 ];
 
