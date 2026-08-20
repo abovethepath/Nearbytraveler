@@ -92,8 +92,13 @@ export function NotificationPermissionModal({ userId, forceShow }: Props) {
     setOpen(false);
   };
 
+  // Explicit X / backdrop dismiss — same as "Not now": snooze, don't re-nag.
+  const handleOpenChange = (v: boolean) => {
+    if (!v) handleLater();
+  };
+
   return (
-    <Dialog open={open} onOpenChange={(v) => { if (!v) handleLater(); }}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 max-w-sm mx-auto rounded-2xl p-6">
         <div className="flex flex-col items-center text-center gap-4">
           <div className="w-14 h-14 rounded-full bg-orange-100 dark:bg-orange-900/40 flex items-center justify-center">
@@ -122,7 +127,7 @@ export function NotificationPermissionModal({ userId, forceShow }: Props) {
               className="w-full text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 text-sm"
             >
               <BellOff className="w-4 h-4 mr-2" />
-              Maybe Later
+              Not now
             </Button>
           </div>
         </div>

@@ -1198,6 +1198,12 @@ app.use((req, res, next) => {
 
     // Only serve index.html for frontend routes, preserving all API routes
     app.use("*", (req, res, next) => {
+      // Block known exploit-scan junk before it reaches the SPA/API logic
+      const BOT_JUNK = /\.(php|asp|aspx|jsp)$|wp-admin|wp-content|wp-login|wp-json|xmlrpc/i;
+      if (BOT_JUNK.test(req.originalUrl)) {
+        return res.status(404).end();
+      }
+
       // Preserve ALL API routes - never serve index.html for them
       if (req.originalUrl.startsWith("/api/")) {
         console.log("🔄 API route preserved:", req.originalUrl);

@@ -61,22 +61,10 @@ export function OneSignalInit({ userId }: { userId: number | null | undefined })
             });
           } catch (e) { /* badge API may not exist */ }
 
-          // Auto-prompt for push permission after 3rd login if not yet granted
-          try {
-            const permission = await OneSignal.getNotificationPermission?.();
-            if (permission !== 'granted' && permission !== 'denied') {
-              const key = 'nt_login_count';
-              const count = parseInt(localStorage.getItem(key) || '0', 10) + 1;
-              localStorage.setItem(key, String(count));
-              if (count >= 3) {
-                await OneSignal.showNativePrompt?.();
-                const newPerm = await OneSignal.getNotificationPermission?.();
-                if (newPerm === 'granted') {
-                  await registerSubscription(userId);
-                }
-              }
-            }
-          } catch (e) { /* permission prompt may not be available */ }
+          // NOTE: We deliberately do NOT auto-request permission here.
+          // Push permission is only ever requested via an explicit user click
+          // in <NotificationPermissionModal /> ("Turn On Notifications").
+          // Auto-prompting on load trapped ChromeOS users with no decline path.
         } catch (e) {
           console.warn("[OneSignal] init error:", e);
         }
