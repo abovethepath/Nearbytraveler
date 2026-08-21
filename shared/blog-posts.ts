@@ -1654,6 +1654,73 @@ The friends you make on a small group tour can be some of the most durable trave
 Book the right size tour. Stay present during the unstructured hours. Make a specific plan before the last day. Send the message that proves you were paying attention.
 
 The tour gives you the room. You still have to walk through the door.`
+  },
+  {
+    title: "Solo Travel Without a Hostel? Here's How to Meet People",
+    date: "2026-08-21",
+    slug: "solo-travel-meet-people-without-hostel",
+    description: "Staying in a hotel but still want real connection? Here's the practical playbook for meeting people as a solo traveler without ever setting foot in a dorm.",
+    body: `There's a version of solo travel advice that assumes you're 24, sleeping in a ten-bed dorm, and perfectly comfortable striking up conversation with whoever's on the bunk above you. A lot of people find that advice useful. And a lot of people don't, because that's not how they travel anymore — or ever.
+
+The fastest-growing segment of solo travelers right now is adults in their 30s, 40s, and beyond. They want a private room. They want a good shower. They want to sleep without earplugs. And they also, sometimes, want to sit across from another human being and have an actual conversation.
+
+Here's how to do both.
+
+## The Real Problem With Hotel Solo Travel
+
+Hostels are social by design. The common room, the shared kitchen, the bar — the whole infrastructure nudges strangers toward each other. Hotels are private by design. Closed doors, quiet lobbies, breakfast tables set for one. Nobody is there to meet you.
+
+That's not a flaw in hotels — it's the point. But it does mean **you have to build your social life outside the building**, rather than stumbling into it at check-in.
+
+Once you accept that, the options open up considerably.
+
+## Lead With Activity, Not With Presence
+
+The mistake most solo hotel travelers make is waiting for connection to happen passively — lingering in the hotel bar, wandering streets hoping for a spontaneous encounter. That works occasionally, but it's a slow game.
+
+Activity-first is faster and honestly more enjoyable. When you're doing something — a cooking class, a guided food tour, a day hike, a photography walk — you have an automatic reason to be there, automatic shared experience, and automatic conversation material. You don't have to introduce yourself as a solo traveler looking for company. You're just someone who wanted to make pasta from scratch.
+
+Small-group experiences are particularly good for this. Twelve people on a half-day tour is enough to find at least one interesting person. A group of forty is basically a crowd where you can disappear without talking to anyone.
+
+If you're unsure how to actually find and choose the right format, [this guide on group tours for solo travelers](/blog/group-tours-for-solo-travelers-how-to-make-friends) breaks down what works and what doesn't.
+
+## The Bar Counter and the Chef's Table
+
+Seating matters more than people realize. A table for one in the middle of a restaurant is isolation. A seat at the bar, or at a counter facing a kitchen, is a conversation waiting to happen.
+
+Bartenders talk to solo diners. Chef's counter seats put you six inches from someone having the same experience. Communal tables at wine bars are explicitly designed for strangers. These aren't exotic or uncomfortable settings — they're just choices you make at the moment of booking or arrival.
+
+If eating alone still feels like something to survive rather than enjoy, the honest advice in [this post on dining solo while traveling](/blog/eating-alone-while-traveling) is worth reading before your next trip.
+
+## Classes, Clubs, and Regular Spots
+
+One-off activities are great. But if you're staying somewhere for more than a few days, repetition does something that a single tour can't: it lets people recognize you.
+
+Showing up to the same coffee shop two mornings in a row, taking a second language class, going back to the same yoga studio — these are low-effort moves that signal you're not just passing through. Locals and regular visitors notice. The barista starts asking what you're doing in town. The person next to you in class asks if you found the homework difficult.
+
+This is the slow travel principle applied to social life. You don't have to stay for months to benefit from it — even a few days of showing up somewhere consistently changes the dynamic. [Slowing down is genuinely one of the most effective social strategies](/blog/slow-travel-solo-meet-people) for solo travelers, and it costs nothing.
+
+## Apps and Tools That Actually Work
+
+For real-time connection — when you arrive in a city and want company that evening rather than in three days — [Nearby Traveler](https://nearbytraveler.org) is worth having. It shows you other travelers and locals who are available to meet right now, in the city you're in. You can see who they are and what they're into before you reach out. No long message threads, no coordination across time zones. You're in the same city, you're both free, you meet.
+
+For longer planning windows, Facebook groups for specific cities or travel interests can surface people doing the same things you are. Meetup.com is genuinely useful in larger cities — locals use it too, not just tourists, so the conversations are different.
+
+Whatever tools you use, the principle is the same: **don't wait to see who materializes, actively go find the people who match what you're doing.**
+
+## A Word About Safety
+
+Meeting strangers as a solo traveler is normal and mostly fine. But it's worth being thoughtful, especially when you're alone and away from home. First meetings in public places, telling someone back home what you're up to, and trusting your instincts when something feels off — these are basics, not paranoia. Solo female travelers in particular may find the practical advice in [this safety guide](/blog/solo-female-travel-safety-tips) useful before experimenting with any of these approaches in an unfamiliar city.
+
+## The Mindset Shift
+
+Here's the honest version: solo hotel travel is not naturally social, and nobody is going to do the work for you. That's a tradeoff you made when you chose privacy and comfort over the communal setup of a hostel. It's a reasonable tradeoff.
+
+But connection is still entirely available. It just requires being slightly more intentional — picking the right seat, booking the right experience, opening an app before wandering out alone at 7pm wondering where everyone is.
+
+The people worth meeting are out there. They booked private rooms too.
+
+Book one thing before you land, sit at the counter at dinner, and go from there.`
   }
 ];
 
