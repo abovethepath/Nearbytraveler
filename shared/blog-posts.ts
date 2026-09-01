@@ -1721,6 +1721,79 @@ But connection is still entirely available. It just requires being slightly more
 The people worth meeting are out there. They booked private rooms too.
 
 Book one thing before you land, sit at the counter at dinner, and go from there.`
+  },
+  {
+    title: "Solo Travel in Your 20s: How to Actually Meet People",
+    date: "2026-09-01",
+    slug: "solo-travel-in-your-20s-how-to-meet-people",
+    description: "Solo travel in your 20s looks perfect on Instagram but feels lonelier than anyone admits. Here's honest, specific advice for actually meeting people on the road.",
+    body: `Solo travel in your 20s is supposed to be the dream. You've seen the Reels. The spontaneous friendships at golden hour. The hostel rooftop where everyone becomes best friends overnight. The group of strangers who turn into a travel crew for the next two weeks.
+
+Sometimes that happens. Often it doesn't — and when it doesn't, it hits harder than you expect. Because you're at the age when meeting people is supposed to be effortless, and somehow you're eating pad thai alone for the third night in a row, scrolling through photos you have nobody to show.
+
+This is the part nobody posts about. And it's worth being honest about it, because it's fixable.
+
+## Why Your 20s Are Both the Best and Hardest Time to Travel Solo
+
+Your 20s give you real advantages on the road. You're flexible. You can tolerate a lot. You're generally seen as approachable. Budget accommodation is fine. Staying out until 2am is still fun rather than punishing.
+
+But there's a specific trap that catches solo travelers in their 20s: **the assumption that social just happens**. You grew up in a world designed to connect you — group chats, algorithms, school hallways, university dorms. You've rarely had to manufacture connection from scratch.
+
+Travel removes all that scaffolding. You're dropped into a city where nobody knows you, has any reason to talk to you, and is probably busy with their own life. The people who thrive socially while traveling aren't luckier than you — they've just learned to stop waiting.
+
+## Stop Relying on the Hostel to Do the Work
+
+Hostels are still one of the best environments for solo traveler connection, full stop. But the passive version — check in, hang around the common area, hope someone talks to you — works less reliably than hostel mythology suggests.
+
+The travelers who consistently make friends at hostels are the ones who show up to the organized stuff, ask the front desk what's happening tonight, and introduce themselves first. They treat the hostel as a starting point rather than a guarantee.
+
+If you're booking accommodation specifically to meet people, look for hostels running communal dinners, pub crawls, or day trips. Those structured moments force interaction in a way that lounging around never does.
+
+And if hostels aren't your thing anymore, [solo travel without a hostel is absolutely workable](/blog/solo-travel-meet-people-without-hostel) — it just requires being more intentional about where you put yourself.
+
+## The Activities That Actually Work
+
+Structured activities are consistently underrated by travelers in their 20s. Cooking classes, walking tours, surf lessons, language exchanges — these put you physically next to other people with a shared task, which is the fastest shortcut to conversation that exists.
+
+You're not approaching a stranger cold. You're just talking about the thing you're both doing. That's the entire difference.
+
+Group tours get dismissed as uncool, but [they're one of the most reliable ways to make genuine friends on the road](/blog/group-tours-for-solo-travelers-how-to-make-friends), especially smaller formats with 8–12 people. You spend hours together. Shared experiences compound fast.
+
+Day trips work on the same principle. Sign up for one, then pay attention to who you click with, and suggest dinner after. Most people traveling solo are waiting for exactly that invitation.
+
+## How to Use Apps Without Wasting Hours on Your Phone
+
+There's a version of using travel apps that's genuinely useful and a version that just eats your evening. The difference is specificity.
+
+General social apps — the ones you use at home — don't translate well to travel. Your social graph is back home. The location-based stuff is noisy.
+
+Apps built specifically for real-time traveler connection work better. [Nearby Traveler](https://nearbytraveler.org) is worth opening the moment you land somewhere new — you can see travelers and locals who are available to meet right now, mark yourself as free, and actually find people rather than hoping the universe puts someone in your path. It removes the social friction because everyone there is already opted in to meeting someone.
+
+The key with any app is using it actively, not passively. Set your availability, reach out to people who look interesting, suggest something specific and low-stakes like coffee or a walk. Vague messages get vague responses.
+
+## The Habits That Separate Connected Travelers from Lonely Ones
+
+A few specific behaviors show up consistently in solo travelers who meet people everywhere they go:
+
+**They tell people they're traveling.** This sounds obvious but most people don't do it. Telling someone you're visiting and asking what they'd show a friend who had three days changes a transaction into a conversation. Locals especially love being asked this.
+
+**They become a regular fast.** Pick one cafe or bar and go back. The second time, you're a familiar face. It takes less time than you'd think.
+
+**They put their phone away at meals.** The phone is a do-not-disturb sign. Nobody approaches someone who's visibly occupied, and you won't notice anyone either.
+
+**They say yes to the thing that sounds slightly uncomfortable.** The invite to a stranger's apartment party. The offer to join someone's dinner table. The suggestion to extend a night out. This is where most solo travel friendships actually start — not in hostel common rooms, but in the yes that comes slightly before your comfort zone does.
+
+For a broader look at what actually patterns across cities and trips, [this breakdown of lessons from solo travel across 10 cities](/blog/lessons-from-solo-travel-meeting-people) is worth reading before your next departure.
+
+## The Loneliness Is Real and Temporary
+
+Even if you do everything right, there will be evenings that feel isolating. Your 20s are a decade when everyone around you seems to be forming the friendships and relationships that will matter for decades — and spending chunks of that time alone in foreign cities can make you question whether you're doing the whole thing wrong.
+
+You're not. The loneliness of solo travel is almost always temporary and almost always followed by a connection you wouldn't have made any other way. But it helps to know it's coming, name it when it shows up, and have a plan rather than just sitting with it.
+
+The plan doesn't have to be complicated. Open an app. Walk to the nearest lively bar and sit at the counter instead of a table. Say yes to the next thing someone suggests.
+
+Your 20s are genuinely one of the best times to travel alone — not because it's easy, but because you're still at the age where a stranger can become a real friend in 48 hours. That window doesn't stay open forever. Use it.`
   }
 ];
 
