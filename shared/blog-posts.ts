@@ -1794,6 +1794,77 @@ You're not. The loneliness of solo travel is almost always temporary and almost 
 The plan doesn't have to be complicated. Open an app. Walk to the nearest lively bar and sit at the counter instead of a table. Say yes to the next thing someone suggests.
 
 Your 20s are genuinely one of the best times to travel alone — not because it's easy, but because you're still at the age where a stranger can become a real friend in 48 hours. That window doesn't stay open forever. Use it.`
+  },
+  {
+    title: "Solo Travel Friendships: Why They Hit Hard (and How to Keep Them)",
+    date: "2026-09-11",
+    slug: "solo-travel-friendships-why-they-feel-intense",
+    description: "Solo travel friendships form fast and feel unusually real. Here's why that happens — and what to actually do so they don't disappear when the trip ends.",
+    body: `You meet someone at a guesthouse breakfast on a Tuesday. By Thursday you've shared a twelve-hour bus ride, a bad meal, a good bar, and more honest conversation than you've had with some people you've known for years. By Saturday one of you is on a plane. You exchange numbers, maybe Instagram handles, promise to visit each other's cities.
+
+Six months later you can barely remember to like their photos.
+
+This is one of the most universal and least talked-about experiences in solo travel. The friendships form with unusual speed and unusual depth, then dissolve almost as fast. Most people chalk it up to the nature of travel and move on. But if you've felt genuine grief over a connection that evaporated, or wondered why you can't seem to maintain the friendships you make on the road, there's more going on than simple distance.
+
+## Why Solo Travel Friendships Feel So Intense
+
+The short answer is that the conditions that produce deep connection are almost perfectly replicated when you travel alone.
+
+Psychologists who study friendship point to a few consistent factors: **proximity, repeated unplanned interaction, and the willingness to let your guard down**. Solo travel delivers all three in an unusually compressed timeframe. You're physically together constantly. You run into each other in the corridor, at the hostel kitchen, at the viewpoint you both ended up at. And because you're both outside your normal lives — away from your jobs, your routines, your usual social roles — you're more willing to be honest. There's nothing to protect. You'll probably never see this person again anyway.
+
+That last part is the interesting one. The perceived temporariness of travel friendships is part of what makes them feel so safe. You can tell a stranger on a train things you wouldn't tell your closest friend at home, because the stakes feel low. But this also means the connection forms in a kind of hothouse — artificially accelerated, built on intimacy that was cheap to offer because you both assumed it was temporary.
+
+Add to this the fact that solo travelers are, by definition, more available than people traveling with partners or groups. When you're alone, meeting another solo traveler isn't an intrusion into an existing social unit. You're both open, both a little hungry for connection. [How to Meet People When Traveling Alone](/blog/how-to-meet-people-when-traveling-alone) covers the mechanics of that initial connection well — but what happens after is a different question entirely.
+
+## The Compression Problem
+
+One reason these friendships feel so real is that they are real. The depth isn't manufactured or illusory. You genuinely learned something true about that person, and they about you. The problem isn't that the connection was fake. The problem is that **three days of travel time isn't the same as three days of regular time**.
+
+When researchers study how long it takes to form a close friendship, they consistently find it requires somewhere in the range of 50 to 200 hours of contact. Solo travel compresses those hours. You're together from morning to night. You eat together, get lost together, make decisions together. Ten days of travel can deliver the contact hours of months of regular friendship-building.
+
+But those hours are also context-dependent. The version of yourself that exists on a trip — more open, less defended, freed from your usual responsibilities — is a real version, but it's not the version your travel friend will encounter if you try to video call on a random Wednesday night when you're tired from work and have three other things on your mind. The friendship was built in a context that no longer exists for either of you. That's not a failure. It's just physics.
+
+## Why They Disappear Anyway
+
+Beyond the context problem, there are practical reasons travel friendships fade that most people don't think about clearly.
+
+First, there's no natural structure to maintain them. Your friendships at home survive partly because you exist in the same ecosystem. You might work in the same industry, live in the same city, go to the same gym. You see each other because life brings you together, not because you're both making active effort every time. Travel friends don't share that ecosystem. Every interaction requires both people to consciously choose it, every single time. That's a high bar, and it drops most friendships eventually.
+
+Second, the follow-up almost always happens wrong. The pattern is: exchange contacts at the airport with genuine intentions, send one enthusiastic message in the first week, exchange a few nostalgic lines, and then let the thread go cold because neither person knows how to shift from the intimacy of shared experience to the lower-stakes rhythms of a long-distance friendship. Nobody is villainous here. It just gets awkward.
+
+Third, people underestimate how much effort the transition requires. A friendship that formed in an intense shared environment has to be deliberately rebuilt in a new one. Most travel friendships don't survive this transition not because people don't care, but because they don't know it's something that needs active attention.
+
+## What Actually Works for Keeping Them
+
+The most honest thing to say here is that not every travel friendship is worth maintaining, and trying to keep all of them alive is a recipe for surface-level contact with many people and real connection with none. The first step is deciding which ones actually matter.
+
+For the ones that do, a few things genuinely help.
+
+**Make the first follow-up specific, not sentimental.** "That trip was amazing, we should definitely stay in touch" is how friendships die. "I found the restaurant we were looking for — here's the address for when you go back" gives the other person something real to respond to. Specific is what keeps threads alive.
+
+**Find a recurring low-effort touchpoint.** Some travel friendships survive because both people start watching the same show, or because one person reliably sends the other articles about a shared interest. The content doesn't matter much. What matters is that contact becomes habitual rather than effortful. [Curing Travel Loneliness](/blog/curing-travel-loneliness) touches on how the absence of these small recurring connections is part of what makes sustained solo travel feel isolating — the same logic applies to friendships you're trying to maintain across distance.
+
+**Say explicitly what you want from the friendship.** This sounds strange but it works. If you want to actually visit each other, say it with a specific window. "I'm thinking about coming to Lisbon in the spring — would that work?" changes the whole shape of the relationship. Vague future plans stay vague. Named possibilities become real ones.
+
+**Accept that some of them are meant to be complete.** A friendship that was real and full and then ended cleanly isn't a failure. Some connections are valuable precisely because of their finite shape. Not every good thing needs a sequel.
+
+## Before the Trip Ends
+
+The best time to set up a travel friendship for survival is before you say goodbye, not after. This sounds obvious but almost nobody does it.
+
+Before you leave, find out one specific thing about their life you can follow up on — a job interview coming up, a trip they're planning, something they mentioned wanting to do. That's your follow-up prompt, already loaded. You're not chasing a feeling later. You're responding to something real.
+
+If you're the kind of person who finds these intense connections easy to form but hard to sustain, it's also worth thinking about how you're meeting people in the first place. Tools that create a little context before the first conversation — like [Nearby Traveler](https://nearbytraveler.org), where locals and travelers opt into meeting each other with some information already shared — tend to produce connections that are easier to maintain afterward, because they started on slightly more intentional footing.
+
+For more on the mechanics of actually finding people worth connecting with, [How to Find Travel Buddies in Any City](/blog/how-to-find-travel-buddies) covers the practical side in detail.
+
+## The Part Nobody Says Out Loud
+
+Solo travel friendships feel so intense partly because something real is happening, and partly because you're both performing a slightly freer version of yourselves in a context that won't last. Both things are true at once.
+
+The connections worth keeping are the ones where you can imagine the person in your regular life and still want them there. Not the vacation version of your life — the Tuesday version. The tired, ordinary, not-doing-anything-interesting Tuesday.
+
+If someone passes that test, send them the restaurant address.`
   }
 ];
 
