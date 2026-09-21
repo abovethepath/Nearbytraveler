@@ -1865,6 +1865,95 @@ Solo travel friendships feel so intense partly because something real is happeni
 The connections worth keeping are the ones where you can imagine the person in your regular life and still want them there. Not the vacation version of your life — the Tuesday version. The tired, ordinary, not-doing-anything-interesting Tuesday.
 
 If someone passes that test, send them the restaurant address.`
+  },
+  {
+    title: "The Solo Tax: What the Single Supplement Actually Costs You",
+    date: "2026-09-21",
+    slug: "solo-travel-single-supplement-how-to-avoid",
+    description: "The single supplement adds 50–100% to solo travel costs. Here's what it actually is, why it exists, and the smartest ways to avoid paying it.",
+    body: `A JourneyWoman survey found that 78% of solo travelers name the single supplement as their biggest booking barrier. Not safety, not language, not loneliness. A fee. That's how significant this problem is, and how little useful information exists about actually handling it.
+
+So here's the full picture: what the single supplement is, why it exists, what it realistically costs you, and the specific strategies that work for avoiding it without giving up the kind of trip you actually want.
+
+## What the Single Supplement Actually Is
+
+When a tour operator or cruise line prices a trip, they build the cost around double occupancy. Two people sharing a cabin or room. One price, split two ways. When you travel alone, you occupy a full double room by yourself, and the operator charges you to cover the revenue gap from the missing second person.
+
+That charge is the single supplement, and it is almost never a small one.
+
+**On group tours, the single supplement typically runs between 25% and 100% of the base tour price.** On cruises, 50% to 100% is common, with some smaller ship expeditions charging up to 200%. On a $4,000 tour, you could be looking at an additional $2,000 to $4,000 just for the privilege of not having a roommate you didn't ask for.
+
+Hotels don't call it a single supplement, but the logic is identical. A room priced at $200 per night for two people rarely drops to $100 for one. The solo traveler pays $160 to $200 for a room built for two. Over a two-week trip, that gap compounds fast.
+
+The math is genuinely punishing. Two travelers booking the same itinerary together will each pay meaningfully less than one traveler booking alone. There's no good justification for this beyond the economics of how rooms are sold. That's cold comfort, but understanding the mechanism helps you work around it.
+
+## Where It Hurts Most
+
+Not every travel format taxes solo travelers equally. Knowing where the hit is heaviest helps you make smarter booking decisions.
+
+**River and expedition cruises** are among the worst offenders. Cabins are almost universally priced for two, and single supplements on small expedition ships can reach 200%. If you're dreaming of Antarctic travel or a Danube cruise, budget accordingly or plan aggressively around no-supplement promotions.
+
+**Coach and large group tours** often apply the supplement rigidly, with little flexibility or transparency. You may not even see the supplement broken out clearly in the pricing — it's simply baked in as the 'solo price.'
+
+**Small group adventure tours** are more variable. Some operators have built their model around solo travelers and price accordingly. Others still apply full supplements. The operator and the specific route matter more than the format category.
+
+**Hotels** are generally the most negotiable, particularly if you're booking directly and traveling in shoulder or off-peak seasons. The supplement exists, but it's softer.
+
+## Strategies That Actually Work
+
+### Book Tours With a No Single Supplement Policy
+
+A growing number of operators have dropped the single supplement outright on certain departures, or offer windows during the booking calendar when it doesn't apply. G Adventures has a 'no single supplement' policy on a specific subset of tours. Intrepid regularly runs no-supplement promotions. Exodus Travels has solo-focused departures with waived supplements.
+
+These aren't obscure deals — they're standard products from established operators. The catch is that availability is limited, popular dates sell out, and the no-supplement policy may not apply to every itinerary in the catalog. You need to search specifically for it rather than assuming it applies.
+
+Before booking any tour, ask directly: does a single supplement apply, and are there departures where it doesn't? The operators who care about solo travelers will have a clear answer.
+
+### Request a Roommate Match
+
+Many group tour operators offer a roommate matching program. You indicate willingness to share a room, they pair you with another solo traveler of the same gender, and both of you avoid the supplement. If they can't find a match, most operators will either waive the supplement or guarantee you a private room at no extra charge.
+
+This option exists across most major operators — G Adventures, Intrepid, Contiki, and others — but you often have to ask for it rather than finding it on the booking page. The tradeoff is obvious: you might end up sharing a room with someone whose sleep schedule or tidiness doesn't match yours. For most people, that tradeoff is worth the cost savings on a long or expensive trip. For others, privacy is worth paying for. That's a genuine personal call.
+
+If you're already thinking about the social dynamics of sharing a trip with strangers, [Group Tours for Solo Travelers: How to Actually Make Friends](/blog/group-tours-for-solo-travelers-how-to-make-friends) is a useful companion read — it covers how to navigate group dynamics once you're on the ground.
+
+### Travel in Shoulder Season
+
+Hotels and some operators apply less pricing pressure during shoulder and off-peak periods. A boutique hotel that holds firm on its double-occupancy rate in July may be far more willing to offer a fair solo rate in October. Peak season is when properties have the least incentive to negotiate.
+
+This isn't a guaranteed supplement waiver, but it meaningfully changes your negotiating position. If your travel dates are flexible, building your calendar around shoulder season can save several hundred dollars per trip on accommodation alone.
+
+### Choose Accommodation Formats Built for Solo Travelers
+
+Hostels are the obvious answer, but they're not the only one, and for many solo travelers, dorm beds aren't the right fit. Boutique guesthouses, particularly in Europe and Southeast Asia, often have single rooms priced at genuinely solo-appropriate rates. Aparthotels charge by the unit rather than by occupancy, which eliminates the supplement structure entirely. Home-sharing platforms give you a private space at a flat price.
+
+The supplement is a hotel-industry construct. It doesn't exist in every accommodation category, and choosing formats that sidestep it is often the cleanest solution. For solo travelers who want real connection alongside a private room, [Solo Travel Without a Hostel? Here's How to Meet People](/blog/solo-travel-meet-people-without-hostel) covers how to build social momentum without compromising on accommodation.
+
+### Time Your Cruise Booking Carefully
+
+Cruise lines sometimes open last-minute solo cabins at reduced or waived supplements when they have unsold inventory. This is more reliable on larger ships with guaranteed solo cabins than on expedition vessels, where capacity is tight. The tradeoff is obvious: you can't reliably plan a specific trip around last-minute availability. But if you're flexible on destination and dates, it's a legitimate way to access cruising at something close to a per-person double rate.
+
+Norwegian Cruise Line, Virgin Voyages, and a handful of other lines have also introduced dedicated solo cabins priced without the supplement at all. These sell out. Book early if the cruise format matters to you.
+
+## The Independence Question
+
+A lot of advice on dodging the single supplement pushes toward roommate matching or shared formats, and those genuinely work. But it's worth being honest about what you're trading.
+
+Solo travel, for many people, is specifically about privacy. About not negotiating your schedule, your noise level, or your morning routine with anyone. Roommate matching solves the financial problem while reintroducing a social one. Some people find it fine, even enjoyable. Others find it genuinely stressful.
+
+**The smartest approach is to be clear with yourself about which costs you're actually willing to absorb** — financial or social — before you start optimizing. If you value privacy highly, your real target is finding operators and accommodation formats where the supplement is lowest, not finding ways to share a room.
+
+For solo travelers building out a fuller strategy around connection without sacrificing independence, [How to Find Travel Buddies in Any City](/blog/how-to-find-travel-buddies) covers how to find people to explore with on your own terms, without committing to a shared room or a packaged tour.
+
+## What to Do Right Now
+
+If you have a specific trip in mind, start by getting the real number. Call or email the operator and ask what the single supplement is, whether roommate matching is available, and whether any upcoming departures run without the supplement. Get it in writing before you book.
+
+[Nearby Traveler](https://nearbytraveler.org) is useful for the accommodation gap — when you're already somewhere and want to offset the isolation of paying for a room alone by finding other travelers or locals available to meet that same day. It doesn't solve the supplement, but it solves what the supplement was never going to fix anyway.
+
+The solo tax is real, it's significant, and it's not going away. But it's also avoidable more often than the default booking flow suggests. You just have to know what to ask for.
+
+The operators who have built their business around solo travelers don't bury the supplement waiver in a promotion. They lead with it, because they know that number is the first thing you're looking at.`
   }
 ];
 
