@@ -1954,6 +1954,79 @@ If you have a specific trip in mind, start by getting the real number. Call or e
 The solo tax is real, it's significant, and it's not going away. But it's also avoidable more often than the default booking flow suggests. You just have to know what to ask for.
 
 The operators who have built their business around solo travelers don't bury the supplement waiver in a promotion. They lead with it, because they know that number is the first thing you're looking at.`
+  },
+  {
+    title: "Solo Travel for Men: How to Actually Meet People",
+    date: "2026-10-01",
+    slug: "solo-travel-for-men-how-to-meet-people",
+    description: "Most 'meet people while traveling' advice ignores men entirely. Here's the honest, specific playbook for solo male travelers who want real connection.",
+    body: `You're somewhere new. The day is yours. You've done the thing — booked the flight, figured out the neighborhood, found a decent place to stay. And now it's 4 pm in a city where you know nobody, and the question of what to actually do with that is sitting there unanswered.
+
+This is the part of solo travel that doesn't get written about much, at least not for men. Most "how to meet people" travel content is aimed at women, which makes sense given the different safety considerations involved. But it also means there's almost nothing out there addressing the specific social friction that men traveling alone actually run into — which is real, even if it's less discussed.
+
+The friction isn't about danger. It's about initiation. Walking into a room alone as a man and starting conversations with strangers carries a different kind of social weight than it sounds. The wrong read in the wrong context, and you've made someone uncomfortable. That awareness is legitimate, and it shapes how you move through a new city whether you name it or not.
+
+Here's what actually works.
+
+## The Honest Problem First
+
+Men traveling solo tend to skew toward the structured end of the travel spectrum — booked itineraries, specific destinations, planned activities. That's not a flaw. It's often how solo trips get out of the planning stage at all. But structured travel optimizes for seeing things rather than meeting people, and those two goals require slightly different approaches.
+
+The other pattern that shows up a lot: spending most of the trip in spectator mode. You see the city. You eat well. You take photos. You move through it competently. And you come home having spoken to almost nobody beyond transactions. That kind of trip can feel hollow afterward in a way that's hard to put into words — not a failure exactly, but not quite what you were after.
+
+The good news is the fix isn't complicated. It just requires being more intentional about a few specific things than most solo travel advice bothers to specify.
+
+## Sit Where Conversation Happens
+
+This sounds obvious until you notice how consistently people ignore it. The physical position you put yourself in determines almost everything about whether conversation happens naturally or has to be forced.
+
+At a restaurant, sit at the bar rather than a table. At a coffee shop, pick the communal table or the counter facing the street rather than the corner with the outlet. At a bar, sit near the bartender, not at the far end. These aren't radical moves — they're just small positioning decisions that put you in the path of the conversations that happen anyway, without requiring you to initiate them awkwardly.
+
+The bar-at-dinner rule in particular is worth following every single night of a solo trip. Bartenders are professionally social. Other solo diners at the bar are usually there for the same reason you are. [Eating alone while traveling](/blog/eating-alone-while-traveling) genuinely stops feeling like anything after the second or third time — and the bar seat makes it considerably better from the start.
+
+## Find Structured Social Situations
+
+The reason hostels work for meeting people isn't the accommodation format — it's the forced proximity and structured common spaces. Once you're past the hostel phase of travel, or if you just prefer not to stay in one, you lose that structure. You have to build it yourself.
+
+The options that actually work for men are mostly activity-based. A pickup basketball game in a city park. A surf lesson if the destination supports it. A cooking class, a brewery tour, a climbing gym day pass. Trivia night at a bar. These formats give you something to do alongside other people, which removes the pressure of cold conversation and replaces it with a shared task or shared attention.
+
+[How to find travel buddies in any city](/blog/how-to-find-travel-buddies) goes into more depth on specific ways to locate these situations once you're already on the ground, which is more useful than planning them from home.
+
+The principle is simple: look for any situation where strangers are doing something together. You contribute to the activity, conversation emerges from it, and you haven't had to introduce yourself in a vacuum.
+
+## Use Technology for the Right Thing
+
+Most travel apps are built for logistics — navigation, accommodation, booking restaurants. Very few are built for the actual social problem of being somewhere new and knowing nobody.
+
+[Nearby Traveler](https://nearbytraveler.org) is one of the exceptions. You open it when you arrive and you can see locals who are available to meet right now — people who live in the city and are open to showing someone around, getting a drink, or just pointing you toward somewhere worth going. It also shows other travelers who've just arrived. For solo male travel specifically, that second option is useful: another person who's free for the evening and looking for company is the lowest-friction social situation you're going to find.
+
+The distinction from a dating app matters here. The context is explicitly social, which means the read on why you're reaching out is clear from the start. That removes a lot of the ambiguity that makes cold social situations awkward.
+
+## Go Where the Locals Are, Not the Tourists
+
+This is repeated constantly in travel writing and almost as constantly ignored, because tourist areas are easy and everything else requires a little more effort.
+
+But for meeting people — actually talking to people who live somewhere, who have opinions about it, who know what's worth doing — you have to be in the places they use. The tourist bar has tourists. The neighborhood bar two kilometers away has people who live there and a bartender who's been working that room for years.
+
+Ask the hotel concierge where they actually go on their days off. Read a local food or culture publication rather than a travel guide. Spend twenty minutes looking for a city-specific subreddit and search for recent recommendations. The information exists; it just takes slightly more friction to find than the top TripAdvisor results.
+
+## Say Yes Before You're Ready
+
+The specific failure mode that solo male travelers seem to hit more than others is decision paralysis in the evening hours. You're tired. The hotel room is comfortable. You tell yourself you'll go out later and then don't. This is the most common way a solo trip ends up feeling emptier than it should.
+
+The version of [how to meet people when traveling alone](/blog/how-to-meet-people-when-traveling-alone) that actually works requires making the decision early — before you've already started decompressing in the room. A choice made at lunch about where you're going that evening is easier to follow through on than one made at 8 pm when you've already been horizontal for an hour.
+
+Say yes to things before you've fully thought them through. If someone at a museum mentions a bar they like, ask which one. If a local colleague suggests continuing the conversation over dinner, go. The cost of being wrong about whether it'll be good is low. The cost of always defaulting to the safe choice is a trip you remember vaguely instead of well.
+
+## The Part Nobody Says Out Loud
+
+There's a version of solo travel that men do where the whole trip is productive and efficient and completely solitary. You see everything on the list. You eat well. You handle yourself competently. And you come home having had approximately zero real human contact beyond the kind that happens in transactions.
+
+That's a legitimate way to travel. But if you're reading this, it's probably not the trip you were hoping for.
+
+The social infrastructure of solo travel doesn't appear automatically. You have to position yourself for it — the right seat, the right neighborhood, the right kind of yes at the right moment. Once you stop waiting for it to happen to you and start making the small moves that put you in its path, the evenings start filling themselves.
+
+Put on shoes. Go find the neighborhood bar. Sit at the counter.`
   }
 ];
 
