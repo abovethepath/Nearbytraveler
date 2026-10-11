@@ -2027,6 +2027,93 @@ That's a legitimate way to travel. But if you're reading this, it's probably not
 The social infrastructure of solo travel doesn't appear automatically. You have to position yourself for it — the right seat, the right neighborhood, the right kind of yes at the right moment. Once you stop waiting for it to happen to you and start making the small moves that put you in its path, the evenings start filling themselves.
 
 Put on shoes. Go find the neighborhood bar. Sit at the counter.`
+  },
+  {
+    title: "The Solo Traveler's Secret: Take a Class, Meet Everyone",
+    date: "2026-10-11",
+    slug: "solo-travel-take-a-class-meet-people",
+    description: "Booking a local cooking, pottery, or language class is the most reliable way for solo travelers to meet real people — locals included. Here's why it works.",
+    body: `Most solo travel advice about meeting people boils down to the same three suggestions: stay in a hostel, do a walking tour, go to a bar and talk to someone. That advice works for some people. For a lot of others, it doesn't — and nobody explains why.
+
+Here's the honest answer: those situations are all passive. You show up, you hope something clicks. Sometimes it does. Often you spend three hours nursing a drink and leave knowing nobody's name.
+
+The approach that actually works consistently is different. It's structured. It gives you something to do with your hands. And it's been quietly driving one of the biggest shifts in how people plan their trips in 2026.
+
+Take a class.
+
+## Why Classes Work When Everything Else Doesn't
+
+Hilton's 2026 Travel Trends Report named "skillcations" the standout travel trend of the year — trips built around learning something: cooking in Bologna, pottery in Kyoto, flamenco in Seville, ceramics in Oaxaca, sourdough in San Francisco. The trend exploded for obvious reasons once you think about it. People want to come home with more than photos. They want something tangible.
+
+But for solo travelers specifically, the social mechanics of a class are what make it special — and this part almost nobody writes about.
+
+When you book a hands-on local class, three things happen at once that don't happen anywhere else.
+
+**First, you have a shared task.** You're not just sitting next to someone hoping conversation ignites. You're both trying to fold pasta without it splitting. That shared frustration, that small triumph when it works, is social glue. It creates moments. You don't have to manufacture them.
+
+**Second, the class is usually small.** A cooking class in a local's home kitchen has six people in it. A pottery studio might have eight. Compare that to a walking tour of thirty, where you spend most of the time trying to hear the guide. In a class, you will actually talk to everyone in the room.
+
+**Third, locals show up.** This is the part that matters most. Walking tours are tourists talking to tourists. Most hostel common rooms are the same. But a Saturday morning pasta class at a family kitchen in Rome? That's locals taking date mornings, couples celebrating anniversaries, neighborhood regulars who come every month. You're not in a tourist product. You're in a room where people actually live.
+
+If meeting real locals while traveling is your goal — and for most solo travelers, it eventually is — [classes are one of the highest-percentage paths to doing it](/blog/meet-locals-when-traveling).
+
+## What Kind of Class to Look For
+
+Not all classes are created equal, and the wrong kind delivers the walking-tour problem in a different outfit.
+
+Avoid anything that markets itself primarily to tourists, uses a professional venue with commercial catering kitchen setup, or runs multiple sessions per day. Those exist to move people through efficiently. They're fine experiences. They're not social ones.
+
+Look for these signals instead:
+
+**Small group, taught by an individual.** A local chef who teaches out of her apartment. A ceramicist with a studio who runs Saturday workshops for whoever shows up. These instructors chose small classes on purpose, and the people who find them tend to be curious and genuinely interested in craft.
+
+**Language classes at local schools.** Signing up for even a week-long intensive language course in a city you're visiting puts you in a classroom with expats, long-term residents, and locals studying a third language. The mix is remarkable and the friendships form fast — you're all struggling with the same subjunctive tense.
+
+**Food markets with a cooking component.** Many cities now offer market tours that end in cooking what you bought. You shop with a local, you cook with them, you eat together. The format creates a natural three-hour arc of shared experience.
+
+The tradeoff worth naming: good local classes take planning. You're not walking in off the street. You need to book ahead, sometimes weeks ahead for popular instructors. That's friction most spontaneous travelers resist. It's worth it.
+
+## The First Five Minutes Are Already Done For You
+
+One of the most underrated parts of taking a class as a solo traveler is that the awkward introduction is handled by someone else.
+
+The instructor introduces everyone. You go around the room. Suddenly you know that the woman next to you is from Lyon and visits this pottery studio every time she's in town, and the guy across from you is a local accountant who started taking cooking classes after a divorce and now teaches himself a new dish every weekend.
+
+You didn't have to engineer any of that. The format did it.
+
+This is especially useful for travelers who find unstructured social situations draining. [If you're an introvert who wants real connection without the performance of working a room](/blog/solo-travel-for-introverts-meeting-people), a class is probably the most natural social environment available to you while traveling.
+
+## After the Class Is Where It Gets Interesting
+
+The class is two hours. What happens next determines whether you met some nice people or made actual connections.
+
+Some instructors invite everyone back to the table to eat what they made — this is the extension you want. Other students often suggest continuing to a nearby bar or café. Say yes. This is the moment most solo travelers talk themselves out of because it feels presumptuous. It isn't. You just spent two hours cooking together. You're not strangers.
+
+If you want to keep meeting people after the class, [Nearby Traveler](https://nearbytraveler.org) is genuinely useful here — mark yourself available after your class wraps and you can see locals or other travelers who are free that evening, so you're not just hoping the pottery instructor's students all want to grab dinner.
+
+For finding other travelers to share the class experience with before you even arrive, [the tools covered in this guide to finding travel companions in any city](/blog/how-to-find-travel-buddies) pair well with the class booking approach — some travelers book a class together and use it as their first shared activity.
+
+## Cities Where This Works Particularly Well
+
+The skillcation approach works everywhere, but some cities have exceptional local class cultures that make it easier.
+
+**Bangkok** — Thai cooking classes range from tourist productions to small family-run kitchens that take four students max. Research carefully and the good ones are worth every baht.
+
+**Mexico City** — The cuisine is extraordinary and the class scene is deep. Mezcal and mole workshops, tortilla-making classes in Coyoacán, market tours in Jamaica. You'll meet more locals here than almost anywhere else in the world through this format.
+
+**Lisbon** — Tile painting workshops (azulejos) draw a mix of visitors and locals. The craft is genuinely connected to the city's identity and the instructors tend to be passionate.
+
+**Kyoto** — The city has built an entire infrastructure around craftspeople offering workshops. Ceramics, calligraphy, shibori dyeing. Book through the craftsperson directly rather than through aggregator sites.
+
+**Bologna** — Fresh pasta classes here are so embedded in local culture that plenty of Bolognesi take them recreationally. Finding one run out of a private home rather than a commercial space is not difficult.
+
+## The Actual Reason This Works
+
+Hostels work for meeting people because they create unavoidable proximity. Walking tours work because you're literally moving through a city with other people. Bars work when the conditions align.
+
+Classes work for a different reason: everyone in the room chose to be curious about something. That self-selection matters more than most people realize. You're not hoping to find someone interesting in a crowd of thousands. You're in a room of eight people who all decided their Tuesday afternoon was better spent learning to make ramen from scratch than sitting in a café on their phone.
+
+That's a different kind of person. And they're usually exactly who you wanted to meet.`
   }
 ];
 
