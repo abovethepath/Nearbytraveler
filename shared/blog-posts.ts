@@ -2179,6 +2179,81 @@ Festival solo travel has a few logistical realities that are worth naming honest
 Most advice about meeting people while traveling treats it as a problem to solve — something you have to engineer around the difficulty of being a stranger somewhere new. Festivals invert that. They're one of the rare travel situations where the environment does the social work for you and your only job is to show up and be present.
 
 The solo travelers who report the best festival experiences aren't the ones who came with a plan. They're the ones who came with no itinerary, said yes to things, and stayed out longer than they meant to. Buy the ticket, book a campsite, and let the first afternoon sort itself out.`
+  },
+  {
+    title: "Join a Run Club While Traveling Solo — It Actually Works",
+    date: "2026-11-01",
+    slug: "solo-travel-join-run-club-meet-people",
+    description: "Run clubs are the best-kept secret for solo travelers. Here's how to find one, show up without knowing anyone, and leave with actual connections.",
+    body: `Nobody tells you this when you're planning a solo trip.
+
+You can book the flights, research the neighborhoods, save the restaurants — and still end up spending most evenings alone in your hotel room wondering how anyone actually meets people in a new city. The standard advice (hostels, walking tours, hotel bars) works fine if you're 22 and comfortable with forced small talk. For everyone else, it feels hollow.
+
+Here's the thing that actually works: show up to a local run club.
+
+Not as a serious runner. Not with a training plan. Just as someone who's in the city, wants to move their legs, and wouldn't mind spending an hour with people who actually live there. It's low-stakes, it's free, and it works faster than almost anything else you can do as a solo traveler.
+
+## Why Run Clubs Work for Solo Travelers Specifically
+
+Run clubs have always existed. What changed recently is the scale. Strava's 2024 data showed a 59% surge in global run club membership, and the social dimension is driving most of it — 72% of Gen Z members say they join primarily to meet people, not to get faster. The running is almost incidental.
+
+That's what makes it perfect for travelers.
+
+When you join a run club mid-trip, you're stepping into a social structure that already exists. There's a start time, a route, a natural pace for conversation, and a group of people who signed up specifically because they wanted to be around other humans. You don't have to engineer connection. The format does it for you.
+
+Compare that to walking into a bar alone and hoping someone talks to you. Or sitting in a cafe with your laptop willing someone to make eye contact. The run club removes the hardest part: the reason to approach a stranger in the first place.
+
+If you've ever struggled with [how to meet people when traveling alone](/blog/how-to-meet-people-when-traveling-alone), run clubs solve the core problem — there's a built-in activity, a built-in conversation starter, and everyone is already in the same headspace.
+
+## How to Find One in Any City
+
+This is easier than you'd think, and you don't need a local connection to do it.
+
+**Strava Clubs** is the most reliable starting point. Search the city name and filter for run clubs — most active ones post their weekly schedules publicly. Look for groups with recent activity rather than the largest membership numbers. A club with 300 members but posts from two years ago won't help you.
+
+**Meetup.com** still has an active running section in most major cities. Filter by this week and you'll usually find two or three options with exact times and meeting spots.
+
+**Instagram local hashtags** are underrated for this. Search #[cityname]runclub or #[cityname]runners and you'll find accounts for active clubs that often post their weekly runs to stories. DM them. They will almost always respond warmly, because they want people to show up.
+
+**Lululemon and running specialty stores** frequently host free weekly runs and post the schedule on their website or at the door. These are especially good for first-timers because they're designed to be beginner-friendly and the staff are used to people showing up cold.
+
+One thing to be honest about: some run clubs in competitive cities run fast. Check the posted pace before you go. Most community clubs list themselves as all-paces-welcome, but it's worth confirming so you're not struggling to keep up while trying to make conversation.
+
+## What to Do When You Get There
+
+Show up a few minutes early. This is the only real tactical advice that matters. The window before the run starts is when people are milling around, stretching, checking their watches — and that's when the easiest conversations happen. Once the run starts you're focused on breathing. Once it ends people scatter quickly.
+
+Tell people you're visiting. This is not a weakness — it's the single most useful social signal you can send. Locals love being asked about their city by someone who's genuinely curious. Say where you're from, say how long you're there, and ask what they'd show a visitor who had three days. You'll get better recommendations than any travel guide and sometimes an invitation to dinner.
+
+Don't try to run with everyone. Pick one or two people at your natural pace and stay with them. A 45-minute run next to one person is worth more than bouncing between ten people and connecting with none of them.
+
+After the run, say yes to whatever comes next. Post-run coffee is common. Sometimes it's a beer. Often people are just heading home, which is fine. But if the group is going somewhere, go. That's where the actual friendships start.
+
+## The Safety Side of It
+
+Group runs in public spaces are genuinely low-risk, but the same common sense applies here as anywhere else. Check the route in advance if you can. Make sure your phone is charged. Share your rough plans with someone back home.
+
+For solo female travelers especially, running with a group is actually one of the safer ways to explore an unfamiliar city — you're not alone, you're moving through public spaces, and you're with people who know the area. The [solo female travel safety tips for 2026](/blog/solo-female-travel-safety-tips) are worth reading before any new city, but run clubs generally sit on the lower end of the risk spectrum compared to other ways of meeting strangers.
+
+## What to Do If You Can't Find a Run Club That Week
+
+Not every city has a run club scheduled on the exact night you're there. That's the honest tradeoff of this tactic — it depends on timing, and some smaller cities won't have options at all.
+
+In that case, Parkrun is worth knowing about. It's a free, weekly 5k held in parks across 22 countries every Saturday morning. No registration required. Show up, scan a barcode if you have one, run. It's not quite the same social density as a dedicated run club but you'll be surrounded by regulars who know each other, and the post-run coffee culture is strong.
+
+If you're looking to stack multiple ways of meeting people into the same trip, [Nearby Traveler](https://nearbytraveler.org) fills the gaps between scheduled events — mark yourself as available and see who else is free right now in your city, whether that's a local who wants to show someone around or another traveler who just arrived and doesn't want to eat alone.
+
+For broader strategies that work across every type of trip, [finding travel buddies in any city](/blog/how-to-find-travel-buddies) covers the full picture beyond the run club tactic specifically.
+
+## The Part Nobody Mentions
+
+You don't have to be a runner.
+
+Seriously. Run clubs in most cities have a wide range of paces and a significant chunk of people who are there almost entirely for the social side. Nobody is checking your marathon time at the door. Showing up matters more than finishing fast.
+
+The other thing nobody mentions: even if you have one solid conversation with one person for 40 minutes while running through a city you've never been in before, that is a fundamentally different travel experience than eating dinner alone at a table for one. It doesn't have to turn into a friendship that lasts years to be worth it.
+
+Find a club, show up five minutes early, and tell someone you're visiting. That's the whole move.`
   }
 ];
 
