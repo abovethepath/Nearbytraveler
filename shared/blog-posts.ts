@@ -2254,6 +2254,85 @@ Seriously. Run clubs in most cities have a wide range of paces and a significant
 The other thing nobody mentions: even if you have one solid conversation with one person for 40 minutes while running through a city you've never been in before, that is a fundamentally different travel experience than eating dinner alone at a table for one. It doesn't have to turn into a friendship that lasts years to be worth it.
 
 Find a club, show up five minutes early, and tell someone you're visiting. That's the whole move.`
+  },
+  {
+    title: "Solo Road Trip? Here's How to Actually Meet People",
+    date: "2026-11-11",
+    slug: "how-to-meet-people-on-a-solo-road-trip",
+    description: "Solo road trips are booming — but the social side is harder than anyone admits. Here's what actually works at campgrounds, trailheads, and small towns.",
+    body: `Solo road trips look incredible from the outside. Windows down, no itinerary, nowhere to be. And a lot of the time, they genuinely are.
+
+But there's a specific kind of loneliness that comes with driving alone through beautiful country, and it's different from the loneliness of solo city travel. In a city, you're surrounded by infrastructure for connection — hostels, bars, walking tours, coffee shops packed with strangers. On a road trip, you're often pulling into a campground at dusk, surrounded by families and couples who already have each other, wondering how you got this far from anyone you know.
+
+With domestic solo travel up 17.6% in 2026 and nearly half of U.S. solo travelers planning domestic-only trips for 2027, the solo road trip is the fastest-growing format in independent travel. The social playbook for it, though, hasn't been written yet.
+
+Here's what actually works.
+
+## Why Road Trips Are Socially Harder Than City Travel
+
+City solo travel has natural gathering points. If you're staying in a hostel, connection is almost built in. If you're not, there are still [practical strategies that work](/blog/solo-travel-meet-people-without-hostel) almost anywhere.
+
+Road trips remove those structures entirely. You're moving constantly, which means you rarely stay in one place long enough for the "become a regular" effect to kick in. You're often staying at campgrounds or motels rather than social accommodation. And the people around you — families on vacation, couples on anniversary trips — aren't necessarily looking for new friends.
+
+None of this means connection is impossible. It means you have to be more deliberate about where and how you create it.
+
+## Campgrounds: Where You're Already 80% of the Way There
+
+Campgrounds are genuinely underrated for solo traveler connection. Everyone is in a good mood. Everyone has time. And unlike a hotel, you're physically close to your neighbors — separated by a few feet of dirt rather than a wall.
+
+The mistake most solo road trippers make is retreating into their campsite. They set up their tent, cook their meal, and sit with their headphones in. The people who consistently meet others do the opposite: they cook outside, leave their campsite open, and make eye contact.
+
+**The campfire is the most reliable connector on a solo road trip.** Build one if fires are allowed. Someone will almost always wander over to ask if they can warm up. If you see someone else's fire, ask if you can join — this is completely normal campground etiquette and rarely gets a no.
+
+Loop campgrounds work better than pull-through ones. When campsites face each other, conversation happens naturally. Seek them out.
+
+## Trailheads and Trails
+
+Hikers talk to each other. This is just a fact. There's something about shared physical effort that removes the awkwardness of approaching a stranger, and trail culture has an unwritten rule that you acknowledge people you pass.
+
+**Use this.** Ask people at the trailhead what conditions are like ahead. Ask at the summit how the approach from the other side compares. These aren't forced conversations — they're genuinely useful exchanges that sometimes become more.
+
+Trailhead parking lots are also worth lingering in. People pre-hike and post-hike in their cars, make coffee, eat snacks. If you're doing the same, you're in the same orbit. Proximity plus a shared activity is most of what you need.
+
+Solo travelers who want to go deeper on the psychology of this — why doing something together lowers the bar for real conversation — will recognize the same logic behind [taking a class as a solo traveler](/blog/solo-travel-take-a-class-meet-people). The structure does the work.
+
+## Small Towns: Underused and Underrated
+
+Small towns are one of the best-kept secrets of road trip connection, and most people drive straight through them.
+
+The thing about small towns is that locals are genuinely curious about visitors. You're notable in a way you'd never be in a city. Walk into a diner, sit at the counter, and someone will almost certainly ask where you're from and where you're headed. This isn't intrusive — it's the culture.
+
+Local bars work the same way. Not tourist bars, not places with a brewery logo on the sign outside. The place that's been there since 1987 with three stools and a TV showing whatever game is on. Order something, ask the bartender about the town. Let it unfold.
+
+Farmer's markets, hardware stores, local diners on a weekday morning — these are the places where people who actually live there spend time. That's who you want to meet.
+
+## The Real-Time Problem
+
+All of the above relies on showing up to the right places at the right moments — which, on a road trip, isn't always predictable. You pull into a small town at 7pm on a Sunday. The diner is closed. The campground is half empty. You don't know anyone within 300 miles.
+
+This is where real-time connection tools have started to matter. [Nearby Traveler](https://nearbytraveler.org) lets you open the app wherever you've stopped and see who's around — locals who are free for dinner, other solo travelers in the same campground or town. You mark yourself available, they can find you, and you stop waiting for the universe to arrange something.
+
+It's not a replacement for the organic stuff. But on the nights when the organic stuff just isn't happening, it's genuinely useful.
+
+## What to Say and How to Start
+
+Most road trip conversations start with the simplest possible entry point: **where are you coming from, where are you headed.**
+
+This is the lingua franca of road travel. Everyone on a road trip is moving, and everyone is at least a little curious about other people's routes. You can open with it at a gas station, a campground, a trailhead. It's not weird. It's expected.
+
+From there, ask what they'd recommend. What's the best thing they've seen. Whether there's a stop you shouldn't skip. People love being asked for local knowledge, and they especially love being helpful to someone who's clearly doing something adventurous alone.
+
+If you're worried about how to handle the social side of this as an introvert specifically, the [solo travel for introverts guide](/blog/solo-travel-for-introverts-meeting-people) has a more tailored approach — ways to get real connection without burning through your whole social battery by noon.
+
+## The Pace Problem
+
+One honest tradeoff of solo road tripping: the constant movement works against connection. You meet someone great at a campground, exchange numbers, and you're in a different state by morning.
+
+The solution isn't to stop moving. It's to build in a few longer stops — two or three nights in a place that interests you. This is when the campground bartender starts to remember your order. When you run into the same hikers twice on different trails. When a loose conversation from the night before has a chance to continue.
+
+Speed is the enemy of road trip connection. Slow down more than you think you need to.
+
+The best solo road trips aren't the ones where you covered the most ground. They're the ones where you stayed long enough to actually be somewhere.`
   }
 ];
 
