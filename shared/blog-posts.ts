@@ -2333,6 +2333,75 @@ The solution isn't to stop moving. It's to build in a few longer stops — two o
 Speed is the enemy of road trip connection. Slow down more than you think you need to.
 
 The best solo road trips aren't the ones where you covered the most ground. They're the ones where you stayed long enough to actually be somewhere.`
+  },
+  {
+    title: "Supper Clubs for Solo Travelers: Meet People Over Dinner",
+    date: "2026-11-21",
+    slug: "supper-clubs-solo-travelers-meet-people",
+    description: "Supper clubs and social dining are the best way to meet people while traveling solo. A practical guide to Timeleft, Eatwith, and finding local events.",
+    body: `There's a specific kind of awkward that comes with eating dinner alone in a new city. Not the casual, book-open lunch awkward — the proper sit-down dinner awkward, where you're handed a table for two and the second chair just sits there. It's not ruinous, but it has a low hum of sadness to it that most solo travelers know well.
+
+Structured social dining solves this in a way that feels almost too obvious once you've tried it. You show up. There are people. You eat together. And because the format is explicitly designed for strangers, the social pressure that makes other situations feel forced mostly disappears. No one is wondering why you're there alone. Everyone is there to meet someone.
+
+The format is booming. TikTok searches for 'supper club' have exploded in the past year, Timeleft now operates in over 200 cities worldwide, and OpenTable has reported a 29% rise in solo dining reservations. The infrastructure for eating with strangers has never been more developed — but most solo travel advice still defaults to hostels and bar stools. This guide is about the dinner table instead.
+
+## Why Dinner Works Better Than Drinks
+
+Most meet-people-while-traveling advice points toward bars and nightlife, and bars are genuinely useful. But they have a ceiling. Loud music, short interactions, the implicit pressure to keep drinking — these make bars good for surface-level contact and not much else.
+
+Dinner is structurally different. You're seated next to someone for ninety minutes. Eating together is one of the oldest social rituals humans have, and it creates a kind of automatic intimacy that standing at a bar doesn't. Conversation goes deeper faster. You learn actual things about people. And because everyone is eating, there are natural pauses that remove the anxiety of keeping a conversation running continuously.
+
+For solo travelers specifically, [eating alone while traveling](/blog/eating-alone-while-traveling) can feel isolating in ways that are hard to explain to people who've never done it. Communal dining flips that. You're eating alone in the sense that you arrived by yourself, but you're not dining alone at all.
+
+## Timeleft: The Most Scalable Option
+
+If you've heard of one structured social dining platform, it's probably Timeleft. The model is simple: you fill out a personality questionnaire, the algorithm matches you with five strangers, and everyone meets at a restaurant on Wednesday night at 7:30pm. You don't know the restaurant until a few hours before. You don't know who you're meeting until you're there.
+
+The format removes all the planning friction that usually stops people from doing something like this. You sign up, you show up. The mystery element is a genuine feature rather than a gimmick — it creates a shared experience from the first message in the group chat and gives everyone something to talk about immediately.
+
+Timeleft operates in cities across Europe, North America, South America, and Southeast Asia, and new cities are being added regularly. For solo travelers, it's most useful when you're staying somewhere for at least a few days, since the dinners run on a weekly cycle. It costs between €10-20 depending on the city, which covers coordination; you pay for your own food.
+
+The tradeoff: it's algorithm-driven, so the matches can be uneven. Some tables click immediately. Others are politely awkward and you leave having learned little more than what people do for work. That's real. But the hit rate is higher than most alternatives, partly because everyone who shows up has explicitly opted into meeting strangers over dinner — that shared intention carries the room.
+
+## Eatwith: Home Cooking, Local Hosts
+
+Eatwith is a different model and worth understanding separately. Rather than matching strangers at a restaurant, Eatwith connects travelers with local hosts who cook dinner in their homes or private venues. The experience is closer to being invited to someone's dinner party than attending a networking event with food.
+
+This matters for solo travelers because it adds a layer of local access that restaurant-based models don't. You're eating food that reflects what a local person actually cooks, often with other guests who are also travelers, and the conversation tends to run wide. Where are you from, where are you going, what are you doing here — these questions feel genuinely interesting in someone's kitchen in a way they sometimes don't at a restaurant table.
+
+Eatwith experiences range from casual home dinners to more elaborate themed evenings. Prices vary significantly — a simple dinner with a local host might be €25-40, while a more curated event in a private venue can run €80 or more. Worth reading the listing carefully to understand what you're getting. The platform is strongest in European cities and a handful of major cities in Asia and the Americas.
+
+## Dinner Table Club and Local Equivalents
+
+The Dinner Table Club, based in the UK, runs a similar concept to Timeleft but with a more curated feel — smaller groups, more emphasis on vetting participants, and a stronger community layer for people who attend regularly. It's worth looking at if you're spending time in London, Edinburgh, or other UK cities where it operates.
+
+Beyond the established platforms, almost every major city has some version of local social dining happening — it just takes slightly more hunting. Search Eventbrite and Meetup for 'supper club', 'communal dinner', 'dinner with strangers', or 'social dining' alongside your destination city. Local Facebook groups often surface one-off events that don't make it onto bigger platforms. The quality varies, but one-off events organized by locals tend to have a more spontaneous energy than the algorithmically matched alternatives.
+
+For broader event-finding strategies that work across different city types, [how to find travel buddies in any city](/blog/how-to-find-travel-buddies) covers the full toolkit — including some offline approaches that complement what you'd find through dining platforms.
+
+## How to Actually Show Up
+
+Showing up alone to a table of strangers is mildly terrifying the first time. A few things that make it less so:
+
+**Arrive on time, or just slightly late.** Arriving first means sitting alone waiting, which amplifies the awkwardness. Two or three minutes late means people are already there, the table is already animated, and you slot in rather than waiting for the room to form around you.
+
+**Don't over-explain yourself.** You don't need a compelling answer to 'what brings you to the city.' Being honest that you're traveling solo and wanted to have dinner with people is a complete and interesting answer. It's also one that most people at the table will respect immediately.
+
+**Ask questions that require more than one sentence.** 'What do you do?' is fine as an opener but runs dry fast. 'How long have you lived here?' or 'What made you try this tonight?' tends to go somewhere more interesting. If you're newer to this, [how to talk to strangers while traveling](/blog/how-to-talk-to-strangers-while-traveling) has practical guidance on exactly this kind of conversation-starting.
+
+**Leave your phone in your pocket for the first twenty minutes.** This sounds small but it isn't. The phone is a signal to everyone around you that you're not fully present, and it closes off the casual opening exchanges that lead to actual conversation.
+
+## A Note on Safety
+
+Dinner at a restaurant with a group of strangers through a vetted platform is low-risk — you're in a public space, there are multiple people, and the platform has some accountability for who's attending. Home dining through Eatwith adds a layer of unfamiliarity that's worth thinking through, particularly if you're traveling alone in a city you don't know well. Read reviews carefully. Check that the host has a history of events. Tell someone where you're going. This isn't alarmism — it's just the same calibration you'd apply to any new situation. For solo women in particular, [solo female travel safety tips](/blog/solo-female-travel-safety-tips) has specific guidance that applies equally well to private dinner settings.
+
+## Finding People Beyond the Dinner Itself
+
+One underused advantage of structured social dining is that it creates a natural way to continue the evening. At the end of dinner, plans often emerge organically — someone knows a bar nearby, someone else is free for a walk, the group decides to stay for another drink. This is the actual social value: not just the dinner, but the fact that dinner is a natural social midpoint rather than an ending.
+
+For nights when you want more options or are in a city where none of these platforms operate, [Nearby Traveler](https://nearbytraveler.org) lets you find other travelers and locals who are free right now — which makes it useful when dinner has ended and you don't want the evening to.
+
+The dinner table is one of the most reliable places humans have ever found to get to know each other. Timeleft, Eatwith, and their local equivalents have just made it easier to find a seat.`
   }
 ];
 
